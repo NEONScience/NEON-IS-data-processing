@@ -38,17 +38,18 @@
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
-#' @param FuncConv (optional) A data frame indicating the terms to apply calibration conversion and their corresponding 
-#' calibration functions. The columns of the data frame are:
-#' \code{var}: Character. The name of the variable/term to be calibrated. Typically this must match a column name in 
-#' the input (L0) data, but it is not required so long as the calibration conversion function handles this case, for example 
-#' if multiple L0 terms are used to create a single calibrated output. In the latter case, provide the term name of the 
-#' single calibrated output.  \cr
-#' \code{FuncConv}: Character. The calibration conversion function within the NEONprocIS.cal package for the term listed 
-#' in the \code{var} column of the same row. Note that any and all calibration functions specified here must accept arguments 
-#' "data", "infoCal", "varCal", "slctCal", and "log", even if they are unused in the function. See any def.cal.conv.____.R 
-#' function in the NEONprocIS.cal package for explanation of these inputs, but in short, the entire L0 data frame and 
+#' @param FuncConv (optional) A data frame indicating the calibration functions to apply and (optionally) the 
+#' L0 terms to apply them to. The columns of the data frame are:
+#' \code{FuncConv}: Character. The calibration conversion function within the NEONprocIS.cal package . Note that 
+#' any and all calibration functions specified here must accept arguments "data", "infoCal", "varCal", "slctCal", 
+#' "Meta", and "log", even if they are unused in the function. See any def.cal.conv.____.R 
+#' function in the NEONprocIS.cal package for explanation of these inputs, but in short, the entire input data frame and 
 #' available calibration information are passed into each calibration function. 
+#' \code{var}: Character. The name of the variable/term to be calibrated. Typically this will be a single L0 term matching
+#' a column in the input data frame. However, it can be a term not found in the input data frame, multiple terms separated 
+#' by pipes (e.g. "resistance|voltage") or no term at all (indicated by an NA). These uncommon cases are acceptable so long 
+#' as the calibration conversion function is able to handle the case, for example if multiple L0 terms are used to create 
+#' a single calibrated output. \cr
 #' 
 #' @param FuncUcrt (optional) A data frame indicating the terms for which to generate L0' uncertainty data and their 
 #' corresponding functions. The columns of the data frame are:
@@ -136,15 +137,17 @@
 #' the child directory structure of the input path. By default, the 'calibration' directory of the input path is dropped
 #' unless specified in the DirSubCopy argument. Further details on the outputs in each of these directories are as follows: \cr
 #' \cr
-#' \code{data}: Calibrated L0' data. If the input argument \code{FuncConv} is not NULL, the calibrated output is structured as follows: 
-#' In the typical case where the term listed in the \code{FuncConv$var} column matches a L0 term in the input data, the calibrated output 
-#' will overwrite the original L0 data (the columns may be relabeled as specified in the output schema provided in SchmDataOutList). 
-#' In the case that a term listed in \code{FuncConv$var} does not match a column in the input data, no L0 data will be overwritten by 
-#' the function's output and instead a new column will be appended to the end of the output data in the row order it appears in 
-#' \code{FuncConv$var}, with the column name defaulting to the term name indicated in \code{FuncConv$var} (but it may also be relabeled 
-#' as specified in the output schema provided SchmDataOutList). Any terms existing in the input data but not indicated in \code{FuncConv$var} 
-#' will be passed through to the output unmodified and in the same order as the input data. If input argument \code{FuncConv} is not 
-#' included or NULL, no calibration conversion will be performed for any L0 data, and the output L0' data will be identical to the 
+#' \code{data}: Calibrated data. If the input argument \code{FuncConv} is not NULL, the calibrated output is 
+#' dependent on the transformations that each calibration function performs on the input data frame, performed in sequence 
+#' according to the rows of FuncConv input argument. For example, consider two rows in FuncConv, where row 1 contains 
+#' FuncConv=def.cal.conv.poly; var=voltage and row 2 contains FuncConv=def.cal.conv.cust; var=NA". The first 
+#' function is a standard polynomial conversion function requiring the L0 term to be converted, and its calibrated output 
+#' replaces the data in the "voltage" column of the data frame. The output will then be passed into the custom def.cal.conv.cust 
+#' function specified in row 2, which does not require any term to be specified in the "var" column. Whatever output data frame 
+#' that function returns will be passed to any successive functions specified in additional rows of FuncConv. Note that the columns 
+#' of the final output data frame as returned by the function indicated in the final row of FuncConv may be relabeled 
+#' as specified in the output schema provided SchmDataOutList. If input argument \code{FuncConv} is not 
+#' included or NULL, no calibration conversion will be performed for any L0 data, and the output data will be identical to the 
 #' L0 data, aside from any relabeling of the columns as specified in SchmDataOutList. \cr
 #' \cr
 #' \code{uncertainty_coef}: All uncertainty coefficients in the calibration files and FDAS uncertainty (if applicable) will be 
@@ -172,8 +175,8 @@
 
 #' @examples
 #' # Not run
-#' FuncConv <- data.frame(var='resistance',
-#'                        FuncConv='def.cal.conv.poly',
+#' FuncConv <- data.frame(FuncConv='def.cal.conv.poly',
+#'                        var='resistance',
 #'                        stringsAsFactors=FALSE)
 #' FuncUcrt <- data.frame(var='resistance',
 #'                        FuncUcrtMeas='def.ucrt.meas.cnst',
@@ -276,23 +279,20 @@ wrap.cal.conv.dp0p <- function(DirIn,
   # Do some error checking if we're applying calibration conversion
   if(!base::is.null(FuncConv)){
     
-    numConv <- base::nrow(FuncConv)
-  
     # Check that the data streams we want to calibrate and/or compute uncertainty for have calibration folders. If not, issue a warning.
-    exstCal <- base::unique(FuncConv$var,FuncUcrt$var) %in% varCal
-    if (numConv > 0 && !base::all(exstCal)) {
+    varCalExpc <- base::setdiff(base::unique(base::unlist(base::strsplit(c(FuncConv$var,FuncUcrt$var),"|",fixed=TRUE))),NA)
+    exstCal <- varCalExpc %in% varCal
+    if (base::nrow(FuncConv) > 0 && !base::all(exstCal)) {
       log$warn(
         base::paste0(
           'No calibration folder exists for term(s): ',
-          base::paste0(FuncConv$var[!exstCal], collapse = ','),
+          base::paste0(varCalExpc[!exstCal], collapse = ','),
           ' in datum path ',
           dirCal,
           '. This might be okay if custom cal and/or uncertainty functions are used.'
         )
       )
     }
-  } else {
-    numConv <- 0
   }
   
   # ------- Create the output directories for data, flags, and uncertainty --------
@@ -358,6 +358,9 @@ wrap.cal.conv.dp0p <- function(DirIn,
     base::stop()
   }
   
+  
+  #!!!!!!!!!!!!!!!!!!!!!!!!! This won't work if custom functions insert/change vars
+  
   # Create a mapping between terms in the input data and terms in the output data (if we have an output schema)
   nameVarIn <- base::names(data)
   nameVarAdd <- setdiff(FuncConv$var,nameVarIn)
@@ -374,14 +377,15 @@ wrap.cal.conv.dp0p <- function(DirIn,
       log = log
     )
   
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  
   # ------- Select which calibrations apply to this day --------
   log$debug('Selecting calibrations applicable to this day')
   calSlct <- NULL
+  varCalExpc <- base::setdiff(base::unique(base::unlist(base::strsplit(c(FuncConv$var,FuncUcrt$var,TermQf),"|",fixed=TRUE))),NA)
   calSlct <- NEONprocIS.cal::wrap.cal.slct(
     DirCal = dirCal,
-    NameVarExpc = base::unique(c(
-      FuncConv$var, TermQf, FuncUcrt$var
-    )),
+    NameVarExpc = varCalExpc,
     TimeBgn = timeBgn,
     TimeEnd = timeEnd,
     NumDayExpiMax = NumDayExpiMax,
@@ -501,7 +505,8 @@ wrap.cal.conv.dp0p <- function(DirIn,
   # ------------ Output ---------------
   
   # Replace the original data with the calibrated data
-  data[, base::names(dataConv)] <- dataConv
+  # data[, base::names(dataConv)] <- dataConv
+  data <- dataConv
   
   # If no output schema was provided, use the same schema as the input data
   if (base::is.null(SchmDataOutList)) {

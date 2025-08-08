@@ -366,7 +366,7 @@ if (!base::is.null(Para$FileSchmQf)) {
 
 # Parse the terms and associated statistics to compute 
 nameParaConv <- base::names(Para)[names(Para) %in% base::paste0("ConvFuncTerm",1:100)]
-if(base::length(namePara > 0)){
+if(base::length(nameParaConv > 0)){
   spltConv <- Para[nameParaConv]
   FuncConv <- base::lapply(spltConv,
                            FUN=function(argSplt){
@@ -388,37 +388,6 @@ if(base::length(namePara > 0)){
 } else {
   FuncConv <- NULL
   log$debug('Functions and associated terms to calibrate: None')
-}
-
-
-
-############ START HERE ##############
-
-
-
-
-
-# Determine the calibration function to be used for each converted term
-if(!base::is.null(Para$TermFuncConv) && 
-   base::length(Para$TermFuncConv) %% 2 > 0){
-  log$fatal('Input argument TermFuncConv must contain term:function pairs, separated by pipes.')
-  stop()
-}
-if (!base::is.null(Para$TermFuncConv) &&
-    base::length(Para$TermFuncConv) > 0) {
-  FuncConv <-
-    NEONprocIS.base::def.vect.pars.pair(
-      vect = Para$TermFuncConv,
-      NameCol = c('var', 'FuncConv'),
-      log = log
-    )
-  log$debug(base::paste0(
-    'Terms to calibrate & conversion function(s) to be used: ',
-    base::paste0(apply(as.matrix(FuncConv),1,base::paste0,collapse=':'), collapse = ', ')
-  ))
-} else {
-  FuncConv <- NULL
-  log$debug('Terms to calibrate & conversion function(s) to be used: None')
 }
 
 # Display choice for NumDayExpiMax

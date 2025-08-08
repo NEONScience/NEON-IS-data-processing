@@ -8,22 +8,17 @@
 #' Definition function. Apply NEON calibration polynomial function contained in coefficients 
 #' CVALA0, CVALA1, CVALA2, etc. to convert raw data to calibrated data.
 
-#' @param data Numeric data frame of raw measurements. 
+#' @param data Data frame of raw, uncalibrated measurements. This data frame must have a column
+#' called "readout_time"
 #' 
-#' @param infoCal A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
-#' One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
-#' This data frame must include columns:\cr
-#' \code{Name} String. The name of the coefficient. Must fit regular expression CVALA[0-9]\cr
-#' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
-#' Defaults to NULL, in which case converted data will be retured as NA.
-#' 
-#' @param varConv A character string of the target variable (column) in the data frame \code{data} for 
-#' which calibrated output will be computed (all other columns will be ignored). Note that for other
-#' uncertainty functions this variable may not need to be in the input data frame. Defaults to the first
+#' @param varConv A character string of the target variables (columns) in the data frame \code{data} for 
+#' which calibrated output will be computed (all other columns will be ignored). Defaults to the first
 #' column in \code{data}.
 #' 
-#' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
-#' NEONprocIS.cal::wrap.cal.conv for what this input is. 
+#' @param calSlct A named list of data frames, each list element corresponding to a 
+#' variable (column) to calibrate. The data frame in each list element holds 
+#' information about the calibration files and time periods that apply to the variable, 
+#' as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
 #' 
 #' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
 #' NEONprocIS.cal::wrap.cal.conv for what this input is.
@@ -45,6 +40,7 @@
 #' infoCal <- data.frame(Name=c('CVALA1','CVALA0'),Value=c(10,1),stringsAsFactors=FALSE)
 #' def.cal.conv.poly(data=data,infoCal=infoCal)
 
+#' @seealso \link[NEONprocIS.cal]{def.cal.slct}
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.b}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.m}
@@ -73,10 +69,11 @@
 #     This includes inputting the entire data frame, the 
 #     variable to be calibrated, and the (unused) argument calSlct
 #   Cove Sturtevant (2025-06-23)
-#    Add unused Meta input to accommodate changes in upstream calibration module
+#     Add unused Meta input to accommodate changes in upstream calibration module
+#   Cove Sturtevant (2025-08-07)
+#     Refactor to loop through applicable calibration files within this function
 ##############################################################################################
 def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),
-                              infoCal = NULL,
                               varConv = base::names(data)[1],
                               calSlct=NULL,
                               Meta=list(),
@@ -87,8 +84,14 @@ def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),
   }
 
   # Ensure input is data frame
-  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=varConv,TestEmpty=FALSE, log = log)
+  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c(varConv,'readout_time'),TestEmpty=FALSE, log = log)
   if (!chk) {
+    stop()
+  }
+  
+  # Ensure a single variable is input
+  if(base::length(varConv) != 1){
+    log$fatal('Calibration function def.cal.conv.poly requires a single character value for the varConv input. Check inputs.')
     stop()
   }
   
@@ -99,28 +102,55 @@ def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),
     stop()
   }
   
-  # If infoCal is NULL, return NA data
-  if (is.null(infoCal)) {
-    log$warn('No calibration information supplied, returning NA values for converted data.')
-    dataConv <- NA * data[[varConv]]
-    return(dataConv)
-  } else {
-    # Check to see if infoCal is a list
-    chkList <-
-      NEONprocIS.base::def.validate.list(infoCal, log = log)
-    if (!chkList) {
-      chk <- c(chk, chkList)
+  # Basic starting info
+  timeMeas <- data$readout_time
+  
+  # Run through each variable to be calibrated
+  for(varIdx in varConv){
+    
+    calSlctIdx <- calSlct[[varIdx]]
+    dataConvIdx <- data[[varIdx]]
+    
+    # Return NA if no cal info supplied
+    if(base::is.null(calSlctIdx)){
+      log$warn(base::paste0('No applicable calibration files available for ',varIdx, '. Returning NA for calibrated output.'))
+      dataConvIdx <- as.numeric(NA)
+      calSlctIdx <- base::data.frame()
     }
     
-  }
-
-  # Construct the polynomial calibration function
-  func <-
-    NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
+    # Run through each calibration file and apply the calibration function for the applicable time period
+    for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
+      
+      # What records in the data correspond to this cal file?
+      setCal <- timeMeas >= calSlctIdx$timeBgn[idxRow] & timeMeas < calSlctIdx$timeEnd[idxRow]
+      
+      # If a calibration file is available for this period, open it and get calibration information
+      if(!base::is.na(calSlctIdx$file[idxRow])){
+        fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
+        infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE,log=log)
+      } else {
+        infoCal <- NULL
+      }
+      
+      # If infoCal is NULL, return NA data
+      if (is.null(infoCal)) {
+        dataConvIdx[setCal] <- as.numeric(NA)
+        next
+      }
+      
+      # Construct the polynomial calibration function
+      func <- NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
+      
+      # Convert data using the calibration function
+      dataConvIdx[setCal] <- stats::predict(object = func, newdata = dataConvIdx[setCal])
+      
+    } # End loop around calibration files
+    
+    # Replace raw data with calibrated data
+    data[[varIdx]] <- dataConvIdx
+    
+  } # End loop around variables
   
-  # Convert data using the calibration function
-  dataConv <- stats::predict(object = func, newdata = data[[varConv]])
-  
-  return(dataConv)
+  return(data)
   
 }

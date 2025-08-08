@@ -15,15 +15,16 @@
 #' information about the calibration files and time periods that apply to the variable, as returned 
 #' from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
 #' 
-#' @param FuncConv A data frame of the terms/variables to convert and the function to convert 
-#' them with. Columns include:\cr
-#' \code{var} Character. The variable in data to apply calibration to. If this variable does not 
-#' exist in the data, it must be created by the associated calibration function in FuncConv. 
-#' ENABLE MULTIPLE VARS TO BE INDICATED HERE FOR PRODUCTION WITH A SINGLE FUNCTION CALL.\cr
-#' \code{FuncConv} A character string indicating the calibration conversion function  
-#' within the NEONprocIS.cal package that should be used. For most NEON data products, this will be 
-#' "def.cal.conv.poly". Note that any alternative function must accept the same arguments as 
-#' def.cal.conv.poly, even if they are unused. See that function for details. 
+#' @param FuncConv A data frame indicating the calibration functions to apply and (optionally) the 
+#' L0 terms to apply them to. The columns of the data frame are:
+#' \code{FuncConv}: Character. The calibration conversion function within the NEONprocIS.cal package . Note that 
+#' any and all calibration functions specified here must accept arguments "data", "infoCal", "varCal", "slctCal", 
+#' "Meta", and "log", even if they are unused in the function. See any def.cal.conv.____.R 
+#' \code{var}: Character. The name of the variable/term to be calibrated. Typically this will be a single L0 term matching
+#' a column in the input data frame. However, it can be a term not found in the input data frame, multiple terms separated 
+#' by pipes (e.g. "resistance|voltage") or no term at all (indicated by an NA). These uncommon cases are acceptable so long 
+#' as the calibration conversion function is able to handle the case, for example if multiple L0 terms are used to create 
+#' a single calibrated output. \cr
 #' 
 #' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
 #' calibration and uncertainty functions. This can contain whatever information might be needed in the
@@ -58,6 +59,8 @@
 #     removed DirCal from inputs since the calibration path is now included in calSlct
 #   Cove Sturtevant (2025-06-23)
 #     accept Meta object for passing additional metadata to calibration functions
+#   Cove Sturtevant (2025-08-07)
+#     Refactor to loop through applicable calibration files within individual cal funcs
 ##############################################################################################
 wrap.cal.conv <- function(data,
                           calSlct,
@@ -69,56 +72,26 @@ wrap.cal.conv <- function(data,
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Basic starting info
-  timeMeas <- data$readout_time
-  
-  # Initialize
-  varData <- base::names(data)
-  varExst <- base::intersect(FuncConv$var,varData) 
-  dataConv <- base::subset(data,select=varExst)
-  dataConv[] <- NA
-  # Tack on any newly created variables to the end
-  varNew <- base::setdiff(FuncConv$var,varData)
-  if(base::length(varNew) > 0){
-    dataConv[[varNew]] <- base::as.numeric(NA)
-  }
-  
-  # Loop through variables
-  for(idxVarCal in FuncConv$var){
-    
-    log$debug(base::paste0('Applying calibration to term: ',idxVarCal))
-    
-    calSlctIdx <- calSlct[[idxVarCal]]
+  # Loop through rows of FuncConv
+  for(idxFunc in base::seq_len(nrow(FuncConv))){
 
-    # Run through each selected calibration and apply the calibration function for the applicable time period
-    for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
-      
-      # What points in the output correspond to this row?
-      setCal <- timeMeas >= calSlctIdx$timeBgn[idxRow] & timeMeas < calSlctIdx$timeEnd[idxRow]
-      
-      # If a calibration file is available for this period, open it and get calibration information
-      if(!base::is.na(calSlctIdx$file[idxRow])){
-        fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
-        infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE,log=log)
-      } else {
-        infoCal <- NULL
-      }
-      
-      # Determine the calibration function to use
-      FuncConvIdx <- base::get(FuncConv$FuncConv[FuncConv$var == idxVarCal], base::asNamespace("NEONprocIS.cal"))
-      
-      # Pass the the calibration information to the calibration function
-      dataConv[setCal,idxVarCal] <- base::do.call(FuncConvIdx,args=base::list(data=base::subset(data,subset=setCal,drop=FALSE),
-                                                                              infoCal=infoCal,
-                                                                              varConv=idxVarCal,
-                                                                              calSlct=calSlct,
-                                                                              Meta=Meta,
-                                                                              log=log)
-                                                  )
-    }
+    log$debug(base::paste0('Applying calibration function: ', FuncConv$FuncConv[idxFunc], ' with indicated term(s): ',FuncConv$var[idxFunc]))
+    
+    # Get the calibration function
+    FuncConvIdx <- base::get(FuncConv$FuncConv[idxFunc], base::asNamespace("NEONprocIS.cal"))
+    
+    # Pass the the calibration information to the calibration function. 
+    # Note that "data" is updated with each function call and passed to subsequent functions
+    varConvIdx <- base::unique(base::unlist(base::strsplit(FuncConv$var[idxFunc],"|",fixed=TRUE)))
+    data <- base::do.call(FuncConvIdx,args=base::list(data=data,
+                                                      varConv=varConvIdx,
+                                                      calSlct=calSlct,
+                                                      Meta=Meta,
+                                                      log=log)
+    )
     
   }
   
-  return(dataConv)
+  return(data)
   
 }
