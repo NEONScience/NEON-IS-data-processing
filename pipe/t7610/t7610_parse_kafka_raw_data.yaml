@@ -70,9 +70,9 @@ transform:
       ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
 
       # Update the airflow triggering table
-      # for site_output in "${sites_output[@]}"; do
-      #   ./update-trigger-table.py -s $site_output -S $OUT_SOURCE_TYPE -D "$OUT_PATH/$OUT_SOURCE_TYPE" 
-      # done
+      for site_output in "${sites_output[@]}"; do
+        ./update-trigger-table.py -s $site_output -S $OUT_SOURCE_TYPE -D "$OUT_PATH/$OUT_SOURCE_TYPE"
+      done
 
       # set +x # Uncomment for debugging
       rm -rf $linkdir
