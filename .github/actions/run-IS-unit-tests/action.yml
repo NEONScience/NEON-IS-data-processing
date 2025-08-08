@@ -99,10 +99,10 @@ runs:
           devtools::test(pkg="${{ env.MODULE_PATH }}")
           cov <- covr::package_coverage
           # Generates an interactive HTML report
-          covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
+          #covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
+          report(cov, file="coverage.html")
           
       - name: Upload coverage.html artifact
-        shell: Rscript {0}
         uses: actions/upload-artifact@v4
         with:
           name: r-coverage-report
