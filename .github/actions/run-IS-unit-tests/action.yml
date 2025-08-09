@@ -97,25 +97,22 @@ runs:
           }
           devtools::test(pkg="${{ env.MODULE_PATH }}")
           cov <- covr::package_coverage
-          # as.data.frame(cov)
           # Generates an interactive HTML report
           covr::report(cov, file="${{ env.COVERAGE_PATH }}/${{ env.MODULE_NAME }}-coverage.html")
           # covr::report(cov, file="coverage.html")
           
-      - name: Add/update the test coverage.html to .github/workflows/
-        shell: bash
-        run: |
-          set -euo pipefail
-          IFS=$'\n\t'
-          git config --local user.email "actions@github.com"
-          git config --local user.name "gitHub Actions"
-          git checkout choim-IS-tests-github-actions
-          echo "Changed files to be committed:"
-          git diff --name-only
-          git add  -u .
-          git commit -m "Add or update the test coverage.html to .github/workflows/"  || echo "No coveage updated"
-          git push origin choim-IS-tests-github-actions
-
+      # - name: Add/update the test coverage.html to .github/workflows/
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
+      #     IFS=$'\n\t'
+      #     git checkout choim-IS-tests-github-actions
+      #     echo "Changed files to be committed:"
+      #     git diff --name-only
+      #     git add  -u .
+      #     git commit -m "Add or update the test coverage.html to .github/workflows/"  || echo "No coveage updated"
+      #     git push origin choim-IS-tests-github-actions
+      # 
 
       #          
       # Uploads the coverage.html file as a workflow artifact
