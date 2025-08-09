@@ -98,7 +98,7 @@ runs:
           devtools::test(pkg="${{ env.MODULE_PATH }}")
           cov <- covr::package_coverage
           # Generates an interactive HTML report
-          covr::report(cov, file="${{ env.COVERAGE_PATH }}/${{ env.MODULE_NAME }}-coverage.html")
+          # covr::report(cov, file="${{ env.COVERAGE_PATH }}/${{ env.MODULE_NAME }}-coverage.html")
           # covr::report(cov, file="coverage.html")
           
       # - name: Add/update the test coverage.html to .github/workflows/
