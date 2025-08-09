@@ -75,14 +75,6 @@ runs:
       - name: Run ${{ env.MODULE_NAME }} unit test coverage using covr package
         shell: Rscript {0}
         run: |
-          library(dplyr)
-          library(arrow)
-          library(jsonlite)
-          library(base)
-          library(utils)
-          library(rlang)
-          library(stringr)
-          library(covr)
           # Install NEONprocIS.base
           devtools::install("${{ env.MODULE_BASE_PATH }}")
           library("${{ env.MODULE_BASE_NAME }}")
@@ -92,19 +84,33 @@ runs:
           library("NEONprocIS.cal")
           }
           #
+          library(dplyr)
+          library(arrow)
+          library(jsonlite)
+          library(base)
+          library(utils)
+          library(rlang)
+          library(stringr)
           if ("${{ env.MODULE_NAME }}" != "${{ env.MODULE_BASE_NAME }}") {
             devtools::install("${{ env.MODULE_PATH }}")
             library("${{ env.MODULE_NAME }}")
           }
           devtools::test(pkg="${{ env.MODULE_PATH }}")
           cov <- covr::package_coverage
+          as.data.frame(cov)
           # Generates an interactive HTML report
           #covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
-          report(cov, file="coverage.html")
+          covr::report(cov, file="coverage.html")
+      #          
+      # Uploads the coverage.html file as a workflow artifact
+      # Find the r-coverage-report artifact on the workflow run details page. 
+      # Download the artifact and open the coverage.html file in your browser 
+      # to explore the detailed test coverage report, including line-by-line coverage information.
+      
+      # - name: Upload coverage.html artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: r-coverage-report
+      #     path: coverage.html
+      #     retention-days: 5 # Adjust retention days as needed
           
-      - name: Upload coverage.html artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: r-coverage-report
-          path: coverage.html
-          retention-days: 5 # Adjust retention days as needed
