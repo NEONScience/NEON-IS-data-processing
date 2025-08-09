@@ -102,16 +102,16 @@ runs:
           covr::to_cobertura(cov, filename = "${{ env.MODULE_NAME }}-coverage.html")
           
       # - name: Add/update the test coverage.html to .github/workflows/
-      #   shell: bash
-      #   run: |
-      #     set -euo pipefail
-      #     IFS=$'\n\t'
-      #     git checkout choim-IS-tests-github-actions
-      #     echo "Changed files to be committed:"
-      #     git diff --name-only
-      #     git add  -u .
-      #     git commit -m "Add or update the test coverage.html to .github/workflows/"  || echo "No coveage updated"
-      #     git push origin choim-IS-tests-github-actions
+        shell: bash
+        run: |
+          set -euo pipefail
+          IFS=$'\n\t'
+          git checkout choim-IS-tests-github-actions
+          echo "Changed files to be committed:"
+          git diff --name-only
+          git add  -u .
+          git commit -m "Add or update the test coverage.html to .github/workflows/"  || echo "No coveage updated"
+          git push origin choim-IS-tests-github-actions
       # 
 
       #          
