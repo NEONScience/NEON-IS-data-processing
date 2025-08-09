@@ -28,6 +28,7 @@ env:
   MODULE_BASE_PATH: ./pack/NEONprocIS.base
   MODULE_NAME: NEONprocIS.base
   MODULE_PATH: ./pack/NEONprocIS.base
+  COVERAGE_PATH: .github/workflows/
   IMAGE_NAME: neon-is-pack-base-r
 
 jobs:
