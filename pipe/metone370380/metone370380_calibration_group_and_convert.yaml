@@ -25,7 +25,7 @@ transform:
     # ... should not arise because the only data coming into Pachyderm will be coming from Kafka. ...
     # ... When a conflict does arise, the Trino data will take precedence, which is fine because the ...
     # ... conflict arose because data for the same sensor and day were in both locations.
-    if [ ${DATA_PATH_TRINO+x} ]; then 
+    if [ ${DATA_PATH_GCS+x} ]; then 
       # Data from trino. 
       # Set CONFIG for filter-joiner to the trino version and run filter joiner
       export CONFIG=$CONFIG_TRINO
@@ -65,9 +65,9 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: DATA_PATH_TRINO
+            name: DATA_PATH_GCS
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_TRINO/metone370380/*/*/*/*/**
+            glob_pattern: /pfs/DATA_PATH_GCS/metone370380/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
@@ -126,8 +126,8 @@ input:
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
-        name: DATA_PATH_TRINO
-        repo: metone370380_data_source_trino
+        name: DATA_PATH_GCS
+        repo: metone370380_data_source_gcs
         glob: /metone370380/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
