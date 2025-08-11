@@ -111,18 +111,17 @@ runs:
           git add "${{ env.MODULE_NAME }}-coverage.html"
           git commit -m "Add the test coverage.html "  || echo "No coveage added"
           git push origin  || echo "No changes to commit"
-      # 
 
       #          
       # Uploads the coverage.html file as a workflow artifact
       # Find the r-coverage-report artifact on the workflow run details page. 
       # Download the artifact and open the coverage.html file in your browser 
       # to explore the detailed test coverage report, including line-by-line coverage information.
-      
-      # - name: Upload coverage.html artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: r-coverage-report
-      #     path: coverage.html
-      #     retention-days: 5 # Adjust retention days as needed
+
+      - name: Upload coverage.html artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-coverage-report
+          path: ${{ env.MODULE_NAME }}-coverage.html
+          retention-days: 5 # Adjust retention days as needed
           
