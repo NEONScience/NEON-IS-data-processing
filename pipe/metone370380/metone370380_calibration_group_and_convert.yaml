@@ -94,21 +94,21 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: metone370380_calibration_assignment
-        glob: /metone370380/(2025)/(07)/(25)
+        glob: /metone370380/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
         repo: metone370380_data_source_gcs
-        glob: /metone370380/(2025)/(07)/(25)
+        glob: /metone370380/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: metone370380_data_source_kafka
-        glob: /metone370380/(2025)/(07)/(25)
+        glob: /metone370380/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
