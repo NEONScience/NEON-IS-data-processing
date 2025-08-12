@@ -110,6 +110,7 @@ runs:
           
       # Display in Job Summary
       - name: Add coverage summary to job summary
+        shell: bash
         run: |
           cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY    
       #          
