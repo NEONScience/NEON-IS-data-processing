@@ -96,9 +96,34 @@ runs:
             library("${{ env.MODULE_NAME }}")
           }
           devtools::test(pkg="${{ env.MODULE_PATH }}")
-          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}", quiet = FALSE, clean = FALSE)
+          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}", type = "all", quiet = FALSE, clean = TRUE)
           # Generates an interactive HTML report
           covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html") 
+      
+      # Generate Markdown Summary
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: '${{ env.MODULE_NAME }}-coverage.html' # Or the path to your Cobertura report
+          format: 'markdown'
+          output: 'file' # To save the markdown to a file
+          
+      # Display in Job Summary
+      - name: Add coverage summary to job summary
+        run: |
+          cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY    
+      #          
+      # Uploads the coverage.html file as a workflow artifact
+      # Find the r-coverage-report artifact on the workflow run details page. 
+      # Download the artifact and open the coverage.html file in your browser 
+      # to explore the detailed test coverage report, including line-by-line coverage information.
+
+      - name: Upload coverage.html artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-coverage-report
+          path: ${{ env.MODULE_NAME }}-coverage.html
+          retention-days: 1 # Adjust retention days as needed
           
       - name: Add/update the test coverage.html to .github/workflows/
         shell: bash
@@ -112,25 +137,3 @@ runs:
           git commit -m "Add the test coverage.html "  || echo "No coveage added"
           git push origin  || echo "No changes to commit"
 
-      #          
-      # Uploads the coverage.html file as a workflow artifact
-      # Find the r-coverage-report artifact on the workflow run details page. 
-      # Download the artifact and open the coverage.html file in your browser 
-      # to explore the detailed test coverage report, including line-by-line coverage information.
-# 
-#       - name: Create error log (if previous step fails)
-#         run: echo "An error occurred during build!" > ${{ env.MODULE_NAME }}-error.log
-#         if: failure()
-        
-      - name: Upload coverage.html artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: r-coverage-report
-          path: ${{ env.MODULE_NAME }}-coverage.html
-          retention-days: 5 # Adjust retention days as needed
-          
-        # if: failure()
-        # with:
-        #   name: ${{ env.MODULE_NAME }}-error-logs
-        #   path: ${{ env.MODULE_NAME }}-error.log
-          
