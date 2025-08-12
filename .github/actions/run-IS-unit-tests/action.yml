@@ -96,7 +96,7 @@ runs:
             library("${{ env.MODULE_NAME }}")
           }
           devtools::test(pkg="${{ env.MODULE_PATH }}")
-          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
+          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}", quiet = FALSE, clean = FALSE)
           # Generates an interactive HTML report
           covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html") 
           

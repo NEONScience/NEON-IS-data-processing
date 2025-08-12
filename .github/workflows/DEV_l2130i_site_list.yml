@@ -1,11 +1,11 @@
-name: "Run IS wq package unit tests"
+name: "Run IS base package unit tests"
 
 on:
   push:
     branches:
      - 'master'
     paths:
-      - 'pack/NEONprocIS.wq/**'
+      - 'pack/NEONprocIS.base/**'
       
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
@@ -26,9 +26,9 @@ env:
   # IS package name
   MODULE_BASE_NAME: NEONprocIS.base
   MODULE_BASE_PATH: ./pack/NEONprocIS.base
-  MODULE_PATH: ./pack/NEONprocIS.wq
-  MODULE_NAME: NEONprocIS.wq
-  IMAGE_NAME: neon-is-pack-wq-r
+  MODULE_NAME: NEONprocIS.base
+  MODULE_PATH: ./pack/NEONprocIS.base
+  IMAGE_NAME: neon-is-pack-base-r
 
 jobs:
   run-unit-test:
