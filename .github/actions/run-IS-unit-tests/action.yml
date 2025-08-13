@@ -98,13 +98,15 @@ runs:
           devtools::test(pkg="${{ env.MODULE_PATH }}")
           cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}", type = "all")
           # Generates an interactive HTML report
-          covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html") 
+          covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
+          # Generates a Cobertura XML file 
+          covr::to_cobertura(cov, filename = "cobertura.xml")
       
       # Generate Markdown Summary
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: coverage.xml # Or the path to your Cobertura report
+          filename: cobertura.xml # Or the path to your Cobertura report
           format: 'markdown'
           output: file # To save the markdown to a file
           
