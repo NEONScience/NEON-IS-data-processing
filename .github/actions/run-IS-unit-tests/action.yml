@@ -113,9 +113,9 @@ runs:
           output: both
       #     
       # # Display in Job Summary
-      # - name: Add coverage summary to job summary
-      #   shell: bash
-      #   run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY    
+      - name: Add coverage summary to job summary
+        shell: bash
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       #          
       # Uploads the coverage.html file as a workflow artifact
       # Find the r-coverage-report artifact on the workflow run details page. 
