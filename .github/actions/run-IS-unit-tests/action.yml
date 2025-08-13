@@ -100,7 +100,7 @@ runs:
           # Generates an interactive HTML report
           covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
           # Generates a Cobertura XML file 
-      #     covr::to_cobertura(cov, filename = "cobertura.xml")
+          covr::to_cobertura(cov, filename = "test-summary.xml")
       # 
       # # Generate Markdown Summary
       # - name: Code Coverage Summary Report
