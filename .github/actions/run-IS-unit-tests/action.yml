@@ -107,8 +107,10 @@ runs:
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
           filename: cobertura.xml # Or the path to your Cobertura report
-          format: 'markdown'
-          output: file # To save the markdown to a file
+          badge: true
+          hide_complexity: true
+          format: markdown
+          output: both
           
       # Display in Job Summary
       - name: Add coverage summary to job summary
