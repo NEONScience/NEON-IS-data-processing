@@ -19,6 +19,7 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, relative_path
     for path in data_path.rglob('*'):
         if path.is_file():
             mac_address = path.parent.parent.name
+            mac_address = mac_address.lower()
             asset_uid = mac_asset_map.get(mac_address)
             log.debug(f'Mac_Address name is: {mac_address}; asset_uid is: {asset_uid}')
 
