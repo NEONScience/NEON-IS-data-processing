@@ -23,7 +23,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: radShortPrimary_group_loader
-      glob: /par-quantum-line/*
+      glob: /rad-short-primary/*
   - pfs:
       name: FILE_YEAR
       repo: cmp22_cron_daily_and_date_control
