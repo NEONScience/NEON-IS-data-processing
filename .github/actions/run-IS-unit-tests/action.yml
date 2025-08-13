@@ -96,26 +96,26 @@ runs:
             library("${{ env.MODULE_NAME }}")
           }
           devtools::test(pkg="${{ env.MODULE_PATH }}")
-          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}", type = "all")
+          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
           # Generates an interactive HTML report
           covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
           # Generates a Cobertura XML file 
-          covr::to_cobertura(cov, filename = "cobertura.xml")
-      
-      # Generate Markdown Summary
-      - name: Code Coverage Summary Report
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: cobertura.xml # Or the path to your Cobertura report
-          badge: true
-          hide_complexity: true
-          format: markdown
-          output: both
-          
-      # Display in Job Summary
-      - name: Add coverage summary to job summary
-        shell: bash
-        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY    
+      #     covr::to_cobertura(cov, filename = "cobertura.xml")
+      # 
+      # # Generate Markdown Summary
+      # - name: Code Coverage Summary Report
+      #   uses: irongut/CodeCoverageSummary@v1.3.0
+      #   with:
+      #     filename: cobertura.xml # Or the path to your Cobertura report
+      #     badge: true
+      #     hide_complexity: false
+      #     format: markdown
+      #     output: both
+      #     
+      # # Display in Job Summary
+      # - name: Add coverage summary to job summary
+      #   shell: bash
+      #   run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY    
       #          
       # Uploads the coverage.html file as a workflow artifact
       # Find the r-coverage-report artifact on the workflow run details page. 
