@@ -14,7 +14,7 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, relative_path
             mac = path.parent.name
             with open(path, 'r') as f:
                 asset = f.read().split()[0]
-            mac_asset_map[mac] = asset
+            mac_asset_map[mac.lower()] = asset
 
     for path in data_path.rglob('*'):
         if path.is_file():
