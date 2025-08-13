@@ -107,7 +107,7 @@ transform:
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
     # Environment variables for bash code
-    SOURCE_TYPE: 't7610'
+    SOURCE_TYPE: 't7610_raw'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -125,7 +125,7 @@ input:
   pfs:
     name: import_trigger
     repo: t7610_cron_daily_and_date_control
-    glob: "/t7610/*/*/*"
+    glob: "/t7610_raw/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
