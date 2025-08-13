@@ -62,21 +62,8 @@ def.cal.conv.swc.test <- function(data = data.frame(data=base::numeric(0)),
     log <- NEONprocIS.base::def.log.init()
   }
 
-  # Ensure input is data frame
+  # Ensure input is data frame with variables to be calibrated
   chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c(varConv,'readout_time'),TestEmpty=FALSE, log = log)
-  if (!chk) {
-    stop()
-  }
-  
-  # Ensure a single variable is input
-  if(base::length(varConv) != 1){
-    log$fatal('Calibration function def.cal.conv.poly requires a single character value for the varConv input. Check inputs.')
-    stop()
-  }
-  
-  # Check to see if data to be calibrated is a numeric array
-  chk <-
-    NEONprocIS.base::def.validate.vector(data[[varConv]], TestEmpty = FALSE, TestNumc = TRUE, log = log)
   if (!chk) {
     stop()
   }
@@ -87,7 +74,14 @@ def.cal.conv.swc.test <- function(data = data.frame(data=base::numeric(0)),
   # Run through each variable to be calibrated
   for(varIdx in varConv){
     
-    # Pull ca
+    # Check to see if data to be calibrated is a numeric array
+    chk <-
+      NEONprocIS.base::def.validate.vector(data[[varIdx]], TestEmpty = FALSE, TestNumc = TRUE, log = log)
+    if (!chk) {
+      stop()
+    }
+
+    # Pull cal and initialize
     calSlctIdx <- calSlct[[varIdx]]
     dataConvIdx <- data[[varIdx]]
     dataConvOutIdx <- as.numeric(NA)*dataConvIdx

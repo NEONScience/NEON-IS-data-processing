@@ -9,9 +9,9 @@
 #' CVALA0, CVALA1, CVALA2, etc. to convert raw data to calibrated data.
 
 #' @param data Data frame of raw, uncalibrated measurements. This data frame must have a column
-#' called "readout_time"
+#' called "readout_time" with POSIXct timestamps
 #' 
-#' @param varConv A character string of the target variables (columns) in the data frame \code{data} for 
+#' @param varConv A character array of the target variables (columns) in the data frame \code{data} for 
 #' which calibrated output will be computed (all other columns will be ignored). Defaults to the first
 #' column in \code{data}.
 #' 
@@ -27,7 +27,8 @@
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
 
-#' @return A  Numeric vector of calibrated data\cr
+#' @return The input data frame, with the columns specified in input \code{varConv} updated with 
+#' calibrations applied.
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -36,9 +37,15 @@
 #' @keywords Currently none
 
 #' @examples
-#' data=data.frame(data=c(1,2,3))
-#' infoCal <- data.frame(Name=c('CVALA1','CVALA0'),Value=c(10,1),stringsAsFactors=FALSE)
-#' def.cal.conv.poly(data=data,infoCal=infoCal)
+#' Not Run
+#' data=data.frame(readout_time=as.POSIXct('2025-01-01','2025-01-02','2025-01-03'),var1=c(1,2,3),var2=c(4,5,6))
+#' calSlct <- NEONprocIS.cal::wrap.cal.slct(
+#'                DirCal = '/path/to/calibration/files',
+#'                NameVarExpc = c('var1','var2'),
+#'                TimeBgn = as.POSIXct('2025-01-01'),
+#'                TimeEnd = as.POSIXct('2025-01-04'),
+#'                )
+#' dataCal <- def.cal.conv.poly(data=data,varConv=c('var1','var2'),calSlct=calSlct)
 
 #' @seealso \link[NEONprocIS.cal]{def.cal.slct}
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
@@ -72,6 +79,7 @@
 #     Add unused Meta input to accommodate changes in upstream calibration module
 #   Cove Sturtevant (2025-08-10)
 #     Refactor to loop through applicable calibration files within this function
+#     Also enable multiple variables to be calibrated with this function call
 ##############################################################################################
 def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),
                               varConv = base::names(data)[1],
@@ -83,21 +91,8 @@ def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),
     log <- NEONprocIS.base::def.log.init()
   }
 
-  # Ensure input is data frame
+  # Ensure input is data frame with variables to be calibrated
   chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c(varConv,'readout_time'),TestEmpty=FALSE, log = log)
-  if (!chk) {
-    stop()
-  }
-  
-  # Ensure a single variable is input
-  if(base::length(varConv) != 1){
-    log$fatal('Calibration function def.cal.conv.poly requires a single character value for the varConv input. Check inputs.')
-    stop()
-  }
-  
-  # Check to see if data to be calibrated is a numeric array
-  chk <-
-    NEONprocIS.base::def.validate.vector(data[[varConv]], TestEmpty = FALSE, TestNumc = TRUE, log = log)
   if (!chk) {
     stop()
   }
@@ -107,6 +102,13 @@ def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),
   
   # Run through each variable to be calibrated
   for(varIdx in varConv){
+    
+    # Check to see if data to be calibrated is a numeric array
+    chk <-
+      NEONprocIS.base::def.validate.vector(data[[varIdx]], TestEmpty = FALSE, TestNumc = TRUE, log = log)
+    if (!chk) {
+      stop()
+    }
     
     # Pull cal file info for this variable and initialize the output
     calSlctIdx <- calSlct[[varIdx]]
