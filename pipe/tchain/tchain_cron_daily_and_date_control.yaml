@@ -11,8 +11,8 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2025-02-01" # Inclusive
-    END_DATE: "2025-02-24" # Inclusive
+    START_DATE: "2017-06-26" # Inclusive
+    #END_DATE: "2025-06-02" # Inclusive
     SOURCE_TYPE: "tchain"
   stdin:
   - "#!/bin/bash"
@@ -22,14 +22,20 @@ input:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "0 0 * * *" # Run at 00:00 GMT
+      spec: "0 7 * * *" # Run at 07:00 GMT (00:00 MST)
       overwrite: true
   - pfs:
       name: SITE_FILE
       repo: tchain_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 64M
+  memory: 100M
+  cpu: 1
+resource_limits:
+  memory: 300M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 500M
   cpu: 0.5
 autoscaling: true
 scheduling_spec:
@@ -49,14 +55,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

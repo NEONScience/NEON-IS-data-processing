@@ -210,5 +210,13 @@
 	{
 	"site" : "WLOU",
 	"kafka_start_date" : "2024-02-03"
+	},
+	{
+	"site" : "SRER",
+	"kafka_start_date" : "2024-02-03"
+	},
+	{
+	"site" : "SJER",
+	"kafka_start_date" : "2024-02-03"
 	}
 ]

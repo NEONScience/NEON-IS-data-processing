@@ -1,0 +1,133 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_level1_grp_reshape
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:v2.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # Run second module - Combined TSDL data and split by HOR.VER
+    Rscript ./flow.tsdl.comb.splt.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "NameVarTime=001|030" \
+      "MrgeCols=startDateTime|endDateTime" \
+      FileSchmMapDepth=$FILE_SCHEMA_MAP_DEPTH \
+      FileSchmMapCols=$FILE_SCHEMA_MAP_COLS \
+      LocDir=location \
+      StatDir=stats \
+      QmDir=quality_metrics \
+      "NameFileSufxRm=basicStats|qualityMetrics" \
+      "SplitGroupName=temp-specific-depths-lakes-split_" 
+      
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: QUALITY_METRICS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+        - path:
+            name: STATISTICS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+        - path:
+            name: GROUP_PATH
+            # Grab group information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+        - path:
+            name: GROUP_PATH
+            # Grab location information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/location/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_MAP_COLS
+      repo: tempSpecificDepthLakes_avro_schemas
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_column_term_substitutions.avsc
+  - pfs:
+      name: FILE_SCHEMA_MAP_DEPTH
+      repo: tempSpecificDepthLakes_avro_schemas
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_depth_term_map.avsc
+  - join:
+    - pfs:
+        name: QUALITY_METRICS_PATH
+        repo: tempSpecificDepthLakes_qm_group_and_compute
+        glob: "/(*)/(*)/(*)"
+        joinOn: "$1/$2/$3" # month day and CFGLOC
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: STATISTICS_PATH
+        repo: tempSpecificDepthLakes_stats_group_and_compute
+        glob: "/(*)/(*)/(*)"
+        joinOn: "$1/$2/$3" # month day and CFGLOC
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: GROUP_PATH
+        repo: tempSpecificDepthLakes_group_path
+        glob: "/(*)/(*)/(*)"
+        joinOn: "$1/$2/$3" # month day and CFGLOC
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+resource_requests: 
+  memory: 1G
+  cpu: 1.2
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+autoscaling: true
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+

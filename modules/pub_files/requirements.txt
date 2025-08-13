@@ -1,8 +1,9 @@
 common==0.1.2
 data_access==0.0.1a2
-environs==7.3.1
 Jinja2==3.1.4
-pandas==1.4.2
+environs==11.0.0
+marshmallow==3.21.3
+pandas==2.1.4
 numpy==1.26.4
 pyfakefs==3.6
 python-eml==0.0.2

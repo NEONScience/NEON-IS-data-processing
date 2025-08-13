@@ -1,2 +1,0 @@
-exo2algae_cron_daily_and_date_control.yaml
-exo2algae_data_source_kafka.yaml

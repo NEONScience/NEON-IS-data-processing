@@ -13,7 +13,7 @@ transform:
     OUT_PATH: /pfs/out
     START_DATE: "2025-06-23" # Inclusive
     #END_DATE: "2025-02-24" # Inclusive
-    SOURCE_TYPE: "t7610"
+    SOURCE_TYPE: "t7610_raw"
   stdin:
   - "#!/bin/bash"
   - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main

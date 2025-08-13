@@ -6,7 +6,18 @@ on:
     paths:
       - 'pipe/pluvio/*.yaml'
       - 'pipe/pluvio/pipe_list_pluvio.txt'
+      - 'pipe/precipWeighingv2/*.yaml'
+      - 'pipe/precipWeighingv2/pipe_list_precipWeighingv2.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+# Workflow-level concurrency
+concurrency: 
+  group: ${{
+      contains(github.workflow, 'update-dag') ||
+      contains(github.workflow, 'site-list') && 'operations-queue'
+    || github.workflow
+    }}
+  cancel-in-progress: false  # Queue them up, don't cancel
 
 jobs:
   # -------------------------------------------------------------
