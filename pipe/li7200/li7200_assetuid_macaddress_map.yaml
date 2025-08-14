@@ -14,7 +14,7 @@ transform:
     OUTPUT_PATH: /pfs/out
     REGION: cert
     SOURCE_TYPE: li7200
-    CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
+    CDSWEBAPP_URL: https://cds-cert.svcs-nonprod.gcp.neoninternal.org/cds-api
     LOG_LEVEL: DEBUG
   secrets:
   - name: pdr-secret
