@@ -68,8 +68,8 @@
 #' Custom uncertainty functions may output any amount of variables/columns as needed, but the variable naming is important. 
 #' At least one output column name from the measurement uncertainty function in \code{FuncUcrtMeas} must start with "ucrtMeas", 
 #' and any number of output columns beginning with "ucrtMeas" indicate other sources of uncertainty (except FDAS) that should 
-#' be added in quadrature to yield the combined individual measurement uncertainty. Any variables in the output data frame(s) of the uncertainty 
-#' functions indicated here that begin with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty function) will be 
+#' be added in quadrature to yield the combined individual measurement uncertainty. Any variables in the output data frame(s) 
+#' of the uncertainty functions indicated here that begin with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty function) will be 
 #' added in quadrature to represent the combined L0' uncertainty for the indicated term. 
 #'
 #' @param ucrtCoefFdas (optional). A data frame of FDAS uncertainty coefficients, as produced by 

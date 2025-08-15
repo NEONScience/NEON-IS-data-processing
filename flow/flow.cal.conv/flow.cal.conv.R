@@ -80,12 +80,12 @@
 #' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
 #'
 #' 6-N. "ConvFuncTermX=value" (optional), where X is an integer beginning at 1 and value contains the calibration
-#' conversion function and associated term(s) to convert with a single call to that function. Begin each "value" 
+#' conversion function and associated term name(s) to pass to a single call of that function. Begin each "value" 
 #' with the calibration conversion function to use within the NEONprocIS.cal package, followed by a 
-#' colon (:), and then the L0 term name to apply the calibration function to. 
+#' colon (:), and then the L0 term name(s) to pass to the calibration function. 
 #' For example: "ConvFuncTerm1=def.cal.conv.poly:resistance" indicates that the L0 term "resistance"
-#' will be calibrated using the function def.cal.conv.poly. Use additional instances of the ConvFuncTermX 
-#' argument to indicate additional functions and associated L0 terms to calibrate, incrementing the X integer with each 
+#' will be passed to the function def.cal.conv.poly. Use additional instances of the ConvFuncTermX 
+#' argument to indicate additional functions and associated L0 term(s) to calibrate, incrementing the X integer with each 
 #' additional argument. For example, if another L0 term "voltage" also uses the
 #' def.cal.conv.poly function, create and additional argument "ConvFuncTerm2=def.cal.conv.poly:voltage". Note
 #' the increment in X. An unlimited number of ConvFuncTermX arguments are allowed. 
@@ -105,7 +105,7 @@
 #' and term(s) listed in this set of arguments match L0 term(s) in the input data, the calibrated output will overwrite the 
 #' original L0 data (the columns may be relabeled as specified in the output schema provided in FileSchmData). 
 #' However, if the L0 terms are desired to be retained, or there is a special case where a 
-#' "calibrated" output is generated without any L0 terms, the ConvFuncTermX argument need not specify any L0 term(s), or the
+#' calibrated output is generated without any L0 terms, the ConvFuncTermX argument need not specify any L0 term(s), or the
 #' specified L0 term(s) need not match any terms in the L0 data, so long as the specified (custom) calibration function knows 
 #' how to handle this. The calibrated output data frame is entirely 
 #' dependent on the transformations that each calibration function performs on the input data frame, performed in sequence 
@@ -144,6 +144,20 @@
 #' calibration flag will be 1, and the suspect calibration flag will be -1.
 #'
 #'Make this UcrtFuncTermX
+#' 9. "UcrtFuncTermX=value (optional), where X is an integer beginning at 1 and value contains the uncertainty
+#' function and associated term(s) to pass to a single call to that function. Begin each "value" 
+#' with the uncertainty function to use within the NEONprocIS.cal package, followed by a 
+#' colon (:), and then the L0 term name(s) to pass to it. 
+#'
+#' Custom uncertainty functions may output any amount of variables/columns as needed, but the variable naming is important. 
+#' At least one output column name from the measurement uncertainty function must contain "ucrtMeas", and any number of output 
+#' columns also containing "ucrtMeas" indicate other sources of uncertainty (except FDAS) that should be added in quadrature to yield
+#' the combined individual measurement uncertainty. Indeed, combined and expanded individual measurement uncertainty are also output in 
+#' the resulting uncertainty data file. Any variables in the output data frame(s) of the uncertainty 
+#' functions indicated here that begin with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty function) will be 
+#' added in quadrature to represent the combined L0' uncertainty for the indicated term. 
+
+#'
 #' 9. "TermFuncUcrt=value" (optional), where value contains the combination of the L0 term and the associated uncertainty 
 #' function to use within the NEONprocIS.cal package to compute individual measurement uncertainty. The argument is formatted 
 #' as term:functionMeas,functionFdas|term:functionMeas,functionFdas... where term is the L0 term, functionMeas is the function 

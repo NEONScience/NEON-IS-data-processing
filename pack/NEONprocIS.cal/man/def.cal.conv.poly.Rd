@@ -14,9 +14,9 @@ def.cal.conv.poly(
 }
 \arguments{
 \item{data}{Data frame of raw, uncalibrated measurements. This data frame must have a column
-called "readout_time"}
+called "readout_time" with POSIXct timestamps}
 
-\item{varConv}{A character string of the target variables (columns) in the data frame \code{data} for 
+\item{varConv}{A character array of the target variables (columns) in the data frame \code{data} for 
 which calibrated output will be computed (all other columns will be ignored). Defaults to the first
 column in \code{data}.}
 
@@ -33,16 +33,23 @@ output in addition to standard R error messaging. Defaults to NULL, in which the
 created and used within the function.}
 }
 \value{
-A  Numeric vector of calibrated data\cr
+The input data frame, with the columns specified in input \code{varConv} updated with 
+calibrations applied.
 }
 \description{
 Definition function. Apply NEON calibration polynomial function contained in coefficients 
 CVALA0, CVALA1, CVALA2, etc. to convert raw data to calibrated data.
 }
 \examples{
-data=data.frame(data=c(1,2,3))
-infoCal <- data.frame(Name=c('CVALA1','CVALA0'),Value=c(10,1),stringsAsFactors=FALSE)
-def.cal.conv.poly(data=data,infoCal=infoCal)
+Not Run
+data=data.frame(readout_time=as.POSIXct('2025-01-01','2025-01-02','2025-01-03'),var1=c(1,2,3),var2=c(4,5,6))
+calSlct <- NEONprocIS.cal::wrap.cal.slct(
+               DirCal = '/path/to/calibration/files',
+               NameVarExpc = c('var1','var2'),
+               TimeBgn = as.POSIXct('2025-01-01'),
+               TimeEnd = as.POSIXct('2025-01-04'),
+               )
+dataCal <- def.cal.conv.poly(data=data,varConv=c('var1','var2'),calSlct=calSlct)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
