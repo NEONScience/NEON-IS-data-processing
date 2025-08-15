@@ -1,0 +1,3 @@
+csat3b_cron_daily_and_date_control.yaml
+csat3b_data_source_kafka.yaml
+csat3b_data_source_trino.yaml
