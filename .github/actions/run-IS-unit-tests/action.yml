@@ -144,8 +144,9 @@ runs:
           IFS=$'\n\t'
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
-          git config push.default 
-          mv ${{ env.MODULE_NAME }}-coverage.html ./test_coverage/
+          git config push.default
+          mkdir -p test_coverage
+          mv "${{ env.MODULE_NAME }}-coverage.html" ./test_coverage/
           git add "./test_coverage/${{ env.MODULE_NAME }}-coverage.html" 
           git commit -m "Add the test coverage.html "  || echo "No coveage added"
           git push origin  || echo "No changes to commit"
