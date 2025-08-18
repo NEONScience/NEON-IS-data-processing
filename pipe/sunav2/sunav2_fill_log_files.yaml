@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-155c3d8
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-a1ff444
   cmd:
   - sh
   - "-c"

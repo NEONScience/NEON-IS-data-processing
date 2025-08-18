@@ -11,11 +11,14 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH
+    
     # Run first module - date-gap-filler (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
+    
     # Run second module - regularize
     Rscript ./flow.rglr.R \
       DirIn=/tmp/pfs/date_filled \
@@ -60,21 +63,15 @@ input:
     - pfs:
         name: DATA_PATH
         repo: sunav2_location_group_and_restructure
-        # For full-scale daily processing, glob should be /sunav2/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /sunav2/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
         glob: /sunav2/(*/*/*)
-        #glob: /sunav2/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
       - pfs:
           name: LOCATION_PATH
           repo: sunav2_location_active_dates_assignment
-          # For full-scale daily processing, glob should be /sunav2/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /sunav2/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
           glob: /sunav2/(*/*/*)
-          #glob: /sunav2/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
-          # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $1
-          #joinOn: $2
           group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:

@@ -26,10 +26,9 @@ transform:
         DirIn=/tmp/pfs/filter_joined \
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
-        DirSubCopy=flags \
-        "TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly|conductivity:def.cal.conv.poly.split" \
-        "TermQf=pressure|temperature|conductivity" \
-        "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst|conductivity:def.ucrt.meas.cnst"
+        TermQf=nitrate_concentration \
+        FileSchmQf=$FILE_SCHEMA_FLAGS \
+        DirSubCopy=flags
     EOF
   env:
     # Environment variables for filter-joiner.
@@ -59,21 +58,26 @@ transform:
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
 input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: sunav2_avro_schemas
+      glob: /sunav2/flags_calibration_sunav2.avsc
   # Outer join all days
-  join:
-  - pfs:
-      name: CALIBRATION_PATH
-      repo: sunav2_calibration_assignment
-      glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3/$4
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-  - pfs:
-      name: DATA_PATH
-      repo: sunav2_fill_log_files
-      glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3/$4
-      outer_join: true
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: sunav2_calibration_assignment
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH
+        repo: sunav2_fill_log_files
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 5
 autoscaling: true
