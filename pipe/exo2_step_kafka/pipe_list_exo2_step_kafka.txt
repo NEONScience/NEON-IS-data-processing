@@ -1,2 +1,0 @@
-exo2_step_kafka_cron_daily_and_date_control.yaml
-exo2_step_data_source_kafka.yaml

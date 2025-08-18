@@ -2,7 +2,7 @@
 pipeline:
   name: mcseries_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.10.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -23,6 +23,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -149,16 +152,16 @@ parallelism_spec:
   constant: 4 
 autoscaling: true
 resource_requests:
-  memory: 1G
+  memory: 1.2G
   cpu: 1.8
 resource_limits:
   memory: 3G
   cpu: 2.5
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 1
+  memory: 1G
+  cpu: 0.5
 datum_set_spec:
-  number: 1
+  number: 2
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

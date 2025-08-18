@@ -1,3 +1,4 @@
 t7610_cron_daily_and_date_control.yaml
 t7610_data_source_kafka.yaml
 t7610_data_source_trino.yaml
+t7610_parse_kafka_raw_data.yaml

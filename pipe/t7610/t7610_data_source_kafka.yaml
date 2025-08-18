@@ -2,12 +2,12 @@
 pipeline:
   name: t7610_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.10.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "t7610"
+    SOURCE_TYPE: "t7610_raw"
     LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -23,6 +23,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -144,7 +147,7 @@ input:
     name: import_trigger
     repo: t7610_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/t7610/*/*/*"
+    glob: "/t7610_raw/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true

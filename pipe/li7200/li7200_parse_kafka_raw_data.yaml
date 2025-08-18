@@ -2,7 +2,7 @@
 pipeline:
   name: li7200_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.10.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -91,14 +91,14 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 4G
-  cpu: 2.5
+  memory: 5G
+  cpu: 1.8
 resource_limits:
-  memory: 8G
-  cpu: 5
+  memory: 7G
+  cpu: 3
 sidecar_resource_requests:
   memory: 3G
-  cpu: 1.5
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:

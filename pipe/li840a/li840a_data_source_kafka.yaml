@@ -2,7 +2,7 @@
 pipeline:
   name: li840a_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.10.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -23,6 +23,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -150,16 +153,13 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 300M
-  cpu: 1.6
+  cpu: 2
 resource_limits:
   memory: 1.5G
-  cpu: 2
+  cpu: 2.5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 1G
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

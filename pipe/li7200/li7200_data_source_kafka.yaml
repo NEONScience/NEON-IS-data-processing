@@ -2,7 +2,7 @@
 pipeline:
   name: li7200_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.10.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -23,6 +23,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -146,17 +149,17 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/li7200/*/*/*"
 parallelism_spec:
-  constant: 1
+  constant: 3
 autoscaling: true
 resource_requests:
+  memory: 5G
+  cpu: 2
+resource_limits:
   memory: 8G
   cpu: 3
-resource_limits:
-  memory: 10G
-  cpu: 5
 sidecar_resource_requests:
   memory: 4G
-  cpu: 3
+  cpu: 2.5
 datum_set_spec:
   number: 1
 scheduling_spec:
