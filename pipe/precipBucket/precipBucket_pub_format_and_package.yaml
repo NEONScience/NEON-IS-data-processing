@@ -105,16 +105,16 @@ input:
     # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
     glob: /*/*/*/*
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
   memory: 400M
-  cpu: 1.2
+  cpu: 0.6
 resource_limits:
   memory: 800M
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 2G
+  memory: 1G
   cpu: 0.4
 datum_set_spec:
   number: 5
