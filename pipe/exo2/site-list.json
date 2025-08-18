@@ -1,9 +1,5 @@
 [
 	{
-	"site" : "ABBY",
-	"kafka_start_date" : "2023-05-24"
-	},
-	{
 	"site" : "ARIK",
 	"kafka_start_date" : "2024-03-01"
 	},
@@ -12,16 +8,8 @@
 	"kafka_start_date" : "2024-08-11"
 	},
 	{
-	"site" : "BARR",
-	"kafka_start_date" : "2023-06-01"
-	},
-	{
 	"site" : "BIGC",
 	"kafka_start_date" : "2024-06-01"
-	},
-	{
-	"site" : "BLAN",
-	"kafka_start_date" : "2023-03-03"
 	},
 	{
 	"site" : "BLDE",
@@ -34,10 +22,6 @@
 	{
 	"site" : "BLWA",
 	"kafka_start_date" : "2024-08-22"
-	},
-	{
-	"site" : "BONA",
-	"kafka_start_date" : "2023-06-01"
 	},
 	{
 	"site" : "CARI",
@@ -61,31 +45,19 @@
 	},
 	{
 	"site" : "GUIL",
-	"kafka_start_date" : "2023-03-09"
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
 	"site" : "HOPB",
 	"kafka_start_date" : "2024-01-17"
 	},
 	{
-	"site" : "JORN",
-	"kafka_start_date" : "2023-05-24"
-	},
-	{
 	"site" : "KING",
 	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "KONA",
-	"kafka_start_date" : "2023-03-15"
-	},
-	{
 	"site" : "LECO",
 	"kafka_start_date" : "2024-02-09"
-	},
-	{
-	"site" : "LENO",
-	"kafka_start_date" : "2023-06-15"
 	},
 	{
 	"site" : "LEWI",
@@ -112,29 +84,17 @@
 	"kafka_start_date" : "2024-02-05"
 	},
 	{
-	"site" : "MLBS",
-	"kafka_start_date" : "2023-02-03"
-	},
-	{
-	"site" : "MOAB",
-	"kafka_start_date" : "2023-05-24"
-	},
-	{
 	"site" : "MD04",
-	"start_date" : "2025-03-26"
+	"start_date" : "2025-03-23"
 	},
 	{
 	"site" : "MDP2",
-	"start_date" : "2025-03-26",
-	"kafka_start_date" : "2025-03-26"
+	"start_date" : "2025-03-23",
+	"kafka_start_date" : "2025-03-23"
 	},
 	{
 	"site" : "OKSR",
 	"kafka_start_date" : "2024-04-06"
-	},
-	{
-	"site" : "ORNL",
-	"kafka_start_date" : "2023-05-10"
 	},
 	{
 	"site" : "POSE",
@@ -153,20 +113,8 @@
 	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "PUUM",
-	"kafka_start_date" : "2023-02-03"
-	},
-	{
 	"site" : "REDB",
 	"kafka_start_date" : "2024-02-06"
-	},
-	{
-	"site" : "SOAP",
-	"kafka_start_date" : "2023-05-24"
-	},
-	{
-	"site" : "STEI",
-	"kafka_start_date" : "2023-03-15"
 	},
 	{
 	"site" : "SUGG",
@@ -175,10 +123,6 @@
 	{
 	"site" : "SYCA",
 	"kafka_start_date" : "2024-04-11"
-	},
-	{
-	"site" : "TALL",
-	"kafka_start_date" : "2023-05-10"
 	},
 	{
 	"site" : "TECR",
@@ -193,23 +137,11 @@
 	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "TREE",
-	"kafka_start_date" : "2023-03-15"
-	},
-	{
 	"site" : "WALK",
 	"kafka_start_date" : "2024-02-09"
 	},
 	{
 	"site" : "WLOU",
 	"kafka_start_date" : "2024-02-06"
-	},
-	{
-	"site" : "WOOD",
-	"kafka_start_date" : "2023-05-24"
-	},
-	{
-	"site" : "WREF",
-	"kafka_start_date" : "2023-02-03"
 	}
 ]

@@ -2,7 +2,7 @@
 pipeline:
   name: parQuantumLine_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.2.0
   cmd:
   - sh
   - "-c"
