@@ -118,12 +118,12 @@ runs:
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
         
       # Upload Coverage Report  
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./test-summary.xml
-          flags: unittests
-          name: codecov-umbrella
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     file: ./test-summary.xml
+      #     flags: unittests
+      #     name: codecov-umbrella
       #          
       # Uploads the coverage.html file as a workflow artifact
       # Find the r-coverage-report artifact on the workflow run details page. 
@@ -137,15 +137,17 @@ runs:
           path: ${{ env.MODULE_NAME }}-coverage.html
           retention-days: 1 # Adjust retention days as needed
           
-      - name: Add/update the test coverage.html to .github/workflows/
+      - name: Add/update the test coverage.html to ./test_coverage/
         shell: bash
         run: |
           set -euo pipefail
           IFS=$'\n\t'
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
-          git config push.default current
-          git add "${{ env.MODULE_NAME }}-coverage.html"
+          git config push.default 
+          mkdir -p test_coverage
+          mv "${{ env.MODULE_NAME }}-coverage.html" ./test_coverage/
+          git add "./test_coverage/${{ env.MODULE_NAME }}-coverage.html" 
           git commit -m "Add the test coverage.html "  || echo "No coveage added"
           git push origin  || echo "No changes to commit"
 
