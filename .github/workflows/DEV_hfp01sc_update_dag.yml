@@ -2,7 +2,7 @@ name: DEV-hfp01sc-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/hfp01sc/*.yaml'
       - 'pipe/hfp01sc/pipe_list_hfp01sc_development.txt'
