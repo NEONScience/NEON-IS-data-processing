@@ -148,7 +148,6 @@ runs:
           git add "${{ env.MODULE_NAME }}-coverage.html"
           echo "Attempting to create a test_coverage directory
           echo "Directory creation successful (or already existed)."
-          git mv "${{ env.MODULE_NAME }}-coverage.html" ./test_coverage/
           git commit -m "Add the test coverage.html "  || echo "No coveage added"
           git push origin  || echo "No changes to commit"
 
