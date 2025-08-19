@@ -146,7 +146,7 @@ runs:
           git config --local user.name "gitHub Actions"
           git config push.default current
           git add "${{ env.MODULE_NAME }}-coverage.html"
-          echo "Attempting to create a test_coverage directory
+          echo "Attempting to create a test_coverage directory"
           mkdir -p test_coverage
           echo "Directory creation successful (or already existed)."
           git mv "${{ env.MODULE_NAME }}-coverage.html" ./test_coverage/
