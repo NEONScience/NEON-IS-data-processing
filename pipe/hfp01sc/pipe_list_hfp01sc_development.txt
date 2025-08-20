@@ -1,2 +1,3 @@
 hfp01sc_cron_daily_and_date_control.yaml
 hfp01sc_data_source_kafka.yaml
+hfp01sc_data_source_trino.yaml

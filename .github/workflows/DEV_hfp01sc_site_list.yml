@@ -2,7 +2,7 @@ name: DEV-hfp01sc-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/hfp01sc/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
