@@ -2,7 +2,7 @@ name: DEV-li840a-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/li840a/*.yaml'
       - 'pipe/li840a/pipe_list_li840a_development.txt'

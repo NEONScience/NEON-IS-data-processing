@@ -2,7 +2,7 @@ name: DEV-t7610-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/t7610/*.yaml'
       - 'pipe/t7610/pipe_list_t7610_development.txt'
