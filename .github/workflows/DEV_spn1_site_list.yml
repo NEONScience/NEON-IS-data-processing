@@ -33,11 +33,12 @@ jobs:
 
       - name: Get Workflow ID with Regex
         id: get-workflow-id
+        shell: bash
         run: |
           # Example: Using a simple regex to filter workflow_ref
           workflow_ref="${{ github.workflow_ref }}"
-          if [[ $workflow_ref =~ .*/workflows/(.*)\site_ist.yml@.* ] || 
-              [ $workflow_ref =~ .*/workflows/(.*)\update_dag.yml@.* ]]; then
+          if [[ $workflow_ref =~ .*/workflows/(.*)\site_ist.yml@.* ]] || 
+             [[ $workflow_ref =~ .*/workflows/(.*)\update_dag.yml@.* ]]; then
             workflow_file_name="${BASH_REMATCH[1]}.yml"
             echo "Workflow File Name: $workflow_file_name"
             echo "::set-output name=workflow_file_name::$workflow_file_name"
