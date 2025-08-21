@@ -45,7 +45,7 @@ jobs:
           fi
 
       - name: Wait for Filtered Workflow
-        uses: kamilchodola/wait-for-workflow-action@v1.1.0
+        uses: kamilchodola/wait-for-workflow-action@1.1.0
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
           workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
