@@ -38,9 +38,13 @@ jobs:
           # Example: Using a simple regex to filter workflow_ref
           # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
           workflow_ref="${{ github.workflow_ref }}"
-          reg_pattern = (workflows\/.*_site_list\.yml|update_dag\.yml) 
-          echo "workflow_ref:::: $workflow_ref"
-          echo "reg_pattern:::  $reg_pattern"
+          regstr_pattern = workflows\/.*_site_list\.yml|update_dag\.yml 
+          
+          if [[ $workflow_ref =~ reg_pattern ]] ; then
+            echo "******* true **********"
+          else 
+            echo "******** false ********"
+          
           # if [[ $workflow_ref =~ (workflows\/.*_site_list\.yml|update_dag\.yml) ]] ; then
           #   workflow_file_name="${BASH_REMATCH[1]}.yml"
           #   echo "Workflow File Name: $workflow_file_name"
