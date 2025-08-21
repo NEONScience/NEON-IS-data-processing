@@ -37,15 +37,14 @@ jobs:
         run: |
           # Example: Using a simple regex to filter workflow_ref
           workflow_ref="${{ github.workflow_ref }}"
-          if [[ $workflow_ref =~ .*/workflows/(.*)\site_ist.yml@.* ]] || 
-             [[ $workflow_ref =~ .*/workflows/(.*)\update_dag.yml@.* ]]; then
+          if [[ $workflow_ref =~ .*/workflows/(.*)\site_ist.yml@.* ]] ; then
             workflow_file_name="${BASH_REMATCH[1]}.yml"
             echo "Workflow File Name: $workflow_file_name"
             echo "::set-output name=workflow_file_name::$workflow_file_name"
           fi
 
       - name: Wait for Filtered Workflow
-        uses: kamilchodola/wait-for-workflow-action@1.1.0
+        uses: kamilchodola/wait-for-workflow-action@1.1.1
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
           workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
