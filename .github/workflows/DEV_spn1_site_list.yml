@@ -36,8 +36,9 @@ jobs:
         shell: bash
         run: |
           # Example: Using a simple regex to filter workflow_ref
+          # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
           workflow_ref="${{ github.workflow_ref }}"
-          if [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]] ; then
+          if [[ $workflow_ref =~ */workflows/*_site_ist.yml* ]] ; then
             workflow_file_name="${BASH_REMATCH[1]}.yml"
             echo "Workflow File Name: $workflow_file_name"
             echo "::set-output name=workflow_file_name::$workflow_file_name"
