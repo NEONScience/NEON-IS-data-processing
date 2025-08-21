@@ -137,7 +137,7 @@ runs:
           path: ${{ env.MODULE_NAME }}-coverage.html
           retention-days: 1 # Adjust retention days as needed
           
-      - name: Add/update the test coverage.html to ./test_coverage/
+      - name: Add/update the test coverage.html to ./pack/test_coverage/
         shell: bash
         run: |
           set -euo pipefail
