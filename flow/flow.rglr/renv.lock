@@ -102,6 +102,21 @@
       "Hash": "d4335fe7207f1c01ab8c41762f5840d4",
       "Requirements": []
     },
+    "R6P": {
+      "Package": "R6P",
+      "Version": "0.4.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2d69956f3a719d2b9c5246d454442ce6",
+      "Requirements": [
+        "R6",
+        "collections",
+        "dplyr",
+        "stringr",
+        "tibble",
+        "tidyr"
+      ]
+    },
     "RColorBrewer": {
       "Package": "RColorBrewer",
       "Version": "1.1-3",
@@ -163,6 +178,14 @@
       "Hash": "019388fc48e48b3da0d3a76ff94608a8",
       "Requirements": []
     },
+    "collections": {
+      "Package": "collections",
+      "Version": "0.3.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "eec272efef8f9b1ff376d67cab931935",
+      "Requirements": []
+    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.5.2",
@@ -199,10 +222,10 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.33",
+      "Version": "0.6.37",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b18a9cf3c003977b0cc49d5e76ebe48d",
+      "Hash": "33698c4b3127fc9f506654607fb73676",
       "Requirements": []
     },
     "doParallel": {
@@ -252,34 +275,6 @@
         "tibble",
         "tidyselect",
         "vctrs"
-      ]
-    },
-    "eddy4R.base": {
-      "Package": "eddy4R.base",
-      "Version": "0.2.24",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "eddy4R",
-      "RemoteUsername": "NEONScience",
-      "RemoteRef": "deve",
-      "RemoteSha": "eaf4bd94702ccb3e84e29d2f9a17ac42ff23b0b2",
-      "RemoteSubdir": "pack/eddy4R.base",
-      "Hash": "824c88f37c420a4c49ee27304cc05e5a",
-      "Requirements": [
-        "BiocManager",
-        "DataCombine",
-        "EMD",
-        "deming",
-        "downloader",
-        "ff",
-        "ffbase",
-        "neonUtilities",
-        "polynom",
-        "rhdf5",
-        "robfilter",
-        "signal",
-        "zoo"
       ]
     },
     "fansi": {
@@ -353,10 +348,10 @@
     },
     "generics": {
       "Package": "generics",
-      "Version": "0.1.3",
+      "Version": "0.1.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "15e9634c0fcd294799e9b2e929ed1b86",
+      "Hash": "4b29bf698d0c7bdb9f1e4976e7ade41d",
       "Requirements": []
     },
     "ggplot2": {
@@ -524,10 +519,10 @@
     },
     "neonUtilities": {
       "Package": "neonUtilities",
-      "Version": "2.4.3",
+      "Version": "2.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "367ac6235c50c523da77238a353e37ff",
+      "Hash": "c128a2d6ed68601b0066062ba4ea67e4",
       "Requirements": [
         "R.utils",
         "curl",
