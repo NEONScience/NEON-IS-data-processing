@@ -43,8 +43,8 @@
 #' 
 #' @examples
 #' # Not run
-# DirInLogs<-"~/pfs/sunav2_logs_output/sunav2/2024/09/10/20349" #cleaned log data
-# DirInStream<-"~/pfs/sunav2_data_parser_trino/sunav2/2024/09/10/20349" #streamed L0 data
+# DirInLogs<-"~/pfs/sunav2_logjam_assign_clean_files/sunav2/2024/09/11/20349" #cleaned log data
+# DirInStream<-"~/pfs/sunav2_trino_data_parser/sunav2/2024/09/11/20349" #streamed L0 data
 # DirIn<-NULL
 # DirOutBase="~/pfs/out"
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_parsed.avsc'),collapse='')
@@ -115,20 +115,23 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   
 #' Determine whether to use logged or streamed data.  
   #' Logged data is used if available, and log data flag set to 1
-  if(!is.null(logData)){
-    dataOut<-logData
+  if(length(logFile)>=1){
+    dataOut<-as.data.frame(logData)
     flagsOut<-data.frame(matrix(ncol=2,nrow=nrow(dataOut), dimnames=list(NULL, c("readout_time", "sunaLogDataQF"))))
     flagsOut$readout_time<-dataOut$readout_time
     flagsOut$sunaLogDataQF<-1
     }
   #' Streamed data is used if no logged data is available, and log data flags set to 0
-  if(is.null(logData) & !is.null(L0Data)){
-    dataOut<-L0Data
+  if(length(logFile)<1 & length(L0Data)>=1){
+    dataOut<-as.data.frame(L0Data)
     flagsOut<-data.frame(matrix(ncol=2,nrow=nrow(dataOut), dimnames=list(NULL, c("readout_time", "sunaLogDataQF"))))
     flagsOut$readout_time<-dataOut$readout_time
     flagsOut$sunaLogDataQF<-0
     }
-  names(dataOut)[names(dataOut) == 'nitrate_concentration'] <- 'nitrate'
+  dataOut$spectrum_channels<-NULL #remove list
+  dataOutFrame<-as.data.frame(dataOut)
+  names(dataOutFrame)[names(dataOutFrame) == 'nitrate_concentration'] <- 'nitrate'
+  
   
 #' Write out data file and log flags file  
   
@@ -137,9 +140,9 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   asset<-tail(x=fileOutSplt,n=1)
   csv_name <-paste0('sunav2_',asset,'_',format(timeBgn,format = "%Y-%m-%d"))
   
-  rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
+  rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOutFrame,
                                                NameFile = base::paste0(DirOutData,'/',csv_name,".parquet"),
-                                               Schm = SchmDataOut),silent=TRUE)
+                                               Schm = SchmFlagsOut),silent=TRUE)
   if(class(rptOut)[1] == 'try-error'){
     log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutData,'/',csv_name,".parquet"),'. ',attr(rptOut, "condition")))
     stop()
