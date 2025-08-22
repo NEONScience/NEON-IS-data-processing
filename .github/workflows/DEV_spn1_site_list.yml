@@ -39,8 +39,8 @@ jobs:
           # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
           workflow_ref="${{ github.workflow_ref }}" 
 
-          if [[ $workflow_ref =~ /*_site_list\.yml ]] ||
-             [[ $workflow_ref =~ /*_update_dag\.yml ]]; then
+          if [[ $workflow_ref =~ /.*_site_list\.yml ]] ||
+             [[ $workflow_ref =~ /.*_update_dag\.yml ]]; then
             workflow_file_name="${BASH_REMATCH[0]}"
             echo "Workflow File Name: $workflow_file_name"
             echo "::set-output name=workflow_file_name::$workflow_file_name"
