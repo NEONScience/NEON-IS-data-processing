@@ -128,9 +128,9 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
     flagsOut$readout_time<-dataOut$readout_time
     flagsOut$sunaLogDataQF<-0
     }
-  dataOut$spectrum_channels<-NULL #remove list
-  dataOutFrame<-as.data.frame(dataOut)
-  names(dataOutFrame)[names(dataOutFrame) == 'nitrate_concentration'] <- 'nitrate'
+  #dataOut$spectrum_channels<-NULL #remove list
+  #dataOutFrame<-as.data.frame(dataOut)
+  #names(dataOutFrame)[names(dataOutFrame) == 'nitrate_concentration'] <- 'nitrate'
   
   
 #' Write out data file and log flags file  
@@ -140,7 +140,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   asset<-tail(x=fileOutSplt,n=1)
   csv_name <-paste0('sunav2_',asset,'_',format(timeBgn,format = "%Y-%m-%d"))
   
-  rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOutFrame,
+  rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
                                                NameFile = base::paste0(DirOutData,'/',csv_name,".parquet"),
                                                Schm = SchmDataOut),silent=TRUE)
   if(class(rptOut)[1] == 'try-error'){
