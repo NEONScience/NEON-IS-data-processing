@@ -37,7 +37,7 @@ jobs:
         run: |
           WORKFLOW_REF="${{github.workflow_ref}}"
           WORKFLOW_BASE=$(basename "${WORKFLOW_REF}")
-          WORKFLOW_FILE=$(basename "${WORKFLOW_REF}" | cut -d'@' -f1)
+          WORKFLOW_FILE=$(basename "${WORKFLOW_REF}" | cut -d'@' -f1 | cut -d'/' -f1)
           echo "${{github.workflow_ref}}" | cut -d'@' -f1
           echo "WORKFLOW_FILE=${WORKFLOW_FILE}" >> $GITHUB_ENV
           echo "Workflow base: ${WORKFLOW_BASE}"
