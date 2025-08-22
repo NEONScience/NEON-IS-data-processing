@@ -43,10 +43,8 @@ jobs:
              [[ $workflow_ref =~ workflows\/.*_update_dag\.yml ]]; then
             workflow_file_path="${BASH_REMATCH[0]}"
             echo "Workflow File Path: $workflow_file_path"
-            workflow_file_name= ${$workflow_file_path#*/}
+            workflow_file_name=${{$workflow_file_path}:9}
             echo "Workflow File Name: $workflow_file_name"
-            # echo "Workflow File Name 1: ${BASH_REMATCH[1]}"
-            # echo "Workflow File Name 2: ${BASH_REMATCH[2]}"
           else
             echo "No Workflow File Name for $workflow_ref"
           fi
