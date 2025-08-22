@@ -1,7 +1,7 @@
 name: DEV-spn1-site-list
 on:
   push:
-    branches${{ 
+    branches: 
       - 'master'
     paths:
       - 'pipe/spn1/site-list.json'
