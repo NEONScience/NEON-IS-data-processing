@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-1a1ca7a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-bae8aad
   cmd:
   - sh
   - "-c"
@@ -140,7 +140,6 @@ input:
       name: FILE_SCHEMA_DATA
       repo: sunav2_avro_schemas
       glob: /sunav2/sunav2_calibrated.avsc
-  
   - join:
     - pfs:
         name: DATA_PATH_TRINO
