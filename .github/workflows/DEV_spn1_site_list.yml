@@ -38,7 +38,7 @@ jobs:
           # Example: Using a simple regex to filter workflow_ref
           # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
           workflow_ref="${{ github.workflow_ref }}"
-          reg_pattern = workflows\/.*_site_list\.yml|workflows\/.*_update_dag\.yml 
+          reg_pattern = workflows\/.*_site_list\.yml 
           
           if [[ $workflow_ref =~ $reg_pattern ]] ; then
             echo "******* true **********"
