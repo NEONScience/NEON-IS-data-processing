@@ -128,6 +128,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
     flagsOut$readout_time<-dataOut$readout_time
     flagsOut$sunaLogDataQF<-0
     }
+  names(dataOut)[names(dataOut) == 'nitrate_concentration'] <- 'nitrate'
   
 #' Write out data file and log flags file  
   
