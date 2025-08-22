@@ -47,7 +47,7 @@ jobs:
           
           if [[ $workflow_ref =~ workflows\/.*_site_list\.yml ]] ||
              [[ $workflow_ref =~ workflows\/.*_update_dag\.yml ]]; then
-            workflow_file_name="${BASH_REMATCH[0]}.yml"
+            workflow_file_name="${BASH_REMATCH[0]}"
             echo "Workflow File Name: $workflow_file_name"
             echo "::set-output name=workflow_file_name::$workflow_file_name"
           else
