@@ -14,7 +14,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: rawNitrateSingleCompressedStream
+    TERM: nitrate
     CTXT: nitrate
   secrets:
   - name: pdr-secret
