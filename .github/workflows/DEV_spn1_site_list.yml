@@ -55,7 +55,8 @@ jobs:
         uses: kamilchodola/wait-for-workflow-action@1.1.1
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
-          workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
+          # workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
+          workflow_id: DEV-spn1-site-list
           org_name: 'battelleecology' # Replace with your GitHub organization name
           repo_name: 'neon-is-data-processing' # Replace with your GitHub repository name
           max_wait_minutes: '1' # Maximum time to wait (in minutes)
