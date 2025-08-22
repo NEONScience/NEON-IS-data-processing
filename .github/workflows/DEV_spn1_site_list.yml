@@ -42,6 +42,7 @@ jobs:
           if [[ $workflow_ref =~ workflows\/.*_site_list\.yml ]] ||
              [[ $workflow_ref =~ workflows\/.*_update_dag\.yml ]]; then
             # workflow_file_name ="${BASH_REMATCH[0]}"
+            workflow_file_name="${BASH_REMATCH[0]}"
             # workflow_file_name= ${$workflow_file_name:9}
             # workflow_file_name= ${workflow_file_name#*/}
             echo "Workflow File Name 0: ${BASH_REMATCH[0]}"
@@ -56,7 +57,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
           # workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
-          workflow_id: DEV-spn1-site-list
+          workflow_id: DEV-spn1-site-list.yml
           org_name: 'battelleecology' # Replace with your GitHub organization name
           repo_name: 'neon-is-data-processing' # Replace with your GitHub repository name
           max_wait_minutes: '1' # Maximum time to wait (in minutes)
