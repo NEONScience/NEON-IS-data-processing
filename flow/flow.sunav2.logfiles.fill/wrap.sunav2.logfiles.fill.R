@@ -47,7 +47,7 @@
 # DirInStream<-"~/pfs/sunav2_trino_data_parser/sunav2/2024/09/11/20349" #streamed L0 data
 # DirIn<-NULL
 # DirOutBase="~/pfs/out"
-# SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_parsed.avsc'),collapse='')
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2/sunav2_calibrated.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_log_flags.avsc'),collapse='')
 #'                               
@@ -142,7 +142,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   
   rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOutFrame,
                                                NameFile = base::paste0(DirOutData,'/',csv_name,".parquet"),
-                                               Schm = SchmFlagsOut),silent=TRUE)
+                                               Schm = SchmDataOut),silent=TRUE)
   if(class(rptOut)[1] == 'try-error'){
     log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutData,'/',csv_name,".parquet"),'. ',attr(rptOut, "condition")))
     stop()

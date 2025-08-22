@@ -42,9 +42,9 @@
 #' @examples
 #' Stepping through the code in Rstudio
 # Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/sunav2_logjam_assign_clean_files/sunav2/2024/09/10/20349') #cleaned log data
-# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/sunav2_data_source_trino/sunav2/2024/09/10/20349') #streamed L0 data
+# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/sunav2_trino_data_parser/sunav2/2024/09/11/20349') #streamed L0 data
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=$DirIn","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmData=~/pfs/sunav2_avro_schemas/sunav2.avsc")
+# arg <- c("DirIn=$DirIn","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmData=~/pfs/sunav2_avro_schemas/sunav2/sunav2_calibrated.avsc")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -146,7 +146,5 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   return()
 }
-
-
 
 

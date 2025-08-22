@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-a1ff444
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-1a1ca7a
   cmd:
   - sh
   - "-c"
@@ -69,6 +69,7 @@ transform:
     Rscript ./flow.sunav2.logfiles.fill.R \
       DirIn=$OUT_PATH_JOIN_SOURCES \
       DirOut=/pfs/out \
+      FileSchmData=$FILE_SCHEMA_DATA \
       DirErr=/pfs/out/errored_datums
     EOF
   env:
@@ -134,35 +135,41 @@ transform:
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
 input:
-  join:
+  cross:
   - pfs:
-      name: DATA_PATH_TRINO
-      repo: sunav2_trino_data_parser
-      glob: /(sunav2/*/*/*) #sunav2/Y/M/D
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-      outer_join: true
-  # - pfs:
-  #     name: DATA_PATH_KAFKA
-  #     repo: sunav2_data_source_kafka
-  #     glob: /(sunav2/*/*/*)
-  #     joinOn: $1
-  #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-  #     outer_join: true
-  - pfs:
-      name: DATA_PATH_LOG
-      repo: sunav2_logjam_assign_clean_files
-      glob: /(sunav2/*/*/*) #sunav2/Y/M/D
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-      outer_join: true
-  - pfs:
-      name: DATE_CONTROL
-      repo: sunav2_cron_daily_and_date_control
-      glob: /(sunav2/*/*/*) #sunav2/Y/M/D
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-      outer_join: true
+      name: FILE_SCHEMA_DATA
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_calibrated.avsc
+  
+  - join:
+    - pfs:
+        name: DATA_PATH_TRINO
+        repo: sunav2_trino_data_parser
+        glob: /(sunav2/*/*/*) #sunav2/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+    # - pfs:
+    #     name: DATA_PATH_KAFKA
+    #     repo: sunav2_data_source_kafka
+    #     glob: /(sunav2/*/*/*)
+    #     joinOn: $1
+    #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    #     outer_join: true
+    - pfs:
+        name: DATA_PATH_LOG
+        repo: sunav2_logjam_assign_clean_files
+        glob: /(sunav2/*/*/*) #sunav2/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+    - pfs:
+        name: DATE_CONTROL
+        repo: sunav2_cron_daily_and_date_control
+        glob: /(sunav2/*/*/*) #sunav2/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
 parallelism_spec:
   constant: 5
 autoscaling: true

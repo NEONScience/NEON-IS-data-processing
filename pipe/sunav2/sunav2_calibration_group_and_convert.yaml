@@ -26,7 +26,7 @@ transform:
         DirIn=/tmp/pfs/filter_joined \
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
-        TermQf=nitrate_concentration \
+        TermQf=nitrate \
         FileSchmQf=$FILE_SCHEMA_FLAGS \
         DirSubCopy=flags
     EOF
