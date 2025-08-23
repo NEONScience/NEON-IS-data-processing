@@ -36,11 +36,11 @@ jobs:
         shell: bash
         run: |
           WORKFLOW_REF="${{github.workflow_ref}}"
-          WORKFLOW_BASE=$(basename "${WORKFLOW_REF}")
-          WORKFLOW_FILE=$(basename "${WORKFLOW_REF}" | cut -d'@' -f1 )
-          echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 |rev
-          echo "WORKFLOW_FILE=${WORKFLOW_FILE}" >> $GITHUB_ENV
-          echo "Workflow base: ${WORKFLOW_BASE}"
+          # WORKFLOW_BASE=$(basename "${WORKFLOW_REF}")
+          # WORKFLOW_FILE=$(basename "${WORKFLOW_REF}" | cut -d'@' -f1 )
+          # echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 |rev
+          echo "WORKFLOW_FILE=${WORKFLOW_REF} | cut -d'@' -f1 | rev | cut -d'/' -f1 | rev " >> $GITHUB_ENV
+          echo "Workflow ref: ${WORKFLOW_REF}"
           echo "Workflow file: ${WORKFLOW_FILE}"
           # 
           # # Example: Using a simple regex to filter workflow_ref
