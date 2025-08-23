@@ -36,12 +36,8 @@ jobs:
         shell: bash
         run: |
           WORKFLOW_REF="${{github.workflow_ref}}"
-          # WORKFLOW_BASE=$(basename "${WORKFLOW_REF}")
-          # WORKFLOW_FILE=$(basename "${WORKFLOW_REF}" | cut -d'@' -f1 )
           echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev
-          #echo "semver=$(git describe --tags --abbrev=0 --match=directory_filter/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
-          #echo "WORKFLOW_FILE="${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev >> $GITHUB_ENV
-          echo "WORKFLOW_FILE= ${{github.workflow_ref}} | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev " >> $GITHUB_ENV
+          echo "WORKFLOW_FILE= $(${{github.workflow_ref}} | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)" >> $GITHUB_ENV
           echo "Workflow ref: ${WORKFLOW_REF}"
           echo "Workflow file: ${WORKFLOW_FILE}"
           # 
