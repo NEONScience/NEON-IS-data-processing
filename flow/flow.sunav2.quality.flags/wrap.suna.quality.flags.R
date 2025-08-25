@@ -6,11 +6,11 @@
 #' 
 #' @description Wrapper function. Uses thresholds to apply quality flags to SUNA data.
 #'
-#' @param DirIn Character value. The file path to the input data.
+#' @param DirInData Character value. The file path to the input data.
+#'
+#' @param DirThresholds Character value. The file path for the quality flag thresholds.
 #'  
-#' @param DirOut Character value. The file path for the output data. 
-#' 
-#' @param DirThresholds Character value. The file path for the quality flag thresholds. 
+#' @param DirOutFlags Character value. The file path for the output data. 
 #' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
