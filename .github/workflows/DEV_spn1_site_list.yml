@@ -39,7 +39,22 @@ jobs:
           echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev
           workflow_file_name="$(echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)"
           echo "Workflow ref: ${workflow_ref}"
-          echo "Workflow file: ${workflow_file_name}"
+          echo "Workflow file: ${WORKFLOW_FILE}"
+          # 
+          # # Example: Using a simple regex to filter workflow_ref
+          # # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
+          # workflow_ref="${{ github.workflow_ref }}" 
+          # # /workflows\/(\d+)/
+          # if [[ $workflow_ref =~ workflows\/.*_site_list\.yml ]] ||
+          #    [[ $workflow_ref =~ workflows\/.*_update_dag\.yml ]]; then
+          #   workflow_file_name="${BASH_REMATCH[0]}"
+          #   echo "Workflow File Name: $workflow_file_name"
+          #   echo "github.run_id: ${{github.run_id}}"
+          #   echo "github.workflow_id: ${{ github.workflow_id }}"
+          #   echo "github.run_number: ${{ github.run_number }}"
+          # else
+          #   echo "No Workflow File Name for $workflow_ref"
+          # fi
 
      - name: Wait for Filtered Workflow
        uses: kamilchodola/wait-for-workflow-action@1.1.1
