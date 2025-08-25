@@ -43,8 +43,11 @@ jobs:
           echo "Workflow file: ${WORKFLOW_FILE}"
           # ${env.WORKFLOW_FILE }: bad substitution
           # echo "env.WORKFLOW_FILE: ${ env.WORKFLOW_FILE }"
-          WORKFLOW_ID="${{ github.workflow_id }}"
-          echo "github.workflow_id: ${WORKFLOW_ID}"
+          echo "github.run_id: ${{github.run_id}}"
+          echo "github.workflow_id: ${{ github.workflow_id }}"
+          echo "github.run_number: ${{ github.run_number }}"
+          # WORKFLOW_ID="${{ github.workflow_id }}"
+          # echo "github.workflow_id: ${WORKFLOW_ID}"
           # 
           # # Example: Using a simple regex to filter workflow_ref
           # # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
@@ -61,17 +64,17 @@ jobs:
           #   echo "No Workflow File Name for $workflow_ref"
           # fi
 
-      - name: Wait for Filtered Workflow
-        uses: kamilchodola/wait-for-workflow-action@1.1.1
-        with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
-          # workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
-          workflow_id: ${{ github.workflow_id }}
-          org_name: 'battelleecology' # Replace with your GitHub organization name
-          repo_name: 'neon-is-data-processing' # Replace with your GitHub repository name
-          max_wait_minutes: '1' # Maximum time to wait (in minutes)
-          interval: '30' # Interval between checks (in seconds)
-          ref: ${{ github.ref }} # The branch/ref to monitor for the workflow run
+      # - name: Wait for Filtered Workflow
+      #   uses: kamilchodola/wait-for-workflow-action@1.1.1
+      #   with:
+      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
+      #     # workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
+      #     workflow_id: ${{ github.workflow_id }}
+      #     org_name: 'battelleecology' # Replace with your GitHub organization name
+      #     repo_name: 'neon-is-data-processing' # Replace with your GitHub repository name
+      #     max_wait_minutes: '1' # Maximum time to wait (in minutes)
+      #     interval: '30' # Interval between checks (in seconds)
+      #     ref: ${{ github.ref }} # The branch/ref to monitor for the workflow run
 
       # - name: Put file
       #   uses: ./.github/actions/put-files
