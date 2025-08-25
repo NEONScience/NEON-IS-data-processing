@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: ls -la
 
-      - name: Get Workflow ID 
+      - name: Get Workflow ID with regex
         id: get-workflow-id
         shell: bash
         run: |
@@ -39,7 +39,7 @@ jobs:
           echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev
           workflow_file_name="$(echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)"
           echo "Workflow ref: ${workflow_ref}"
-          echo "Workflow file: ${WORKFLOW_FILE}"
+          echo "Workflow file name: ${workflow_file_name}"
           # 
           # # Example: Using a simple regex to filter workflow_ref
           # # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
