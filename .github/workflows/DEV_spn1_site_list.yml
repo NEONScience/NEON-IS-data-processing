@@ -42,11 +42,13 @@ jobs:
           echo "WORKFLOW_FILE=${WORKFLOW_FILE}" >> $GITHUB_ENV
           echo "Workflow ref: ${WORKFLOW_REF}"
           echo "Workflow file: ${WORKFLOW_FILE}"
+          if [[ "$WORKFLOW_FILE" == *_site_list.yml ]]; then
+            echo "This is the _site_list workflow"
+          fi
           # ${env.WORKFLOW_FILE }: bad substitution
-          # echo "env.WORKFLOW_FILE: ${ env.WORKFLOW_FILE }"
-          echo "github.run_id: ${{github.run_id}}"
-          echo "github.workflow_id: ${{ github.workflow_id }}"
-          echo "github.run_number: ${{ github.run_number }}"
+          # echo "env.WORKFLOW_FILE: ${ env.WORKFLOW_FILE
+                
+      - name: Use in conditional
       # 
       # - name: Wait for Filtered Workflow
       #   uses: kamilchodola/wait-for-workflow-action@1.1.1
