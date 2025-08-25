@@ -47,8 +47,7 @@ jobs:
           fi
           # ${env.WORKFLOW_FILE }: bad substitution
           # echo "env.WORKFLOW_FILE: ${ env.WORKFLOW_FILE
-                
-      - name: Use in conditional
+
       # 
       # - name: Wait for Filtered Workflow
       #   uses: kamilchodola/wait-for-workflow-action@1.1.1
