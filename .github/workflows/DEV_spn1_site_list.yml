@@ -35,14 +35,15 @@ jobs:
         id: get-workflow-id
         shell: bash
         run: |
-          WORKFLOW_REF="${{github.workflow_ref}}"
+          WORKFLOW_REF="${{ github.workflow_ref }}"
           echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev
-          # WORKFLOW_FILE="$(${{github.workflow_ref}} | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)" 
-          WORKFLOW_FILE="$(echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)">> $GITHUB_ENV
+          # WORKFLOW_FILE="$(${{ github.workflow_ref }} | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)" 
+          WORKFLOW_FILE="$(echo "${{ github.workflow_ref }}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)">> $GITHUB_ENV
           echo "Workflow ref: ${WORKFLOW_REF}"
           echo "Workflow file: ${WORKFLOW_FILE}"
-          echo "github.workflow_id: ${{ github.workflow_id }}"
           echo "env.WORKFLOW_FILE: ${env.WORKFLOW_FILE }"
+          WORKFLOW_ID="${{ github.workflow_id }}"
+          echo "github.workflow_id: ${WORKFLOW_ID}"
           # 
           # # Example: Using a simple regex to filter workflow_ref
           # # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
