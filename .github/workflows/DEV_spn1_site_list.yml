@@ -1,7 +1,7 @@
 name: DEV-spn1-site-list
 on:
   push:
-    branches:
+    branches: 
       - 'master'
     paths:
       - 'pipe/spn1/site-list.json'
@@ -31,16 +31,42 @@ jobs:
       - uses: actions/checkout@v4
       - run: ls -la
 
-      - name: Wait 30 seconds
-        run: sleep 30
-        timeout-minutes: 2  # Will timeout after 2 minutes
-      
-      - name: Put file
-        uses: ./.github/actions/put-files
-        with:
-          pachd_address: ${{ env.PACHD_ADDRESS }}
-          pach_token: ${{ env.PACH_TOKEN }}
-          repo_name: ${{ env.REPO }}
-          branch_name: ${{ env.BRANCH }}
-          in_paths: ${{ env.IN_PATHS }}
-          out_paths: ${{ env.OUT_PATHS }}
+      - name: Get Workflow ID with Regex
+        id: get-workflow-id
+        shell: bash
+        run: |
+          WORKFLOW_REF="${{ github.workflow_ref }}"
+          # echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev
+          # WORKFLOW_FILE="$(${{ github.workflow_ref }} | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)"
+          WORKFLOW_FILE="$(echo "${{ github.workflow_ref }}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)"
+          echo "WORKFLOW_FILE=${WORKFLOW_FILE}" >> $GITHUB_ENV
+          echo "Workflow ref: ${WORKFLOW_REF}"
+          echo "Workflow file: ${WORKFLOW_FILE}"
+          # ${env.WORKFLOW_FILE }: bad substitution
+          # echo "env.WORKFLOW_FILE: ${ env.WORKFLOW_FILE }"
+          echo "github.run_id: ${{github.run_id}}"
+          echo "github.workflow_id: ${{ github.workflow_id }}"
+          echo "github.run_number: ${{ github.run_number }}"
+      # 
+      # - name: Wait for Filtered Workflow
+      #   uses: kamilchodola/wait-for-workflow-action@1.1.1
+      #   with:
+      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
+      #     # workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
+      #     workflow_id: 'DEV-spn1-site-list.yml'
+      #     org_name: 'battelleecology' # Replace with your GitHub organization name
+      #     repo_name: 'neon-is-data-processing' # Replace with your GitHub repository name
+      #     max_wait_minutes: '1' # Maximum time to wait (in minutes)
+      #     interval: '30' # Interval between checks (in seconds)
+      #     ref: ${{ github.ref }} # The branch/ref to monitor for the workflow run
+      #     out_paths: ${{ env.OUT_PATHS }}
+-
+-      - name: Put file
+-        uses: ./.github/actions/put-files
+-        with:
+-          pachd_address: ${{ env.PACHD_ADDRESS }}
+-          pach_token: ${{ env.PACH_TOKEN }}
+-          repo_name: ${{ env.REPO }}
+-          branch_name: ${{ env.BRANCH }}
+-          in_paths: ${{ env.IN_PATHS }}
+-          out_paths: ${{ env.OUT_PATHS }}
