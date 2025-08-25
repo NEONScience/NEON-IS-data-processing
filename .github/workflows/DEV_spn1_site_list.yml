@@ -60,13 +60,13 @@ jobs:
       #     interval: '30' # Interval between checks (in seconds)
       #     ref: ${{ github.ref }} # The branch/ref to monitor for the workflow run
       #     out_paths: ${{ env.OUT_PATHS }}
--
--      - name: Put file
--        uses: ./.github/actions/put-files
--        with:
--          pachd_address: ${{ env.PACHD_ADDRESS }}
--          pach_token: ${{ env.PACH_TOKEN }}
--          repo_name: ${{ env.REPO }}
--          branch_name: ${{ env.BRANCH }}
--          in_paths: ${{ env.IN_PATHS }}
--          out_paths: ${{ env.OUT_PATHS }}
+
+      # - name: Put file
+#      uses: ./.github/actions/put-files
+#      with:
+#        pachd_address: ${{ env.PACHD_ADDRESS }}
+#        pach_token: ${{ env.PACH_TOKEN }}
+#        repo_name: ${{ env.REPO }}
+#        branch_name: ${{ env.BRANCH }}
+#        in_paths: ${{ env.IN_PATHS }}
+#        out_paths: ${{ env.OUT_PATHS }}
