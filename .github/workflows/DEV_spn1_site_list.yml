@@ -41,6 +41,8 @@ jobs:
           WORKFLOW_FILE="$(echo "${{github.workflow_ref}}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)">> $GITHUB_ENV
           echo "Workflow ref: ${WORKFLOW_REF}"
           echo "Workflow file: ${WORKFLOW_FILE}"
+          echo "github.workflow_id: ${{ github.workflow_id }}"
+          echo "env.WORKFLOW_FILE: ${env.WORKFLOW_FILE }"
           # 
           # # Example: Using a simple regex to filter workflow_ref
           # # [[ $workflow_ref =~ .*/workflows/*_site_ist.yml@.* ]]
@@ -62,19 +64,19 @@ jobs:
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
           # workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
-          workflow_id: ${{ env.WORKFLOW_FILE }}
+          workflow_id: ${{ github.workflow_id }}
           org_name: 'battelleecology' # Replace with your GitHub organization name
           repo_name: 'neon-is-data-processing' # Replace with your GitHub repository name
           max_wait_minutes: '1' # Maximum time to wait (in minutes)
           interval: '30' # Interval between checks (in seconds)
           ref: ${{ github.ref }} # The branch/ref to monitor for the workflow run
 
-      - name: Put file
-        uses: ./.github/actions/put-files
-        with:
-          pachd_address: ${{ env.PACHD_ADDRESS }}
-          pach_token: ${{ env.PACH_TOKEN }}
-          repo_name: ${{ env.REPO }}
-          branch_name: ${{ env.BRANCH }}
-          in_paths: ${{ env.IN_PATHS }}
-          out_paths: ${{ env.OUT_PATHS }}
+      # - name: Put file
+      #   uses: ./.github/actions/put-files
+      #   with:
+      #     pachd_address: ${{ env.PACHD_ADDRESS }}
+      #     pach_token: ${{ env.PACH_TOKEN }}
+      #     repo_name: ${{ env.REPO }}
+      #     branch_name: ${{ env.BRANCH }}
+      #     in_paths: ${{ env.IN_PATHS }}
+      #     out_paths: ${{ env.OUT_PATHS }}
