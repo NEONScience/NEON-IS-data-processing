@@ -38,8 +38,12 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2024-10-31)
 #     Initial creation
+#   Teresa Burlingame (2025-08-26)
+#     Adding set.seed function to uncertainty calculation so values are stable
 ##############################################################################################
 def.ucrt.agr.precip.bench <- function(bench,ucrtBench){
+  # set a random seed so that ucrt data will compute the same random every time. Reduces diffs
+  set.seed(8366)
   
   # Are any benchmarks NA? Return NA. 
   # The creation of any benchmark dataset needs to handle missing depth values such that an 
