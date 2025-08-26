@@ -12,7 +12,7 @@
 #'  
 #' @param DirOutFlags Character value. The file path for the output data. 
 #' 
-#' @param SchmDataOut (optional), A json-formatted character string containing the schema for the output data 
+#' @param SchmFlagsOut (optional), A json-formatted character string containing the schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
@@ -117,7 +117,7 @@ wrap.sunav2.quality.flags <- function(DirInData=NULL,
   
   #' Write out data file and log flags file  
   base::dir.create(DirOutFlags,recursive=TRUE)
-  sensorFlagFileName<-paste0(stringr::str_remove(fileName,".parquet"),'_sensor_specific_flags')
+  sensorFlagFileName<-paste0(stringr::str_remove(dataFileName,".parquet"),'_sensor_specific_flags')
 
   rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagFile,
                                                     NameFile = base::paste0(DirOutFlags,'/',sensorFlagFileName,".parquet"),
