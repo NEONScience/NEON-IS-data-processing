@@ -6,9 +6,7 @@
 #' 
 #' @description Wrapper function. Uses thresholds to apply quality flags to SUNA data.
 #'
-#' @param DirInData Character value. The file path to the input data.
-#'
-#' @param DirThresholds Character value. The file path for the quality flag thresholds.
+#' @param DirIn Character value. The file path to the input data and quality flag thresholds.
 #'  
 #' @param DirOutFlags Character value. The file path for the output data. 
 #' 
@@ -44,8 +42,7 @@
 #' Bobby Hensley (2025-08-30) created
 #' 
 ##############################################################################################
-wrap.sunav2.quality.flags <- function(DirInData=NULL,
-                                      DirInThresholds=NULL,
+wrap.sunav2.quality.flags <- function(DirIn,
                                       DirOutFlags=NULL,
                                       SchmFlagsOut=NULL,
                                       log=NULL
@@ -55,6 +52,15 @@ wrap.sunav2.quality.flags <- function(DirInData=NULL,
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
   } 
+  
+  DirInData <-
+    NEONprocIS.base::def.dir.in(DirBgn = DirIn,
+                                nameDirSub = "data",
+                                log = log)
+  DirInThresholds <-
+    NEONprocIS.base::def.dir.in(DirBgn = DirIn,
+                                nameDirSub = "threshold",
+                                log = log)
   
   #' Read in parquet file of SUNA data
   dataFileName<-base::list.files(DirInData,full.names=FALSE)
