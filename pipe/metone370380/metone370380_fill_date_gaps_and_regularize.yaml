@@ -2,7 +2,7 @@
 pipeline:
   name: metone370380_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.1.1
+  image: quay.io/battelleecology/neon-is-gf-rglr:sha-5a0010b0 
   cmd:
   - sh
   - "-c"
@@ -25,7 +25,7 @@ transform:
       FreqRglr=1 \
       MethRglr=CybiEc \
       WndwRglr=Trlg \
-      IdxWndw=IdxWndwMin \
+      IdxWndw=WndwMax \
       RptTimeWndw=FALSE \
       DropNotNumc=FALSE \
       "DirSubCopy=location|uncertainty_coef"
