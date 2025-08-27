@@ -149,7 +149,7 @@ transform:
     if [[ -d "$OUT_PATH/${SOURCE_TYPE}_raw" ]]; then
       # Run array parser 
       cd ../
-      # export LOG_LEVEL=DEBUG
+      # export LOG_LEVEL=INFO
       export SCHEMA_PATH=$FILE_SCHEMA_PARSED
       export DATA_PATH=$OUT_PATH/${SOURCE_TYPE}_raw
       echo "Running array parser"
