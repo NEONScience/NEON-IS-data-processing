@@ -1,0 +1,51 @@
+name: "Build a module, push the image and update pipeline spec yamls"
+description: "Builds the module, pushes the image to Artifact Registry and github registry"
+
+runs:
+   using: "composite"
+   steps: 
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+            workload_identity_provider: ${{ env.GCP_PROVIDER }}
+            service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      # - name: "Docker auth"
+      #   shell: bash
+      #   run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_HOST }} --quiet
+        
+      # Login to github registry
+      - name: Log into github registry ${{ env.GHCR_REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GHCR_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ env.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+
+      - name: Get Workflow ID
+        shell: bash
+        run: |
+          # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+          set -euo pipefail
+          IFS=$'\n\t'
+          WORKFLOW_REF="${{ github.workflow_ref }}"
+          WORKFLOW_FILE="$(echo "${{ github.workflow_ref }}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)"
+          echo "WORKFLOW_FILE=${WORKFLOW_FILE}" >> $GITHUB_ENV
+          echo "Workflow ref: ${WORKFLOW_REF}"
+          echo "Workflow file: ${WORKFLOW_FILE}"
+          if [[ "$WORKFLOW_FILE" == *_site_list.yml ]] || 
+             [[ "$WORKFLOW_FILE" == *_update_dag.yml ]]; then
+            echo "This is the site_list or update_dag workflow"
+            echo "Possibly gh not installed"
+            echo "Possibly failed before::::::::::  gh run list"
+            gh run list --repo NEONScience/NEON-IS-data-processing
+            # Below need api
+            # gh run view RUN_ID --repo NEONScience/NEON-IS-data-processing
+            # gh api repos/NEONScience/NEON-IS-data-processing/actions/runs/RUN_ID/jobs
+          fi

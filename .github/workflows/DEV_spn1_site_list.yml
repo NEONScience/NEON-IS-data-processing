@@ -20,8 +20,18 @@ env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   # Use github and google registries
   GHCR_REGISTRY: ghcr.io
+  # GHCR_NS, i.e, NEONSciene, in lowercase
+  # GHCR_NS: ${{ github.repository_owner }}
+  GHCR_NS: ${{ vars.SHARED_WIF_REPO }}
+  GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
+  GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
   GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
   GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # Get just the repo name from the event, i.e., NEON-IS-data-processing, in lowercase
+  # REPO_NAME: ${{ github.event.repository.name }}
+  REPO_NAME: neon-is-data-processing
 
 jobs:
   put_files:
@@ -44,42 +54,8 @@ jobs:
       - uses: actions/checkout@v4
       - run: ls -la 
       
-      - id: "auth"
-        uses: "google-github-actions/auth@v2"
-        with:
-            workload_identity_provider: ${{ env.GCP_PROVIDER }}
-            service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
-      
-      # Login to github registry
-      - name: Log into github registry ${{ env.GHCR_REGISTRY }}
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.GHCR_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ env.GITHUB_TOKEN }}
-
       - name: Get Workflow ID
-        id: get-workflow-id
-        shell: bash
-        run: |
-          # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
-          set -euo pipefail
-          IFS=$'\n\t'
-          WORKFLOW_REF="${{ github.workflow_ref }}"
-          WORKFLOW_FILE="$(echo "${{ github.workflow_ref }}" | cut -d'@' -f1 |  rev | cut -d'/' -f1 | rev)"
-          echo "WORKFLOW_FILE=${WORKFLOW_FILE}" >> $GITHUB_ENV
-          echo "Workflow ref: ${WORKFLOW_REF}"
-          echo "Workflow file: ${WORKFLOW_FILE}"
-          if [[ "$WORKFLOW_FILE" == *_site_list.yml ]] || 
-             [[ "$WORKFLOW_FILE" == *_update_dag.yml ]]; then
-            echo "This is the site_list or update_dag workflow"
-            echo "Possibly gh not installed"
-            echo "Possibly failed before::::::::::  gh run list"
-            gh run list --repo NEONScience/NEON-IS-data-processing
-            # Below need api
-            # gh run view RUN_ID --repo NEONScience/NEON-IS-data-processing
-            # gh api repos/NEONScience/NEON-IS-data-processing/actions/runs/RUN_ID/jobs
-          fi
+        uses: ./.github/actions/get-workflow-id
 
       - name: Put file
         uses: ./.github/actions/put-files
