@@ -44,13 +44,11 @@ jobs:
              [[ "$WORKFLOW_FILE" == *_update_dag.yml ]]; then
             echo "This is the site_list or update_dag workflow"
             echo "Possibly gh not installed"
-            gh --version
             echo "Possibly failed before::::::::::  gh run list"
             gh run list --repo NEONScience/NEON-IS-data-processing
-            echo "Possibly failed before::::::::::  gh run view"
-            gh run view RUN_ID --repo NEONScience/NEON-IS-data-processing
-            echo "Possibly failed before::::::::::  gh api "
-            gh api repos/NEONScience/NEON-IS-data-processing/actions/runs/RUN_ID/jobs
+            # Below need api
+            # gh run view RUN_ID --repo NEONScience/NEON-IS-data-processing
+            # gh api repos/NEONScience/NEON-IS-data-processing/actions/runs/RUN_ID/jobs
           fi
 
       # 
