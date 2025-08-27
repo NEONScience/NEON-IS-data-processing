@@ -20,6 +20,8 @@ env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   # Use github and google registries
   GHCR_REGISTRY: ghcr.io
+  GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
+  GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
 
 jobs:
   put_files:
@@ -34,7 +36,13 @@ jobs:
       OUT_PATHS: 'site-list.json' # Comma-separated list (no spaces) of corresponding path(s) to place the files(s) in Pachyderm. Must be same length as IN_PATHS. If corresponding entry in IN_PATHS is a file, specify to the file. If corresponding entry in IN_PATHS is a directory, specify to the directory. 
     steps:
       - uses: actions/checkout@v4
-      - run: ls -la
+      - run: ls -la 
+      
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+            workload_identity_provider: ${{ env.GCP_PROVIDER }}
+            service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
       
       # Login to github registry
       - name: Log into github registry ${{ env.GHCR_REGISTRY }}
