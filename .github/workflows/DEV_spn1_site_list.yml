@@ -40,9 +40,15 @@ jobs:
           echo "WORKFLOW_FILE=${WORKFLOW_FILE}" >> $GITHUB_ENV
           echo "Workflow ref: ${WORKFLOW_REF}"
           echo "Workflow file: ${WORKFLOW_FILE}"
-          if [[ "$WORKFLOW_FILE" == *_site_list.yml ] || 
+          if [[ "$WORKFLOW_FILE" == *_site_list.yml ]] || 
              [[ "$WORKFLOW_FILE" == *_update_dag.yml ]]; then
             echo "This is the site_list or update_dag workflow"
+            echo "Possibly failed before::::::::::  gh run list"
+            gh run list --repo OWNER/REPO
+            echo "Possibly failed before::::::::::  gh run view"
+            gh run view RUN_ID --repo NEONScience/NEON-IS-data-processing
+            echo "Possibly failed before::::::::::  gh api "
+            gh api repos/NEONScience/NEON-IS-data-processing/actions/runs/RUN_ID/jobs
           fi
 
       # 
