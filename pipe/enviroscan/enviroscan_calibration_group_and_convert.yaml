@@ -115,7 +115,7 @@ transform:
     # Environment variables for array parser
     PARSE_CALIBRATION: 'True'
     TEST_MODE: 'True' # We already parsed the data. Pass it through via symlink
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     SOURCE_TYPE_INDEX: '4'
     YEAR_INDEX: '5'
     MONTH_INDEX: '6'

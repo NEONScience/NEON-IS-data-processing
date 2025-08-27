@@ -38,7 +38,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "3"
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     # LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   cross:

@@ -9,7 +9,7 @@ transform:
     #   skip first 3 fields (source_id, site_id, readout_time) in parsed schema
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "4"
-    LOG_LEVEL: DEBUG 
+    LOG_LEVEL: INFO 
     UPDATE_TRIGGER_TABLE: "True"
     SOURCE_TYPE: "l2130i_raw"
     PARSE_FIELD: "measurement_buffer"
