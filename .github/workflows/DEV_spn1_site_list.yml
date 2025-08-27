@@ -40,11 +40,10 @@ jobs:
           echo "WORKFLOW_FILE=${WORKFLOW_FILE}" >> $GITHUB_ENV
           echo "Workflow ref: ${WORKFLOW_REF}"
           echo "Workflow file: ${WORKFLOW_FILE}"
-          if [[ "$WORKFLOW_FILE" == *_site_list.yml ]]; then
-            echo "This is the _site_list workflow"
+          if [[ "$WORKFLOW_FILE" == *_site_list.yml ] || 
+             [[ "$WORKFLOW_FILE" == *_update_dag.yml ]]; then
+            echo "This is the site_list or update_dag workflow"
           fi
-          # ${env.WORKFLOW_FILE }: bad substitution
-          # echo "env.WORKFLOW_FILE: ${ env.WORKFLOW_FILE}
 
       # 
       # - name: Wait for Filtered Workflow
