@@ -26,7 +26,13 @@ env:
 jobs:
   put_files:
     runs-on: arc-neon-gke
-    #runs-on: ubuntu-latest 
+    #runs-on: ubuntu-latest
+    permissions:
+        contents: 'write'
+        security-events: write
+        packages: write
+        id-token: 'write'
+        pull-requests: 'write' 
     env:
       PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
@@ -74,20 +80,6 @@ jobs:
             # gh run view RUN_ID --repo NEONScience/NEON-IS-data-processing
             # gh api repos/NEONScience/NEON-IS-data-processing/actions/runs/RUN_ID/jobs
           fi
-
-      # 
-      # - name: Wait for Filtered Workflow
-      #   uses: kamilchodola/wait-for-workflow-action@1.1.1
-      #   with:
-      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }} # Needs a token with `workflow` scope
-      #     # workflow_id: ${{ steps.get-workflow-id.outputs.workflow_file_name }}
-      #     workflow_id: 'DEV-spn1-site-list.yml'
-      #     org_name: 'battelleecology' # Replace with your GitHub organization name
-      #     repo_name: 'neon-is-data-processing' # Replace with your GitHub repository name
-      #     max_wait_minutes: '1' # Maximum time to wait (in minutes)
-      #     interval: '30' # Interval between checks (in seconds)
-      #     ref: ${{ github.ref }} # The branch/ref to monitor for the workflow run
-      #     out_paths: ${{ env.OUT_PATHS }}
 
       - name: Put file
         uses: ./.github/actions/put-files
