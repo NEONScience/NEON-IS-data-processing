@@ -32,21 +32,21 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.sunav2.quality.flags <- function(DirIn="~/pfs/sunav2_location_group_and_restructure/sunav2/2024/09/10/CFGLOC110733/data",
+#' flow.sunav2.quality.flags <- function(DirIn="~/pfs/nitrate_thresh_select_ts_pad/2025/06/25/nitrate_HOPB112100/sunav2/CFGLOC113620",
 #'                               DirInThresholds="~/pfs/nitrate_thresh_select_ts_pad/2024/09/10/nitrate_CRAM103100/sunav2/CFGLOC110733/threshold",
 #'                               DirOut="~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733/flags", 
 #'                               FileSchmQf=base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_sensor_specific_flags.avsc'),collapse='')
 #'                               log=log)
 #' Stepping through the code in R studio                               
-# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2024/09/10/nitrate_CRAM103100')
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/pfs/sunav2_location_group_and_restructure/sunav2/2024/09/10/CFGLOC110733/data",
-#          "DirInThresholds=~/pfs/nitrate_thresh_select_ts_pad/2024/09/10/nitrate_CRAM103100/sunav2/CFGLOC110733/threshold",
-#          "DirOut=~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733/flags",
-#          "DirErr=~/pfs/out/errored_datums")
-# arg <- c("DirIn=$DIR_IN",
-#          "DirOut=~/pfs/out",
-#          "DirErr=~/pfs/out/errored_datums")
+Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/25/nitrate_HOPB112100/sunav2/CFGLOC113620')
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+arg <- c("DirIn=~/pfs/sunav2_location_group_and_restructure/sunav2/2024/09/10/CFGLOC110733/data",
+         "DirInThresholds=~/pfs/nitrate_thresh_select_ts_pad/2024/09/10/nitrate_CRAM103100/sunav2/CFGLOC110733/threshold",
+         "DirOut=~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733/flags",
+         "DirErr=~/pfs/out/errored_datums")
+arg <- c("DirIn=$DIR_IN",
+         "DirOut=~/pfs/out",
+         "DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -101,7 +101,7 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
 # Find all the input paths (datums). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
-                              nameDirSub = NULL,
+                              nameDirSub = 'data',
                               log = log)
 
 # Process each datum path
@@ -113,7 +113,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
     withCallingHandlers(
       wrap.sunav2.quality.flags(
         DirIn=idxFileIn,
-        DirOut=Para$DirOut,
+        DirOutFlags=Para$DirOut,
         SchmFlagsOut=FileSchmQf,
         log=log
       ),
