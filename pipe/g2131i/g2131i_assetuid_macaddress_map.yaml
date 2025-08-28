@@ -15,7 +15,7 @@ transform:
     REGION: cert
     SOURCE_TYPE: g2131i
     CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
