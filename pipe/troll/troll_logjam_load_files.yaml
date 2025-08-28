@@ -15,7 +15,7 @@ transform:
   env:
     LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     STARTING_PATH_INDEX: "7"
   secrets:
   - name: pdr-secret
