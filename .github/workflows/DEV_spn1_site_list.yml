@@ -51,13 +51,17 @@ jobs:
       IN_PATHS: 'pipe/spn1/site-list.json' # Comma-separated list (no spaces) to one or more paths or directories. Length must match OUT_PATHS. If directory, all files in directory will be placed in pachyderm at corresponding entry of OUT_PATHS. 
       OUT_PATHS: 'site-list.json' # Comma-separated list (no spaces) of corresponding path(s) to place the files(s) in Pachyderm. Must be same length as IN_PATHS. If corresponding entry in IN_PATHS is a file, specify to the file. If corresponding entry in IN_PATHS is a directory, specify to the directory. 
     steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v4.1.4"
-      - run: ls -la 
+      - name: Checkout
+        uses: actions/checkout@v4
+    
+      - name: Setup GitHub CLI
+        uses: github/gh-cli-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Get Workflow ID
-        uses: ./.github/actions/get-workflow-id
-
+      - name: Use gh CLI
+        run: gh run list --repo NEONScience/NEON-IS-data-processing
+    
       - name: Put file
         uses: ./.github/actions/put-files
         with:
