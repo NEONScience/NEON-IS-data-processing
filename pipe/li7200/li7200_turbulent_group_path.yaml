@@ -12,7 +12,7 @@ transform:
   - python3 -m group_path.group_path_main
   env:
     GROUP: turbulent
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums

@@ -31,7 +31,7 @@ transform:
     EOF
   env:
     # Environment variables for date gap filler
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     OUT_PATH: /tmp/pfs/date_filled
     OUTPUT_DIRECTORIES: data,location,flags
     DATA_SOURCE_TYPE_INDEX: '3'

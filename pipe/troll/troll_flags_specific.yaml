@@ -15,7 +15,7 @@ transform:
       FileSchmQf=$SCHEMA_FLAGS
       "DirSubCopy=uncertainty_data|uncertainty_coef"
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 input:
   cross:
   - pfs:
