@@ -97,6 +97,8 @@
 #     adjust heaterErrorQF to match sensor settings
 #   Teresa Burlingame (2025-03-19)
 #     adjust heaterErrorQF to flag when one of the temperature streams is way off, causing heater failure
+#   Teresa Burlingame (2025-08-26)
+#     Adding set.seed function to uncertainty calculation so values are stable
 #
 ##############################################################################################
 wrap.precip.aepg.smooth <- function(DirIn,
@@ -383,6 +385,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
   strainGaugeDepthAgr[,nameVarPrecipTypeS] <- as.character(NA)
   strainGaugeDepthAgr[,nameVarPrecipBulkS] <- as.numeric(NA)
 
+  #set seed to reduce random changes in reprocessing. 
+  set.seed(6366)
+  
   for(idxSurr in c(0,seq_len(nSurr))){
     
     if (idxSurr == 0){
