@@ -25,8 +25,8 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: sunav2_site_list_kafka
-      glob: /site-list.json
+      repo: sunav2_site_list
+      glob: /site-list-full.json
 resource_requests:
   memory: 100M
   cpu: 1
