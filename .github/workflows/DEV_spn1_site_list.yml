@@ -9,7 +9,7 @@ on:
 
 # Workflow-level concurrency
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_number % 2 }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_number }}% 2
 
   # group: ${{
   #     contains(github.workflow, 'update-dag') ||
