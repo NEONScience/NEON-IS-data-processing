@@ -9,7 +9,7 @@ on:
 
 # Workflow-level concurrency
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_number }}% 2
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_number }} % 2
 
   # group: ${{
   #     contains(github.workflow, 'update-dag') ||
@@ -56,20 +56,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
     
-      - name: Setup GitHub CLI
-        uses: github/gh-cli-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Setup GitHub CLI
+      #   uses: github/gh-cli-action@v1
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Use gh CLI
-        run: gh run list --repo NEONScience/NEON-IS-data-processing
-    
-      - name: Put file
-        uses: ./.github/actions/put-files
+        run: |
+          # gh run list --repo NEONScience/NEON-IS-data-processing
+          gh issue comment ${{ github.event.pull_request.number }} --body "Thanks for the pull request!"
         with:
-          pachd_address: ${{ env.PACHD_ADDRESS }}
-          pach_token: ${{ env.PACH_TOKEN }}
-          repo_name: ${{ env.REPO }}
-          branch_name: ${{ env.BRANCH }}
-          in_paths: ${{ env.IN_PATHS }}
-          out_paths: ${{ env.OUT_PATHS }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+      # - name: Put file
+      #   uses: ./.github/actions/put-files
+      #   with:
+      #     pachd_address: ${{ env.PACHD_ADDRESS }}
+      #     pach_token: ${{ env.PACH_TOKEN }}
+      #     repo_name: ${{ env.REPO }}
+      #     branch_name: ${{ env.BRANCH }}
+      #     in_paths: ${{ env.IN_PATHS }}
+      #     out_paths: ${{ env.OUT_PATHS }}
