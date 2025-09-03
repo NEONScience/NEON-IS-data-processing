@@ -9,13 +9,13 @@ on:
 
 # Workflow-level concurrency
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_number }} % 2
+  # group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_number }} % 2
 
-  # group: ${{
-  #     contains(github.workflow, 'update-dag') ||
-  #     contains(github.workflow, 'site-list') && 'operations-queue'
-  #   || github.workflow
-  #   }}-${{ github.run_number % 2 }}
+  group: ${{
+      contains(github.workflow, 'update-dag') ||
+      contains(github.workflow, 'site-list') && 'operations-queue'
+    || github.workflow
+    }}-${{ github.run_number }} % 2
   cancel-in-progress: false  # Queue them up, don't cancel
 
 env:
@@ -61,19 +61,24 @@ jobs:
       #   with:
       #     token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Use gh CLI
-        env:
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN }}
+      # - name: Use gh CLI
+      #   env:
+      #     GH_TOKEN: ${{secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     # gh run list --repo NEONScience/NEON-IS-data-processing
+      #     gh issue comment ${{ github.event.pull_request.number }} --body "Thanks for the pull request!"      
+      - name: Get short SHA
         run: |
-          # gh run list --repo NEONScience/NEON-IS-data-processing
-          gh issue comment ${{ github.event.pull_request.number }} --body "Thanks for the pull request!"
+          echo "github.run_number=${{ github.run_number }}"
+          echo "github.run_number mod 2=${{ github.run_number }} % 2"
+          echo "github.workflow=${{ github.workflow }}"
 
-      # - name: Put file
-      #   uses: ./.github/actions/put-files
-      #   with:
-      #     pachd_address: ${{ env.PACHD_ADDRESS }}
-      #     pach_token: ${{ env.PACH_TOKEN }}
-      #     repo_name: ${{ env.REPO }}
-      #     branch_name: ${{ env.BRANCH }}
-      #     in_paths: ${{ env.IN_PATHS }}
-      #     out_paths: ${{ env.OUT_PATHS }}
+      - name: Put file
+        uses: ./.github/actions/put-files
+        with:
+          pachd_address: ${{ env.PACHD_ADDRESS }}
+          pach_token: ${{ env.PACH_TOKEN }}
+          repo_name: ${{ env.REPO }}
+          branch_name: ${{ env.BRANCH }}
+          in_paths: ${{ env.IN_PATHS }}
+          out_paths: ${{ env.OUT_PATHS }}

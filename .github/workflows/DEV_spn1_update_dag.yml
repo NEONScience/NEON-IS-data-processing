@@ -14,7 +14,7 @@ concurrency:
       contains(github.workflow, 'update-dag') ||
       contains(github.workflow, 'site-list') && 'operations-queue'
     || github.workflow
-    }}
+    }}-${{ github.run_number }} % 2
   cancel-in-progress: false  # Queue them up, don't cancel
 
 jobs:
@@ -38,10 +38,6 @@ jobs:
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit
 
-      - name: Wait 30 seconds
-        run: sleep 30
-        timeout-minutes: 2  # Will timeout after 2 minutes
-      
     # Using get-changed-files-action 
       - name: Get changed files action
         id: changed-files-action
