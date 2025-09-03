@@ -62,12 +62,12 @@ jobs:
       #     token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Use gh CLI
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN }}
         run: |
           # gh run list --repo NEONScience/NEON-IS-data-processing
           gh issue comment ${{ github.event.pull_request.number }} --body "Thanks for the pull request!"
-        with:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+
       # - name: Put file
       #   uses: ./.github/actions/put-files
       #   with:
