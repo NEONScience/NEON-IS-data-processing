@@ -2,7 +2,7 @@ name: DEV-hivol3000-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/hivol3000/*.yaml'
       - 'pipe/hivol3000/pipe_list_hivol3000.txt'

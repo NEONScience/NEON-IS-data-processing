@@ -2,7 +2,7 @@ name: DEV-csat3-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/csat3/*.yaml'
       - 'pipe/csat3/pipe_list_csat3.txt'
