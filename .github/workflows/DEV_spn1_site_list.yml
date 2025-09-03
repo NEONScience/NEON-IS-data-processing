@@ -70,15 +70,14 @@ jobs:
       - name: Get short SHA
         run: |
           echo "github.run_number=${{ github.run_number }}"
-          echo "github.run_number mod 2=${{ github.run_number }} % 2"
-          echo "github.workflow=${{ github.workflow }}"
-
-      - name: Put file
-        uses: ./.github/actions/put-files
-        with:
-          pachd_address: ${{ env.PACHD_ADDRESS }}
-          pach_token: ${{ env.PACH_TOKEN }}
-          repo_name: ${{ env.REPO }}
-          branch_name: ${{ env.BRANCH }}
-          in_paths: ${{ env.IN_PATHS }}
-          out_paths: ${{ env.OUT_PATHS }}
+          echo "github.run_number mod 2=${{ ${{ github.run_number }} % 2 }}"
+          
+      # - name: Put file
+      #   uses: ./.github/actions/put-files
+      #   with:
+      #     pachd_address: ${{ env.PACHD_ADDRESS }}
+      #     pach_token: ${{ env.PACH_TOKEN }}
+      #     repo_name: ${{ env.REPO }}
+      #     branch_name: ${{ env.BRANCH }}
+      #     in_paths: ${{ env.IN_PATHS }}
+      #     out_paths: ${{ env.OUT_PATHS }}
