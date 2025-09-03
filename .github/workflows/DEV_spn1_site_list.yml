@@ -15,7 +15,7 @@ concurrency:
       contains(github.workflow, 'update-dag') ||
       contains(github.workflow, 'site-list') && 'operations-queue'
     || github.workflow
-    }}-${{ github.run_number }} % 2
+    }}-$((${{ github.run_number }} % 2))
   cancel-in-progress: false  # Queue them up, don't cancel
 
 env:
@@ -56,25 +56,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
     
-      # - name: Setup GitHub CLI
-      #   uses: github/gh-cli-action@v1
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      
-      # - name: Use gh CLI
-      #   env:
-      #     GH_TOKEN: ${{secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     # gh run list --repo NEONScience/NEON-IS-data-processing
-      #     gh issue comment ${{ github.event.pull_request.number }} --body "Thanks for the pull request!"      
       - name: Get github run number
         run: |
           echo "github.run_number=${{ github.run_number }}"
           echo "github_run_number_mod_2=$((${{ github.run_number }} % 2))"
-          echo "github_run_number_div_2=$((${{ github.run_number }} / 2))"
-          echo "github_run_number_mul_2=$((${{ github.run_number }} * 2))"
-          echo "github_run_number_add_2=$((${{ github.run_number }} + 2))"
-          echo "github_run_number_sub_2=$((${{ github.run_number }} - 2))"
+          echo ""
+          concurr_group1="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'operations-queue'}}"
+          concurr_group2="${{ github.workflow }}-$((${{ github.run_number }} % 2))"
+          echo "concurr_group1: $concurr_group1"
+          echo "concurr_group2: $concurr_group2"
+          echo ""
           
       # - name: Put file
       #   uses: ./.github/actions/put-files
