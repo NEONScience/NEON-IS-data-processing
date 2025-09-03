@@ -70,6 +70,7 @@ jobs:
       - name: Get github run number
         run: |
           echo "github.run_number=${{ github.run_number }}"
+          echo "github_run_number_mod_2=$((${{ github.run_number }} % 2))"
           echo "github_run_number_div_2=$((${{ github.run_number }} / 2))"
           echo "github_run_number_mul_2=$((${{ github.run_number }} * 2))"
           echo "github_run_number_add_2=$((${{ github.run_number }} + 2))"
