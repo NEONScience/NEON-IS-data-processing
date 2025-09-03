@@ -67,10 +67,10 @@ jobs:
       #   run: |
       #     # gh run list --repo NEONScience/NEON-IS-data-processing
       #     gh issue comment ${{ github.event.pull_request.number }} --body "Thanks for the pull request!"      
-      - name: Get short SHA
+      - name: Get github run number
         run: |
           echo "github.run_number=${{ github.run_number }}"
-          echo "github_run_number_mod_2=$(${{ github.run_number }} % 2)"
+          echo "github_run_number_mod_2=$(${{ github.run_number }} mod 2)"
           
       # - name: Put file
       #   uses: ./.github/actions/put-files
