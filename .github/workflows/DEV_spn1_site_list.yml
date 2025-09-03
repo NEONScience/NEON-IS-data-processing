@@ -7,14 +7,17 @@ on:
       - 'pipe/spn1/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
-# Workflow-level concurrency
-concurrency: 
-  # group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_number }} % 2
+# # Workflow-level concurrency
+# concurrency:
+#   group: ${{
+#       contains(github.workflow, 'update-dag') ||
+#       contains(github.workflow, 'site-list') && 'operations-queue'
+#     || github.workflow
+#     }}-$((${{ github.run_number }} % 2))
 
+concurrency:
   group: ${{
-      contains(github.workflow, 'update-dag') ||
-      contains(github.workflow, 'site-list') && 'operations-queue'
-    || github.workflow
+      contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') 
     }}-$((${{ github.run_number }} % 2))
   cancel-in-progress: false  # Queue them up, don't cancel
 
@@ -61,10 +64,9 @@ jobs:
           echo "github.run_number=${{ github.run_number }}"
           echo "github_run_number_mod_2=$((${{ github.run_number }} % 2))"
           echo ""
-          concurr_group1="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'operations-queue'}}"
-          concurr_group2="${{ github.workflow }}-$((${{ github.run_number }} % 2))"
+          concurr_group1="${{ contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') }}-$((${{ github.run_number }} % 2))"
           echo "concurr_group1: $concurr_group1"
-          echo "concurr_group2: $concurr_group2"
+          # echo "concurr_group2: $concurr_group2"
           echo ""
           
       # - name: Put file
