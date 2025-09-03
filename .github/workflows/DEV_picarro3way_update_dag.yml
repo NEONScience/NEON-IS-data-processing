@@ -2,7 +2,7 @@ name: DEV-picarro3way-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/picarro3way/*.yaml'
       - 'pipe/picarro3way/pipe_list_picarro3way_development.txt'
