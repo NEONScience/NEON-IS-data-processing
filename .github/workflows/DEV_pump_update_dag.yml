@@ -2,7 +2,7 @@ name: DEV-pump-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/pump/*.yaml'
       - 'pipe/pump/pipe_list_pump_development.txt'

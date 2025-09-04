@@ -6,7 +6,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "4"
-    LOG_LEVEL: DEBUG 
+    LOG_LEVEL: INFO 
     UPDATE_TRIGGER_TABLE: "True"
     SOURCE_TYPE: "t7610_raw"
     PARSE_FIELD: ""
@@ -83,7 +83,7 @@ input:
   pfs:
     name: DATA_PATH
     repo: t7610_data_source_kafka
-    glob: /t7610_raw/*/*/*/*
+    glob: /t7610_raw/*/*/*
 parallelism_spec:
   constant: 3
 autoscaling: true

@@ -41,7 +41,7 @@ transform:
     # run data parser
     python3 -m raw_data_parsers.raw_data_parser.data_parser_main
 
-    # Upload L0 files to bucket, compacting with any existing file with the same name
+    # Upload parsed files to bucket, compacting with any existing file with the same name
     # when SOURCE_TYPE is drx8533ep_raw, OUT_SOURCE_TYPE is drx8533ep
     OUT_SOURCE_TYPE=${SOURCE_TYPE%%_raw} 
     if [[ -d "$OUT_PATH/$OUT_SOURCE_TYPE" ]]; then
@@ -60,15 +60,21 @@ transform:
         fday="${BASH_REMATCH[4]}"
         fsourceid="${BASH_REMATCH[5]}"
         fname="${BASH_REMATCH[6]}"
+        # fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
         outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
         mkdir -p "${outdir}"
         ln -s "${f}" "${outdir}/${fname}"
-
-        # Upload to bucket, compacting with any existing file 
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
-        rm -rf "${outdir}"
+        
       done
-      
+
+      # Upload to bucket, compacting with any existing file 
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+
+      # Update the airflow triggering table
+      for site_output in "${sites_output[@]}"; do
+        ./update-trigger-table.py -s $site_output -S $OUT_SOURCE_TYPE -D "$OUT_PATH/$OUT_SOURCE_TYPE"
+      done
+
       # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi
@@ -95,18 +101,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: 'true'
-    nodepool.neonscience.org/pipeline: 'yes'
-    cloud.google.com/gke-spot: 'true'
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

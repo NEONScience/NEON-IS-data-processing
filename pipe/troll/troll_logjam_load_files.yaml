@@ -15,7 +15,7 @@ transform:
   env:
     LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     STARTING_PATH_INDEX: "7"
   secrets:
   - name: pdr-secret
@@ -42,18 +42,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

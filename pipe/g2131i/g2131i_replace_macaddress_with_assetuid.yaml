@@ -38,7 +38,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "3"
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     # LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   cross:
@@ -77,18 +77,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

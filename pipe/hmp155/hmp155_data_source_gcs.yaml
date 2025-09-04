@@ -39,7 +39,7 @@ transform:
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
     KAFKA_RETENTION_DAYS: "15"
-    BUCKET_VERSION_PATH: "v1"  # The root path of the bucket, indicative of the version (e.g. v2)
+    BUCKET_VERSION_PATH: "v2"  # The root path of the bucket, indicative of the version (e.g. v2)
     SOURCE_TYPE_INDEX: "3"
     YEAR_INDEX: "4"
     MONTH_INDEX: "5"
@@ -72,18 +72,5 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class
+    

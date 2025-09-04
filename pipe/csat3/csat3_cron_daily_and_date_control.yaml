@@ -12,7 +12,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2025-07-15" # Inclusive
-    # END_DATE: "2025-04-01" # Inclusive
+    END_DATE: "2025-08-01" # Inclusive
     SOURCE_TYPE: "csat3"
   stdin:
   - "#!/bin/bash"
@@ -22,7 +22,8 @@ input:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "0 8 * * *" # Run at 01:00 MST (08:00 GMT)
+      spec: "@never"
+      # spec: "0 8 * * *" # Run at 01:00 MST (08:00 GMT)
       overwrite: true
   - pfs:
       name: SITE_FILE
@@ -40,18 +41,4 @@ sidecar_resource_requests:
 autoscaling: true
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class
