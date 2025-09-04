@@ -37,10 +37,6 @@ jobs:
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-      - name: Wait 30 seconds
-        run: sleep 30
-        timeout-minutes: 2  # Will timeout after 2 minutes
-          
     # Using get-changed-files-action 
       - name: Get changed files action
         id: changed-files-action

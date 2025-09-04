@@ -53,15 +53,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
     
-      - name: Get github run number and concurrency group number 
-        run: |
-          echo "*********************************"
-          echo "github.run_number=${{ github.run_number }}"
-          echo "*********************************"
-          concurr_group="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'concurrency-group'|| github.workflow  }}-$((${{ github.run_number }} % 2))"
-          echo "concurr_group: $concurr_group"
-          echo "*********************************"
-          
       - name: Put file
         uses: ./.github/actions/put-files
         with:

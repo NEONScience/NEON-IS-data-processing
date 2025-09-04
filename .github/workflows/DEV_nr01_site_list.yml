@@ -31,10 +31,6 @@ jobs:
       - uses: actions/checkout@v4
       - run: ls -la
 
-      - name: Wait 30 seconds
-        run: sleep 30
-        timeout-minutes: 2  # Will timeout after 2 minutes
-      
       - name: Put file
         uses: ./.github/actions/put-files
         with:
