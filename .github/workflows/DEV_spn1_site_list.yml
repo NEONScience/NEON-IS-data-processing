@@ -13,7 +13,7 @@ concurrency:
       contains(github.workflow, 'update-dag') ||
       contains(github.workflow, 'site-list') && 'concurrency-group'
     || github.workflow
-    }}-$((${{ github.run_number }} % 2))
+    }}-$((${{ github.run_number }} % 3))
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -55,12 +55,11 @@ jobs:
     
       - name: Get github run number
         run: |
+          echo "***********"
           echo "github.run_number=${{ github.run_number }}"
-          echo "github_run_number_mod_2=$((${{ github.run_number }} % 2))"
-          echo ""
-          concurr_group="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'concurrency-group'|| github.workflow  }}-$((${{ github.run_number }} % 2))"
+          echo "***********"
+          concurr_group="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'concurrency-group'|| github.workflow  }}-$((${{ github.run_number }} % 3))"
           echo "concurr_group: $concurr_group"
-          echo ""
           
       # - name: Put file
       #   uses: ./.github/actions/put-files
