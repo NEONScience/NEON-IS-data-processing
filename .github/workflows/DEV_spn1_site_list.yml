@@ -13,7 +13,7 @@ concurrency:
       contains(github.workflow, 'update-dag') ||
       contains(github.workflow, 'site-list') && 'concurrency-group'
     || github.workflow
-    }}-$((${{ github.run_number }} % 3))
+    }}-$((${{ github.run_number }} % 2))
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -53,20 +53,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
     
-      - name: Get github run number
+      - name: Get github run number and concurrency group number 
         run: |
           echo "*********************************"
           echo "github.run_number=${{ github.run_number }}"
           echo "*********************************"
-          concurr_group="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'concurrency-group'|| github.workflow  }}-$((${{ github.run_number }} % 3))"
+          concurr_group="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'concurrency-group'|| github.workflow  }}-$((${{ github.run_number }} % 2))"
           echo "concurr_group: $concurr_group"
+          echo "*********************************"
           
-      # - name: Put file
-      #   uses: ./.github/actions/put-files
-      #   with:
-      #     pachd_address: ${{ env.PACHD_ADDRESS }}
-      #     pach_token: ${{ env.PACH_TOKEN }}
-      #     repo_name: ${{ env.REPO }}
-      #     branch_name: ${{ env.BRANCH }}
-      #     in_paths: ${{ env.IN_PATHS }}
-      #     out_paths: ${{ env.OUT_PATHS }}
+      - name: Put file
+        uses: ./.github/actions/put-files
+        with:
+          pachd_address: ${{ env.PACHD_ADDRESS }}
+          pach_token: ${{ env.PACH_TOKEN }}
+          repo_name: ${{ env.REPO }}
+          branch_name: ${{ env.BRANCH }}
+          in_paths: ${{ env.IN_PATHS }}
+          out_paths: ${{ env.OUT_PATHS }}
