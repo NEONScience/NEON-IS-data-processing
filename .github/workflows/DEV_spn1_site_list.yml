@@ -1,8 +1,8 @@
 name: DEV-spn1-site-list
 on:
   push:
-    branches: 
-      - 'master'
+    branches:
+      - 'none'
     paths:
       - 'pipe/spn1/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
@@ -55,9 +55,9 @@ jobs:
     
       - name: Get github run number
         run: |
-          echo "***********"
+          echo "*********************************"
           echo "github.run_number=${{ github.run_number }}"
-          echo "***********"
+          echo "*********************************"
           concurr_group="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'concurrency-group'|| github.workflow  }}-$((${{ github.run_number }} % 3))"
           echo "concurr_group: $concurr_group"
           

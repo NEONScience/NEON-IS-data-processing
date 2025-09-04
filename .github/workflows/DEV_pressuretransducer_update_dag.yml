@@ -2,7 +2,7 @@ name: DEV-pressuretransducer-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/pressuretransducer/*.yaml'
       - 'pipe/pressuretransducer/pipe_list_pressuretransducer_development.txt'

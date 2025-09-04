@@ -34,7 +34,7 @@ transform:
 input:
   cron:
     name: tick
-    spec: "@daily"
+    spec: "@never"
     overwrite: true
 autoscaling: true
 resource_requests:
@@ -48,18 +48,4 @@ sidecar_resource_requests:
   cpu: 0.2
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class
