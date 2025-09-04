@@ -9,7 +9,6 @@ on:
   
 # Workflow-level concurrency
 concurrency:
-concurrency:
   group: ${{
       contains(github.workflow, 'update-dag') ||
       contains(github.workflow, 'site-list') && 'concurrency-group'
