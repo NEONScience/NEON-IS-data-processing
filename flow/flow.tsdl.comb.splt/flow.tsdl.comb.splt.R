@@ -83,7 +83,7 @@
 #' @keywords Currently none
 
 #' @examples 
-# Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_level1_group/2025/05/10/temp-specific-depths-lakes_BARC103100')
+# Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_level1_group/2025/06/11/temp-specific-depths-lakes_BARC103100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","NameVarTime=001|030", "SplitGroupName=temp-specific-depths-lakes-split_",
 #          "FileSchmMapDepth=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
