@@ -2,7 +2,7 @@ name: DEV-cmp22-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'cmp22'
     paths:
       - 'pipe/cmp22/*.yaml'
       - 'pipe/cmp22/pipe_list_cmp22_development.txt'
