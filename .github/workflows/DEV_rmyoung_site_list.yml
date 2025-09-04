@@ -2,7 +2,7 @@ name: DEV-rmyoung-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/rmyoung/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
