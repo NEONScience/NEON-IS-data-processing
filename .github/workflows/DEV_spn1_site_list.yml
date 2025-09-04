@@ -15,11 +15,11 @@ concurrency:
     || github.workflow
     }}-$((${{ github.run_number }} % 2))
 
-concurrency:
-  group: ${{
-      contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') 
-    }}-$((${{ github.run_number }} % 2))
-  cancel-in-progress: false  # Queue them up, don't cancel
+# concurrency:
+#   group: ${{
+#       contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') 
+#     }}-$((${{ github.run_number }} % 2))
+#   cancel-in-progress: false  # Queue them up, don't cancel
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
