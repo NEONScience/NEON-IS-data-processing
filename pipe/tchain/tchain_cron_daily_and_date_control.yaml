@@ -12,7 +12,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2017-06-26" # Inclusive
-    #END_DATE: "2025-06-02" # Inclusive
+    END_DATE: "2025-09-02" # Inclusive
     SOURCE_TYPE: "tchain"
   stdin:
   - "#!/bin/bash"
@@ -22,7 +22,8 @@ input:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "0 7 * * *" # Run at 07:00 GMT (00:00 MST)
+      spec: "@never"
+      #spec: "0 7 * * *" # Run at 07:00 GMT (00:00 MST)
       overwrite: true
   - pfs:
       name: SITE_FILE
