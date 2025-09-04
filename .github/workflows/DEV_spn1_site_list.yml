@@ -11,15 +11,9 @@ on:
 concurrency:
   group: ${{
       contains(github.workflow, 'update-dag') ||
-      contains(github.workflow, 'site-list') && 'operations-queue'
+      contains(github.workflow, 'site-list') && 'concurrency-group'
     || github.workflow
     }}-$((${{ github.run_number }} % 2))
-
-# concurrency:
-#   group: ${{
-#       contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') 
-#     }}-$((${{ github.run_number }} % 2))
-#   cancel-in-progress: false  # Queue them up, don't cancel
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -64,7 +58,7 @@ jobs:
           echo "github.run_number=${{ github.run_number }}"
           echo "github_run_number_mod_2=$((${{ github.run_number }} % 2))"
           echo ""
-          concurr_group="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'operations-queue'|| github.workflow  }}-$((${{ github.run_number }} % 2))"
+          concurr_group="${{contains(github.workflow, 'update-dag') || contains(github.workflow, 'site-list') && 'concurrency-group'|| github.workflow  }}-$((${{ github.run_number }} % 2))"
           echo "concurr_group: $concurr_group"
           echo ""
           
