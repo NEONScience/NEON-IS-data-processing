@@ -88,20 +88,15 @@ wrap.file.comb.tsdl.splt <- function(filePths,
   #  ====================== Load Mapping schemas ===========================  #
   #   =====================================================================   #
   locFilePths <- filePths[base::which(base::basename(base::dirname(filePths)) == locDir)]
-  locFile <- locFilePths[grep("_locations",locFilePths)]
-  
-  if(base::length(locFilePths) ==0){
-    log$error(base::paste0("Could not find a location file in provided files: ",
-                           base::paste(filePths, collapse=", ")))
-    stop()
-  }
-  
-  
-  
-  #first get location history z offset
-  if(NEONprocIS.base::def.validate.json(locFile,log=log)){
+  if(grepl("_locations",locFilePths)){
+    locFile <- locFilePths[grepl("_locations",locFilePths)]
     log$debug(base::paste0("location datum(s) found, reading in: ",locFile))
+    #first get location history z offset
     LocationHist <- NEONprocIS.base::def.loc.geo.hist(locFile, log = NULL)
+  }else{
+    locFile <- locFilePths[1]
+    log$debug(base::paste0("Not asset location history found, reading in: ",locFile))
+    LocationHist <- NULL
   }
   
   
@@ -396,6 +391,8 @@ wrap.file.comb.tsdl.splt <- function(filePths,
             }
           }
           data<-data_all
+        }else{
+          log$debug(base::paste0('No location history incorporated into files.'))
         }
       }
       
