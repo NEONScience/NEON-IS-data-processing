@@ -88,7 +88,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
   #  ====================== Load Mapping schemas ===========================  #
   #   =====================================================================   #
   locFilePths <- filePths[base::which(base::basename(base::dirname(filePths)) == locDir)]
-  if(grepl("_locations",locFilePths)){
+  if(any(grepl("_locations",locFilePths))){
     locFile <- locFilePths[grepl("_locations",locFilePths)]
     log$debug(base::paste0("location datum(s) found, reading in: ",locFile))
     #first get location history z offset
