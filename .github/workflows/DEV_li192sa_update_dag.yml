@@ -2,7 +2,7 @@ name: DEV-li192sa-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/li192sa/*.yaml'
       - 'pipe/li192sa/pipe_list_li192sa_development.txt'

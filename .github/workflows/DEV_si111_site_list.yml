@@ -2,7 +2,7 @@ name: DEV-si111-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/si111/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface

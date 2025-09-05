@@ -2,7 +2,7 @@ name: DEV-mwseries-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/mwseries/*.yaml'
       - 'pipe/mwseries/pipe_list_mwseries_development.txt'
