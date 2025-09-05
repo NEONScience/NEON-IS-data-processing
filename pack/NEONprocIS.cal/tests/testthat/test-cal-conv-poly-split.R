@@ -1,0 +1,94 @@
+##############################################################################################
+#' @title Unit test of def.cal.conv.poly.split,
+#' Convert raw to calibrated data using NEON polynomial calibration coefficients that are split based on input range
+
+#' @description
+#' Definition function. Apply NEON calibration polynomial function contained in coefficients 
+#' CVALM0, CVALM1, CVALM2, CVALH0, CVALH1, CVALH2 etc. to convert raw data to calibrated data.
+
+#' @param data Numeric data frame of raw measurements. 
+#' @param infoCal A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
+#' One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
+#' This data frame must include columns:\cr
+#' \code{Name} String. The name of the coefficient. Must fit regular expression CVALM[0-9]\cr
+#' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
+#' Defaults to NULL, in which case converted data will be retured as NA.
+#' @param varConv A character string of the target variable (column) in the data frame \code{data} for 
+#' which the calibration will be applied (all other columns will be ignored). Note that for other
+#' uncertainty functions this variable may not need to be in the input data frame. Defaults to the first
+#' column in \code{data}.
+#' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
+#' NEONprocIS.cal::wrap.cal.conv for what this input is. 
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
+#' created and used within the function.
+
+#' @return A  Numeric vector of calibrated data\cr
+
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+#' NEON.DOC.000785 TIS Calibrated Measurements and Level 1 Data Products Uncertainty Budget Plan
+
+#' @keywords Currently none
+
+#' @examples
+#' data=data.frame(data=c(1,2,3))
+#' infoCal <- list(cal=data.frame(Name=c('CVALH0','CVALH1','CVALH2','CVALM0','CVALM1','CVALM2'),Value=c(-0.48,0.97,-0.000001,0.11,1,-0.00024),stringsAsFactors=FALSE))
+#' def.cal.conv.poly.split(data=data,infoCal=infoCal)
+
+#' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
+#' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly}
+#' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.b}
+#' @seealso \link[NEONprocIS.cal]{wrap.cal.conv}
+#' 
+#' @examples
+#' To run with testthat:
+#' devtools::test(pkg="<path>/NEON-IS-data-processing/pack/NEONprocIS.cal")
+#' an example, devtools::test(pkg="C:/projects/NEON-IS-data-processing/pack/NEONprocIS.cal")
+
+# changelog and author contributions / copyrights
+#   Mija Choi (2025-09-05)
+#     Original Creation 
+##############################################################################################
+# Define test context
+context("\n                       Unit test of def-cal-conv-poly-split.R\n")
+
+# Unit test of def-cal-conv-poly-split.R
+test_that("Unit test of def-cal-conv-poly-split.R", {
+   # The input json has Name, Value, and .attrs
+   
+   testDir = "testdata/"
+   testFileCal = "calibration_CVALM.xml"
+   testFileCalPath <- paste0(testDir, testFileCal)
+   
+   testData = "L0_data.csv"
+   testDataPath <- paste0(testDir, testData)
+   
+   data0 <- read.csv(testDataPath, sep = ",", header = TRUE)
+   
+   data <- data.frame(data0$resistance)
+   
+   # Happy path 1
+   
+   infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
+   
+   
+   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.split (data = data.frame(data=base::numeric(0)),
+                                                        infoCal = infoCal,
+                                                        log = NULL)
+   
+   expect_true (is.vector(vector_cvalM))
+   
+   # Happy path 2 infoCal is not passed in
+   
+   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.split (data = data.frame(data=base::numeric(0)), log = NULL)
+   
+   expect_true (is.vector(vector_cvalM))
+   
+   # Sad path 1 - data is not an array
+   data <- list (data)
+   
+   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.split (data = data.frame(data=base::numeric(0)),infoCal = infoCal,log = NULL)
+   
+   expect_true (is.vector(vector_cvalM))
+})
