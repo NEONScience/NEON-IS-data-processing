@@ -2,7 +2,7 @@
 pipeline:
   name: tempSpecificDepthLakes_level1_grp_reshape
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:sha-77e8a8b
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:sha-2ac6bd6
   cmd:
   - sh
   - "-c"
