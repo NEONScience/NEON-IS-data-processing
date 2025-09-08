@@ -1,9 +1,7 @@
 ---
 pipeline:
-  name: troll_calibration_loader
+  name: subsurfMoorTempCond_calibration_loader
 transform:
-  # image_pull_secrets:
-  # - battelleecology-quay-read-all-pull-secret
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
   cmd:
   - /bin/bash
@@ -14,7 +12,7 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: "aquatroll200,leveltroll500"
+    SOURCE_TYPE: "hobou24,leveltroll400"
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
@@ -22,7 +20,7 @@ transform:
 input:
   pfs:
     name: IN_PATH
-    repo: troll_calibration_list_files
+    repo: subsurfMoorTempCond_calibration_list_files
     glob: /*/*/*/*
     empty_files: true
 parallelism_spec:
