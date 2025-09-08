@@ -13,56 +13,42 @@ transform:
     IFS=$'\n\t'
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf /tmp/kafka_merged
     rm -rf $OUT_PATH_JOINER
+    rm -rf /tmp/kafka_merged
+    rm -rf /tmp/kafka_merged_copy
     rm -rf $OUT_PATH_ARRAY_PARSER
-    
-    mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     mkdir -p $OUT_PATH_JOINER 
+    mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     mkdir -p $OUT_PATH_ARRAY_PARSER
-    
-    # Detect if we have data coming from Kafka or trino
-    # Note that we run the filter-joiner in sequential if statements rather than an elif statement ...
-    # ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...
-    # ... trino data wins (filter joiner will not copy a file if it is already in the destination). This scenario ...
-    # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka ...
-    # ... retention period for data that have already been loaded from Trino. In normal operations this scenario ...
-    # ... should not arise because the only data coming into Pachyderm will be coming from Kafka. ...
-    # ... When a conflict does arise, the Trino data will take precedence, which is fine because the ...
-    # ... conflict arose because data for the same sensor and day were in both locations.
-    if [ ${DATA_PATH_TRINO+x} ]; then 
-      # Data from trino. 
-      # Set CONFIG for filter-joiner to the trino version and run filter joiner
-      export CONFIG=$CONFIG_TRINO
-      export OUT_PATH=$OUT_PATH_JOINER
-      python3 -m filter_joiner.filter_joiner_main
-    fi  
-    if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
-      # Data from kafka. 
-      # Run kafka combiner
-      Rscript ./flow.kfka.comb.R \
-          DirIn=$KAFKA_UNMERGED_DATA \
+
+    # Join files from the archive and from Kafka
+    export OUT_PATH=$OUT_PATH_JOINER
+    python3 -m filter_joiner.filter_joiner_main
+
+    # Combine data from Kafka and the archive
+    Rscript ./flow.kfka.comb.R \
+          DirIn=$OUT_PATH_JOINER \
           DirOut=/tmp/kafka_merged \
           DirErr=/pfs/out/errored_datums \
-          FileSchmL0=$FILE_SCHEMA_PARSED
-      # Set CONFIG for filter-joiner to the kafka version and run filter joiner
-      export CONFIG=$CONFIG_KAFKA
-      export OUT_PATH=$OUT_PATH_JOINER
-      python3 -m filter_joiner.filter_joiner_main
-    fi  
-    
+          FileSchmL0=$FILE_SCHEMA_PARSED \
+          DirSubCopy=calibration
+
+    # Copy and destroy links (cannot daisy chain links)
+    cp -rL /tmp/kafka_merged /tmp/kafka_merged_copy || : # Allow to fail without exit code (happens if step above produced no output)
+
     # Run array parser (parse calibrations only - data already parsed)
     export SCHEMA_PATH=$FILE_SCHEMA_PARSED
-    export DATA_PATH=$OUT_PATH_JOINER
+    export DATA_PATH=/tmp/kafka_merged_copy
     export OUT_PATH=$OUT_PATH_ARRAY_PARSER
     python3 -m array_parser.array_parser_main
+    
 
     # Run calibration conversion module
     Rscript ./flow.cal.conv.R \
       DirIn=$OUT_PATH_ARRAY_PARSER \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "FileSchmData=$FILE_SCHEMA_DATA" \
+      "FileSchmData=$FILE_SCHEMA_PARSED" \
       "FileSchmQf=$FILE_SCHEMA_FLAGS" \
       "TermFuncConv=depth0WaterTemp:def.cal.conv.poly|depth1WaterTemp:def.cal.conv.poly|depth2WaterTemp:def.cal.conv.poly|depth3WaterTemp:def.cal.conv.poly|depth4WaterTemp:def.cal.conv.poly|depth5WaterTemp:def.cal.conv.poly|depth6WaterTemp:def.cal.conv.poly|depth7WaterTemp:def.cal.conv.poly|depth8WaterTemp:def.cal.conv.poly|depth9WaterTemp:def.cal.conv.poly|depth10WaterTemp:def.cal.conv.poly" \
       "TermQf=depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp" \
@@ -70,19 +56,24 @@ transform:
 
     EOF
   env:
-    # Environment variables for filter-joiner.
-    # There are two configs here, CONFIG_KAFKA is when data comes from kafka, CONFIG_TRINO is when data comes from trino. 
-    # The engironment variable CONFIG is set to the appropriate one as detected in the bash script above
-    CONFIG_KAFKA: |
+    # Environment variables for filter-joiner
+    CONFIG: |
       ---
       # Configuration for filter-joiner module that will bring together the data and calibrations
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: DATA_PATH_KAFKA
+            name: KAFKA_UNMERGED_DATA
             # Filter for data directory
-            glob_pattern: /tmp/kafka_merged/tchain/*/*/*/*/**
+            glob_pattern: /pfs/KAFKA_UNMERGED_DATA/tchain/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: DATA_PATH_ARCHIVE
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_ARCHIVE/tchain/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
@@ -92,25 +83,7 @@ transform:
             glob_pattern: /pfs/CALIBRATION_PATH/tchain/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
-    CONFIG_TRINO: |
-      ---
-      # Configuration for filter-joiner module that will bring together the data and calibrations
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      input_paths:
-        - path:
-            name: DATA_PATH_TRINO
-            # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_TRINO/tchain/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
             outer_join: true
-        - path:
-            name: CALIBRATION_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/tchain/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
@@ -119,29 +92,21 @@ transform:
     # Environment variables for array parser
     PARSE_CALIBRATION: 'True'
     TEST_MODE: 'True' # We already parsed the data. Pass it through via symlink
-    LOG_LEVEL: DEBUG
-    SOURCE_TYPE_INDEX: '4'
-    YEAR_INDEX: '5'
-    MONTH_INDEX: '6'
-    DAY_INDEX: '7'
-    SOURCE_ID_INDEX: '8'
-    DATA_TYPE_INDEX: '9'
+    LOG_LEVEL: INFO
+    SOURCE_TYPE_INDEX: '3'
+    YEAR_INDEX: '4'
+    MONTH_INDEX: '5'
+    DAY_INDEX: '6'
+    SOURCE_ID_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
     OUT_PATH_ARRAY_PARSER: /tmp/pfs/array_parsed # R modules must have pfs in the repo structure
 
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '1' # Option for calibration conversion module
 input:
   cross:
-  # - pfs:
-  #     name: FILE_SCHEMA_L0
-  #     repo: tchain_avro_schemas
-  #     glob: /tchain/tchain.avsc
   - pfs:
       name: FILE_SCHEMA_PARSED
-      repo: tchain_avro_schemas
-      glob: /tchain/tchain_parsed.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA
       repo: tchain_avro_schemas
       glob: /tchain/tchain_parsed.avsc
   - pfs:
@@ -158,8 +123,8 @@ input:
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
-        name: DATA_PATH_TRINO
-        repo: tchain_data_source_trino
+        name: DATA_PATH_ARCHIVE
+        repo: tchain_data_source_gcs
         glob: /tchain/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
@@ -187,18 +152,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

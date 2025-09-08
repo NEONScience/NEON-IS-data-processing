@@ -54,8 +54,8 @@ transform:
         fgroup="${BASH_REMATCH[4]}"
         fname="${BASH_REMATCH[5]}"
         # Now get the timing index from the file name
-        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
-        avg_int="${BASH_REMATCH[2]}"
+        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_[A-Za-z0-9]+_[A-Za-z0-9]+_([A-Za-z0-9]+).parquet ]]
+        avg_int="${BASH_REMATCH[1]}"
         #Form the output path and link
         outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
         mkdir -p "${outdir}"
@@ -102,7 +102,7 @@ transform:
             join_indices: [6]
 
     OUT_PATH: /tmp/pfs/filter_joined
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for calibration module
