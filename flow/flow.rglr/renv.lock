@@ -102,21 +102,6 @@
       "Hash": "d4335fe7207f1c01ab8c41762f5840d4",
       "Requirements": []
     },
-    "R6P": {
-      "Package": "R6P",
-      "Version": "0.4.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "2d69956f3a719d2b9c5246d454442ce6",
-      "Requirements": [
-        "R6",
-        "collections",
-        "dplyr",
-        "stringr",
-        "tibble",
-        "tidyr"
-      ]
-    },
     "RColorBrewer": {
       "Package": "RColorBrewer",
       "Version": "1.1-3",
@@ -214,14 +199,6 @@
       "Hash": "019388fc48e48b3da0d3a76ff94608a8",
       "Requirements": []
     },
-    "collections": {
-      "Package": "collections",
-      "Version": "0.3.9",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "eec272efef8f9b1ff376d67cab931935",
-      "Requirements": []
-    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.5.2",
@@ -258,10 +235,10 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.37",
+      "Version": "0.6.33",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "33698c4b3127fc9f506654607fb73676",
+      "Hash": "b18a9cf3c003977b0cc49d5e76ebe48d",
       "Requirements": []
     },
     "doParallel": {
@@ -413,10 +390,10 @@
     },
     "generics": {
       "Package": "generics",
-      "Version": "0.1.4",
+      "Version": "0.1.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4b29bf698d0c7bdb9f1e4976e7ade41d",
+      "Hash": "15e9634c0fcd294799e9b2e929ed1b86",
       "Requirements": []
     },
     "ggplot2": {
