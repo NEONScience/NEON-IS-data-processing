@@ -76,7 +76,17 @@
 #' FreqRglr is NA, the directory structure must be location-focused, where the parent directory of the
 #' terminal directories is named for the named location. Default value is NA.
 #'
-#' 7. "MethRglr=value" (optional), where value is the regularization method (per the choices in
+#' 7. "ValuFill=value" (optional), where value is the numeric value to fill missing values in the data
+#'  (all columns other than readout_time). The value may be a single string, in which
+#' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
+#' in which case the argument is formatted as dir:value|dir:value...
+#' where dir is one of the directories specified in DirRglr and value is the the value to fill missing
+#' values with for the data in that directory. Multiple dir:value pairs are separated by pipes (|). For example,
+#' "ValuFill=data:0|flags:NA" indicates that the files in the data directory will be
+#' have missing values filled with 0, and files in the flags directory will be regularized with
+#' the missing values filled with NA. Default value is NA, and should be used in most cases.
+#'  
+#' 8. "MethRglr=value" (optional), where value is the regularization method (per the choices in
 #' eddy4R.base::def.rglr for input parameter MethRglr). The value may be a single string, in which
 #' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
 #' in which case the argument is formatted as dir:value|dir:value...
@@ -87,7 +97,7 @@
 #' the "CybiDflt" method. Default value is CybiEc, which should be used in most cases. Note that the
 #' 'instantaneous' regularization method is 'CybiEcTimeMeas'.
 #'
-#' 8. "WndwRglr=value" (optional), where value is the windowing method (per the choices in
+#' 9. "WndwRglr=value" (optional), where value is the windowing method (per the choices in
 #' eddy4R.base::def.rglr for input parameter WndwRglr). The value may be a single string, in which
 #' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
 #' in which case the argument is formatted as dir:value|dir:value...
@@ -97,7 +107,7 @@
 #' regularized with the Trlg windowing method, and files in the flags directory will be regularized with
 #' the "Lead" windowing method. Default value is Trlg, and should be used in most cases.
 #'
-#' 9. "IdxWndw=value" (optional), where value is the index allocation method (per the choices in
+#' 10. "IdxWndw=value" (optional), where value is the index allocation method (per the choices in
 #' eddy4R.base::def.rglr for input parameter IdxWndw).  The value may be a single string, in which
 #' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
 #' in which case the argument is formatted as dir:value|dir:value...
@@ -108,7 +118,7 @@
 #' regularized with the "Cntr" index allocation method. Default value is IdxWndwMin, and should be used
 #' in most cases.
 #' 
-#' 10. "RptTimeWndw=value" (optional), where value is logical TRUE or FALSE (default), and pertains to the 
+#' 11. "RptTimeWndw=value" (optional), where value is logical TRUE or FALSE (default), and pertains to the 
 #' choices in eddy4R.base::def.rglr for input parameter RptTimeWndw. TRUE will output
 #' two additional columns at the end of the output data file for the start and end times of the time windows
 #' used in the regularization. Note that the output variable readout_time will be included in the output
@@ -126,7 +136,7 @@
 #' (exclusive) times of the regularization bin for each output record. These may be renamed using the 
 #' schema provided in argument FileSchmRglr.
 #' 
-#' 11. "DropNotNumc=value" (optional), where value is logical TRUE (default) or FALSE, and pertains to the 
+#' 12. "DropNotNumc=value" (optional), where value is logical TRUE (default) or FALSE, and pertains to the 
 #' choices in eddy4R.base::def.rglr for input parameter DropNotNumc. TRUE will drop
 #' all non-numeric columns prior to the regularization (except for readout_time). Dropped columns will 
 #' not be included in the output. The value may be a single string, in which
@@ -139,7 +149,7 @@
 #' flags directory. Ensure that any schemas provided for the output files account for the choice(s) made
 #' here (i.e. there may be fewer columns if DropNotNumc=TRUE)
 #'
-#' 12. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 13. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the regularization folder in the input path that are to be copied with a
 #' symbolic link to the output path.
 #'
@@ -214,6 +224,8 @@
 #     Move main functionality to wrapper function and add error routing
 #   Cove Sturtevant (2023-01-19)
 #     Enable regularized time period to be controlled by active periods
+#   Cove Sturtevant (2023-01-19)
+#     Add option to choose the value to fill missing values with 
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -251,6 +263,7 @@ Para <-
     NameParaOptn = c(
       "FileSchmRglr",
       "FreqRglr",
+      "ValuFill",
       "MethRglr",
       "WndwRglr",
       "IdxWndw",
@@ -261,6 +274,7 @@ Para <-
     ValuParaOptn = base::list(
       FileSchmRglr = "NA",
       FreqRglr = NA,
+      ValuFill = as.numeric(NA),
       MethRglr = "CybiEc",
       WndwRglr = "Trlg",
       IdxWndw = "IdxWndwMin",
@@ -322,6 +336,22 @@ FreqRglr <-
     log = log
   )
 FreqRglr <- FreqRglr[base::match(Para$DirRglr, FreqRglr$DirRglr),]
+
+# Retrieve value to fill missing data with
+log$debug(base::paste0(
+  'Missing values will be filled with: ',
+  base::paste0(Para$ValuFill, collapse = ',')
+))
+ValuFill <-
+  NEONprocIS.base::def.vect.pars.pair(
+    vect = Para$ValuFill,
+    KeyExp = Para$DirRglr,
+    ValuDflt = base::as.numeric(NA),
+    NameCol = c('DirRglr', 'ValuFill'),
+    Type = c('character', 'numeric'),
+    log = log
+  )
+ValuFill <- ValuFill[base::match(Para$DirRglr, ValuFill$DirRglr),]
 
 # Retrieve regularization method
 log$debug(base::paste0(
@@ -404,6 +434,7 @@ DropNotNumc <- DropNotNumc[base::match(Para$DirRglr, DropNotNumc$DirRglr),]
 ParaRglr = base::cbind(
   SchmRglr, 
   FreqRglr['FreqRglr'], 
+  ValuFill['ValuFill'],
   MethRglr['MethRglr'], 
   WndwRglr['WndwRglr'], 
   IdxWndw['IdxWndw'],
