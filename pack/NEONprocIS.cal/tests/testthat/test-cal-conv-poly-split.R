@@ -72,7 +72,6 @@ test_that("Unit test of def-cal-conv-poly-split.R", {
    
    infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
    
-   
    vector_cval_M_H <- NEONprocIS.cal::def.cal.conv.poly.split (data = data,
                                                         infoCal = infoCal,
                                                         varConv = base::names(data)[1],
@@ -80,10 +79,11 @@ test_that("Unit test of def-cal-conv-poly-split.R", {
                                                         log = NULL)
    
    expect_true (is.vector(vector_cval_M_H))
-   
+   expect_true (all((data-vector_cval_M_H) > 0.0))
+
    # Happy path 2 infoCal is not passed in
    
-   vector_cval_M_H <- NEONprocIS.cal::def.cal.conv.poly.split (data = data.frame(data=base::numeric(0)), log = NULL)
+   vector_cval_M_H <- NEONprocIS.cal::def.cal.conv.poly.split (data = data, log = NULL)
    
    expect_true (is.vector(vector_cval_M_H))
    
