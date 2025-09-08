@@ -215,7 +215,7 @@ wrap.subs.leveltroll400.files <- function(FileIn,
     Asset <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Device Name"][1]
     #log$debug(base::paste0('metadata: ',logName,'_',Troll_SN,'_',Asset))
     if(length(Asset)<1 || Asset == " " || nchar(Asset) == 0){
-      log$error(base::paste0('File Info: No asset specified in ', FileIn))
+      log$error(base::paste0('File Info: No Asset specified in ', FileIn))
       stop()
     }
     #define Site
@@ -393,7 +393,7 @@ wrap.subs.leveltroll400.files <- function(FileIn,
           #write out flags
           DirOutFlags <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',Asset,'/flags/')
           base::dir.create(DirOutFlags,recursive=TRUE)
-          csv_name_flags <-paste0(sensor,'_',asset,'_',format(timeBgn,format = "%Y-%m-%d"),'_logFlags')
+          csv_name_flags <-paste0(sensor,'_',Asset,'_',year,'-',month,'-',day,'_logFlags')
           
           rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
                                                             NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),

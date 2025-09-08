@@ -42,7 +42,7 @@
 #' @examples
 #' Stepping through the code in Rstudio 
 #' setwd('/home/NEON/kcawley/NEON-IS-data-processing/flow/flow.leveltroll400.files')
-#' Sys.setenv(DIR_IN='/home/NEON/kcawley/pfs/troll_logjam_load_files/leveltroll400')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll400_logjam_load_files/leveltroll400')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
