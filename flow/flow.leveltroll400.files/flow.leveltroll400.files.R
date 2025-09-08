@@ -24,7 +24,11 @@
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
 #' leveltroll500 (does not output conductivity) in your schema.
 #' 
-#'
+#' 5. "FileSchmFlags=value" (optional), where values is the full path to the avro schema for the output flags 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #' 
@@ -47,6 +51,7 @@
 
 # changelog and author contributions / copyrights
 #   Kaelin Cawley (2024-12-06) original creation
+#   Nora Catolico (2025-09-08) separate out flagging file
 # 
 ##############################################################################################
 options(digits.secs = 3)
@@ -77,7 +82,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,
                                       NameParaReqd = c("DirIn", "DirOut","DirErr"),
-                                      NameParaOptn = c("FileSchmData"),
+                                      NameParaOptn = c("FileSchmData","FileSchmFlags"),
                                       log = log)
 
 # Echo arguments
@@ -85,6 +90,7 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
+log$debug(base::paste0('Schema for output flags: ', Para$FileSchmFlags))
 
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
@@ -92,6 +98,11 @@ if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
   SchmDataOut <- NULL
 } else {
   SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
+}
+if(base::is.null(Para$FileSchmFlags) || Para$FileSchmFlags == 'NA'){
+  SchmFlagsOut <- NULL
+} else {
+  SchmFlagsOut <- base::paste0(base::readLines(Para$FileSchmFlags),collapse='')
 }
 
 # Find all the input leveltroll400 paths (datums). We will process each one.
@@ -116,6 +127,7 @@ foreach::foreach(idxFileIn = fileData) %dopar% {
         FileIn=idxFileIn,
         DirOut=Para$DirOut,
         SchmDataOut=SchmDataOut,
+        SchmFlagsOut=SchmFlagsOut,
         log=log
       ),
       error = function(err) {

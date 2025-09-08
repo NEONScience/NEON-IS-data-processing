@@ -17,6 +17,11 @@
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
 #' 
+#' @param SchmFlagsOut (optional), A json-formatted character string containing the schema for the output flags 
+#' file. If this input is not provided, the output schema for the data will be the same as the input flags
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA.
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
@@ -35,15 +40,18 @@
 #' wrap.subs.leveltroll400.logfiles <- function(FileIn = "~/pfs/logjam_load_files/5886/b6a5483d7675e2f5294cbb0b22021694.csv",
 #'                               DirOut="~/pfs/out",
 #'                               SchmDataOut=NULL,
+#'                               SchmFlagsOut=NULL,
 #'                               log=log)
 #'                               
 #' @changelog
 #   Kaelin Cawley (2024-12-06) original creation
+#   Nora Catolico (2025-09-08) separate out flagging file
 #' 
 ##############################################################################################
 wrap.subs.leveltroll400.files <- function(FileIn,
                              DirOut,
                              SchmDataOut=NULL,
+                             SchmFlagsOut=NULL,
                              log=NULL
 ){
   
@@ -364,18 +372,15 @@ wrap.subs.leveltroll400.files <- function(FileIn,
           year <- substr(out_file$day[1],1,4)
           month <- substr(out_file$day[1],6,7)
           day <- substr(out_file$day[1],9,10)
-          out_file <- out_file[,c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag')]
-          # if(sensor=='aquatroll200'){
-          #   out_file <- out_file[,c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag')]
-          # }else if(sensor=='leveltroll500'){
-          #   out_file <- out_file[,c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag')]
-          # }
+          dataOut <- out_file[,c('source_id','readout_time','pressure','temperature')]
+          flagsOut <- out_file[,c('source_id','readout_time','logFlag','logDateErrorFlag')]
+          
           #create output directory
           DirOutLogFile <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',Asset,'/data/')
           base::dir.create(DirOutLogFile,recursive=TRUE)
           csv_name <-paste0(sensor,'_',Asset,'_',year,'-',month,'-',day,'_log')
           
-          rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file,
+          rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
                                                        NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),
                                                        Schm = SchmDataOut),silent=TRUE)
           if(class(rptOut)[1] == 'try-error'){
@@ -384,6 +389,22 @@ wrap.subs.leveltroll400.files <- function(FileIn,
           } else {
             log$info(base::paste0('Data written successfully in ', base::paste0(DirOutLogFile,csv_name,".parquet")))
           }
+          
+          #write out flags
+          DirOutFlags <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',Asset,'/flags/')
+          base::dir.create(DirOutFlags,recursive=TRUE)
+          csv_name_flags <-paste0(sensor,'_',asset,'_',format(timeBgn,format = "%Y-%m-%d"),'_logFlags')
+          
+          rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
+                                                            NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),
+                                                            Schm = SchmFlagsOut),silent=TRUE)
+          if(class(rptOutFlags)[1] == 'try-error'){
+            log$error(base::paste0('Cannot write Flags to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+            stop()
+          } else {
+            log$info(base::paste0('Flags written successfully in ', base::paste0(DirOutFlags,'/',csv_name_flags,".parquet")))
+          }
+          
         }#end of days loop
       }else{
         log$error(base::paste0('No days can be written out for ', FileIn))
