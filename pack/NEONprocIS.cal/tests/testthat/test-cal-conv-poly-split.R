@@ -73,22 +73,25 @@ test_that("Unit test of def-cal-conv-poly-split.R", {
    infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
    
    
-   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.split (data = data.frame(data=base::numeric(0)),
+   vector_cval_M_H <- NEONprocIS.cal::def.cal.conv.poly.split (data = data,
                                                         infoCal = infoCal,
+                                                        varConv = base::names(data)[1],
+                                                        calSlct=NULL,
                                                         log = NULL)
    
-   expect_true (is.vector(vector_cvalM))
+   expect_true (is.vector(vector_cval_M_H))
    
    # Happy path 2 infoCal is not passed in
    
-   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.split (data = data.frame(data=base::numeric(0)), log = NULL)
+   vector_cval_M_H <- NEONprocIS.cal::def.cal.conv.poly.split (data = data.frame(data=base::numeric(0)), log = NULL)
    
-   expect_true (is.vector(vector_cvalM))
+   expect_true (is.vector(vector_cval_M_H))
    
    # Sad path 1 - data is not an array
    data <- list (data)
+   vector_cval_M_H <- try(NEONprocIS.cal::def.cal.conv.poly.b (data = data,
+                                                            infoCal = infoCal,
+                                                            log = NULL), silent = TRUE)
    
-   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.split (data = data.frame(data=base::numeric(0)),infoCal = infoCal,log = NULL)
-   
-   expect_true (is.vector(vector_cvalM))
+   testthat::expect_true((class(vector_cval_M_H)[1] == "try-error"))
 })
