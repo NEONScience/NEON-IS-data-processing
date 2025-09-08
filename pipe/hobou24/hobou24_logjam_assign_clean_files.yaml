@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: logjam_clean_hobou24_files
+  name: hobou24_logjam_assign_clean_files
 transform:
   cmd: ["/bin/bash"]
   stdin:
@@ -20,7 +20,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: logjam_load_files
+      repo: hobou24_logjam_load_files
       glob: /*
 parallelism_spec:
   constant: 3
