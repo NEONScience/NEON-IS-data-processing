@@ -43,6 +43,7 @@
 #' \code{FreqRglr} Numeric value of the regularization frequency in Hz. May be NA, in which case the location file
 #' mentioned in the DirIn parameter will be used to find the regularization frequency ("Data Rate" property). 
 #' Note that a non-NA value for FreqRglr supercedes the data rate in the location file. \cr
+#' \code{ValuFill} Numeric value (including NA) of the value to fill missing values with. \cr
 #' \code{MethRglr} Character string indicating the regularization method (per the choices in
 #' eddy4R.base::def.rglr for input parameter MethRglr)\cr
 #' \code{WndwRglr} Character string indicating the windowing method (per the choices in
@@ -81,6 +82,7 @@
 #' ParaRglr <- data.frame(DirRglr=c('data','flags'),
 #'                        SchmRglr = c(NA,NA),
 #'                        FreqRglr = c(0.5,0.5),
+#'                        ValuFill = c(0,NA),
 #'                        MethRglr = c('CybiEc','CybiEc'),
 #'                        WndwRglr = c('Trlg','Trlg'),
 #'                        IdxWndw = c('IdxWndwMin','IdxWndwMin'),
@@ -287,6 +289,7 @@ wrap.rglr <- function(DirIn,
             BgnRglr = BgnRglr,
             EndRglr = EndRglr,
             FreqRglr = FreqRglrIdx,
+            ValuFill = ParaRglr$ValuFill[idxRowParaRglr],
             MethRglr = ParaRglr$MethRglr[idxRowParaRglr],
             WndwRglr = ParaRglr$WndwRglr[idxRowParaRglr],
             IdxWndw = ParaRglr$IdxWndw[idxRowParaRglr],
