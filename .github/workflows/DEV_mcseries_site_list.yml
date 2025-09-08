@@ -2,7 +2,7 @@ name: DEV-mcseries-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/mcseries/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface

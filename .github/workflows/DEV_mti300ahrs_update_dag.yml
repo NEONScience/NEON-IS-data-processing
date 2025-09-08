@@ -2,7 +2,7 @@ name: DEV-mti300ahrs-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/mti300ahrs/*.yaml'
       - 'pipe/mti300ahrs/pipe_list_mti300ahrs_development.txt'
