@@ -136,6 +136,24 @@
       "Hash": "720badd4eb76a481fb97d65e08dc67f0",
       "Requirements": []
     },
+    "arrow": {
+      "Package": "arrow",
+      "Version": "19.0.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "96d6db49e9dd0dec85a6a0844dd0f5fe",
+      "Requirements": [
+        "R6",
+        "assertthat",
+        "bit64",
+        "cpp11",
+        "glue",
+        "purrr",
+        "rlang",
+        "tidyselect",
+        "vctrs"
+      ]
+    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.2.1",
@@ -146,6 +164,14 @@
         "sys"
       ]
     },
+    "assertthat": {
+      "Package": "assertthat",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "50c838a310445e954bc13f26f26a6ecf",
+      "Requirements": []
+    },
     "bit": {
       "Package": "bit",
       "Version": "4.6.0",
@@ -153,6 +179,16 @@
       "Repository": "CRAN",
       "Hash": "ebe86ffd194564abdc895d87742d5a29",
       "Requirements": []
+    },
+    "bit64": {
+      "Package": "bit64",
+      "Version": "4.6.0-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4f572fbc586294afff277db583b9060f",
+      "Requirements": [
+        "bit"
+      ]
     },
     "boot": {
       "Package": "boot",
@@ -204,10 +240,10 @@
     },
     "data.table": {
       "Package": "data.table",
-      "Version": "1.17.2",
+      "Version": "1.17.8",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "635dab9a2cf94e651ee57b31373e5677",
+      "Hash": "1d991cd6160fa7b1fdbd3689034cbd15",
       "Requirements": []
     },
     "deming": {
@@ -275,6 +311,35 @@
         "tibble",
         "tidyselect",
         "vctrs"
+      ]
+    },
+    "eddy4R.base": {
+      "Package": "eddy4R.base",
+      "Version": "0.3.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "eddy4R",
+      "RemoteUsername": "NEONScience",
+      "RemoteRef": "deve",
+      "RemoteSha": "ca559f517a601b83d64e8f7e906fb05f30c30d39",
+      "RemoteSubdir": "pack/eddy4R.base",
+      "Hash": "17ab00926ef72b92db162946fcbebc8e",
+      "Requirements": [
+        "BiocManager",
+        "DataCombine",
+        "EMD",
+        "R6P",
+        "deming",
+        "downloader",
+        "ff",
+        "ffbase",
+        "neonUtilities",
+        "polynom",
+        "rhdf5",
+        "robfilter",
+        "signal",
+        "zoo"
       ]
     },
     "fansi": {
@@ -436,6 +501,17 @@
       "Hash": "8954069286b4b2b0d023d1b288dce978",
       "Requirements": []
     },
+    "jose": {
+      "Package": "jose",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cf5ae308441d505b8c7e4b08e0e510aa",
+      "Requirements": [
+        "jsonlite",
+        "openssl"
+      ]
+    },
     "jsonlite": {
       "Package": "jsonlite",
       "Version": "1.8.7",
@@ -519,19 +595,22 @@
     },
     "neonUtilities": {
       "Package": "neonUtilities",
-      "Version": "2.2.0",
+      "Version": "3.0.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "c128a2d6ed68601b0066062ba4ea67e4",
+      "Hash": "6484d78722f2cac5ca7ecf0c392a1c70",
       "Requirements": [
         "R.utils",
+        "arrow",
         "curl",
         "data.table",
         "downloader",
+        "dplyr",
         "httr",
+        "jose",
         "jsonlite",
         "pbapply",
-        "stringr",
+        "rlang",
         "tidyr"
       ]
     },
