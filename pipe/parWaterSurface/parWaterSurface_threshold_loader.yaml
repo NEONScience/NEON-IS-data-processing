@@ -25,36 +25,16 @@ input:
     repo: pqs1_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
-resource_requests:
-  memory: 120M
-  cpu: 0.05
 autoscaling: true
+resource_requests:
+  memory: 50M
+  cpu: 0.1
+resource_limits:
+  memory: 300M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 600M
+  cpu: 0.2
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]
-
+    cloud.google.com/compute-class: pach-pipeline-class
