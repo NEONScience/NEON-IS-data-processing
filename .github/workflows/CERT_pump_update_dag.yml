@@ -2,7 +2,7 @@ name: CERT-pump-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/pump/*.yaml'
       - 'pipe/pump/pipe_list_pump.txt'
