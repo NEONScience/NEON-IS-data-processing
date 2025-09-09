@@ -2,7 +2,7 @@ name: CERT-csat3b-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/csat3b/*.yaml'
       - 'pipe/csat3b/pipe_list_csat3b.txt'

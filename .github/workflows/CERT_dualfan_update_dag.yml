@@ -2,7 +2,7 @@ name: CERT-dualfan-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/dualfan/*.yaml'
       - 'pipe/dualfan/pipe_list_dualfan.txt'

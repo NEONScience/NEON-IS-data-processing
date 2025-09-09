@@ -2,7 +2,7 @@ name: CERT-li850-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/li850/*.yaml'
       - 'pipe/li850/pipe_list_li850.txt'
