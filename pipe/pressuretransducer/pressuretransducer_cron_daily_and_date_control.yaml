@@ -22,8 +22,7 @@ input:
   # This cron should be the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "@never"
-      #spec: "30 0 * * *" # Run at 00:30 GMT
+      spec: "30 0 * * *" # Run at 00:30 GMT
       overwrite: true
   - pfs:
       name: SITE_FILE
