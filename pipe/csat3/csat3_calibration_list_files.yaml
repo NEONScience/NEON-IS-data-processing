@@ -15,10 +15,16 @@ input:
     repo: csat3_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
+autoscaling: true
 resource_requests:
   memory: 64M
   cpu: 0.5
-autoscaling: true
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
