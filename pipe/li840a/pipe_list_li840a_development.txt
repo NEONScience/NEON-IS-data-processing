@@ -1,3 +1,10 @@
 li840a_cron_daily_and_date_control.yaml
 li840a_data_source_kafka.yaml
 li840a_data_source_trino.yaml
+li840a_calibration_list_files.yaml
+li840a_calibration_loader.yaml
+li840a_calibration_assignment.yaml
+li840a_calibration_group_and_validate.yaml
+li840a_location_asset.yaml
+li840a_location_asset_assignment.yaml
+li840a_location_group_and_restructure.yaml
