@@ -57,21 +57,24 @@ context("\n                       Unit test of def-cal-conv-poly-split.R\n")
 test_that("Unit test of def-cal-conv-poly-split.R", {
    # The input json has Name, Value, and .attrs
    
-   testDir = "testdata/"
-   testFileCal = "calibration_CVALM.xml"
-   testFileCalPath <- paste0(testDir, testFileCal)
-   
-   testData = "L0_data.csv"
-   testDataPath <- paste0(testDir, testData)
-   
-   data0 <- read.csv(testDataPath, sep = ",", header = TRUE)
-   
-   data <- data.frame(data0$resistance)
+   # testDir = "testdata/"
+   # testFileCal = "calibration_CVALM.xml"
+   # testFileCalPath <- paste0(testDir, testFileCal)
+   # 
+   # infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
    
    # Happy path 1
    
-   infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
+   # Create calibration coefficients
+   Name = c("CVALH2", "CVALH1", "CVALH0", "CVALM2", "CVALM1", "CVALM0")
+   Value = c("0.000007067061488", "1.021338038908240", "3.831569019253189", "0.000080828104414", "1.008251095617125", "-0.061550466016713")
+   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
+   infoCal <- list(cal = cal)
    
+   # Create data
+   data=c(101.0,102.0,93.0,94.0,95.0,106.0)
+   data = data.frame(data=data)
+ 
    vector_cval_M_H <- NEONprocIS.cal::def.cal.conv.poly.split (data = data,
                                                         infoCal = infoCal,
                                                         varConv = base::names(data)[1],
@@ -79,15 +82,15 @@ test_that("Unit test of def-cal-conv-poly-split.R", {
                                                         log = NULL)
    
    expect_true (is.vector(vector_cval_M_H))
-   expect_true (all((data-vector_cval_M_H) > 0.0))
+   expect_true (vector_cval_M_H[c(1, 2, 6)] > 100.0 && vector_cval_M_H[3:5] < 100.0) 
 
-   # Happy path 2 infoCal is not passed in
+   # Sad path 1 infoCal is not passed in, defaulted to NULL. Returns NA
    
    vector_cval_M_H <- NEONprocIS.cal::def.cal.conv.poly.split (data = data, log = NULL)
    
-   expect_true (is.vector(vector_cval_M_H))
-   
-   # Sad path 1 - data is not an array
+   expect_true (all(is.na(vector_cval_M_H))) 
+
+   # Sad path 2 - data is not an array
    data <- list (data)
    vector_cval_M_H <- try(NEONprocIS.cal::def.cal.conv.poly.b (data = data,
                                                             infoCal = infoCal,
