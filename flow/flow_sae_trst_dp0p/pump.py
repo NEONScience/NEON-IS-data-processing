@@ -18,7 +18,8 @@ class Pump(L0toL0p):
 
 def main() -> None:
 
-    pump = Pump()
+    context_dp_map = {'storage': 'pumpStor', 'turbulent': 'pumpTurb'}
+    pump = Pump(context_dp_map=context_dp_map)
     pump.l0tol0p()
     log.debug("done.")
 

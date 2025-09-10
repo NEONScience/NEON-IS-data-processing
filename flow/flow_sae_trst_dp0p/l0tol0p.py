@@ -26,6 +26,10 @@ class L0toL0p:
                  calibrated_qf_list: Optional[List] = None, target_qf_cal_list: Optional[List] = None):
 
         """
+        :param context_dp_map: map between context and data product name,
+                use this map when multiple data products derived from the same sensor type,
+                e.g. mcseries -> mfcSampTurb, mfcValiTurb, ...
+                do not set new_source_type_name when defining this map
         :param cal_term_map: map for calibrated variables between field names from avro schema and term names from ATBD
         :param calibrated_qf_list: list of quality flag names that were calibrated on site
         :param target_qf_cal_list: list of quality flag names that will take flags from calibrated_qf_list
@@ -35,9 +39,9 @@ class L0toL0p:
         file_dirs: The directories to files need l0 to l0p transformation.
         relative_path_index: Starting index of the input path to include in the output path.
         new_source_type_name(optional): Replace source_type with the new name in the output path,
-                may happen when multiple data products derived from same sensor type,
-                e.g. mcseries -> mfcSampTurb
-        When new_source_type_name is defined, relative_path_index is the index after that of replaced source type
+                define it when using a product name other than sensor type name
+                e.g. li7200 -> irga
+                do not set it when using context_dp_map
         location_link_type(optional): Link or copy location directory to output,
                 when defined, must be either "SYMLINK" or "COPY"
                 if not defined, the location directory will not be shown in output repo
