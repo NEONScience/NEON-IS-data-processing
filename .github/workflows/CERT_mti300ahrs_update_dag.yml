@@ -2,7 +2,7 @@ name: CERT-mti300ahrs-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/mti300ahrs/*.yaml'
       - 'pipe/mti300ahrs/pipe_list_mti300ahrs.txt'

@@ -2,7 +2,7 @@ name: DEV-mcseries-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/mcseries/*.yaml'
       - 'pipe/mcseries/pipe_list_mcseries_development.txt'

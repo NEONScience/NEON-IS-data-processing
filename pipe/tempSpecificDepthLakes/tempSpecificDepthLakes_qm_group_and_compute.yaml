@@ -28,37 +28,37 @@ transform:
       "WndwAgr=030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
-      "GrpQfAlph1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF" \
+      "GrpQfAlph1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempSpikeQF|depth0WaterTempSuspectCalQF" \
       "GrpQfBeta1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF" \
       "GrpQfBetaIgnr1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF" \
-      "GrpQfAlph2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF" \
+      "GrpQfAlph2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempSpikeQF|depth1WaterTempSuspectCalQF" \
       "GrpQfBeta2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF" \
       "GrpQfBetaIgnr2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF" \
-      "GrpQfAlph3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF" \
+      "GrpQfAlph3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempSpikeQF|depth2WaterTempSuspectCalQF" \
       "GrpQfBeta3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF" \
       "GrpQfBetaIgnr3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF" \
-      "GrpQfAlph4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF" \
+      "GrpQfAlph4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempSpikeQF|depth3WaterTempSuspectCalQF" \
       "GrpQfBeta4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF" \
       "GrpQfBetaIgnr4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF" \
-      "GrpQfAlph5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF" \
+      "GrpQfAlph5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempSpikeQF|depth4WaterTempSuspectCalQF" \
       "GrpQfBeta5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF" \
       "GrpQfBetaIgnr5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF" \
-      "GrpQfAlph6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF" \
+      "GrpQfAlph6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempSpikeQF|depth5WaterTempSuspectCalQF" \
       "GrpQfBeta6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF" \
       "GrpQfBetaIgnr6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF" \
-      "GrpQfAlph7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF" \
+      "GrpQfAlph7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempSpikeQF|depth6WaterTempSuspectCalQF" \
       "GrpQfBeta7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF" \
       "GrpQfBetaIgnr7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF" \
-      "GrpQfAlph8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF" \
+      "GrpQfAlph8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempSpikeQF|depth7WaterTempSuspectCalQF" \
       "GrpQfBeta8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF" \
       "GrpQfBetaIgnr8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF" \
-      "GrpQfAlph9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF" \
+      "GrpQfAlph9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempSpikeQF|depth8WaterTempSuspectCalQF" \
       "GrpQfBeta9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF" \
       "GrpQfBetaIgnr9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF" \
-      "GrpQfAlph10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF" \
+      "GrpQfAlph10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempSpikeQF|depth9WaterTempSuspectCalQF" \
       "GrpQfBeta10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF" \
       "GrpQfBetaIgnr10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF" \
-      "GrpQfAlph11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF" \
+      "GrpQfAlph11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempSpikeQF|depth10WaterTempSuspectCalQF" \
       "GrpQfBeta11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF" \
       "GrpQfBetaIgnr11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF" 
       
@@ -71,38 +71,38 @@ transform:
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
       FileSchmQm=$FILE_SCHEMA_QM_INST \
-      "GrpQfAlph1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempSpikeQF" \
-      "GrpQfBeta1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempSpikeQF" \
+      "GrpQfAlph1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempSpikeQF|depth0WaterTempSuspectCalQF" \
+      "GrpQfBeta1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF" \
       "GrpQfBetaIgnr1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF" \
-      "GrpQfAlph2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempSpikeQF" \
-      "GrpQfBeta2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempSpikeQF" \
+      "GrpQfAlph2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempSpikeQF|depth1WaterTempSuspectCalQF" \
+      "GrpQfBeta2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF" \
       "GrpQfBetaIgnr2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF" \
-      "GrpQfAlph3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempSpikeQF" \
-      "GrpQfBeta3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempSpikeQF" \
+      "GrpQfAlph3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempSpikeQF|depth2WaterTempSuspectCalQF" \
+      "GrpQfBeta3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF" \
       "GrpQfBetaIgnr3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF" \
-      "GrpQfAlph4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempSpikeQF" \
-      "GrpQfBeta4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempSpikeQF" \
+      "GrpQfAlph4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempSpikeQF|depth3WaterTempSuspectCalQF" \
+      "GrpQfBeta4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF" \
       "GrpQfBetaIgnr4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF" \
-      "GrpQfAlph5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempSpikeQF" \
-      "GrpQfBeta5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempSpikeQF" \
+      "GrpQfAlph5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempSpikeQF|depth4WaterTempSuspectCalQF" \
+      "GrpQfBeta5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF" \
       "GrpQfBetaIgnr5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF" \
-      "GrpQfAlph6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempSpikeQF" \
-      "GrpQfBeta6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempSpikeQF" \
+      "GrpQfAlph6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempSpikeQF|depth5WaterTempSuspectCalQF" \
+      "GrpQfBeta6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF" \
       "GrpQfBetaIgnr6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF" \
-      "GrpQfAlph7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempSpikeQF" \
-      "GrpQfBeta7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempSpikeQF" \
+      "GrpQfAlph7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempSpikeQF|depth6WaterTempSuspectCalQF" \
+      "GrpQfBeta7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF" \
       "GrpQfBetaIgnr7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF" \
-      "GrpQfAlph8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempSpikeQF" \
-      "GrpQfBeta8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempSpikeQF" \
+      "GrpQfAlph8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempSpikeQF|depth7WaterTempSuspectCalQF" \
+      "GrpQfBeta8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF" \
       "GrpQfBetaIgnr8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF" \
-      "GrpQfAlph9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempSpikeQF" \
-      "GrpQfBeta9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempSpikeQF" \
+      "GrpQfAlph9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempSpikeQF|depth8WaterTempSuspectCalQF" \
+      "GrpQfBeta9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF" \
       "GrpQfBetaIgnr9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF" \
-      "GrpQfAlph10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempSpikeQF" \
-      "GrpQfBeta10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempSpikeQF" \
+      "GrpQfAlph10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempSpikeQF|depth9WaterTempSuspectCalQF" \
+      "GrpQfBeta10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF" \
       "GrpQfBetaIgnr10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF" \
-      "GrpQfAlph11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempSpikeQF" \
-      "GrpQfBeta11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempSpikeQF" \
+      "GrpQfAlph11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempSpikeQF|depth10WaterTempSuspectCalQF" \
+      "GrpQfBeta11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF" \
       "GrpQfBetaIgnr11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF" \
       "QfForc1=depth0WaterTempNullQF:1:depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempValidCalQF|depth0WaterTempSpikeQF:-1" \
       "QfForc2=depth1WaterTempNullQF:1:depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempValidCalQF|depth1WaterTempSpikeQF:-1" \
@@ -137,7 +137,7 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [6]
     OUT_PATH: /tmp/pfs/filter_joined
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     PARALLELIZATION_INTERNAL: '1' # Option for quality metrics module
@@ -180,18 +180,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

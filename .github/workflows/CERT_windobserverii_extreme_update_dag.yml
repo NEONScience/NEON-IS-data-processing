@@ -2,7 +2,7 @@ name: CERT-windobserverii_extreme-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/windobserverii_extreme/*.yaml'
       - 'pipe/windobserverii_extreme/pipe_list_windobserverii_extreme.txt'

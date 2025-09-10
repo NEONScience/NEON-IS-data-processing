@@ -60,6 +60,8 @@
 # changelog and author contributions / copyrights
 #   Guy Litt (2021-04-12)
 #     original creation
+#   Nora Catolico (2025-08)
+#     updates for new structure
 
 ##############################################################################################
 wrap.file.comb.tsdl.splt <- function(filePths,
@@ -86,18 +88,15 @@ wrap.file.comb.tsdl.splt <- function(filePths,
   #  ====================== Load Mapping schemas ===========================  #
   #   =====================================================================   #
   locFilePths <- filePths[base::which(base::basename(base::dirname(filePths)) == locDir)]
-  
-  # Turns out it doesn't matter which location file is used - both have same format under $features
-  if(base::length(locFilePths) > 1){
-    log$info(base::paste0("Multiple location files exist. Using the first location file, ", locFilePths[1]))
-  }
- 
-  locFile <- locFilePths[1]
-  
-  if(base::length(locFilePths) ==0){
-    log$error(base::paste0("Could not find a location file in provided files: ",
-                           base::paste(filePths, collapse=", ")))
-    stop()
+  if(any(grepl("_locations",locFilePths))){
+    locFile <- locFilePths[grepl("_locations",locFilePths)]
+    log$debug(base::paste0("location datum(s) found, reading in: ",locFile))
+    #first get location history z offset
+    LocationHist <- NEONprocIS.base::def.loc.geo.hist(locFile, log = NULL)
+  }else{
+    locFile <- locFilePths[1]
+    log$debug(base::paste0("Not asset location history found, reading in: ",locFile))
+    LocationHist <- NULL
   }
   
   
@@ -369,6 +368,33 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     
     for(nameLoc in base::names(dataTime)){
       data <- dataTime[[nameLoc]]
+      
+      #add in z offset
+      if(length(data$startDateTime)>0){
+        data_all<-NULL
+        if(!is.null(LocationHist) & length(LocationHist$CFGLOC)>0){
+          for(i in 1:length(LocationHist$CFGLOC)){
+            startDate<-LocationHist$CFGLOC[[i]]$start_date
+            endDate<-LocationHist$CFGLOC[[i]]$end_date
+            data_subset<-data[data$startDateTime>=startDate & data$startDateTime<endDate,]
+            if(length(data_subset$startDateTime)>0){
+              if(is.null(LocationHist$CFGLOC[[i]]$z_offset)|is.na(LocationHist$CFGLOC[[i]]$z_offset)){
+                #do nothing
+              }else{
+                data_subset$thermistorDepth <- data_subset$thermistorDepth - LocationHist$CFGLOC[[i]]$z_offset
+              }
+            }
+            if(i==1){
+              data_all<-data_subset
+            }else{
+              data_all<-rbind(data_all,data_subset)
+            }
+          }
+          data<-data_all
+        }else{
+          log$debug(base::paste0('No location history incorporated into files.'))
+        }
+      }
       
       #split 
       dirRepoParts <- strsplit(dirRepo, "/")[[1]]
