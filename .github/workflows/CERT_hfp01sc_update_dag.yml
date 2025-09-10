@@ -2,7 +2,7 @@ name: CERT-hfp01sc-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/hfp01sc/*.yaml'
       - 'pipe/hfp01sc/pipe_list_hfp01sc.txt'
