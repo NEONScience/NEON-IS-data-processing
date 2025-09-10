@@ -1,6 +1,7 @@
 cmp22_cron_daily_and_date_control.yaml
 cmp22_data_source_kafka.yaml
-cmp22_data_source_trino.yaml
+#cmp22_data_source_trino.yaml
+cmp22_data_source_gcs.yaml
 cmp22_calibration_list_files.yaml
 cmp22_calibration_loader.yaml
 cmp22_location_asset.yaml
