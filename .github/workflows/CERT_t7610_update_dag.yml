@@ -2,7 +2,7 @@ name: CERT-t7610-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/t7610/*.yaml'
       - 'pipe/t7610/pipe_list_t7610.txt'

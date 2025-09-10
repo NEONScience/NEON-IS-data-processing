@@ -2,7 +2,7 @@ name: DEV-si111-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/si111/*.yaml'
       - 'pipe/si111/pipe_list_si111_development.txt'

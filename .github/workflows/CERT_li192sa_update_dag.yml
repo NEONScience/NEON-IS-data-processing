@@ -2,7 +2,7 @@ name: CERT-li192sa-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/li192sa/*.yaml'
       - 'pipe/li192sa/pipe_list_li192sa.txt'

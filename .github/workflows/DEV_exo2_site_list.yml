@@ -2,7 +2,7 @@ name: DEV-exo2-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/exo2/site-list.json'
       - 'pipe/exo2/site-list-buoy.json'
