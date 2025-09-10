@@ -84,7 +84,7 @@ test_that("Unit test of def-cal-conv-poly-m.R", {
    vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.m (data = data, log = NULL)
    
    expect_true (is.vector(vector_cvalM))
-   expect_true (all(is.na(vector_cval_M_H))) 
+   expect_true (all(is.na(vector_cvalM))) 
    
    
    # Sad path 1 - data is not an array.  Error out due to "Input is not a data frame."
