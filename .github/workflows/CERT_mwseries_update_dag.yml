@@ -2,7 +2,7 @@ name: CERT-mwseries-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/mwseries/*.yaml'
       - 'pipe/mwseries/pipe_list_mwseries.txt'

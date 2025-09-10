@@ -2,7 +2,7 @@ name: DEV-gascylinder-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/gascylinder/*.yaml'
       - 'pipe/gascylinder/pipe_list_gascylinder.txt'
