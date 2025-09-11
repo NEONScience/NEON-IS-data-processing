@@ -2,7 +2,7 @@ name: CERT-mcseries-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/mcseries/*.yaml'
       - 'pipe/mcseries/pipe_list_mcseries.txt'

@@ -2,7 +2,7 @@ name: DEV-rmyoung-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/rmyoung/*.yaml'
       - 'pipe/rmyoung/pipe_list_rmyoung_development.txt'
