@@ -29,7 +29,7 @@ class L0toL0p:
         :param context_dp_map: map between context and data product name,
                 use this map when multiple data products derived from the same sensor type,
                 e.g. mcseries -> mfcSampTurb, mfcValiTurb, ...
-                do not set new_source_type_name when defining this map
+                no need to set new_source_type_name when defining this map, it will be overwritten
         :param cal_term_map: map for calibrated variables between field names from avro schema and term names from ATBD
         :param calibrated_qf_list: list of quality flag names that were calibrated on site
         :param target_qf_cal_list: list of quality flag names that will take flags from calibrated_qf_list
@@ -41,7 +41,7 @@ class L0toL0p:
         new_source_type_name(optional): Replace source_type with the new name in the output path,
                 define it when using a product name other than sensor type name
                 e.g. li7200 -> irga
-                do not set it when using context_dp_map
+                no need to set this when using context_dp_map, it will be overwritten
         location_link_type(optional): Link or copy location directory to output,
                 when defined, must be either "SYMLINK" or "COPY"
                 if not defined, the location directory will not be shown in output repo
@@ -101,16 +101,16 @@ class L0toL0p:
         L0 to l0p transformation.
         """
         out_df = pd.DataFrame()
+        # for multiple data products from the same sensor type,
+        # list those files without location context defined,
+        # which have no dp assigned, e.g. pump in 00017
         hold_files = {}
         for root, directories, files in os.walk(str(self.in_path)):
             if root.endswith('location'):
                 if self.context_dp_map:
-                    # self.get_location_context(root, files)
                     self.get_dp_name(root, files)
-                    # TODO
-                    for filepath in hold_files.keys():
-                        self.read_files(filepath, hold_files[filepath], out_df)
-                if self.location_link_type:
+                if ((self.location_link_type and not self.context_dp_map) or
+                        (self.location_link_type and self.context_dp_map and self.new_source_type_name)):
                     self.link_location(root, files)
                 continue
             if not out_df.empty and directories:
@@ -122,29 +122,34 @@ class L0toL0p:
                 if self.context_dp_map and not self.new_source_type_name:
                     hold_files[root] = files
                     continue
-                self.read_files(root, files, out_df)
+                out_df = self.read_files(root, files, out_df)
         if not out_df.empty and self.out_file:
             self.write_to_parquet(self.out_file, out_df)
+        if self.context_dp_map:
+            log.debug("files without location context:")
+            log.debug(hold_files.values())
 
-    def read_files(self, filepath: str, files: List, out_df: pd.DataFrame):
+    def read_files(self, filepath: str, files: List, out_df: pd.DataFrame) -> pd.DataFrame:
         for file in files:
             if ".DS_Store" in file:
                 continue
             path = Path(filepath, file)
             if "flag" in str(path):
                 if out_df.empty:
-                    out_df = get_cal_val_flags(path, self.cal_term_map)
+                    out_df = get_cal_val_flags(str(path), self.cal_term_map)
                 else:
-                    out_df = pd.merge(out_df, get_cal_val_flags(path, self.cal_term_map), how='inner',
+                    out_df = pd.merge(out_df, get_cal_val_flags(str(path), self.cal_term_map), how='inner',
                                       left_on=['readout_time'], right_on=['readout_time'])
                 self.get_combined_qfcal(out_df)
             else:
-                self.out_file = self.create_output_path(path)
+                self.out_file = self.create_output_path(str(path))
                 if out_df.empty:
                     out_df = self.data_conversion(path)
                 else:
                     out_df = pd.merge(self.data_conversion(path), out_df, how='inner', left_on=['readout_time'],
                                       right_on=['readout_time'])
+
+        return out_df
 
     @staticmethod
     def write_to_parquet(out_file: str, out_df: pd.DataFrame) -> None:
@@ -188,13 +193,14 @@ class L0toL0p:
             data = json.load(f)
             for feature in data['features']:
                 context = feature['properties']['context']
-                return context  # ','.join(context)
+                return context
+        return []
 
     def get_dp_name(self, path: str, files: List[str]) -> None:
         loc_ctxs = self.get_location_context(path, files)
-        # TODO: all element of keys in list of loc_ctxs
         for key in self.context_dp_map.keys():
             tmp_keys = key.replace(' ', '').split(sep=',')
             if all(ctx in loc_ctxs for ctx in tmp_keys):
                 self.new_source_type_name = self.context_dp_map[key]
                 return
+        self.new_source_type_name = None

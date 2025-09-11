@@ -11,7 +11,7 @@ log = get_logger()
 class Pump(L0toL0p):
     def data_conversion(self, filename) -> pd.DataFrame:
         df = super().data_conversion(filename)
-        df['pumpVolt'] = df['dac_output'].apply(lambda x: math.nan if math.isnan(x) else x.astype('float32'))
+        df.rename(columns={'dac_output': 'pumpVolt'}, inplace=True)
         log.debug(f'{df.columns}')
         return df
 
