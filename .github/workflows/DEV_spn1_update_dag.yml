@@ -9,12 +9,12 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
-concurrency: 
+concurrency:
   group: ${{
       contains(github.workflow, 'update-dag') ||
-      contains(github.workflow, 'site-list') && 'operations-queue'
+      contains(github.workflow, 'site-list') && 'concurrency-group'
     || github.workflow
-    }}
+    }}-$((${{ github.run_number }} % 2))
   cancel-in-progress: false  # Queue them up, don't cancel
 
 jobs:
@@ -36,8 +36,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
-          
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit
+
     # Using get-changed-files-action 
       - name: Get changed files action
         id: changed-files-action

@@ -8,18 +8,40 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
-concurrency: 
+concurrency:
   group: ${{
       contains(github.workflow, 'update-dag') ||
-      contains(github.workflow, 'site-list') && 'operations-queue'
+      contains(github.workflow, 'site-list') && 'concurrency-group'
     || github.workflow
-    }}
-  cancel-in-progress: false  # Queue them up, don't cancel
+    }}-$((${{ github.run_number }} % 2))
+
+env:
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+  # Use github and google registries
+  GHCR_REGISTRY: ghcr.io
+  # GHCR_NS, i.e, NEONSciene, in lowercase
+  # GHCR_NS: ${{ github.repository_owner }}
+  GHCR_NS: ${{ vars.SHARED_WIF_REPO }}
+  GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
+  GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
+  GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
+  GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # Get just the repo name from the event, i.e., NEON-IS-data-processing, in lowercase
+  # REPO_NAME: ${{ github.event.repository.name }}
+  REPO_NAME: neon-is-data-processing
 
 jobs:
   put_files:
     runs-on: arc-neon-gke
-    #runs-on: ubuntu-latest 
+    #runs-on: ubuntu-latest
+    permissions:
+        contents: 'write'
+        security-events: write
+        packages: write
+        id-token: 'write'
+        pull-requests: 'write' 
     env:
       PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
@@ -28,9 +50,9 @@ jobs:
       IN_PATHS: 'pipe/spn1/site-list.json' # Comma-separated list (no spaces) to one or more paths or directories. Length must match OUT_PATHS. If directory, all files in directory will be placed in pachyderm at corresponding entry of OUT_PATHS. 
       OUT_PATHS: 'site-list.json' # Comma-separated list (no spaces) of corresponding path(s) to place the files(s) in Pachyderm. Must be same length as IN_PATHS. If corresponding entry in IN_PATHS is a file, specify to the file. If corresponding entry in IN_PATHS is a directory, specify to the directory. 
     steps:
-      - uses: actions/checkout@v4
-      - run: ls -la
-      
+      - name: Checkout
+        uses: actions/checkout@v4
+    
       - name: Put file
         uses: ./.github/actions/put-files
         with:
