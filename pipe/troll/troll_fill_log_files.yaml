@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: troll_fill_log_files_test
+  name: troll_fill_log_files
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-logs-group-fill:v1.1.1
   cmd:
@@ -155,28 +155,28 @@ input:
     - pfs:
         name: DATA_PATH_ARCHIVE
         repo: troll_data_source_gcs
-        glob: /(aquatroll200/2025/04/24) #aquatroll200/Y/M/D
+        glob: /(*/*/*/*) #aquatroll200/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
     - pfs:
         name: DATA_PATH_KAFKA
         repo: troll_data_source_kafka
-        glob: /(aquatroll200/2025/04/24)
+        glob: /(*/*/*/*)
         joinOn: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
         outer_join: true
     - pfs:
         name: DATA_PATH_LOG
         repo: troll_logjam_assign_clean_files
-        glob: /(aquatroll200/2025/04/24) #aquatroll200/Y/M/D
+        glob: /(*/*/*/*) #aquatroll200/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
     - pfs:
         name: DATE_CONTROL
         repo: troll_cron_daily_and_date_control
-        glob: /(aquatroll200/2025/04/24) #aquatroll200/Y/M/D
+        glob: /(*/*/*/*) #aquatroll200/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
