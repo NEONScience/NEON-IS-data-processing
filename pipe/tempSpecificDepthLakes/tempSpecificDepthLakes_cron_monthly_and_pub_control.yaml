@@ -18,7 +18,8 @@ input:
   # Choose a monthly cron date to be something sufficiently after the 1st to allow kafka lag and timeseries pad
   cron:
     name: tick
-    spec: "0 7 5 * *" # Run at 00:00 MST (07:00 GMT) on the 10th of the month 
+    spec: "@never"
+    #spec: "0 7 5 * *" # Run at 00:00 MST (07:00 GMT) on the 10th of the month 
     overwrite: true
 autoscaling: true
 resource_requests:
@@ -32,18 +33,4 @@ sidecar_resource_requests:
   cpu: 0.1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class
