@@ -28,11 +28,12 @@ transform:
     rm -r -f /tmp/pfs/padded_analyzer 
     
     # Run second module - qaqc plausibility
+    # FileSchmQf=$SCHEMA_FLAGS \
+
     Rscript ./flow.qaqc.plau.R \
       DirIn=/tmp/pfs/padded_analyzerCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      #FileSchmQf=$SCHEMA_FLAGS \
       "TermTest1=shortwaveRadiation:null|gap|range(rmv)|step(rmv)|persistence(rmv)"\
       DirSubCopy=data
 
