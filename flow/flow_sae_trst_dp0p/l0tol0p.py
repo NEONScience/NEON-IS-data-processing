@@ -38,7 +38,7 @@ class L0toL0p:
         out_path: The output path for linking.
         file_dirs: The directories to files need l0 to l0p transformation.
         relative_path_index: Starting index of the input path to include in the output path.
-        new_source_type_name(optional): Replace source_type with the new name in the output path,
+        new_source_type_name(optional): Replace source_type with the new name in output path,
                 define it when using a product name other than sensor type name
                 e.g. li7200 -> irga
                 no need to set this when using context_dp_map, it will be overwritten
@@ -98,38 +98,48 @@ class L0toL0p:
 
     def l0tol0p(self) -> None:
         """
-        L0 to l0p transformation.
+        L0 to l0p transformation. Check in_path is year/mm/dd or year/mm/dd/CFGLOC
         """
-        out_df = pd.DataFrame()
-        # for multiple data products from the same sensor type,
+        location_path = os.path.join(self.in_path, "location")
+        if os.path.exists(location_path):
+            self.process_l0_to_l0p(self.in_path)
+        else:
+            for cfg_folder in os.listdir(self.in_path):
+                cfg_path = os.path.join(self.in_path, cfg_folder)
+                if os.path.isdir(cfg_path):
+                    self.process_l0_to_l0p(cfg_path)
+
+    def process_l0_to_l0p(self, cfg_path) -> None:
+        location_path = os.path.join(cfg_path, 'location')
+        if os.path.exists(location_path):
+            if self.context_dp_map:
+                self.get_dp_name(location_path, os.listdir(location_path))
+            if ((self.location_link_type and not self.context_dp_map) or
+                (self.location_link_type and self.context_dp_map and self.new_source_type_name)):
+                    self.link_location(location_path, os.listdir(location_path))
+
+        # when getting multiple data products from the same sensor type,
         # list those files without location context defined,
         # which have no dp assigned, e.g. pump in 00017
         hold_files = {}
-        for root, directories, files in os.walk(str(self.in_path)):
-            if root.endswith('location'):
-                if self.context_dp_map:
-                    self.get_dp_name(root, files)
-                if ((self.location_link_type and not self.context_dp_map) or
-                        (self.location_link_type and self.context_dp_map and self.new_source_type_name)):
-                    self.link_location(root, files)
+        for subfolder in os.listdir(cfg_path):
+            if subfolder not in self.file_dirs:
                 continue
-            if not out_df.empty and directories:
-                if any(tmp_dir in directories for tmp_dir in self.file_dirs):
-                    self.write_to_parquet(self.out_file, out_df)
-                    out_df = pd.DataFrame()
-                    self.out_file = ''
-            if files:
-                if self.context_dp_map and not self.new_source_type_name:
-                    hold_files[root] = files
-                    continue
-                out_df = self.read_files(root, files, out_df)
-        if not out_df.empty and self.out_file:
-            self.write_to_parquet(self.out_file, out_df)
-        if self.context_dp_map:
-            log.debug("files without location context:")
-            log.debug(hold_files.values())
+            subfolder_path = os.path.join(cfg_path, subfolder)
+            if self.context_dp_map and not self.new_source_type_name:
+                hold_files[subfolder_path] = os.listdir(subfolder_path)
+                continue
+            out_df = self.read_files(subfolder_path, os.listdir(subfolder_path))
 
-    def read_files(self, filepath: str, files: List, out_df: pd.DataFrame) -> pd.DataFrame:
+            if not out_df.empty and self.out_file:
+                self.write_to_parquet(self.out_file, out_df)
+            self.out_file = ''
+
+        if self.context_dp_map and hold_files:
+            log.debug("files without location context: %s", list(hold_files.values()))
+
+    def read_files(self, filepath: str, files: List) -> pd.DataFrame:
+        out_df = pd.DataFrame()
         for file in files:
             if ".DS_Store" in file:
                 continue
@@ -148,7 +158,6 @@ class L0toL0p:
                 else:
                     out_df = pd.merge(self.data_conversion(path), out_df, how='inner', left_on=['readout_time'],
                                       right_on=['readout_time'])
-
         return out_df
 
     @staticmethod
