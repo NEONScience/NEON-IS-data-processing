@@ -97,7 +97,7 @@ test_that("testing calibration conversion", {
   cat("\n       |======= Negative test 1::                      ============|\n")
   cat("\n       |------ cal is a list but empty                             |\n\n")
   #
-  calibrated <- try (NEONprocIS.cal::def.cal.conv.poly(data = data.frame(data=base::numeric(0)), infoCal = cal), silent = TRUE)
+  calibrated <- try (NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = cal), silent = TRUE)
   
   testthat::expect_true((class(calibrated)[1] == "try-error"))
   
