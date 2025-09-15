@@ -21,7 +21,7 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: hobou24_logjam_cron_monthly_and_pub_control_tick
+    repo: hobou24_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 autoscaling: true

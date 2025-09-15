@@ -27,8 +27,7 @@ input:
       glob: /leveltroll400/*
   - pfs:
       name: FILE_YEAR
-      #repo: leveltroll400_logjam_cron_monthly_and_pub_control
-      repo: leveltroll400_site_list #for testing. change this later.
+      repo: leveltroll400_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
   constant: 5

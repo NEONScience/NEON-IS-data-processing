@@ -27,8 +27,7 @@ input:
       glob: /hobou24/*
   - pfs:
       name: FILE_YEAR
-      #repo: hobou24_logjam_cron_monthly_and_pub_control
-      repo: hobou24_site_list #for testing. change this later.
+      repo: hobou24_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
   constant: 5
