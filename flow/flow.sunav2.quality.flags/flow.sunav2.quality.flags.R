@@ -108,7 +108,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
     withCallingHandlers(
       wrap.sunav2.quality.flags(
         DirIn=idxFileIn,
-        DirOutFlags=Para$DirOut,
+        DirOut=Para$DirOut,
         SchmFlagsOut=FileSchmQf,
         log=log
       ),

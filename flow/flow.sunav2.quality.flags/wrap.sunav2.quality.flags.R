@@ -43,7 +43,7 @@
 #' 
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
-                                      DirOutFlags=NULL,
+                                      DirOut,
                                       SchmFlagsOut=NULL,
                                       log=NULL
 ){
@@ -53,8 +53,10 @@ wrap.sunav2.quality.flags <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirInData <- paste0(DirIn,"/data")
   DirInThresholds <- paste0(DirIn,"/threshold")
+  DirOutFlags <- base::paste0(DirOut,InfoDirIn$dirRepo,'flags')
   
   #' Read in parquet file of SUNA data
   dataFileName<-base::list.files(DirInData,full.names=FALSE)
