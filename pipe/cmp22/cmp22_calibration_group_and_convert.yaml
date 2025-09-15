@@ -17,14 +17,14 @@ transform:
     rm -rf /tmp/pfs/kafka_merged
     mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
     mkdir -p /tmp/pfs/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
-
+    
     # Join files from the archive and from Kafka
     python3 -m filter_joiner.filter_joiner_main
     
     # Combine data from Kafka and the archive
     Rscript ./flow.kfka.comb.R \
           DirIn=$OUT_PATH \
-          DirOut=/tmp/pfs/kafka_merged\
+          DirOut=/tmp/pfs/kafka_merged \
           DirErr=/pfs/out/errored_datums \
           FileSchmL0=$FILE_SCHEMA_L0 \
           DirSubCopy=calibration
@@ -40,6 +40,7 @@ transform:
       TermQf=voltage \
       TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly \
       FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
+
     EOF
   env:
     # Environment variables for filter-joiner
