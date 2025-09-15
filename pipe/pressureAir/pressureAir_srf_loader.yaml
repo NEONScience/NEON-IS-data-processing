@@ -1,27 +1,24 @@
 pipeline:
-  name: pressureAir_group_loader
+  name: pressureAir_srf_loader
 transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
   cmd:
     - /bin/bash
   env:
     GROUP_PREFIX_1: pressure-air_
     GROUP_PREFIX_2: pressure-air-buoy_
     LOG_LEVEL: INFO
-    OUT_PATH: /pfs/out    
-    # ERR_PATH can be changed, it is user specified
-    ERR_PATH: /pfs/out/errored_datums
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-loader:v1.0.0
-  # image_pull_secrets:
-  #   - battelleecology-quay-read-all-pull-secret
+    OUT_PATH: /pfs/out
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
   stdin:
     - '#!/bin/bash'
     - export GROUP_PREFIX=$GROUP_PREFIX_1
-    - python3 -m group_loader.group_loader_main
+    - python3 -m srf_loader.srf_loader_main
     - export GROUP_PREFIX=$GROUP_PREFIX_2
-    - python3 -m group_loader.group_loader_main
+    - python3 -m srf_loader.srf_loader_main
+input:
 input:
   pfs:
     branch: master
@@ -37,7 +34,7 @@ resource_limits:
   cpu: 1.5
 sidecar_resource_requests:
   memory: 200M
-  cpu: 0.2
+  cpu: 0.3
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
