@@ -2,7 +2,6 @@ leveltroll400_logjam_cron_monthly_and_pub_control.yaml
 leveltroll400_logjam_list_files.yaml
 leveltroll400_logjam_load_files.yaml
 leveltroll400_logjam_assign_clean_files.yaml
-
 leveltroll400_calibration_list_files.yaml
 leveltroll400_calibration_loader.yaml
 leveltroll400_calibration_assignment.yaml
@@ -11,5 +10,5 @@ leveltroll400_location_asset.yaml
 leveltroll400_location_loader.yaml
 leveltroll400_location_asset_assignment.yaml
 leveltroll400_location_active_dates_assignment.yaml
-leveltroll400_location_group_and_restructure.yaml
+leveltroll400_location_group_and_restructure.yaml  ########update once cal mod is working
 leveltroll400_fill_date_gaps_and_regularize.yaml
