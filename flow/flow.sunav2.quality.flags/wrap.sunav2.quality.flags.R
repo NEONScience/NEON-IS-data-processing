@@ -53,14 +53,8 @@ wrap.sunav2.quality.flags <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
-  DirInData <-
-    NEONprocIS.base::def.dir.in(DirBgn = DirIn,
-                                nameDirSub = "data",
-                                log = log)
-  DirInThresholds <-
-    NEONprocIS.base::def.dir.in(DirBgn = DirIn,
-                                nameDirSub = "threshold",
-                                log = log)
+  DirInData <- paste0(DirIn,"/data")
+  DirInThresholds <- paste0(DirIn,"/threshold")
   
   #' Read in parquet file of SUNA data
   dataFileName<-base::list.files(DirInData,full.names=FALSE)
@@ -70,8 +64,8 @@ wrap.sunav2.quality.flags <- function(DirIn,
   #' Convert measurements to be tested from class character to numeric
   sunaData$relative_humidity<-as.numeric(sunaData$relative_humidity)
   sunaData$lamp_temperature<-as.numeric(sunaData$lamp_temperature)
-  sunaData$spectrum_average<-as.numeric(sunaData$spectrum_average)
-  sunaData$dark_value_used_for_fit<-as.numeric(sunaData$dark_value_used_for_fit)
+  sunaData$spec_average<-as.numeric(sunaData$spec_average)
+  sunaData$dark_signal_average<-as.numeric(sunaData$dark_signal_average)
   
   #' Create data frame of input file readout_times to serve as basis of output flag file
   flagFile<-as.data.frame(sunaData$readout_time)
@@ -113,10 +107,10 @@ wrap.sunav2.quality.flags <- function(DirIn,
   minLightDarkRatio<-spectralRatioThreshold$number_value
   flagFile$nitrateLightDarkRatioQF<-NA
   for(i in 1:nrow(sunaData)){
-    if(is.na(sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')])|is.na(sunaData[i,which(colnames(sunaData)=='spectrum_average')])){
+    if(is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])|is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
       flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=-1}
-    if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')])&!is.na(sunaData[i,which(colnames(sunaData)=='spectrum_average')])){
-      if(sunaData[i,which(colnames(sunaData)=='spectrum_average')]/sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')]<minLightDarkRatio){
+    if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])&!is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
+      if(sunaData[i,which(colnames(sunaData)=='spec_average')]/sunaData[i,which(colnames(sunaData)=='dark_signal_average')]<minLightDarkRatio){
         flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}
       else{flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=0}}  
   }  
