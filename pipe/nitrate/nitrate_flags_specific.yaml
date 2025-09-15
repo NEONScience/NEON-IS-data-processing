@@ -1,32 +1,31 @@
 ---
 pipeline:
-  name: troll_flags_specific
+  name: nitrate_flags_specific
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-flags:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-flags-specific:sha-612f69c
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - Rscript ./flow.troll.flags.R
+  - Rscript ./flow.sunav2.quality.flags.R
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums
       FileSchmQf=$SCHEMA_FLAGS
-      "DirSubCopy=uncertainty_data|uncertainty_coef"
   env:
     LOG_LEVEL: INFO
 input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: troll_calibration_group_and_convert
+      repo: nitrate_analyze_pad_and_qaqc_plau
       # /source_type/YYYY/MM/DD
       glob: /*/*/*/*/
   - pfs:
       name: SCHEMA_FLAGS
-      repo: troll_avro_schemas
-      glob: /troll_shared/flags_troll_specific.avsc
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_sensor_specific_flags.avsc
 parallelism_spec:
   constant: 6
 autoscaling: true
