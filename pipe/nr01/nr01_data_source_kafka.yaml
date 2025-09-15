@@ -72,8 +72,6 @@ transform:
       import_trigger_glob="${import_trigger}/*"
     fi
 
-    sites_output=()
-
     for site_kafka in ${import_trigger_glob}; do
       site_file=$(basename "${site_kafka}") # Strip off any path prefix
       site=$(echo "${site_file}" | cut -f 1 -d "." --only-delimited) # Extract the site from site.kafka. Ignore site-only files (e.g. CPER vs. CPER.kafka)
@@ -104,19 +102,17 @@ transform:
       date_str_1=$(date +%Y-%m-%d -d "${date_str} + 1 day")
       ./extract-kafka-sensor.py -s "${site}" -S "${SOURCE_TYPE}" -D "${siteoutpath}/${SOURCE_TYPE}" -d "${date_str_1}" --only noncurrent --consumer client.rack="${zone}"
 
-      sites_output+=("${site}")
-
       # Upload L0 files to bucket, compacting with any existing file with the same name
       if [[ -d "${siteoutpath}/${SOURCE_TYPE}" ]]; then
         linkdir=$(mktemp -d)
         shopt -s globstar
-        out_parquet_glob="${OUT_PATH}/**/*.parquet"
-        # /pfs/out/nr01/2023/01/01/12345/data/file.parquet
+        out_parquet_glob="${siteoutpath}/**/*.parquet"
+        # /pfs/out/ABBY/nr01/2023/01/01/12345/data/file.parquet
         echo "Linking output files to ${linkdir}"
         # set -x # Uncomment for debugging
         for f in ${out_parquet_glob}; do
           # Parse the path
-          [[ "${f}" =~ ^${OUT_PATH}/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+          [[ "${f}" =~ ^${siteoutpath}/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
           fsourcetype="${BASH_REMATCH[1]}"
           fyear="${BASH_REMATCH[2]}"
           fmonth="${BASH_REMATCH[3]}"
@@ -128,23 +124,23 @@ transform:
           mkdir -p "${outdir}"
           ln -s "${f}" "${outdir}/${fname}"
         done
+
+        # Upload to bucket, compacting with any existing file
+        echo "Uploading and compacting for ${site} ${date_str}"
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
+
+        # Update the airflow triggering table
+        echo "Updating airflow trigger table for ${site} ${date_str}"
+        ./update-trigger-table.py -s "${site}" -S "${SOURCE_TYPE}" -D "${siteoutpath}/${SOURCE_TYPE}"
+
+        # set +x # Uncomment for debugging
+        rm -rf "${linkdir}"
+        # Move the per site files to the structure expected by pachyderm
+        rclone move "${siteoutpath}/${SOURCE_TYPE}/" "${OUT_PATH}/${SOURCE_TYPE}/"
+        # Remove the site directory
+        rm -rf "${siteoutpath}"
       fi
 
-      # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
-
-      # Update the airflow triggering table
-      for site_output in "${sites_output[@]}"; do
-        echo "Updating airflow trigger table for ${site_output} and ${date_str}"
-        ./update-trigger-table.py -s "${site_output}" -S "${SOURCE_TYPE}" -D "${OUT_PATH}/${SOURCE_TYPE}"
-      done
-
-      # set +x # Uncomment for debugging
-      rm -rf "${linkdir}"
-      # Move the per site files to the structure expected by pachyderm
-      mv "${siteoutpath}/*" "${OUT_PATH}/."
-      # Remove the site directory
-      rm -rf "${siteoutpath}"
     done
     EOF
 input:
