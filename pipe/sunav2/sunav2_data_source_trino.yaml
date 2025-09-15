@@ -124,7 +124,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: nitrate_cron_monthly_and_pub_control   #update in cert
+    repo: sunav2_cron_daily_and_date_control   #update in cert
     glob: "/sunav2/*/*/*"
 output_branch: master
 parallelism_spec:
