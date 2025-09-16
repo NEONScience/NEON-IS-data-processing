@@ -13,7 +13,7 @@ git_path_pipelines='/home/NEON/ncatolico/R/NEON-IS-data-processing/pipe'
 git_path_avro='/home/NEON/ncatolico/R/NEON-IS-avro-schemas'
 git_path_avro_l0='/home/NEON/ncatolico/R/neon-avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='leveltroll400'
+source_type='hobou24'
 product='subsurfMoorTempCond'
 
 # Define paths based on base paths and product information above 
