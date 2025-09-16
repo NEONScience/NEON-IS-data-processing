@@ -66,8 +66,8 @@ wrap.sunav2.quality.flags <- function(DirIn,
   #' Convert measurements to be tested from class character to numeric
   sunaData$relative_humidity<-as.numeric(sunaData$relative_humidity)
   sunaData$lamp_temperature<-as.numeric(sunaData$lamp_temperature)
-  sunaData$spec_average<-as.numeric(sunaData$spec_average)
-  sunaData$dark_signal_average<-as.numeric(sunaData$dark_signal_average)
+  sunaData$spectrum_average<-as.numeric(sunaData$spectrum_average)
+  sunaData$dark_value_used_for_fit<-as.numeric(sunaData$dark_value_used_for_fit)
   
   #' Create data frame of input file readout_times to serve as basis of output flag file
   flagFile<-as.data.frame(sunaData$readout_time)

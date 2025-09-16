@@ -62,7 +62,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_FLAGS
       repo: sunav2_avro_schemas
-      glob: /sunav2/flags_calibration_sunav2.avsc
+      glob: /sunav2/sunav2_calibration_flags.avsc
   # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
