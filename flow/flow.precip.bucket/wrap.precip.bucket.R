@@ -74,6 +74,9 @@
 #     Initial creation
 #   Teresa Burlingame  (2025-07-10)
 #     Optimizations with AI assist and update ucrt for sec precip. 
+#   Teresa Burlingame  (2025-09-05)
+#     Error Handling - UCRT files have different classes. Convert all to character then change 
+#       specific columns as needed (dates, Values)
 ##############################################################################################
 wrap.precip.bucket <- function(DirIn,
                                DirOutBase,
@@ -233,7 +236,12 @@ wrap.precip.bucket <- function(DirIn,
   
   # Process U_CVALA1 uncertainty coefficients
   if (length(ucrtCoef) > 0) {
-    ucrtCoef_df <- dplyr::bind_rows(ucrtCoef)
+    ucrtCoef_df <- lapply(ucrtCoef, function(x) {
+      df <- as.data.frame(x, stringsAsFactors = FALSE)
+      # Convert all columns to character
+      df[] <- lapply(df, as.character)
+    }) %>%
+      bind_rows()
     uCvalA1_rows <- ucrtCoef_df$Name == "U_CVALA1"
     uCvalA1 <- as.numeric(ucrtCoef_df$Value[uCvalA1_rows])
     

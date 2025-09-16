@@ -2,7 +2,7 @@ name: DEV-exo2-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/exo2/*.yaml'
       - 'pipe/exo2/pipe_list_exo2_development.txt'

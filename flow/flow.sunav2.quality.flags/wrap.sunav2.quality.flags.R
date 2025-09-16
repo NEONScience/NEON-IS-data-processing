@@ -6,9 +6,7 @@
 #' 
 #' @description Wrapper function. Uses thresholds to apply quality flags to SUNA data.
 #'
-#' @param DirInData Character value. The file path to the input data.
-#'
-#' @param DirThresholds Character value. The file path for the quality flag thresholds.
+#' @param DirIn Character value. The file path to the input data and quality flag thresholds.
 #'  
 #' @param DirOutFlags Character value. The file path for the output data. 
 #' 
@@ -44,9 +42,8 @@
 #' Bobby Hensley (2025-08-30) created
 #' 
 ##############################################################################################
-wrap.sunav2.quality.flags <- function(DirInData=NULL,
-                                      DirInThresholds=NULL,
-                                      DirOutFlags=NULL,
+wrap.sunav2.quality.flags <- function(DirIn,
+                                      DirOut,
                                       SchmFlagsOut=NULL,
                                       log=NULL
 ){
@@ -56,6 +53,11 @@ wrap.sunav2.quality.flags <- function(DirInData=NULL,
     log <- NEONprocIS.base::def.log.init()
   } 
   
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  DirInData <- paste0(DirIn,"/data")
+  DirInThresholds <- paste0(DirIn,"/threshold")
+  DirOutFlags <- base::paste0(DirOut,InfoDirIn$dirRepo,'/flags')
+  
   #' Read in parquet file of SUNA data
   dataFileName<-base::list.files(DirInData,full.names=FALSE)
   sunaData<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', dataFileName),
@@ -64,8 +66,8 @@ wrap.sunav2.quality.flags <- function(DirInData=NULL,
   #' Convert measurements to be tested from class character to numeric
   sunaData$relative_humidity<-as.numeric(sunaData$relative_humidity)
   sunaData$lamp_temperature<-as.numeric(sunaData$lamp_temperature)
-  sunaData$spectrum_average<-as.numeric(sunaData$spectrum_average)
-  sunaData$dark_value_used_for_fit<-as.numeric(sunaData$dark_value_used_for_fit)
+  sunaData$spec_average<-as.numeric(sunaData$spec_average)
+  sunaData$dark_signal_average<-as.numeric(sunaData$dark_signal_average)
   
   #' Create data frame of input file readout_times to serve as basis of output flag file
   flagFile<-as.data.frame(sunaData$readout_time)
@@ -107,10 +109,10 @@ wrap.sunav2.quality.flags <- function(DirInData=NULL,
   minLightDarkRatio<-spectralRatioThreshold$number_value
   flagFile$nitrateLightDarkRatioQF<-NA
   for(i in 1:nrow(sunaData)){
-    if(is.na(sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')])|is.na(sunaData[i,which(colnames(sunaData)=='spectrum_average')])){
+    if(is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])|is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
       flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=-1}
-    if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')])&!is.na(sunaData[i,which(colnames(sunaData)=='spectrum_average')])){
-      if(sunaData[i,which(colnames(sunaData)=='spectrum_average')]/sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')]<minLightDarkRatio){
+    if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])&!is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
+      if(sunaData[i,which(colnames(sunaData)=='spec_average')]/sunaData[i,which(colnames(sunaData)=='dark_signal_average')]<minLightDarkRatio){
         flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}
       if(sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')]==0){
         flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}

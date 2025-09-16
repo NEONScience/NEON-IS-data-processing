@@ -9,18 +9,15 @@
 #'
 #' The arguments are: 
 #' 
-#' 1. "DirInData=value", The input path to the data, structured as follows: 
-#' #/pfs/BASE_REPO/date/source-id/data.         
-#'        
-#' 2. "DirInThresholds=value", The input path to the test thresholds, structured as follows: 
-#' #/pfs/BASE_REPO/date/source-id/thresholds.         
+#' 1. "DirIn=value", The input path to the data, structured as follows: 
+#' #/pfs/BASE_REPO/date/source-id/data.              
 #' 
-#' 2. "DirOutFlags=value", where the value is the output path.
+#' 2. "DirOut=value", where the value is the output path.
 #' 
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
-#' replace the #/pfs/BASE_REPO portion of \code{DirInData}.
+#' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #'  
-#' 4. "SchmFlagsOut=value" (optional), where values is the full path to the avro schema for the output data 
+#' 4. "FileSchmQf=value" (optional), where values is the full path to the avro schema for the output data 
 #' file. 
 #' 
 #'
@@ -35,18 +32,16 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.sunav2.quality.flags <- function(DirInData="~/pfs/sunav2_location_group_and_restructure/sunav2/2024/09/10/CFGLOC110733/data",
-#'                               DirInThresholds="~/pfs/nitrate_thresh_select_ts_pad/2024/09/10/nitrate_CRAM103100/sunav2/CFGLOC110733/threshold",
-#'                               DirOutFlags="~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733/flags", 
-#'                               SchmFlagsOut=base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_sensor_specific_flags.avsc'),collapse='')
+#' flow.sunav2.quality.flags <- function(DirIn="~/pfs/nitrate_thresh_select_ts_pad/2025/06/25/nitrate_HOPB112100",                        
+#'                               DirOut="~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733", 
+#'                               FileSchmQf=base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_sensor_specific_flags.avsc'),collapse='')
 #'                               log=log)
 #' Stepping through the code in R studio                               
-Sys.setenv(DIR_IN='/home/NEON/hensley/pfs/sunav2_location_group_and_restructure/sunav2/2024/09/10/CFGLOC110733/data')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirInData=~/pfs/sunav2_location_group_and_restructure/sunav2/2024/09/10/CFGLOC110733/data",
-         "DirInThresholds=~/pfs/nitrate_thresh_select_ts_pad/2024/09/10/nitrate_CRAM103100/sunav2/CFGLOC110733/threshold",
-         "DirOutFlags=~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733/flags",
-         "DirErr=~/pfs/out/errored_datums")
+# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=$DIR_IN",
+#          "DirOut=~/pfs/out",
+#          "DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -81,46 +76,40 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirInData", "DirInThresholds","DirOutFlags","DirErr"),
-                                      NameParaOptn = c("SchmFlagsOut"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),
+                                      NameParaOptn = c("FileSchmQf"),log = log)
 
 # Echo arguments
-log$debug(base::paste0('Input data directory: ', Para$DirInData))
-log$debug(base::paste0('Input thresholds directory: ', Para$DirInThresholds))
-log$debug(base::paste0('Output directory: ', Para$DirOutFlags))
+log$debug(base::paste0('Input data directory: ', Para$DirIn))
+log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Schema for output data: ', Para$SchmFlagsOut))
+log$debug(base::paste0('Schema for output data: ', Para$FileSchmQf))
 
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
-if(base::is.null(Para$SchmFlagsOut) || Para$SchmFlagsOut == 'NA'){
-  SchmFlagsOut <- NULL
+if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
+  FileSchmQf <- NULL
 } else {
-  SchmFlagsOut <- base::paste0(base::readLines(Para$SchmFlagsOut),collapse='')
+  FileSchmQf <- base::paste0(base::readLines(Para$FileSchmQf),collapse='')
 }
 
 # Find all the input paths (datums). We will process each one.
-DirInData <-
-  NEONprocIS.base::def.dir.in(DirBgn = Para$DirInData,
-                              nameDirSub = NULL,
-                              log = log)
-DirInThresholds <-
-  NEONprocIS.base::def.dir.in(DirBgn = Para$DirInThresholds,
-                              nameDirSub = NULL,
+DirIn <-
+  NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
+                              nameDirSub = 'data',
                               log = log)
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
-foreach::foreach(idxFileIn = DirInData) %dopar% {
+foreach::foreach(idxFileIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to file: ', idxFileIn))
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
       wrap.sunav2.quality.flags(
-        DirInData=idxFileIn,
-        DirInThresholds=DirInThresholds,
-        DirOutFlags=Para$DirOutFlags,
-        SchmFlagsOut=SchmFlagsOut,
+        DirIn=idxFileIn,
+        DirOut=Para$DirOut,
+        SchmFlagsOut=FileSchmQf,
         log=log
       ),
       error = function(err) {

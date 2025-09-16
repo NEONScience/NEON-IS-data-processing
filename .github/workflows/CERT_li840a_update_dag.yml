@@ -2,7 +2,7 @@ name: CERT-li840a-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/li840a/*.yaml'
       - 'pipe/li840a/pipe_list_li840a.txt'

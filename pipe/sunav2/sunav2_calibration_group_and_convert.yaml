@@ -41,14 +41,14 @@ transform:
         - path:
             name: DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH/*/*/*/*/*/**
+            glob_pattern: /pfs/DATA_PATH/sunav2/*/*/*/*/**
             # Join on named location (already joined below by source type and day)
             join_indices: [7]
             outer_join: true
         - path:
             name: CALIBRATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
+            glob_pattern: /pfs/CALIBRATION_PATH/sunav2/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
@@ -63,19 +63,20 @@ input:
       name: FILE_SCHEMA_FLAGS
       repo: sunav2_avro_schemas
       glob: /sunav2/flags_calibration_sunav2.avsc
-  # Outer join all days
+  # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
         name: CALIBRATION_PATH
         repo: sunav2_calibration_assignment
-        glob: /(*)/(*)/(*)/(*)
-        joinOn: $1/$2/$3/$4
+        glob: /sunav2/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH
         repo: sunav2_fill_log_files
-        glob: /(*)/(*)/(*)/(*)
-        joinOn: $1/$2/$3/$4
+        glob: /sunav2/(*)/(*)/(*)
+        joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
@@ -94,18 +95,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class
