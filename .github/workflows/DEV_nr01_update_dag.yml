@@ -2,7 +2,7 @@ name: DEV-nr01-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/nr01/*.yaml'
       - 'pipe/nr01/pipe_list_nr01_development.txt'

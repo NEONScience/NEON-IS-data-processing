@@ -2,7 +2,7 @@ name: DEV-gmp343-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/gmp343/*.yaml'
       - 'pipe/gmp343/pipe_list_gmp343_development.txt'

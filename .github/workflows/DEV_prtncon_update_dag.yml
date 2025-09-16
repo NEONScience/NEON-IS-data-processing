@@ -2,7 +2,7 @@ name: DEV-prtncon-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/prtncon/*.yaml'
       - 'pipe/prtncon/pipe_list_prtncon_development.txt'
