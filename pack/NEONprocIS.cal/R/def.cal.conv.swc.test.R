@@ -138,7 +138,7 @@ def.cal.conv.swc.test <- function(data = data.frame(data=base::numeric(0)),
     nameVar <- names(data)
     numVar <- length(nameVar)
     idxVarConv <- which(nameVar == varIdx)
-    data <- data[,c(1:idxVarConv,numVar,(idxVarConv+1):numVar)]
+    data <- data[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
     
     # -------------------------------------------------------
     
