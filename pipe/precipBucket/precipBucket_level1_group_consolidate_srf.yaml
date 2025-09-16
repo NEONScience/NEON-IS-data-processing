@@ -219,21 +219,21 @@ input:
   - pfs:
       name: STATISTICS_PATH
       repo: precipBucket_thresh_select_precip_stats
-      glob: /(*/*/*)
+      glob: /(2025/*/*)
       joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: GROUP_PATH
       repo: precipBucket_group_path
-      glob: /(*/*/*)
+      glob: /(2025/*/*)
       joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: SRF_PATH
       repo: precipBucket_srf_assignment
-      glob: /(*/*/*)
+      glob: /(2025/*/*)
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
