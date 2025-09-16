@@ -28,9 +28,9 @@
 #' 
 #' @examples
 #' # Not run
-# DirInData<-"~/pfs/sunav2_location_group_and_restructure/sunav2/2024/09/10/CFGLOC110733/data" 
+# DirInData<-"~/pfs/sunav2_location_group_and_restructure/2024/09/10/CFGLOC110733/data" 
 # DirInThresholds<-"~/pfs/nitrate_thresh_select_ts_pad/2024/09/10/nitrate_CRAM103100/sunav2/CFGLOC110733/threshold"
-# DirOutFlags<-"~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733/flags/" 
+# DirOutFlags<-"~/pfs/sunav2_sensor_specific_flags/2024/09/10/CFGLOC110733/flags/" 
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_sensor_specific_flags.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'
@@ -114,7 +114,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
     if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])&!is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
       if(sunaData[i,which(colnames(sunaData)=='spec_average')]/sunaData[i,which(colnames(sunaData)=='dark_signal_average')]<minLightDarkRatio){
         flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}
-      if(sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')]==0){
+      if(sunaData[i,which(colnames(sunaData)=='dark_signal_average')]==0){
         flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}
       else{flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=0}}  
   }
@@ -125,11 +125,11 @@ wrap.sunav2.quality.flags <- function(DirIn,
   lampStabilizePoints=5
   flagFile$burstNumber<-0 #' Assumes each burst starts with a dark measurement.
   for(i in 2:nrow(sunaData)){
-    if(is.na(sunaData[i,which(colnames(sunaData)=='header_light_frame')])){
+    if(is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
       flagFile[i,which(colnames(flagFile)=='burstNumber')]=0}
     #' If header is missing, assumes a dark measurement starting a new burst.
-    if(!is.na(sunaData[i,which(colnames(sunaData)=='header_light_frame')])){
-      if(sunaData[i,which(colnames(sunaData)=='header_light_frame')]==1){
+    if(!is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
+      if(sunaData[i,which(colnames(sunaData)=='light_dark_frame')]==1){
         flagFile[i,which(colnames(flagFile)=='burstNumber')]=flagFile[i-1,which(colnames(flagFile)=='burstNumber')]+1}
       else{flagFile[i,which(colnames(flagFile)=='burstNumber')]=0}}
     }
