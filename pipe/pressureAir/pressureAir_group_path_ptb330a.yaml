@@ -11,7 +11,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m group_path.group_path_main
   env:
-    GROUP: pressure-air_
+    GROUP: pressure-air
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
