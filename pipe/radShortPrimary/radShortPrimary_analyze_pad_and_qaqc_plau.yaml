@@ -28,14 +28,15 @@ transform:
     rm -r -f /tmp/pfs/padded_analyzer 
     
     # Run second module - qaqc plausibility
-    # FileSchmQf=$SCHEMA_FLAGS \
+    
 
     Rscript ./flow.qaqc.plau.R \
       DirIn=/tmp/pfs/padded_analyzerCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmQf=$SCHEMA_FLAGS \
       "TermTest1=shortwaveRadiation:null|gap|range(rmv)|step(rmv)|persistence(rmv)"\
-      DirSubCopy=data
+      "DirSubCopy=data|location|threshold"
 
     ###custom script will go here for heater flag and lightning flag
       
@@ -54,10 +55,10 @@ input:
       name: DATA_PATH
       repo: radShortPrimary_thresh_select_ts_pad
       glob: /*/*/*
-  # - pfs:
-  #     name: SCHEMA_FLAGS
-  #     repo: radShortPrimary_avro_schemas
-  #     glob: /radShortPrimary/flags_plausibility_radShortPrimary.avsc
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: radShortPrimary_avro_schemas
+      glob: /radShortPrimary/flags_plausibility_radShortPrimary.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true
