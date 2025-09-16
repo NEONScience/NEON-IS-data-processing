@@ -436,41 +436,13 @@ if(base::length(nameParaUcrt > 0)){
                            })
   FuncUcrt <- base::do.call(rbind,FuncUcrt)
   log$debug(base::paste0(
-    'Functions and associated terms to calibrate: ',
+    'Functions and associated terms to compute uncertainty: ',
     base::paste0(lapply(spltUcrt,base::paste0,collapse=':'), collapse = ', ')
   ))
   
 } else {
   FuncUcrt <- NULL
-  log$debug('Functions and associated terms to calibrate: None')
-}
-
-# Which uncertainty function(s) are we using?
-if(!base::is.null(Para$TermUcrtFunc) && 
-   base::length(Para$TermFuncUcrt) %% 2 > 0){
-  log$fatal('Input argument TermFuncUcrt must contain term:function(s) sets, separated by pipes.')
-  stop()
-}
-if (!base::is.null(Para$TermFuncUcrt) &&
-    base::length(Para$TermFuncUcrt) > 0) {
-  FuncUcrt <-
-    NEONprocIS.base::def.vect.pars.pair(
-      vect = Para$TermFuncUcrt,
-      NameCol = c('var', 'FuncUcrtMeasFdas'),
-      log = log
-    )
-  log$debug(base::paste0(
-    'Terms and functions to compute individual measurement uncertainty: ',
-    base::paste0(apply(as.matrix(FuncUcrt),1,base::paste0,collapse=':'), collapse = ' ... ')
-  ))
-  
-  # Further separate FDAS uncertainty functions into their own column
-  funcUcrtSplt <- base::strsplit(FuncUcrt$FuncUcrtMeasFdas,',')
-  funcUcrtSplt <- lapply(funcUcrtSplt,FUN=function(rowIdx){data.frame(FuncUcrtMeas=rowIdx[1],FuncUcrtFdas=rowIdx[2],stringsAsFactors=FALSE)})
-  FuncUcrt <- cbind(FuncUcrt['var'],do.call('rbind',funcUcrtSplt))
-} else {
-  FuncUcrt <- NULL
-  log$debug('Terms and functions to compute individual measurement uncertainty: None')
+  log$debug('Functions and associated terms to compute uncertainty: None')
 }
 
 # Assign NumDayExpiMax if input argument specified anything other than a blanket default
