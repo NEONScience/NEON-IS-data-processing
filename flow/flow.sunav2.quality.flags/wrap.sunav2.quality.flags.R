@@ -112,8 +112,31 @@ wrap.sunav2.quality.flags <- function(DirInData=NULL,
     if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')])&!is.na(sunaData[i,which(colnames(sunaData)=='spectrum_average')])){
       if(sunaData[i,which(colnames(sunaData)=='spectrum_average')]/sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')]<minLightDarkRatio){
         flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}
+      if(sunaData[i,which(colnames(sunaData)=='dark_value_used_for_fit')]==0){
+        flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}
       else{flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=0}}  
-  }  
+  }
+  
+  #' Identifies light measurement number within burst and performs lamp stabilization test
+  # lampStabilizeThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Lamp Stabilization Points"),]
+  # lampStabilizePoints<-lampStabilizeThreshold$number_value
+  lampStabilizePoints=5
+  flagFile$burstNumber<-0 #' Assumes each burst starts with a dark measurement.
+  for(i in 2:nrow(sunaData)){
+    if(is.na(sunaData[i,which(colnames(sunaData)=='header_light_frame')])){
+      flagFile[i,which(colnames(flagFile)=='burstNumber')]=0}
+    #' If header is missing, assumes a dark measurement starting a new burst.
+    if(!is.na(sunaData[i,which(colnames(sunaData)=='header_light_frame')])){
+      if(sunaData[i,which(colnames(sunaData)=='header_light_frame')]==1){
+        flagFile[i,which(colnames(flagFile)=='burstNumber')]=flagFile[i-1,which(colnames(flagFile)=='burstNumber')]+1}
+      else{flagFile[i,which(colnames(flagFile)=='burstNumber')]=0}}
+    }
+  flagFile$nitrateLampStabilizeQF<-0
+  for(i in 1:nrow(flagFile)){
+    if(flagFile[i,which(colnames(flagFile)=='burstNumber')]<=lampStabilizePoints){
+      flagFile[i,which(colnames(flagFile)=='nitrateLampStabilizeQF')]=1}
+    }
+  flagFile<-flagFile[,-which(colnames(flagFile)=='burstNumber')] #' Drops this column since it's no longer needed.
   
   #' Write out data file and log flags file  
   base::dir.create(DirOutFlags,recursive=TRUE)
