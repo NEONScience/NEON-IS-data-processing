@@ -431,16 +431,17 @@ if(base::length(nameParaUcrt > 0)){
                              } else {
                                var <- base::paste0(var,collapse="|")
                              }
-                             return(base::data.frame(FuncUcrt=func,var=var))
+                             funcUcrtSplt$var <- var
+                             return(funcUcrtSplt)
                            })
   FuncUcrt <- base::do.call(rbind,FuncUcrt)
   log$debug(base::paste0(
     'Functions and associated terms to calibrate: ',
-    base::paste0(apply(as.matrix(spltUcrt),1,base::paste0,collapse=':'), collapse = ', ')
+    base::paste0(lapply(spltUcrt,base::paste0,collapse=':'), collapse = ', ')
   ))
   
 } else {
-  spltUcrt <- NULL
+  FuncUcrt <- NULL
   log$debug('Functions and associated terms to calibrate: None')
 }
 
