@@ -27,6 +27,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         TermQf=nitrate \
+        FileSchmData=$FILE_SCHEMA_DATA \
         FileSchmQf=$FILE_SCHEMA_FLAGS \
         DirSubCopy=flags
     EOF
@@ -63,6 +64,10 @@ input:
       name: FILE_SCHEMA_FLAGS
       repo: sunav2_avro_schemas
       glob: /sunav2/sunav2_calibration_flags.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_logfilled.avsc
   # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
