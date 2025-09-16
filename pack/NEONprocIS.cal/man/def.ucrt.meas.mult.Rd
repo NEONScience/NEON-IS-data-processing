@@ -6,7 +6,6 @@
 \usage{
 def.ucrt.meas.mult(
   data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
   varUcrt = base::names(data)[1],
   calSlct = NULL,
   Meta = list(),
@@ -16,16 +15,8 @@ def.ucrt.meas.mult(
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}
 
-\item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
-(as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
-a data frame of uncertainty coefficents. Columns of this data frame are:\cr
-\code{Name} String. The name of the coefficient. \cr
-\code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
-
-\item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} for 
-which uncertainty data will be computed (all other columns will be ignored). Note that for other
-uncertainty functions this variable may not need to be in the input data frame, so long as the function
-knows that. Defaults to the first
+\item{varUcrt}{A character array of the target variables (columns) in the data frame \code{data} for 
+which uncertainty output will be computed (all other columns will be ignored). Defaults to the first
 column in \code{data}.}
 
 \item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
