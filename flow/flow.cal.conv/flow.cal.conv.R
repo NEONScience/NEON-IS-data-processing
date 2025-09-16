@@ -80,11 +80,11 @@
 #' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
 #'
 #' 6-N. "ConvFuncTermX=value" (optional), where X is an integer beginning at 1 and value contains the calibration
-#' conversion function and associated term name(s) to pass to a single call of that function. Begin each "value" 
+#' conversion function and the associated term name(s) to access within a single call of that function. Begin each "value" 
 #' with the calibration conversion function to use within the NEONprocIS.cal package, followed by a 
 #' colon (:), and then the L0 term name(s) to pass to the calibration function. 
 #' For example: "ConvFuncTerm1=def.cal.conv.poly:resistance" indicates that the L0 term "resistance"
-#' will be passed to the function def.cal.conv.poly. Use additional instances of the ConvFuncTermX 
+#' will be accessed in the function def.cal.conv.poly. Use additional instances of the ConvFuncTermX 
 #' argument to indicate additional functions and associated L0 term(s) to calibrate, incrementing the X integer with each 
 #' additional argument. For example, if another L0 term "voltage" also uses the
 #' def.cal.conv.poly function, create and additional argument "ConvFuncTerm2=def.cal.conv.poly:voltage". Note
@@ -336,14 +336,13 @@ Para <-
       base::paste0("ConvFuncTerm",1:100),
       "NumDayExpiMax",
       "TermQf",
-      "TermFuncUcrt",
+      base::paste0("UcrtFuncTerm",1:100),
       "FileUcrtFdas",
       "PathMeta",
       "DirSubCopy"
     ),
     ValuParaOptn = base::list(
       TermQf = NULL,
-      TermFuncUcrt = NULL,
       NumDayExpiMax = NA,
       PathMeta = NULL
     ),
@@ -380,7 +379,7 @@ if (!base::is.null(Para$FileSchmQf)) {
 }
 
 
-# Parse the terms and associated statistics to compute 
+# Parse the cal functions and associated terms
 nameParaConv <- base::names(Para)[names(Para) %in% base::paste0("ConvFuncTerm",1:100)]
 if(base::length(nameParaConv > 0)){
   spltConv <- Para[nameParaConv]
@@ -414,8 +413,39 @@ log$debug(
   )
 )
 
+# Parse the uncertainty functions and associated terms
+nameParaUcrt <- base::names(Para)[names(Para) %in% base::paste0("UcrtFuncTerm",1:100)]
+if(base::length(nameParaUcrt > 0)){
+  spltUcrt <- Para[nameParaUcrt]
+  FuncUcrt <- base::lapply(spltUcrt,
+                           FUN=function(argSplt){
+                             # Parse the uncertainty funcs (meas vs. fdas)
+                             func <- argSplt[1]
+                             funcUcrtSplt <- base::strsplit(func,',')[[1]]
+                             funcUcrtSplt <- data.frame(FuncUcrtMeas=funcUcrtSplt[1],FuncUcrtFdas=funcUcrtSplt[2],stringsAsFactors=FALSE)
+                             
+                             # Parse the variables
+                             var <- setdiff(utils::tail(x=argSplt,n=-1),func)
+                             if (base::length(var) == 0){
+                               var<-NA
+                             } else {
+                               var <- base::paste0(var,collapse="|")
+                             }
+                             return(base::data.frame(FuncUcrt=func,var=var))
+                           })
+  FuncUcrt <- base::do.call(rbind,FuncUcrt)
+  log$debug(base::paste0(
+    'Functions and associated terms to calibrate: ',
+    base::paste0(apply(as.matrix(spltUcrt),1,base::paste0,collapse=':'), collapse = ', ')
+  ))
+  
+} else {
+  spltUcrt <- NULL
+  log$debug('Functions and associated terms to calibrate: None')
+}
+
 # Which uncertainty function(s) are we using?
-if(!base::is.null(Para$TermFuncUcrt) && 
+if(!base::is.null(Para$TermUcrtFunc) && 
    base::length(Para$TermFuncUcrt) %% 2 > 0){
   log$fatal('Input argument TermFuncUcrt must contain term:function(s) sets, separated by pipes.')
   stop()

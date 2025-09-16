@@ -84,6 +84,9 @@
 #     removed DirCal from inputs since the calibration path is now included in calSlct
 #   Cove Sturtevant (2025-06-23)
 #     accept Meta object for passing additional metadata to uncertainty functions
+#   Cove Sturtevant (2025-09-16)
+#     Refactor to loop through applicable calibration files within individual ucrt funcs
+#     Also shift variable name prepending to each function, to remove reliance on mappNameVar
 ##############################################################################################
 wrap.ucrt.dp0p <- function(data,
                            FuncUcrt,
@@ -105,20 +108,71 @@ wrap.ucrt.dp0p <- function(data,
   base::names(ucrtData) <- FuncUcrt$var
 
   # Loop through the variables
-  for(idxVar in FuncUcrt$var){
+  for(idxFunc in base::seq_len(nrow(FuncUcrt))){
     
     # Determine the individual measurement uncertainty function to use
-    FuncUcrtMeasIdx <- base::get(FuncUcrt$FuncUcrtMeas[FuncUcrt$var == idxVar], base::asNamespace("NEONprocIS.cal"))
+    FuncUcrtMeasIdx <- base::get(FuncUcrt$FuncUcrtMeas[idxFunc], base::asNamespace("NEONprocIS.cal"))
     
-    # Get output variable name
+    # Get output variable name - FIX ME
     nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==idxVar]
     
     # Determine whether FDAS uncertainty applies to this variable, and what function
     FuncUcrtFdasIdx <- NULL
-    if(!base::is.na(FuncUcrt$FuncUcrtFdas[FuncUcrt$var == idxVar])){
-      FuncUcrtFdasIdx <- base::get(FuncUcrt$FuncUcrtFdas[FuncUcrt$var == idxVar], base::asNamespace("NEONprocIS.cal"))
+    if(!base::is.na(FuncUcrt$FuncUcrtFdas[idxFunc])){
+      FuncUcrtFdasIdx <- base::get(FuncUcrt$FuncUcrtFdas[idxFunc], base::asNamespace("NEONprocIS.cal"))
     }
 
+    
+    # Pass the the uncertainty information to the uncertainty function. 
+    varUcrtIdx <- base::unique(base::unlist(base::strsplit(FuncUcrt$var[idxFunc],"|",fixed=TRUE)))
+    ucrtMeas <- base::do.call(FuncUcrtMeasIdx,args=base::list(data=data,
+                                                              varUcrt=varUcrtIdx,
+                                                              calSlct=calSlct,
+                                                              Meta=Meta,
+                                                              log=log)
+    )
+    
+    # Compute FDAS uncertainty, if applicable
+    if(!base::is.null(FuncUcrtFdasIdx)){
+      
+      # Add the FDAS uncertainty coefs to those from the cal file
+      infoCal$ucrt <- base::rbind(infoCal$ucrt,ucrtCoefFdas,stringsAsFactors=FALSE)
+      
+      # Get applicable FDAS uncertainty
+      ucrtFdas <- base::do.call(FuncUcrtFdasIdx,args=base::list(data=base::subset(data,subset=setCal,drop=FALSE),
+                                                                infoCal=infoCal,
+                                                                varUcrt=idxVar,
+                                                                calSlct=calSlct,
+                                                                Meta=Meta,
+                                                                log=log))
+      
+      # Combine with ucrtMeas
+      if(base::nrow(ucrtMeas) != base::nrow(ucrtFdas)){
+        log$error('Number of rows returned from measurement calibration uncertainty function do not equal that from FDAS uncertainty function. Something is wrong in the code.')
+        stop()
+      }
+      ucrtMeas <- base::cbind(ucrtMeas,ucrtFdas)
+    }
+    
+    # Put in overall output for this variable
+    if(idxRow == 1){
+      # Initialize the output with our known columns names
+      ucrtDataIdx <-
+        base::as.data.frame(
+          base::matrix(
+            data=as.numeric(NA),
+            nrow = base::length(timeMeas),
+            ncol = base::ncol(ucrtMeas),
+            dimnames = base::list(NULL, base::names(ucrtMeas))
+          ),
+          stringsAsFactors = FALSE
+        )
+    }
+    # Place this round of uncertainty data in the output
+    ucrtDataIdx[setCal,] <- ucrtMeas
+    
+    
+    
     # Run through each selected calibration and apply the uncertainty function for the applicable time period
     calSlctIdx <- calSlct[[idxVar]]
     for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
