@@ -138,7 +138,15 @@ transform:
         # set +x # Uncomment for debugging
         rm -rf "${linkdir}"
         # Move the per site files to the structure expected by pachyderm
-        (cd "${siteoutpath}/${SOURCE_TYPE}/" && tar c .) | (cd "${OUT_PATH}/${SOURCE_TYPE}/" && tar xf -)
+        cd "${siteoutpath}/${SOURCE_TYPE}/"
+        dest="${OUT_PATH}/${SOURCE_TYPE}/"
+        find . -type f | while read f; do
+            d=$(dirname "$f")
+            file=$(basename "$f")
+            mkdir -p "$dest/$d"
+            mv -f "$f" "$dest/$d/"
+        done
+        cd -
         # Remove the site directory
         rm -rf "${siteoutpath}"
       fi
