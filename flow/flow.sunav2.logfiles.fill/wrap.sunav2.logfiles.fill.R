@@ -44,10 +44,10 @@
 #' @examples
 #' # Not run
 # DirInLogs<-"~/pfs/sunav2_logjam_assign_clean_files/sunav2/2024/09/11/20349" #cleaned log data
-# DirInStream<-"~/pfs/sunav2_trino_data_parser/sunav2/2024/09/11/20349" #streamed L0 data
+# DirInStream<-"~/pfs/sunav2_trino_data_parser/sunav2/2025/06/22/20345" #streamed L0 data
 # DirIn<-NULL
 # DirOutBase="~/pfs/out"
-# SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2/sunav2_calibrated.avsc'),collapse='')
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2/sunav2_logfilled.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_log_flags.avsc'),collapse='')
 #'                               
@@ -118,7 +118,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   }
   
 #' update columns to same format
-  if(length(L0Data>=1)){
+  if(length(L0Data)>=1){
     L0Data$spectrum_channels <- lapply(L0Data$spectrum_channels, function(x) paste(x, collapse = ";")) 
   }
   
