@@ -121,12 +121,12 @@ Para <-
     NameParaReqd = c(
                      "DirIn", 
                      "DirOut", 
-                     "DirErr" ,
-                     "FlagsRad"
+                     "DirErr" 
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "SchmQf"
+                     "SchmQf",
+                     "FlagsRad"
                      ),
     log = log
   )

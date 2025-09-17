@@ -69,14 +69,14 @@
 #     Initial creation
 
 ##############################################################################################
-wrap.precip.pluvio.flags<- function(DirIn,
+wrap.rad.flags.cstm <- function(DirIn,
                                     DirOutBase,
                                     SchmQf=NULL,
                                     DirSubCopy=NULL,
                                     FlagsRad=NULL,
                                     log=NULL
 ){
-  
+
   library(dplyr)
   
   if(base::is.null(log)){
@@ -86,24 +86,30 @@ wrap.precip.pluvio.flags<- function(DirIn,
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirInData <- fs::path(DirIn,'data')
-  dirInQf <- fs::path(DirIn,'flags')
-
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutQf <- fs::path(dirOut,'flags')
   dirOutData <- fs::path(dirOut,'data')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
                                 DirSub = c('flags', 'data'),
                                 log = log)
+
+  
   
   # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('flags','data')))
+  DirSubCopy <- base::unique(DirSubCopy)
   if(base::length(DirSubCopy) > 0){
 
     NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
                                        DirDest=dirOut,
-                                       LnkSubObj=FALSE,
+                                       LnkSubObj=TRUE,
                                        log=log)
-  }    
+  } 
+  
+  #no custom flags were given, passing through module. 
+  if (is.null(FlagsRad)){
+    log$info("No custom flags specified, skipping datum")
+    return()
+  }
   
   # Take stock of our data files.
   fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
@@ -114,7 +120,6 @@ wrap.precip.pluvio.flags<- function(DirIn,
                                             RmvDupl=TRUE,
                                             Df=TRUE, 
                                             log=log)
-
   #run heater flag script
   if("Cmp22Heater" %in% FlagsRad){
     data <- def.cmp22.heater.flags(data, log)
@@ -122,25 +127,32 @@ wrap.precip.pluvio.flags<- function(DirIn,
   
   #run radiation shading script
   if("Shadow" %in% FlagsRad){
-    data <- def.rad.shadow.flags()
+    data <- def.rad.shadow.flags(DirIn, data, log)
   }
-  
-  ##drop unwanted columns
-  
-  ##########should be more custom
-  qfCust <- data %>% dplyr::select(c(readout_time, heaterQF, shadowQF))
-  
-  
-  
-#######get these names corrected
-  nameFileQfOutFlag <- fileQfPlau
 
-  nameFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
+  #if schema - get col names from schema, else keep all?
+  if(base::is.null(FileSchmQf) || FileSchmQf == 'NA'){
+    qfCust <- data
+  } else {
+    # Parse JSON and extract field names
+    schema_json <- jsonlite::fromJSON(FileSchmQf)
+    field_names <-schema_json$fields$name
+    qfCust <- data[,field_names]
+  }
+ 
+  # Create output filenames
+  nameFileIdxSplt <- strsplit(fileData, '.', fixed = TRUE)[[1]]
+  base_name <- paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt) - 1)], collapse = '.')
+  extension <- utils::tail(nameFileIdxSplt, 1)
+  
+  nameFileQfOutFlag <- paste0(base_name, "_customFlags.", extension)
+
+  pathFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
       
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
           data = qfCust,
-          NameFile = nameFileQfOutFlag,
+          NameFile = pathFileQfOutFlag,
           log=log
         ),
         silent = TRUE)
