@@ -111,7 +111,13 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
       # Generate error and stop execution
       log$error(base::paste0('File ', dirInDataLogs, '/', logFile, ' is unreadable.'))
       base::stop()}
-    }
+  }
+  
+#' update columns to same format
+  if(length(L0Data>=1)){
+    L0Data$spectrum_channels <- lapply(L0Data$spectrum_channels, function(x) paste(x, collapse = ";")) 
+  }
+  
   
 #' Determine whether to use logged or streamed data.  
   #' Logged data is used if available, and log data flag set to 1
@@ -128,8 +134,6 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
     flagsOut$readout_time<-dataOut$readout_time
     flagsOut$sunaLogDataQF<-0
     }
-  dataOut$spectrum_channels<-0 #remove list for now
-  
   
 #' Write out data file and log flags file  
   
