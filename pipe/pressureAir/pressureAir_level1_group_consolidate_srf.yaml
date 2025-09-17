@@ -235,14 +235,14 @@ input:
   join:
   - pfs:
       name: QUALITY_METRICS_PATH
-      repo: parQuantumLine_qm_group_and_compute
+      repo: pressureAir_qm_group_and_compute
       glob: /(*/*/*)
       joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
-      repo: parQuantumLine_stats_group_and_compute
+      repo: pressureAir_stats_group_and_compute
       glob: /(*/*/*)
       joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
