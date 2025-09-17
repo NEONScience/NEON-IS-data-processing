@@ -114,7 +114,8 @@ wrap.ucrt.dp0p <- function(data,
     FuncUcrtMeasIdx <- base::get(FuncUcrt$FuncUcrtMeas[idxFunc], base::asNamespace("NEONprocIS.cal"))
     
     # Get output variable name - FIX ME
-    nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==idxVar]
+    nameVarUcrtOut <- 
+    #nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==idxVar]
     
     # Determine whether FDAS uncertainty applies to this variable, and what function
     FuncUcrtFdasIdx <- NULL

@@ -61,7 +61,7 @@
 #   Cove Sturtevant (2025-06-23)
 #    Add unused Meta input to accommodate changes in upstream calibration & uncertainty module
 ##############################################################################################
-def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
+def.ucrt.meas.swc.test <- function(data = data.frame(data=base::numeric(0)),
                           varUcrt = base::names(data)[1],
                           calSlct=NULL,
                           Meta=list(),
@@ -72,17 +72,11 @@ def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
   }
   
   # Ensure input is data frame with the target variable in it
-  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c(varUcrt,'readout_time'),TestEmpty=FALSE, log = log)
+  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=varUcrt,TestEmpty=FALSE, log = log)
   if (!chk) {
     stop()
   }
   
-  # Basic starting info
-  timeMeas <- data$readout_time
-  
-  # Run through each variable to compute uncertainty for
-  for(varIdx in varConv){
-    
   # Check data input is numeric
   if (!NEONprocIS.base::def.validate.vector(data[[varUcrt]],TestEmpty = FALSE, TestNumc = TRUE, log=log)) {
     stop()
