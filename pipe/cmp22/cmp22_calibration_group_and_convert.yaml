@@ -93,7 +93,7 @@ input:
       glob: /cmp22/flags_calibration_cmp22.avsc
   - pfs:
       name: FILE_UNCERTAINTY_FDAS
-      repo: li191r_uncertainty_fdas
+      repo: cmp22_uncertainty_fdas
       glob: /fdas_calibration_uncertainty_general.json
   # Outer join all days so that varying sensors between kafka and archive loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
