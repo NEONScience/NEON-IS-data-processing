@@ -38,13 +38,13 @@ transform:
     
     # Set some environment variables for the 3rd module
     export OUT_PATH=$OUT_PATH_3
-    
+
     # Run third module - level 1 consolidate (using environment variables below as input parameters)
     python3 -m level1_consolidate.level1_consolidate_main
     
     # Run fourth module - pub workbook loader (using environment variables below as input parameters)
     python3 -m pub_workbook_loader.pub_workbook_loader_main
-    
+
     # # Run fifth and final module - create pub tables and apply science review flags (if any)
     Rscript ./flow.pub.tabl.srf.R \
       DirIn=/tmp/pfs/interimC \
@@ -58,15 +58,15 @@ transform:
     # Define your group prefixes as variables
     export GROUP_PREFIX_1=$GROUP_PREFIX_1     # Ensure these match your actual data prefixes
     export GROUP_PREFIX_2=$GROUP_PREFIX_2 # Ensure these match your actual data prefixes
-    
+
     export OUT_PATH=/pfs/out
     linkdir=$(mktemp -d)
     shopt -s globstar
     out_parquet_glob="${OUT_PATH}/**/*.parquet"
-    
+
     echo "Linking output files to ${linkdir}"
     # set -x # Echo commands to output for debugging
-    
+
     fname="" # This will continue to act as a flag for rclone
     for f in $out_parquet_glob; do
     if [[ -f "$f" ]]; then
@@ -77,9 +77,9 @@ transform:
     fyear="${BASH_REMATCH[1]}"
     fmonth="${BASH_REMATCH[2]}"
     fday="${BASH_REMATCH[3]}"
-    fgroup="${BASH_REMATCH[4]}" 
-    fname_temp="${BASH_REMATCH[5]}" 
-    
+    fgroup="${BASH_REMATCH[4]}"
+    fname_temp="${BASH_REMATCH[5]}"
+
     # --- START: Explicit Group Skip Logic ---
     # Check if fgroup starts with GROUP_PREFIX_1_ OR GROUP_PREFIX_2_
     if [[ "$fgroup" == "${GROUP_PREFIX_1}_"* || "$fgroup" == "${GROUP_PREFIX_2}_"* ]]; then
@@ -90,14 +90,14 @@ transform:
     elif [[ "$fgroup" == "${GROUP_PREFIX_2}_"* ]]; then
     current_group_prefix="$GROUP_PREFIX_2"
     fi
-    
+
     # Assign fname for the next regex and the rclone flag
     fname="$fname_temp"
-    
+
     # Now get the timing index from the file name using the determined prefix
     if [[ "$fname" =~ ^${current_group_prefix}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]; then
     avg_int="${BASH_REMATCH[2]}"
-    
+
     # Form the output path and link
     outdir="${linkdir}/v2/${current_group_prefix}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
     mkdir -p "${outdir}"
@@ -112,14 +112,14 @@ transform:
     # No 'continue' needed as it will naturally move to the next iteration
     fi
     # --- END: Explicit Group Skip Logic ---
-    
+
     else
       # This block handles files that don't match the general path structure at all
       echo "Skipping file: $f (does not match general path pattern expected: $OUT_PATH/YEAR/MONTH/DAY/GROUP_ID/data/FILENAME)"
     fi
     fi
     done
-    
+
     # set +x # Uncomment this if you uncommented set -x at the top
     if [[ -n "${fname}" ]]; then # Check if fname is non-empty (-n checks if string is not null)
     echo "Syncing files to bucket"
@@ -210,7 +210,7 @@ transform:
     GROUP_METADATA_NAMES: group,science_review_flags
     # path index of names of directories to include in the output
     DATA_TYPE_INDEX: "9"
-    DATA_TYPE_NAMES: location,stats
+    DATA_TYPE_NAMES: location,stats,quality_metrics
     
 # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /tmp/pub_workbooks
