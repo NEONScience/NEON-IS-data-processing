@@ -1,31 +1,28 @@
 ---
 pipeline:
-  name: cmp22_location_asset_assignment
+  name: radShortPrimary_srf_assignment
 transform:
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
   - Rscript
-      ./flow.loc.grp.asgn.R
+      ./flow.srf.asgn.R
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-      TypeFile=asset
-      "Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|location_properties:LatTow|location_properties:LonTow"
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.1.2
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
 input:
-
   cross:
   - pfs:
       name: DIR_IN
-      repo: cmp22_location_asset
-      glob: /cmp22/*
+      repo: radShortPrimary_srf_loader
+      glob: /*
   - pfs:
       name: FILE_YEAR
       repo: cmp22_cron_daily_and_date_control
@@ -34,16 +31,16 @@ parallelism_spec:
   constant: 2
 autoscaling: true
 resource_requests:
-  memory: 400M
-  cpu: 1.5
+  memory: 200M
+  cpu: 0.8
 resource_limits:
   memory: 800M
-  cpu: 2
+  cpu: 1.5
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.3
+  memory: 1G
+  cpu: 0.2
 datum_set_spec:
-  number: 5
+  number: 10
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
