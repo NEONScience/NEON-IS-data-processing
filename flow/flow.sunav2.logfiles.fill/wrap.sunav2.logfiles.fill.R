@@ -98,7 +98,9 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
       # Generate error and stop execution
       log$error(base::paste0('File ', dirInDataStream, '/', L0File, ' is unreadable.'))
       base::stop()}
-    }
+  }else{
+    L0Data<-NULL
+  }
   
 #' Load any logged data
   fileDataLogs<-base::list.files(dirInDataLogs,full.names=FALSE)
@@ -111,6 +113,8 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
       # Generate error and stop execution
       log$error(base::paste0('File ', dirInDataLogs, '/', logFile, ' is unreadable.'))
       base::stop()}
+  }else{
+    logData<-NULL
   }
   
 #' update columns to same format
