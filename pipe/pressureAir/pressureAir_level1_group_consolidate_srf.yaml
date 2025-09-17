@@ -41,16 +41,16 @@ transform:
 
     # Run third module - level 1 consolidate (using environment variables below as input parameters)
     python3 -m level1_consolidate.level1_consolidate_main
-    
+     
     # Run fourth module - pub workbook loader (using environment variables below as input parameters)
     python3 -m pub_workbook_loader.pub_workbook_loader_main
 
-    # # Run fifth and final module - create pub tables and apply science review flags (if any)
+    # Run fifth and final module - create pub tables and apply science review flags (if any)
     Rscript ./flow.pub.tabl.srf.R \
       DirIn=/tmp/pfs/interimC \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      DirData=stats \
+      "DirData=stats|quality_metrics" \
       PathPubWb=$PUB_WORKBOOKS \
       "DirSubCopy=science_review_flags|group|location"
 
