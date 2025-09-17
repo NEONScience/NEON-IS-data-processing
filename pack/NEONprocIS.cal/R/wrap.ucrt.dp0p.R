@@ -239,6 +239,9 @@ wrap.ucrt.dp0p <- function(data,
       
     } # End loop around selected calibrations
     
+    ## TODO: Return lists of data frames from each uncertainty function call. Loop through them here to compute combined uncertainty
+    
+    
     # Compute combined uncertainty for this variable. This will combine (in quadrature) any and all outputs from the 
     # measurement and fdas uncertainty functions that begin with ucrtMeas or ucrtFdas.
     nameVarUcrtIdx <- base::names(ucrtDataIdx)

@@ -59,13 +59,16 @@
 #     This includes inputting the entire data frame, the 
 #     variable to be generate uncertainty info for, and the (unused) argument calSlct
 #   Cove Sturtevant (2025-06-23)
-#    Add unused Meta input to accommodate changes in upstream calibration & uncertainty module
+#     Add unused Meta input to accommodate changes in upstream calibration & uncertainty module
+#   Cove Sturtevant (2025-09-17)
+#     Refactor to loop through applicable calibration files within this function
+#     Also enable uncertainty comps of multiple variables with this function call
 ##############################################################################################
 def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
-                          varUcrt = base::names(data)[1],
-                          calSlct=NULL,
-                          Meta=list(),
-                          log = NULL) {
+                                varUcrt = base::names(data)[1],
+                                calSlct=NULL,
+                                Meta=list(),
+                                log = NULL) {
   # Initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -80,14 +83,34 @@ def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
   # Basic starting info
   timeMeas <- data$readout_time
   
-  # Run through each variable to compute uncertainty for
-  for(varIdx in varConv){
-    
-  # Check data input is numeric
-  if (!NEONprocIS.base::def.validate.vector(data[[varUcrt]],TestEmpty = FALSE, TestNumc = TRUE, log=log)) {
-    stop()
-  }
+  # Initialize output list of data frames
+  ucrtList <- list()
   
+  # Run through each variable to compute uncertainty for
+  for(varIdx in varUcrt){
+    
+    # Check data input is numeric
+    if (!NEONprocIS.base::def.validate.vector(data[[varIdx]],TestEmpty = FALSE, TestNumc = TRUE, log=log)) {
+      stop()
+    }
+    
+    # Pull cal file info for this variable and initialize the output
+    calSlctIdx <- calSlct[[varIdx]]
+    dataUcrtIdx <- data[[varIdx]]
+    dataUcrtOutIdx <- as.numeric(NA)*dataUcrtIdx
+    
+    # Skip if no cal info supplied
+    if(base::is.null(calSlctIdx)){
+      log$warn(base::paste0('No applicable calibration files available for ',varIdx, '. Returning NA for calibrated output.'))
+      calSlctIdx <- base::data.frame()
+    }
+    
+    
+    
+    
+    
+    
+    
   # Initialize output data frame
   dataUcrt <- data[[varUcrt]] # Target variable to compute uncertainty for
   ucrt <- base::data.frame(ucrtMeas = NA * dataUcrt)
