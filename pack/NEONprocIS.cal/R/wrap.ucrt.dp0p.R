@@ -107,29 +107,27 @@ wrap.ucrt.dp0p <- function(data,
   ucrtData <- base::vector(mode = "list", length = base::length(FuncUcrt$var))
   base::names(ucrtData) <- FuncUcrt$var
 
-  # Loop through the variables
-  for(idxFunc in base::seq_len(nrow(FuncUcrt))){
+  # Loop through the functions
+  for(idxFunc in base::seq_len(base::nrow(FuncUcrt))){
     
     # Determine the individual measurement uncertainty function to use
     FuncUcrtMeasIdx <- base::get(FuncUcrt$FuncUcrtMeas[idxFunc], base::asNamespace("NEONprocIS.cal"))
     
-    # Get output variable name - FIX ME
-    nameVarUcrtOut <- 
-    #nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==idxVar]
-    
     # Determine whether FDAS uncertainty applies to this variable, and what function
     FuncUcrtFdasIdx <- NULL
+    # MetaIdx <- Meta
     if(!base::is.na(FuncUcrt$FuncUcrtFdas[idxFunc])){
+      # MetaIdx$FuncUcrtFdas <- FuncUcrt$FuncUcrtFdas[idxFunc]
+      # MetaIdx$ucrtCoefFdas <- ucrtCoefFdas
       FuncUcrtFdasIdx <- base::get(FuncUcrt$FuncUcrtFdas[idxFunc], base::asNamespace("NEONprocIS.cal"))
     }
 
-    
     # Pass the the uncertainty information to the uncertainty function. 
     varUcrtIdx <- base::unique(base::unlist(base::strsplit(FuncUcrt$var[idxFunc],"|",fixed=TRUE)))
     ucrtMeas <- base::do.call(FuncUcrtMeasIdx,args=base::list(data=data,
                                                               varUcrt=varUcrtIdx,
                                                               calSlct=calSlct,
-                                                              Meta=Meta,
+                                                              Meta=MetaIdx,
                                                               log=log)
     )
     
@@ -267,6 +265,10 @@ wrap.ucrt.dp0p <- function(data,
     # Compute expanded uncertainty
     ucrtDataIdx <- base::cbind(ucrtDataIdx,NEONprocIS.cal::def.ucrt.expn(ucrtComb=ucrtDataIdx[['ucrtComb']],log=log))
     
+    # Get output variable name - FIX ME
+    nameVarUcrtOut <- 
+    #nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==idxVar]
+      
     # Append the output variable name as a prefix to each column
     if(!base::is.null(nameVarUcrtOut)){
       base::names(ucrtDataIdx) <- base::paste0(nameVarUcrtOut,'_',base::names(ucrtDataIdx))
@@ -275,7 +277,7 @@ wrap.ucrt.dp0p <- function(data,
     # Place uncertainty for this variable in overall output
     ucrtData[[idxVar]] <- ucrtDataIdx
     
-  } # End loop around variables for which to compute individual combined measurement uncertainty 
+  } # End loop around functions
   
   return(ucrtData)
   

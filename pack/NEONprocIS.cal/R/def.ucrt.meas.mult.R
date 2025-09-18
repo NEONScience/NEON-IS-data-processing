@@ -94,52 +94,62 @@ def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
       stop()
     }
     
-    # Pull cal file info for this variable and initialize the output
+    # Pull cal file info for this variable and initialize output data frame
     calSlctIdx <- calSlct[[varIdx]]
     dataUcrtIdx <- data[[varIdx]]
-    dataUcrtOutIdx <- as.numeric(NA)*dataUcrtIdx
+    ucrtIdx <- base::data.frame(ucrtMeas = NA * dataUcrtIdx)
     
     # Skip if no cal info supplied
     if(base::is.null(calSlctIdx)){
-      log$warn(base::paste0('No applicable calibration files available for ',varIdx, '. Returning NA for calibrated output.'))
-      calSlctIdx <- base::data.frame()
+      log$debug(base::paste0('No calibration information supplied for ',
+                             varIdx,
+                             'returning NA values for individual measurement uncertainty.')
+      )
+      ucrtList[[varIdx]] <- ucrtIdx
+      next
     }
     
+    # Run through each calibration file and apply the uncertainty function for the applicable time period
+    for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
+      
+      # What records in the data correspond to this cal file?
+      setCal <- timeMeas >= calSlctIdx$timeBgn[idxRow] & timeMeas < calSlctIdx$timeEnd[idxRow]
+      
+      # If a calibration file is available for this period, open it and get uncertainty information
+      if(!base::is.na(calSlctIdx$file[idxRow])){
+        fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
+        infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE,log=log)
+      } else {
+        infoCal <- NULL
+      }
+      
+      # If infoCal is NULL, return NA data
+      if (is.null(infoCal)) {
+        ucrtIdx$ucrtMeas[setCal] <- as.numeric(NA)
+        next
+      }
+      
+      # Uncertainty coefficient U_CVALA1 represents the combined measurement uncertainty for an
+      # individual reading. It includes the repeatability and reproducibility of the sensor and the
+      # lab DAS and ii) uncertainty of the calibration procedures and coefficients including
+      # uncertainty in the standard (truth).
+      ucrtCoef <- infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',]
+      
+      # Issue warning if more than one matching uncertainty coefficient was found
+      if(base::nrow(ucrtCoef) > 1){
+        log$warn("More than one matching uncertainty coefficient was found for U_CVALA1. Using the first.")
+      }
+      
+      # The individual measurement uncertainty is just U_CVALA1 multiplied by each measurement
+      ucrtIdx$ucrtMeas[setCal] <- base::as.numeric(ucrtCoef$Value[1])*dataUcrtIdx[setCal]
+      
+    } # End loop around calibration files
     
+    # Place in output
+    ucrtList[[varIdx]] <- ucrtIdx
     
-    
-    
-    
-    
-  # Initialize output data frame
-  dataUcrt <- data[[varUcrt]] # Target variable to compute uncertainty for
-  ucrt <- base::data.frame(ucrtMeas = NA * dataUcrt)
-  
-  # If infoCal is NULL, return NA data
-  if(base::is.null(infoCal)){
-    log$debug('No calibration information supplied, returning NA values for individual measurement uncertainty.')
-    return(ucrt)
-  }
-  
-  # Check format of infoCal
-  if (!NEONprocIS.cal::def.validate.info.cal(infoCal,CoefUcrt='U_CVALA1',log=log)){
-    stop()
-  }
-  
-  # Uncertainty coefficient U_CVALA1 represents the combined measurement uncertainty for an
-  # individual reading. It includes the repeatability and reproducibility of the sensor and the
-  # lab DAS and ii) uncertainty of the calibration procedures and coefficients including
-  # uncertainty in the standard (truth).
-  ucrtCoef <- infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',]
-  
-  # Issue warning if more than one matching uncertainty coefficient was found
-  if(base::nrow(ucrtCoef) > 1){
-    log$warn("More than one matching uncertainty coefficient was found for U_CVALA1. Using the first.")
-  }
-  
-  # The individual measurement uncertainty is just U_CVALA1 multiplied by each measurement
-  ucrt$ucrtMeas[] <- base::as.numeric(ucrtCoef$Value[1])*dataUcrt
-  
-  return(ucrt)
+  } # End loop around variables to compute uncertainty
+
+  return(ucrtList)
   
 }
