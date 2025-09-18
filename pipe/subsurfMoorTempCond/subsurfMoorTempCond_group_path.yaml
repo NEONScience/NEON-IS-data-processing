@@ -48,12 +48,18 @@ input:
         repo: leveltroll400_fill_date_gaps_and_regularize
         glob: /leveltroll400/(*/*/*)
         joinOn: $1
-#    - pfs:
-#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-#        name: GROUP_FOCUS_PATH
-#        repo: 
-#        glob: /(*/*/*)
-#        joinOn: $1
+    - pfs:
+        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+        name: LOCATION_FOCUS_PATH
+        repo: hobou24_fill_date_gaps_and_regularize
+        glob: /hobou24/(*/*/*)
+        joinOn: $1
+    - pfs:
+       # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
+       name: GROUP_FOCUS_PATH
+       repo: pressureAir_level1_group_consolidate_srf
+       glob: /(*/*/*)
+       joinOn: $1
 parallelism_spec:
   constant: 5
 autoscaling: true
