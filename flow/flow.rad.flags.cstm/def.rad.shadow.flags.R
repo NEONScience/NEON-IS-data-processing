@@ -6,7 +6,7 @@
 #' @description Definition function. Using site specific thresholds and location information for site calculate, calculate solar
 #' angles and the impact of lightning rod shading radiation pedestal. 
 #' 
-#' @param data data frame or data.table of incoming radiation data. 
+#' @param flagDf data frame input to append flags to reqs at least var readout_time
 #' 
 #' @param DirIn list of incoming directories. Used to check for location/threshold information. Function cannot run without both
 #' 
@@ -30,9 +30,12 @@
 #  Teresa Burlingame (2025-09-15)
 #     Initial creation
 ##############################################################################################
+###### TODO look into making more efficient (does it need to be one sec, does it need to be TF then 0/1 etc)
+#### Add a -1 scenario? After finished if val is not 0/1 make -1? 
+
 def.rad.shadow.flags <- function(DirIn, 
-                                 data, 
-                                  log = NULL){
+                                 flagDf,
+                                 log = NULL){
   if(base::is.null(log)){
       log <- NEONprocIS.base::def.log.init()
     }   
@@ -41,6 +44,15 @@ def.rad.shadow.flags <- function(DirIn,
   library(suncalc)
   library(lubridate)
   library(dplyr)
+  
+  if(!"readout_time" %in% names(flagDf)){
+    log$error("readout_time not in flagDF variable. Invalid configuration.")
+    stop()
+  } 
+  
+  #store names before transformation 
+  original_flagDf_cols <- names(flagDf)
+  
   
   #read in thresholds for shading
   dirInThsh <- fs::path(DirIn,'threshold')
@@ -67,6 +79,9 @@ def.rad.shadow.flags <- function(DirIn,
   ########
   
   # Verify terms exist (vectorized)
+  #TODO open up to more terms for SPN1/other sensors?
+  #input parameter! tailor to be clear that it's in one parameter. 
+  # look at stats flow termTest1 etc
   termTest <- "shortwaveRadiation"
   if (!termTest %in% thsh$term_name) {
     log$error(base::paste0('Missing threshold term: ', termTest))
@@ -74,11 +89,13 @@ def.rad.shadow.flags <- function(DirIn,
   }
   
   # Extract thresholds using vectorized lookup
-  thsh_subset <- thsh[thsh$term_name == termTest, ]
+  thsh_subset <- thsh[thsh$term_name == termTest,]
   
   threshold_lookup <- setNames(thsh_subset$number_value, thsh_subset$threshold_name)
   
   # Pre-allocate threshold variables
+  
+  #TODO to customize consider threshold names including the shading item in question eg LR, Cimel, NRSS project?
   thresholds <- list(
     Azimuth = threshold_lookup["Azimuth"],
     Length = threshold_lookup["Length"],
@@ -96,7 +113,7 @@ def.rad.shadow.flags <- function(DirIn,
   az <- as.numeric(thresholds$Azimuth)
   len <- as.numeric(thresholds$Length)
   len_corrector <- as.numeric(thresholds$Length_corrector)
-  alt_adj <-as.numeric(thresholds$Altitude)
+  alt <-as.numeric(thresholds$Altitude)
   
   #######TODO test on site with blanks to see if REALM fills in
   
@@ -153,7 +170,7 @@ def.rad.shadow.flags <- function(DirIn,
   
   #use readout_time of data to add lat/long and azimuth calculations . 
   
-  df_solar_pos <- data.frame(date = data$readout_time)
+  df_solar_pos <- data.frame(date = flagDf$readout_time)
   df_solar_pos$lat = lat_tow
   df_solar_pos$lon =  lon_tow
   #data frame by date
@@ -165,24 +182,24 @@ def.rad.shadow.flags <- function(DirIn,
   df_solar_pos$deg_az <- round((df_solar_pos$azimuth*(180/pi)) + 180)
   df_solar_pos$deg_alt <- (df_solar_pos$altitude*(180/pi)) 
   
-  ########how to make more customizable? what if I want thresholds for cimel in the future? Or NRSS projects
+  ######## TODO? how to make more customizable? what if I want thresholds for cimel in the future? Or NRSS projects
   
   #2.6m higher than radiation pedestal
   df_solar_pos$shadow_length_LR <-  2.6/tan(df_solar_pos$altitude) #3m rod - ~0.4m spn1 height
   
   #consider buffer to be also programatic based on shadow length. 
-  df_shadow<- df_solar_pos %>% dplyr::filter( (deg_az >=az - deg_buffer & deg_az <= az + deg_buffer) & deg_alt >= alt_adj & shadow_length_LR >= len*len_corrector) 
+  df_shadow<- df_solar_pos %>% dplyr::filter((deg_az >=az - deg_buffer & deg_az <= az + deg_buffer) & deg_alt >= alt & shadow_length_LR >= len*len_corrector) 
   
   # Check for proximity to df_shadow dates (Flag 1 potential)
   #buffer based on distance to sensor. 
-  data <- data %>%
+  flagDf <- flagDf %>%
     mutate(
       # Create a temporary boolean for lightning shading from df_shadow
       shadowQF = sapply(readout_time, function(ts_time) {
-        any(abs(difftime(ts_time, df_shadow$date, units = "sec")) <= buffer)
+        any(abs(difftime(ts_time, df_shadow$date, units = "mins")) <= buffer)
       })
     ) %>% 
     mutate(shadowQF = as.integer(shadowQF)) #TF as integer is 0/1
   
-  return(data)
+  return(flagDf)
   }

@@ -28,9 +28,7 @@
 #'
 #' @param SchmQf (Optional). A json-formatted character string containing the schema for the custom flags being applied.
 #' 
-#'  @param Shadow (defaults F). Logical whether to source custom function def.rad.shadow.flags 
-#'  
-#' @param Cmp22Heater (defaults F). Logical whether to source custom function def.cmp.heater.flags 
+#' @param RadFlags (Optional). A list of flags to run. If not provided it will fail the script. 
 #' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data/flags/threshold folders in the input path that are to be copied with a 
@@ -70,18 +68,20 @@
 
 ##############################################################################################
 wrap.rad.flags.cstm <- function(DirIn,
-                                    DirOutBase,
-                                    SchmQf=NULL,
-                                    DirSubCopy=NULL,
-                                    FlagsRad=NULL,
-                                    log=NULL
+                                DirOutBase,
+                                SchmQf=NULL,
+                                DirSubCopy=NULL,
+                                FlagsRad=NULL,
+                                log=NULL
 ){
 
+  ####TODO check libraries and function calls
+  
   library(dplyr)
   
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
-  } 
+  }
   
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
@@ -93,8 +93,7 @@ wrap.rad.flags.cstm <- function(DirIn,
                                 DirSub = c('flags', 'data'),
                                 log = log)
 
-  
-  
+
   # Copy with a symbolic link the desired subfolders 
   DirSubCopy <- base::unique(DirSubCopy)
   if(base::length(DirSubCopy) > 0){
@@ -106,6 +105,7 @@ wrap.rad.flags.cstm <- function(DirIn,
   } 
   
   #no custom flags were given, passing through module. 
+  # TODO test what happens if none of the available options in here? QF_DF will just be readout time? 
   if (is.null(FlagsRad)){
     log$info("No custom flags specified, skipping datum")
     return()
@@ -120,40 +120,33 @@ wrap.rad.flags.cstm <- function(DirIn,
                                             RmvDupl=TRUE,
                                             Df=TRUE, 
                                             log=log)
-  #run heater flag script
+  
+  #initialize flagsDf to have same readout_time as data of interest
+  flagDf <- data.frame(readout_time = data$readout_time)
+
   if("Cmp22Heater" %in% FlagsRad){
     source("./def.cmp22.heater.flags.R")
-    data <- def.cmp22.heater.flags(data, log)
+    flagDf <- def.cmp22.heater.flags(data, flagDf, log)
   }
-  
+
   #run radiation shading script
   if("Shadow" %in% FlagsRad){
     source("./def.rad.shadow.flags.R")
-    data <- def.rad.shadow.flags(DirIn, data, log)
+    flagDf <- def.rad.shadow.flags(DirIn, flagDf, log)
   }
 
-  #if schema - get col names from schema, else keep all?
-  if(base::is.null(FileSchmQf) || FileSchmQf == 'NA'){
-    qfCust <- data
-  } else {
-    # Parse JSON and extract field names
-    schema_json <- jsonlite::fromJSON(FileSchmQf)
-    field_names <-schema_json$fields$name
-    qfCust <- data[,field_names]
-  }
- 
   # Create output filenames
   nameFileIdxSplt <- strsplit(fileData, '.', fixed = TRUE)[[1]]
   base_name <- paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt) - 1)], collapse = '.')
   extension <- utils::tail(nameFileIdxSplt, 1)
   
   nameFileQfOutFlag <- paste0(base_name, "_customFlags.", extension)
-
+#### TODO error finding parquet file? 
   pathFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
       
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
-          data = qfCust,
+          data = flagDf,
           NameFile = pathFileQfOutFlag,
           log=log
         ),

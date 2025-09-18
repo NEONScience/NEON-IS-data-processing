@@ -168,7 +168,7 @@ DirIn <-
                               nameDirSub =  nameDirSub,
                               log = log)
 
-#flag functions to run. If not explicitly true in Paramaters will be set to false. 
+#flag functions to run. If blank functions will be passed over and data will just pass through 
 
 FlagsRad <- base::unique(Para$FlagsRad)
 
