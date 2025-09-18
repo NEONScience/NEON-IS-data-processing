@@ -30,7 +30,7 @@ input:
       repo: metone370380_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 2
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 600M
