@@ -21,7 +21,8 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "TermQf=ux_wind_speed|uy_wind_speed|uz_wind_speed|speed_of_sound"
+      "TermQf=asrpH2O|asrpCO2" \
+      DirSubCopy=calibration
     EOF
   env:
     # Environment variables for filter-joiner
