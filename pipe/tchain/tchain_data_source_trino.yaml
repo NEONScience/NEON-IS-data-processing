@@ -94,7 +94,7 @@ transform:
     # run array parser
     if [[ -d "$OUT_PATH/${SOURCE_TYPE}_raw" ]]; then
       # Run array parser 
-      # export LOG_LEVEL=DEBUG
+      # export LOG_LEVEL=INFO
       export SCHEMA_PATH=$FILE_SCHEMA_PARSED
       export DATA_PATH=$OUT_PATH/${SOURCE_TYPE}_raw
       echo "Running array parser"
@@ -207,24 +207,10 @@ resource_limits:
   memory: 800M
   cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

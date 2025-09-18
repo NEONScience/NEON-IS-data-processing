@@ -134,8 +134,11 @@ def main():
     if len(pipeline_reqs_update) == 0:
         print('No pipelines to update. Exiting.')
         return None
-    else:
-        print(f'{len(pipeline_reqs_update)} total pipelines will be updated/created')
+    elif len(pipeline_reqs_update) == 1:
+        # Turn off transaction if a single pipeline will be created/updated
+        transaction = False
+    
+    print(f'{len(pipeline_reqs_update)} total pipelines will be updated/created')
     
     # Start transaction
     txn_id = ""

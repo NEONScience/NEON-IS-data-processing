@@ -12,8 +12,8 @@ transform:
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
     OUT_PATH_KAFKA: /pfs/out/kafka
     OUT_PATH_TRINO: /pfs/out/trino
-    START_DATE: "2025-05-01" # Inclusive
-   # END_DATE: "2023-11-23" # Inclusive
+    START_DATE: "2025-07-29" # Inclusive
+    END_DATE: "2025-08-02" # Inclusive
     SOURCE_TYPE: "prtncon"
   cmd:
   - sh
@@ -39,7 +39,8 @@ input:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      spec: "@never"
+      #spec: "0 0 * * *" # Run at 00:00 GMT
       overwrite: true
   - pfs:
       name: SITE_FILE_KAFKA
@@ -61,18 +62,4 @@ sidecar_resource_requests:
 autoscaling: true
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

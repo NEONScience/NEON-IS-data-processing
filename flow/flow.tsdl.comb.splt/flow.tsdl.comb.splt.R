@@ -42,34 +42,31 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
 #'
-#' 3. "NameDirCombOut=value", where value is the name of the output directory that will be created to
-#' hold the combined file, e.g. "level1_reshape".
-#'
-#' 4. "NameVarTime=value", where value is the name of the time variable(s) common across all
+#' 3. "NameVarTime=value", where value is the name of the time variable(s) common across all
 #' files, separated by pipes. Note that any missing timestamps among the files will be filled with NA values.
 #' e.g. "001|030"
 #'
-#' 5. "FileSchmMapDepth=value", where value is the file path to the schema that maps named location depths
+#' 4. "FileSchmMapDepth=value", where value is the file path to the schema that maps named location depths
 #'  to data's depth column naming convention.
 #'
-#' 6. "FileSchmMapCols=value" (optional), where value is the file path to the schema that maps existing
+#' 5. "FileSchmMapCols=value" (optional), where value is the file path to the schema that maps existing
 #' strings in data column names to substitute values. (e.g. WaterTemp becomes tsdWaterTemp). 
 #'
-#' 7. "NameFileSufxRm=value" (optional), where value is a character vector of suffix(es) to remove from the output
+#' 6. "NameFileSufxRm=value" (optional), where value is a character vector of suffix(es) to remove from the output
 #' file name (before any extension). For example, if the shortest file name found in the input files is 
 #' "prt_CFGLOC12345_2019-01-01_basicStats.parquet", and the input argument is "NameFileSufxRm=_basicStats", then the 
 #' output file will be "prt_CFGLOC12345_2019-01-01.parquet". Default is c("basicStats","qualityMetrics") for removal.
 #'  
-#' 8. "MrgeCols=value" (optional), where values is the name of the columns that all data files contain 
+#' 7. "MrgeCols=value" (optional), where values is the name of the columns that all data files contain 
 #' for merging. Each column name is separated by pipes. Default "startDateTime|endDateTime".
 #' 
-#' 9. "LocDir=value" (optional), where LocDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 8. "LocDir=value" (optional), where LocDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  location file(s). Default "location".
 #' 
-#' 10. "StatDir=value" (optional), where StatDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 9. "StatDir=value" (optional), where StatDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  the stats data files for each time variable. Default "stats".
 #' 
-#' 11. "QmDir=value" (optional), where QmDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 10. "QmDir=value" (optional), where QmDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  quality metrics files for each time variable. Default "quality_metrics".
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -86,10 +83,12 @@
 #' @keywords Currently none
 
 #' @examples 
-#' Rscript ./flow.tsdl.comb.splt.R "DirIn=/home/NEON/glitt/pfs/tempSpecificDepthLakes_level1_group/tchain/2019/01/10/" 
-#' "DirOut=/home/NEON/glitt/pfs/tsdl_comb_long" "NameDirCombOut=/level1_reshape" "NameVarTime=001|030" 
-#' "FileSchmMapDepth=./tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc" 
-#' "FileSchmMapCols=./tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc"
+# Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_level1_group/2025/06/11/temp-specific-depths-lakes_BARC103100')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","NameVarTime=001|030", "SplitGroupName=temp-specific-depths-lakes-split_",
+#          "FileSchmMapDepth=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
+#          "FileSchmMapCols=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc")
+# rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso Currently none.
 
@@ -98,12 +97,15 @@
 #     original creation/adapted from flow.data.comb.ts.R by CS
 #   Guy Litt (2021-05-11)
 #     update documentation
+#   Nora Catolico (2025-06-17)
+#     add logic to split into separate directories and update group files
 
 ##############################################################################################
 library(dplyr)
 library(data.table)
 library(NEONprocIS.base)
 library(stringr)
+library(jsonlite)
 
 source("./wrap.file.comb.tsdl.splt.R")
 source("./wrap.schm.map.char.gsub.R")
@@ -120,12 +122,13 @@ arg <- base::commandArgs(trailingOnly = TRUE)
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut", "NameDirCombOut", "NameVarTime", "FileSchmMapDepth"),
+    NameParaReqd = c("DirIn", "DirOut", "DirErr", "NameVarTime", "FileSchmMapDepth", "SplitGroupName"),
     NameParaOptn = c("FileSchmMapCols",
                      "MrgeCols",
                      "LocDir",
                      "StatDir",
                      "QmDir",
+                     "GroupDir",
                      "NameFileSufxRm",
                      "CorrColNams"),
     log = log
@@ -148,6 +151,9 @@ if(base::is.null(Para$QmDir)){
 if(base::is.null(Para$NameFileSufxRm)){
   Para$NameFileSufxRm <- base::c("basicStats","qualityMetrics")
 }
+if(base::is.null(Para$SplitGroupName)){
+  Para$SplitGroupName <- base::c("temp-specific-depths-lakes-split_")
+}
 if(base::is.null(Para$CorrColNams)){
   Para$CorrColNams <- TRUE
 }
@@ -166,12 +172,6 @@ log$debug(
   base::paste0(
     'All files found in the following directories will be combined: ',
     base::paste0(Para$DirComb, collapse = ',')
-  )
-)
-log$debug(
-  base::paste0(
-    'A single combined data file will be populated in the directory: ',
-    Para$NameDirCombOut
   )
 )
 
@@ -205,102 +205,53 @@ for (idxDirIn in DirIn) {
     base::list.files(base::paste0(idxDirIn, '/', Para$DirComb), full.names =
                        TRUE)
   
-  # Gather info about the input directory (including date) and create the output directory.
+  # Gather info about the input directory (including date).
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn,log=log)
-  idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
-  idxDirOutComb <- base::paste0(idxDirOut, '/', Para$NameDirCombOut)
-  NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
-                                DirSub = Para$NameDirCombOut,
-                                log = log)
   
-  # Combine data files
-  dataLs <- NULL
-  dataLs <- # NEONprocIS.base::
-   wrap.file.comb.tsdl.splt(filePths = filePath,
+  #find group directory
+  Site <- sub(".*(temp-specific-depths-lakes_[^/]+)/.*", "\\1", idxDirIn)
+  SiteDir <- sub(paste0(Site,".*"), Site, idxDirIn)
+  log$debug(base::paste0('Site directory: ', SiteDir))
+  GroupDir <- paste0(SiteDir,"/group")
+  log$debug(base::paste0('Group directory: ', GroupDir))
+  
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      # Combine data files
+      wrap.file.comb.tsdl.splt(InfoDirIn = InfoDirIn,
+                               DirOut = Para$DirOut,
+                            filePths = filePath,
+                            fileNames = fileNamz,
                            nameVarTime = Para$NameVarTime,
                            mrgeCols = Para$MrgeCols,
                            locDir = Para$LocDir,
                            statDir = Para$StatDir,
                            qmDir = Para$QmDir,
+                           GroupDir = GroupDir,
                            nameSchmMapDpth = Para$FileSchmMapDepth,
                            nameSchmMapCols = Para$FileSchmMapCols,
-                           log = log)
-  
-  # Separate by timing index:
-  for(nameVarTime in Para$NameVarTime){
-    dataTime <- dataLs[[nameVarTime]]
-    
-    log$debug(base::paste0(
-      'HOR.VER locations found in the combined data files: ',
-      base::paste0(base::names(dataTime), collapse = ",")
-    ))
-    
-    for(nameLoc in base::names(dataTime)){
-      data <- dataTime[[nameLoc]]
+                           NameFileSufxRm = Para$NameFileSufxRm,
+                           SplitGroupName = Para$SplitGroupName,
+                           log = log
+      ),
+      error = function(err) {
+        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
         
-        
-      # Take stock of the combined data
-      nameCol <- base::names(data)
-      log$debug(base::paste0(
-        'Columns found in the combined data files: ',
-        base::paste0(nameCol, collapse = ',')
-      ))
-      
-      # ----------------------------------------------------------------------- #
-      # Remove suffix strings, Take the shortest file name, insert HOR.VER.TMI
-      # ----------------------------------------------------------------------- #
-      # Subset to dat files that should begin with 'tchain'
-      fileDat <- fileNamz[base::intersect(base::grep("tchain", fileNamz), base::grep(nameVarTime,fileNamz))] 
-      
-      # Remove the NameFileSufx strings to simplify output filename
-      fileDats <-  base::lapply(Para$NameFileSufxRm, 
-                                function(x) 
-                                  base::gsub(pattern="__",replacement="_",
-                                             base::gsub(pattern=x,replacement = "",
-                                                        fileDat) ) )
-      fileDats <- base::unlist(base::lapply(fileDats, 
-                                            function(x) x[base::which.min(base::nchar(x))]))
-
-      fileBase <-
-        fileDats[base::nchar(fileDats) == base::min(base::nchar(fileDats))][1]
-      # Insert the HOR.VER into the filename by replacing the nameVarTime with the standard HOR.VER.TMI
-      fileBaseLoc <- base::gsub(nameVarTime,
-                                base::paste0(nameLoc,".",nameVarTime),fileBase)
-      
-      fileOut <-
-        NEONprocIS.base::def.file.name.out(nameFileIn = fileBaseLoc,
-                                           sufx = "",
-                                           log = log)
-      log$debug(base::paste0(
-        "Named output filepath as ", fileOut))
-      
-      nameFileOut <- base::paste0(idxDirOutComb, '/', fileOut)
-      
-      # ----------------------------------------------------------------------- #
-      # Write out the file.
-      # ----------------------------------------------------------------------- #
-      rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-          data = data,
-          NameFile = nameFileOut,
-          NameFileSchm = NULL,
-          Schm = NULL,
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
           log=log
-        ),
-        silent = TRUE)
-      if (base::class(rptWrte) == 'try-error') {
-        log$error(base::paste0(
-          'Cannot write combined file ',
-          nameFileOut,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
-      } else {
-        log$info(base::paste0('Combined data written successfully in file: ',
-                              nameFileOut))
+        )
       }
-    } # end loop on HOR.VER
-  }
+    ),
+    # This simply to avoid returning the error
+    error=function(err) {}
+  )
   
 } # End loop around datum paths

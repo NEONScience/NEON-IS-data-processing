@@ -7,7 +7,7 @@ on:
     paths:
       - 'modules_combined/thresh_select_precip_stats/**'
       - 'flow/flow.thsh.slct/**'
-      - '/flow/flow.precip.bucket/**'
+      - 'flow/flow.precip.bucket/**'
 
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 

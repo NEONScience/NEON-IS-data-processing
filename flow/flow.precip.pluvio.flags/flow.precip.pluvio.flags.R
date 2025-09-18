@@ -54,7 +54,7 @@
 #' gapQF
 #' rangeQF
 #' stepQF
-#' TODO add calibration flag info 
+#' TODO add calibration flag info ?
 #' sensorErrorQF
 #' heaterErrorQF
 #' 
@@ -105,7 +105,7 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function and other dependency functions. Assume it is in the working directory
-source("./wrap.precip.pluvio.stats.R")
+source("./wrap.precip.pluvio.flags.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -136,7 +136,7 @@ Para <-
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "SchmQm"
+                     "SchmQf"
                      ),
     log = log
   )
@@ -147,30 +147,16 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve output schema for  stats
-FileSchmQm <- Para$SchmQm
+# Retrieve output schema for  flags
+FileSchmQf <- Para$SchmQf
 log$debug(base::paste0('Output schema for bulk precipitation custom flags: ',base::paste0(FileSchmData,collapse=',')))
 
 # Read in the schema 
-if(base::is.null(FileSchmQm) || FileSchmQm == 'NA'){
-  FileSchmQm <- NULL
+if(base::is.null(FileSchmQf) || FileSchmQf == 'NA'){
+  FileSchmQf <- NULL
 } else {
-  FileSchmQm <- base::paste0(base::readLines(FileSchmQm),collapse='')
+  FileSchmQf <- base::paste0(base::readLines(FileSchmQf),collapse='')
 }
-
-# TODO do I need data schemas? 
-# # Retrieve output schema for  stats
-# FileSchmData <- Para$SchmData
-# log$debug(base::paste0('Output schema for precipitation data: ',base::paste0(FileSchmData,collapse=',')))
-# 
-# # Read in the schema 
-# if(base::is.null(FileSchmData) || FileSchmData== 'NA'){
-#   FileSchmData <- NULL
-# } else {
-#   FileSchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
-# }
-
-####might need a data schema probably?? 
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
@@ -201,10 +187,9 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.precip.pluvio.flags(DirIn=DirIn,
+      wrap.precip.pluvio.flags(DirIn=idxDirIn,
                               DirOutBase=Para$DirOut,
-                              #SchmData=FileSchmData, # TODO do I need a stat schema? 
-                              SchmQm=FileSchmQm, 
+                              SchmQf=FileSchmQf, 
                               DirSubCopy=DirSubCopy,
                               log=log
       ),

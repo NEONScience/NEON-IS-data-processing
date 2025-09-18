@@ -1,5 +1,0 @@
-precipThroughfall_group_loader.yaml
-precipThroughfall_group_assignment.yaml
-precipThroughfall_group_path.yaml
-precipThroughfall_srf_loader.yaml
-precipThroughfall_srf_assignment.yaml
