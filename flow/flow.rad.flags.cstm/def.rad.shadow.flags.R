@@ -77,7 +77,7 @@ def.rad.shadow.flags <- function(DirIn,
   thsh$threshold_name[thsh$threshold_name == "StdDev multiplier for Min Sigma"] <- "LengthLR"
   thsh$threshold_name[thsh$threshold_name == "Max Sigma Test"] <- "Length_correctorLR"
   thsh$threshold_name[thsh$threshold_name == "StdDev multiplier for Max Sigma"] <- "AltitudeLR"
-  thsh$threshold_name[thsh$threshold_name == "Despiking Method"] <- "Obstruction_heightLR"
+  thsh$threshold_name[thsh$threshold_name == "Delta Test window step - points"] <- "Obstruction_heightLR"
 
   ########
   
