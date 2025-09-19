@@ -129,13 +129,13 @@ wrap.rad.flags.cstm <- function(DirIn,
   flagDf <- data.frame(readout_time = data$readout_time)
 
   if("Cmp22Heater" %in% FlagsRad){
-    #source("./def.cmp22.heater.flags.R")
+    source("./def.cmp22.heater.flags.R")
     flagDf <- def.cmp22.heater.flags(data, flagDf, log)
   }
 
   #run radiation shading script
   if("Shadow" %in% FlagsRad){
-    #source("./def.rad.shadow.flags.R")
+    source("./def.rad.shadow.flags.R")
     flagDf <- def.rad.shadow.flags(DirIn, flagDf, termTest,shadowSource, log)
   }
 
