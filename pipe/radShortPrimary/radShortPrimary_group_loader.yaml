@@ -1,11 +1,10 @@
 pipeline:
-  name: pressureAir_group_loader
+  name: radShortPrimary_group_loader
 transform:
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX_1: pressure-air_
-    GROUP_PREFIX_2: pressure-air-buoy_
+    GROUP_PREFIX: rad-short-primary_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
@@ -18,16 +17,13 @@ transform:
     mount_path: /var/db_secret
   stdin:
     - '#!/bin/bash'
-    - export GROUP_PREFIX=$GROUP_PREFIX_1
-    - python3 -m group_loader.group_loader_main
-    - export GROUP_PREFIX=$GROUP_PREFIX_2
     - python3 -m group_loader.group_loader_main
 input:
   pfs:
     branch: master
     empty_files: true
     glob: /*
-    repo: ptb330a_cron_daily_and_date_control_tick
+    repo: cmp22_cron_daily_and_date_control_tick
 autoscaling: true
 resource_requests:
   memory: 50M
@@ -40,4 +36,18 @@ sidecar_resource_requests:
   cpu: 0.2
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
