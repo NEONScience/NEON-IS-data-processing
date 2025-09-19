@@ -1,33 +1,40 @@
 ##############################################################################################
-#' @title Workflow for missing barometric pressure flag and barometric pressure conversion
+#' @title Workflow for barometric pressure flag and barometric pressure conversion
 
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
-#' @description Workflow. Flags missing barometric pressure for the Level Troll 400. 
-#' Calculates water depth when L1 pressure data is available.
+#' @description Workflow. Calculates converted pressure and flags/removes pressure data if barometric pressure final QF is 1. 
 #' 
 #'
 #' The arguments are: 
 #' 
-#' 1. "DirIn=value", The input path to the data from a single source ID, structured as follows: 
-#' #/pfs/BASE_REPO/#/yyyy/mm/dd/source-id, where # indicates any number of parent and child directories 
+#' 1. "DirIn=value", The input path to the data from a single group ID, structured as follows: 
+#' #/pfs/BASE_REPO/yyyy/mm/dd/group/#, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
-#' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor.
+#' the 4-digit year, 2-digit month, and' 2-digit day.
 #'
 #' 
 #' Nested within this path are the folders:
-#'         /data
-#'         /flags
-#'         /uncertainty_coef
-#'         /uncertainty_data
+#'         /leveltroll400
+#'         /leveltroll400/data
+#'         /leveltroll400/flags
+#'         /leveltroll400/location
+#'         /pressure-air-buoy_*
+#'         /pressure-air-buoy_*/data
+#'         /pressure-air-buoy_*/group
+#'         /pressure-air-buoy_*/location
 #'         
 #' For example:
-#' Input path = pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/01/23681 with nested folders:
-#'         /data
-#'         /flags
-#'         /uncertainty_coef
-#'         /uncertainty_data
+#' Input path = pfs/subsurfMoorTempCond_group_path/2022/06/15/subsurf-moor-temp-cond_PRPO103100 with nested folders:
+#'         /leveltroll400
+#'         /leveltroll400/data
+#'         /leveltroll400/flags
+#'         /leveltroll400/location
+#'         /pressure-air-buoy_PRPO103100
+#'         /pressure-air-buoy_PRPO103100/data
+#'         /pressure-air-buoy_PRPO103100/group
+#'         /pressure-air-buoy_PRPO103100/location
 #'         
 #'        
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
@@ -45,14 +52,19 @@
 #' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable). See below for details.
+#' 
+#' #' 5. "FileSchmUcrt=value" (optional), where values is the full path to the avro schema for the output uncertainty file. 
+#' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
+#' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
+#' nested within term/variable).
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
-#' @return Corrected conductivity data and associated flags for missing temperature data.
+#' @return Corrected pressure data and associated flags for missing bouy barometric pressure data.
 #' Filtered data and quality flags output in Parquet format in DirOut, where the terminal directory 
 #' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
-#' Directories 'data' and 'flags' are automatically populated in the output directory, where the files 
+#' Directories 'data', 'flags', and 'uncertainty' are automatically populated in the output directory, where the files 
 #' for data and flags will be placed, respectively. Any other folders specified in argument
 #' DirSubCopy will be copied over unmodified with a symbolic link. 
 #' 
@@ -67,11 +79,10 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_group_path/2022/06/15/subsurf-moor-temp-cond_PRLA103100')
-#Sys.setenv(FILE_SCHEMA_DATA='~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_cond_corrected.avsc')
-#Sys.setenv(FILE_SCHEMA_QF='~/pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific_temp.avsc')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums") #,"FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_QF")
+# Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_group_path/2022/06/15/subsurf-moor-temp-cond_PRPO103100')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# DirSubCopy<-c('hobou24','group')
+# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums") #,"FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_QF")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -109,7 +120,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","FileSchmUcrt","DirSubCopy"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -131,13 +142,20 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
 } else {
   SchmQfOut <- base::paste0(base::readLines(Para$FileSchmQf),collapse='')
 }
+if(base::is.null(Para$FileSchmQf) || Para$FileSchmUcrt == 'NA'){
+  SchmUcrtOut <- NULL
+} else {
+  SchmUcrtOut <- base::paste0(base::readLines(Para$FileSchmUcrt),collapse='')
+}
+
+
 
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <-
   base::unique(base::setdiff(
     Para$DirSubCopy,
-    c('data', 'uncertainty_coef', 'uncertainty_data', 'flags')
+    c('hobou24','group')
   ))
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
@@ -152,11 +170,6 @@ log$debug(base::paste0(
   'expected subdirectories: ',
   base::paste0(nameDirSub, collapse = ',')
 ))
-nameDirSubPartial <- base::c('pressure')
-log$debug(base::paste0(
-  'expected partial-name subdirectories: ',
-  base::paste0(nameDirSubPartial, collapse = ',')
-))
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
@@ -170,20 +183,15 @@ doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
-  SubDirInPartial <-
-    def.dir.in.partial(DirBgn = idxDirIn,
-                       nameDirSubPartial = nameDirSubPartial,
-                       log = log)
-  
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
       wrap.troll.cond.conv(
         DirIn=idxDirIn,
-        SubDirInPartial = SubDirInPartial,
         DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
         SchmQfOut=SchmQfOut,
+        SchmUcrtOut=SchmUcrtOut,
         DirSubCopy=DirSubCopy,
         log=log
       ),

@@ -1,31 +1,38 @@
 ##############################################################################################
-#' @title Wrapper for Missing Temp Flag and Conductivity Conversion
+#' @title Wrapper for barometric pressure flag and barometric pressure conversion
 
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
-#' @description Wrapper function. Flags conductivity for the Aqua Troll 200 when temperature stream is missing. 
-#' Calculates specific conductance when temperature stream is available.
+#' @description Wrapper function. Calculates converted pressure and flags/removes pressure data if barometric pressure final QF is 1. 
 #'
 #'
-#' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
-#' #/pfs/BASE_REPO/#/yyyy/mm/dd/source-id, where # indicates any number of parent and child directories 
+#' @param DirIn Character value. The input path to the data from a single group ID, structured as follows: 
+#' #/pfs/BASE_REPO/yyyy/mm/dd/group/#, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
-#' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr
+#' the 4-digit year, 2-digit month, and' 2-digit day.
 #'
 #' 
 #' Nested within this path are the folders:
-#'         /data
-#'         /flags
-#'         /uncertainty_coef
-#'         /uncertainty_data
+#'         /leveltroll400
+#'         /leveltroll400/data
+#'         /leveltroll400/flags
+#'         /leveltroll400/location
+#'         /pressure-air-buoy_*
+#'         /pressure-air-buoy_*/data
+#'         /pressure-air-buoy_*/group
+#'         /pressure-air-buoy_*/location
 #'         
 #' For example:
-#' Input path = pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/01/23681 with nested folders:
-#'         /data
-#'         /flags
-#'         /uncertainty_coef
-#'         /uncertainty_data
+#' Input path = pfs/subsurfMoorTempCond_group_path/2022/06/15/subsurf-moor-temp-cond_PRPO103100 with nested folders:
+#'         /leveltroll400
+#'         /leveltroll400/data
+#'         /leveltroll400/flags
+#'         /leveltroll400/location
+#'         /pressure-air-buoy_PRPO103100
+#'         /pressure-air-buoy_PRPO103100/data
+#'         /pressure-air-buoy_PRPO103100/group
+#'         /pressure-air-buoy_PRPO103100/location
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
@@ -34,7 +41,12 @@
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
 #'
-#' @param SchmQf (optional) A json-formatted character string containing the schema for the flags output
+#' @param SchmQfOut (optional) A json-formatted character string containing the schema for the flags output
+#' by this function. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA.
+#'
+#' @param SchmUcrtOut (optional) A json-formatted character string containing the schema for the uncertainty output
 #' by this function. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
@@ -47,10 +59,10 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #' 
-#' @return Corrected conductivity data and associated flags for missing temperature data.
+#' @return Corrected pressure data and associated flags for missing bouy barometric pressure data.
 #' Filtered data and quality flags output in Parquet format in DirOut, where the terminal directory 
 #' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
-#' Directories 'data' and 'flags' are automatically populated in the output directory, where the files 
+#' Directories 'data', 'flags', and 'uncertainty' are automatically populated in the output directory, where the files 
 #' for data and flags will be placed, respectively. Any other folders specified in argument
 #' DirSubCopy will be copied over unmodified with a symbolic link. 
 #' 
@@ -62,12 +74,12 @@
 #' @examples
 #' # Not run
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' SchmDataOut <- base::paste0(base::readLines('~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_cond_corrected.avsc'),collapse='')
-#' SchmQfOut <- base::paste0(base::readLines('~/pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific_temp.avsc'),collapse='')
-#' wrap.troll.cond.conv <- function(DirIn="~/pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/02/1285",
+#' SchmDataOut <- base::paste0(base::readLines('~/pfs/leveltroll400_avro_schemas/leveltroll400/leveltroll400_baro_corrected.avsc'),collapse='')
+#' wrap.troll.cond.conv <- function(DirIn="~/pfs/subsurfMoorTempCond_group_path/2022/06/15/subsurf-moor-temp-cond_PRPO103100",
 #'                               DirOutBase="~/pfs/out",
 #'                               SchmDataOut=SchmDataOut,
-#'                               SchmQf=SchmQfOut,
+#'                               SchmQfOut=SchmQfOut,
+#'                               SchmUcrt=SchmUcrtOut,
 #'                               DirSubCopy=NULL,
 #'                               log=log)
 #'                               
@@ -76,9 +88,10 @@
 #' 
 ##############################################################################################
 wrap.troll.cond.conv <- function(DirIn,
-                               DirOutBase,
+                                 DirOutBase,
                                SchmDataOut=NULL,
-                               SchmQf=NULL,
+                               SchmQfOut=NULL,
+                               SchmUcrtOut=NULL,
                                DirSubCopy=NULL,
                                log=NULL
 ){
@@ -90,20 +103,48 @@ wrap.troll.cond.conv <- function(DirIn,
   
   # Gather info about the input directory (including date), and create base output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
-  dirInData <- fs::path(DirIn,'data')
-  timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
+  
+  TrollDirIn <-
+    def.dir.in.partial(DirBgn = DirIn,
+                       nameDirSubPartial = 'leveltroll400',
+                       log = log)
+  DirInTrollCFGLOC <-
+    NEONprocIS.base::def.dir.in(DirBgn = TrollDirIn,
+                                nameDirSub = 'data',
+                                log = log)
+  DirInTrollData <- fs::path(DirInTrollCFGLOC,'data')
+  DirInTrollFlags <- fs::path(DirInTrollCFGLOC,'flags')
+  DirInTrollLoc <- fs::path(DirInTrollCFGLOC,'location')
+  if(length(DirInTrollData)==0){
+    # Generate error and stop execution
+    log$error(base::paste0('No Troll data found in ', DirIn))
+    base::stop()
+  }
+  InfoDirInTroll <- NEONprocIS.base::def.dir.splt.pach.time(DirInTrollCFGLOC)
+  timeBgn <-  InfoDirInTroll$time # Earliest possible start date for the data
+  fileOutSplt <- base::strsplit(DirInTrollCFGLOC,'[/]')[[1]] # Separate underscore-delimited components of the file name
+  CFGLOC<-tail(x=fileOutSplt,n=1)
+  
+  BaroDirIn <-
+    def.dir.in.partial(DirBgn = DirIn,
+                       nameDirSubPartial = 'pressure',
+                       log = log)
+  DirInBaroData <- fs::path(BaroDirIn,'data')
+  
+  
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
-  DirOutData <- base::paste0(DirOut,'/data')
+  DirOutData <- base::paste0(DirOut,'/pressure/',CFGLOC,'/data')
   base::dir.create(DirOutData,recursive=TRUE)
-  DirInFlags <- base::paste0(DirIn,'/flags')
-  DirOutFlags <- base::paste0(DirOut,'/flags')
+  DirOutFlags <- base::paste0(DirOut,'/pressure/',CFGLOC,'/flags')
   base::dir.create(DirOutFlags,recursive=TRUE)
+  DirOutLoc <- base::paste0(DirOut,'/pressure/',CFGLOC,'/location')
+  base::dir.create(DirOutLoc,recursive=TRUE)
+  DirOutUcrt <- base::paste0(DirOut,'/pressure/',CFGLOC,'/uncertainty_data')
+  base::dir.create(DirOutUcrt,recursive=TRUE)
   
   
   # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- c('uncertainty_coef','uncertainty_data')
   if(base::length(DirSubCopy) > 0){
-    
     NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
                                        DirDest=DirOut,
                                        LnkSubObj=FALSE,
@@ -111,58 +152,85 @@ wrap.troll.cond.conv <- function(DirIn,
   }    
   
   # The flags folder is already populated from the calibration module. Copy over any existing files.
-  fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
+  fileCopy <- base::list.files(DirInTrollFlags,recursive=TRUE) # Files to copy over
   # Symbolically link each file
   for(idxFileCopy in fileCopy){
-    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
+    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInTrollFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
+    rptCopy <- base::system(cmdCopy)
+  }
+  # copy over location files
+  fileCopy <- base::list.files(DirInTrollLoc,recursive=TRUE) # Files to copy over
+  # Symbolically link each file
+  for(idxFileCopy in fileCopy){
+    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInTrollLoc,'/',idxFileCopy),' ',base::paste0(DirOutLoc,'/',idxFileCopy))
     rptCopy <- base::system(cmdCopy)
   }
   
   # Take stock of our data files. 
-  fileData <- base::list.files(dirInData,full.names=FALSE)
+  fileTrollData <- base::list.files(DirInTrollData,full.names=FALSE)
+  fileBaroData <- base::list.files(DirInBaroData,full.names=FALSE)
   
   # --------- Load the data ----------
-  # Load in data file in parquet format into data frame 'data'. Grab the first file only, since there should only be one.
-  fileData <- fileData[1]
-  trollData  <-
-    base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirInData, '/', fileData),
+  # Load in troll data file in parquet format into data frame 'data'. Grab the first file only, since there should only be one.
+  fileTrollData <- fileTrollData[1]
+  TrollData  <-
+    base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInTrollData, '/', fileTrollData),
                                              log = log),
               silent = FALSE)
   if (base::any(base::class(data) == 'try-error')) {
     # Generate error and stop execution
-    log$error(base::paste0('File ', dirData, '/', fileData, ' is unreadable.'))
+    log$error(base::paste0('File ', dirData, '/', fileTrollData, ' is unreadable.'))
     base::stop()
   }
   
-  #create missing temperature flag; default all flags to -1 then change them as the test can be performed
-  trollData$missingTempQF <- -1
-  trollData$missingTempQF[!is.na(trollData$temperature) && trollData$temperature!="NA" && trollData$temperature!="NaN"]<-0
-  trollData$missingTempQF[is.na(trollData$temperature)|trollData$temperature=="NA"|trollData$temperature=="NaN"]<-1
-  source_id<-trollData$source_id[1]
   
-  #convert actual conductivity to specific conductance
-  trollData$specCond <- NA
-  trollData$specCond <- trollData$conductivity/(1+0.0191*(trollData$temperature-25))
-  trollData$specCond[trollData$missingTempQF>0]<-NA #If no temp stream, then do not output specific conductance. Could potentially report acutal conductivity in future. 
+  
+  # Load in the barometric pressure 30min data file in parquet format
+  fileBaroData <- fileBaroData[grepl('030',fileBaroData)][1]
+  BaroData  <-
+    base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInBaroData, '/', fileBaroData),
+                                             log = log),
+              silent = FALSE)
+  if (base::any(base::class(data) == 'try-error')) {
+    # Generate error and stop execution
+    log$error(base::paste0('File ', dirData, '/', fileBaroData, ' is unreadable.'))
+    base::stop()
+  }
+  
+  #Keep relevant BARO data
+  TrollData$baroPressure[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresMean[TrollData$readout_time == BaroData$startDateTime] 
+  TrollData$baroPresExpUncert[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresExpUncert[TrollData$readout_time == BaroData$startDateTime]
+  TrollData$baroPresQF[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresFinalQF[TrollData$readout_time == BaroData$startDateTime]
+  
+  
+  
+  #The surface water pressure is determined by subtracting the air pressure of the atmosphere from the measured pressure.
+  TrollData$pressure_raw<-TrollData$pressure
+  TrollData$pressure <- as.numeric(TrollData$pressure_raw) - as.numeric(TrollData$baroPressure)
+  #don't produce data where baro is flagged
+  TrollData$pressure[TrollData$baroPresQF==1]<-NA
   
   #Create dataframe for output data
-  dataOut <- trollData
-  dataOut$raw_conductivity <- dataOut$conductivity #need to keep for later calculations
-  dataOut$conductivity <- dataOut$specCond #replace actual conductivity with specific conductance
-  dataCol <- c("source_id","site_id","readout_time","pressure","pressure_data_quality","temperature","temperature_data_quality","raw_conductivity","conductivity_data_quality","conductivity","internal_battery")
+  dataOut <- TrollData
+  dataCol <- c("source_id","readout_time","pressure","temperature")
   dataOut <- dataOut[,dataCol]
   
   #Create dataframe for just flags
-  QFCol <- c("readout_time", "missingTempQF")
-  flagsOut <- trollData[,QFCol]
+  QFCol <- c("readout_time", "baroPresQF")
+  flagsOut <- TrollData[,QFCol]
+  
+  #Create dataframe for just ucrt
+  UcrtCol <- c("readout_time", "baroPresExpUncert")
+  ucrtOut <- TrollData[,UcrtCol]
   
   #Turn necessary outputs to integer
-  colInt <- c("missingTempQF") 
+  colInt <- c("baroPresQF") 
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
   
-
+  source_id <- TrollData$source_id[1]
+  
   # Write out data
-  NameFileOutData <- base::paste0(DirOutData,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet")
+  NameFileOutData <- base::paste0(DirOutData,"/leveltroll400_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet")
   rptDataOut <-
     base::try(NEONprocIS.base::def.wrte.parq(data = dataOut,NameFile = NameFileOutData,Schm = SchmDataOut),
     silent = TRUE)
@@ -174,13 +242,23 @@ wrap.troll.cond.conv <- function(DirIn,
   }
   
   #Write out flags
-  NameFileOutFlags <- base::paste0(DirOutFlags,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc_Temp.parquet")
-  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQf),silent=TRUE)
+  NameFileOutFlags <- base::paste0(DirOutFlags,"/leveltroll400_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecific_baro.parquet")
+  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQfOut),silent=TRUE)
   if(base::any(base::class(rptQfOut) == 'try-error')){
     log$error(base::paste0('Cannot write flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
     stop()
   } else {
     log$info(base::paste0('Flags written successfully in ', NameFileOutFlags))
+  }
+  
+  #Write out ucrt
+  NameFileOutUcrt <- base::paste0(DirOutUcrt,"/leveltroll400_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_expn_ucrt_baro.parquet")
+  rptUcrtOut <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut,NameFile = NameFileOutUcrt,Schm = SchmUcrtOut),silent=TRUE)
+  if(base::any(base::class(rptUcrtOut) == 'try-error')){
+    log$error(base::paste0('Cannot write barometric pressure uncertainty to ',NameFileOutUcrt,'. ',attr(rptUcrtOut, "condition")))
+    stop()
+  } else {
+    log$info(base::paste0('Barometric pressure uncertainty written successfully in ', NameFileOutUcrt))
   }
   
 } # End loop around datum paths

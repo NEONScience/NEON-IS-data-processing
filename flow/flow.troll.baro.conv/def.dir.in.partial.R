@@ -1,4 +1,4 @@
-def.dir.in.partial<-function (DirBgn, nameDirSubPartialPartial, log = NULL) 
+def.dir.in.partial<-function (DirBgn, nameDirSubPartial, log = NULL) 
 {
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -25,12 +25,12 @@ def.dir.in.partial<-function (DirBgn, nameDirSubPartialPartial, log = NULL)
     setMtch <- grepl(nameDirSubPartial,dirAllEnd)
     dirAll <- dirAll[setMtch]
   }
-  if (base::length(DirIn) == 0) {
+  if (base::length(dirAll) == 0) {
     log$warn(base::paste0("No datums found for processing in parent directory ", 
                           DirBgn))
   }
   else {
-    log$info(base::paste0(base::length(DirIn), " datums found for processing. 
+    log$info(base::paste0(base::length(dirAll), " datums found for processing. 
                           ",dirAll))
   }
   return(dirAll)
