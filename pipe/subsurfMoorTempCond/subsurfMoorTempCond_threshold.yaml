@@ -14,9 +14,9 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp|depth11WaterTemp
+    TERM: pressure|temperature|conductivity
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
-    CTXT: subsurfaceLake
+    CTXT: subsurface-lake
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret

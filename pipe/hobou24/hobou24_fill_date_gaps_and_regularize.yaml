@@ -77,7 +77,7 @@ input:
       - pfs:
           name: DATE_LIMITER_PATH
           repo: hobou24_cron_daily_and_date_control
-          glob: /hobou24(*/*/*)
+          glob: /hobou24/(*/*/*)
           joinOn: $1
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY

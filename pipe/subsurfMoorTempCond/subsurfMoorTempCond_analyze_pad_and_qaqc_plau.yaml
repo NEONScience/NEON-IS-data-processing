@@ -32,17 +32,9 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQf=$SCHEMA_FLAGS \
-      "TermTest1=depth0WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest2=depth1WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest3=depth2WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest4=depth3WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest5=depth4WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest6=depth5WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest7=depth6WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest8=depth7WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest9=depth8WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest10=depth9WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest11=depth10WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
+      "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike" \
+      "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike" \
+      "TermTest3=conductivity:null|gap|range(rmv)|step(rmv)|spike" \
       DirSubCopy=location
     EOF
   env:
