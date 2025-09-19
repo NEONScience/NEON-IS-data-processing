@@ -126,7 +126,9 @@ Para <-
     NameParaOptn = c(
                      "DirSubCopy",
                      "SchmQf",
-                     "FlagsRad"
+                     "FlagsRad",
+                     "termTest",
+                     "shadowSource"
                      ),
     log = log
   )
@@ -176,6 +178,22 @@ if(base::is.null(FlagsRad) || FlagsRad == 'NA'){
   FlagsRad <- NULL
   log$info("No Custom Flags found for processing")}
 
+
+# term tests for shading. If blank and shadow script sourced will fail
+termTest <- base::unique(Para$termTest)
+
+if(base::is.null(termTest) || termTest == 'NA'){
+  termTest <- NULL
+  log$info("No termTest found for processing")}
+
+# source of shading for shading. If blank and shadow script sourced will fail
+shadowSource <- base::unique(Para$shadowSource)
+
+if(base::is.null(shadowSource) || shadowSource == 'NA'){
+  shadowSource <- NULL
+  log$info("No shadowSource found for processing")}
+
+
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
@@ -189,6 +207,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                               SchmQf=FileSchmQf, 
                               DirSubCopy=DirSubCopy,
                               FlagsRad=FlagsRad,
+                              termTest=termTest,
+                              shadowSource=shadowSource,
                               log=log
       ),
       error = function(err) {

@@ -30,6 +30,8 @@
 #' 
 #' @param RadFlags (Optional). A list of flags to run. If not provided it will fail the script. 
 #' 
+#' @param termTest (Optional). terms to run for shading flag. If NULL and Shadow is in RadFlags will result in errored datum.
+#' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data/flags/threshold folders in the input path that are to be copied with a 
 #' symbolic link to the output path (i.e. carried through as-is). Note that the 'stats' and 'flags' directories 
@@ -58,7 +60,7 @@
 #' DirIn='/scratch/pfs/cmp_analyze_pad_and_qaqc_plau/2025/03/31/'
 #' DirOutBase='/scratch/pfs/out_tb'
 
-#' wrap.rad.flags.cstm(DirIn,DirOutBase,DirSubCopy,shadow,cmp_heat)
+#' wrap.rad.flags.cstm(DirIn,DirOutBase,DirSubCopy,RadFlags,termTest)
 
 #' @seealso Currently none
 
@@ -70,8 +72,10 @@
 wrap.rad.flags.cstm <- function(DirIn,
                                 DirOutBase,
                                 SchmQf=NULL,
+                                termTest=NULL,
                                 DirSubCopy=NULL,
                                 FlagsRad=NULL,
+                                shadowSource=NULL,
                                 log=NULL
 ){
 
@@ -125,14 +129,14 @@ wrap.rad.flags.cstm <- function(DirIn,
   flagDf <- data.frame(readout_time = data$readout_time)
 
   if("Cmp22Heater" %in% FlagsRad){
-    source("./def.cmp22.heater.flags.R")
+    #source("./def.cmp22.heater.flags.R")
     flagDf <- def.cmp22.heater.flags(data, flagDf, log)
   }
 
   #run radiation shading script
   if("Shadow" %in% FlagsRad){
-    source("./def.rad.shadow.flags.R")
-    flagDf <- def.rad.shadow.flags(DirIn, flagDf, log)
+    #source("./def.rad.shadow.flags.R")
+    flagDf <- def.rad.shadow.flags(DirIn, flagDf, termTest,shadowSource, log)
   }
 
   # Create output filenames
@@ -141,7 +145,6 @@ wrap.rad.flags.cstm <- function(DirIn,
   extension <- utils::tail(nameFileIdxSplt, 1)
   
   nameFileQfOutFlag <- paste0(base_name, "_customFlags.", extension)
-#### TODO error finding parquet file? 
   pathFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
       
       rptWrte <-
