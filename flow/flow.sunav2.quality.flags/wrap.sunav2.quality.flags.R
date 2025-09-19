@@ -4,22 +4,25 @@
 #' @author
 #' Bobby Hensley \email{hensley@battelleecology.org}
 #' 
-#' @description Wrapper function. Uses thresholds to apply quality flags to SUNA data.
+#' @description Wrapper function. Uses thresholds to apply sensor-specific quality flags to SUNA data.  
+#' Measurements where the lamp has not had enough time to stabilze  (nitrateLampStabilizeQF=1) are removed. 
 #'
-#' @param DirIn Character value. The file path to the input data and quality flag thresholds.
-#'  
-#' @param DirOutFlags Character value. The file path for the output data. 
+#' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #' 
-#' @param SchmFlagsOut (optional), A json-formatted character string containing the schema for the output data 
-#' file. If this input is not provided, the output schema for the data will be the same as the input data
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA.
+#' @param DirInAdditional Character value.  The file path to the log file flags and calibration flags.
+#'  
+#' @param DirOut Character value. The base file path for the output data. 
+#' 
+#' @param SchmData (optional), A json-formatted character string containing the schema for the data file.
+#' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
+#' 
+#' @param SchmFlagsOut (optional), A json-formatted character string containing the schema for the output flags. 
 #' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #' 
-#' @return SUNA data with sensor-specific quality flags applied in daily parquets.
+#' @return SUNA data file and combined flag file in daily parquets.
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -28,133 +31,179 @@
 #' 
 #' @examples
 #' # Not run
-# DirInData<-"~/pfs/sunav2_location_group_and_restructure/2024/09/10/CFGLOC110733/data" 
-# DirInThresholds<-"~/pfs/nitrate_thresh_select_ts_pad/2024/09/10/nitrate_CRAM103100/sunav2/CFGLOC110733/threshold"
-# DirOutFlags<-"~/pfs/sunav2_sensor_specific_flags/2024/09/10/CFGLOC110733/flags/" 
-# SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_sensor_specific_flags.avsc'),collapse='')
+# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620" 
+# DirInAdditional<-"~/pfs/nitrate_group_path/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620/flags"
+# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620" 
+# SchmData<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
+# SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_all_flags.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'
-#'                                                              
-#'                                                                                             
-#'                                                                                                                            
 #'                                                                                                                                                                                          
 #' @changelog
-#' Bobby Hensley (2025-08-30) created
+#' Bobby Hensley (2025-08-30)
+#' Initial creation.
+#' 
+#' Bobby Hensley (2025-09-18)
+#' Updated so that measurements prior to lamp stabilization (never intended to be
+#' used in downstream pipeline) are removed.
 #' 
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
+                                      DirInAdditional,
                                       DirOut,
+                                      SchmData=NULL,
                                       SchmFlagsOut=NULL,
                                       log=NULL
 ){
   
-  #' Start logging if not already
+  #' Start logging if not already.
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
   } 
   
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirInData <- paste0(DirIn,"/data")
+  DirInPlaus <- paste0(DirIn,"/flags")
   DirInThresholds <- paste0(DirIn,"/threshold")
-  DirOutFlags <- base::paste0(DirOut,InfoDirIn$dirRepo,'/flags')
+  DirOutData <- base::paste0(DirOut,"/data")
+  DirOutFlags <- base::paste0(DirOut,"/flags")
   
-  #' Read in parquet file of SUNA data
+  #' Read in parquet file of SUNA data.
   dataFileName<-base::list.files(DirInData,full.names=FALSE)
   sunaData<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', dataFileName),
                                              log = log),silent = FALSE)
   
-  #' Convert measurements to be tested from class character to numeric
+  #' Read in parquet file of QAQC plausibility flags.
+  plausFileName<-base::list.files(DirInPlaus,full.names=FALSE)
+  plausFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInPlaus, '/', plausFileName),
+                                                     log = log),silent = FALSE)
+  
+  #' Read in parquet file of calibration flags.
+  calFileName<-grep("flagsCal",base::list.files(DirInAdditional,full.names=FALSE),value=TRUE)  
+  calFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInAdditional, '/', calFileName),
+                                                     log = log),silent = FALSE)
+  
+  #' Read in parquet file of logged file flags.
+  logFileName<-grep("logFlags",base::list.files(DirInAdditional,full.names=FALSE),value=TRUE)  
+  logFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInAdditional, '/', logFileName),
+                                                     log = log),silent = FALSE)
+  
+  #' Convert measurements to be tested from class character to numeric.
   sunaData$relative_humidity<-as.numeric(sunaData$relative_humidity)
   sunaData$lamp_temperature<-as.numeric(sunaData$lamp_temperature)
   sunaData$spec_average<-as.numeric(sunaData$spec_average)
   sunaData$dark_signal_average<-as.numeric(sunaData$dark_signal_average)
   
-  #' Create data frame of input file readout_times to serve as basis of output flag file
-  flagFile<-as.data.frame(sunaData$readout_time)
-  colnames(flagFile)<-c("readout_time")
+  #' Create data frame of input data file readout_times to serve as basis of sensor specific flag file.
+  sensorFlags<-as.data.frame(sunaData$readout_time)
+  colnames(sensorFlags)<-c("readout_time")
   
-  #' Read in json file of quality flag thresholds
+  #' Read in json file of quality flag thresholds.
   thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
   sunaThresholds<-base::try(NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = base::paste0(DirInThresholds, '/', thresholdFileName)),silent = FALSE)
   
-  #' Perform internal humidity test
+  #' Perform internal humidity test.
   humidityThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Maximum Internal humidity"),]
   maxHumidity<-humidityThreshold$number_value
-  flagFile$nitrateHumidityQF<-NA
+  sensorFlags$nitrateHumidityQF<-NA
   for(i in 1:nrow(sunaData)){
     if(is.na(sunaData[i,which(colnames(sunaData)=='relative_humidity')])){
-      flagFile[i,which(colnames(flagFile)=='nitrateHumidityQF')]=-1}
+      sensorFlags[i,which(colnames(sensorFlags)=='nitrateHumidityQF')]=-1}
     if(!is.na(sunaData[i,which(colnames(sunaData)=='relative_humidity')])){
       if(sunaData[i,which(colnames(sunaData)=='relative_humidity')]>maxHumidity){
-        flagFile[i,which(colnames(flagFile)=='nitrateHumidityQF')]=1}
-      else{flagFile[i,which(colnames(flagFile)=='nitrateHumidityQF')]=0}}  
+        sensorFlags[i,which(colnames(sensorFlags)=='nitrateHumidityQF')]=1}
+      else{sensorFlags[i,which(colnames(sensorFlags)=='nitrateHumidityQF')]=0}}  
   }
   
-  #' Perform lamp temperature test (New condition need to be created. Using default for now)
+  #' Perform lamp temperature test (New condition need to be created. Using default for now).
   # lampTempThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Maximum Lamp Temperature"),]
   # maxLampTemp<-lampTempThreshold$number_value
   maxLampTemp=35
-  flagFile$nitrateLampTempQF<-NA
+  sensorFlags$nitrateLampTempQF<-NA
   for(i in 1:nrow(sunaData)){
     if(is.na(sunaData[i,which(colnames(sunaData)=='lamp_temperature')])){
-      flagFile[i,which(colnames(flagFile)=='nitrateLampTempQF')]=-1}
+      sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampTempQF')]=-1}
     if(!is.na(sunaData[i,which(colnames(sunaData)=='lamp_temperature')])){
       if(sunaData[i,which(colnames(sunaData)=='lamp_temperature')]>maxLampTemp){
-        flagFile[i,which(colnames(flagFile)=='nitrateLampTempQF')]=1}
-      else{flagFile[i,which(colnames(flagFile)=='nitrateLampTempQF')]=0}}  
+        sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampTempQF')]=1}
+      else{sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampTempQF')]=0}}  
   }
    
-  #' Perform light to dark spectral ratio test
+  #' Perform light to dark spectral ratio test.
   spectralRatioThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Minimum Light to Dark Spec Average Ratio"),]
   minLightDarkRatio<-spectralRatioThreshold$number_value
-  flagFile$nitrateLightDarkRatioQF<-NA
+  sensorFlags$nitrateLightDarkRatioQF<-NA
   for(i in 1:nrow(sunaData)){
     if(is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])|is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
-      flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=-1}
+      sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=-1}
     if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])&!is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
       if(sunaData[i,which(colnames(sunaData)=='spec_average')]/sunaData[i,which(colnames(sunaData)=='dark_signal_average')]<minLightDarkRatio){
-        flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}
+        sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=1}
       if(sunaData[i,which(colnames(sunaData)=='dark_signal_average')]==0){
-        flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=1}
-      else{flagFile[i,which(colnames(flagFile)=='nitrateLightDarkRatioQF')]=0}}  
+        sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=1}
+      else{sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=0}}  
   }
   
-  #' Identifies light measurement number within burst and performs lamp stabilization test
+  #' Identifies light measurement number within burst and performs lamp stabilization test.
   # lampStabilizeThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Lamp Stabilization Points"),]
   # lampStabilizePoints<-lampStabilizeThreshold$number_value
-  lampStabilizePoints=5
-  flagFile$burstNumber<-0 #' Assumes each burst starts with a dark measurement.
+  lampStabilizePoints=9
+  sensorFlags$burstNumber<-0 #' Assumes each burst starts with a dark measurement.
   for(i in 2:nrow(sunaData)){
     if(is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
-      flagFile[i,which(colnames(flagFile)=='burstNumber')]=0}
+      sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=0}
     #' If header is missing, assumes a dark measurement starting a new burst.
     if(!is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
       if(sunaData[i,which(colnames(sunaData)=='light_dark_frame')]==1){
-        flagFile[i,which(colnames(flagFile)=='burstNumber')]=flagFile[i-1,which(colnames(flagFile)=='burstNumber')]+1}
-      else{flagFile[i,which(colnames(flagFile)=='burstNumber')]=0}}
+        sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=sensorFlags[i-1,which(colnames(sensorFlags)=='burstNumber')]+1}
+      else{sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=0}}
     }
-  flagFile$nitrateLampStabilizeQF<-0
-  for(i in 1:nrow(flagFile)){
-    if(flagFile[i,which(colnames(flagFile)=='burstNumber')]<=lampStabilizePoints){
-      flagFile[i,which(colnames(flagFile)=='nitrateLampStabilizeQF')]=1}
+  sensorFlags$nitrateLampStabilizeQF<-0
+  for(i in 1:nrow(sensorFlags)){
+    if(sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]<=lampStabilizePoints){
+      sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampStabilizeQF')]=1}
     }
-  flagFile<-flagFile[,-which(colnames(flagFile)=='burstNumber')] #' Drops this column since it's no longer needed.
+  sensorFlags<-sensorFlags[,-which(colnames(sensorFlags)=='burstNumber')] #' Drops this column since it's no longer needed.
   
-  #' Write out data file and log flags file  
-  base::dir.create(DirOutFlags,recursive=TRUE)
-  sensorFlagFileName<-paste0(stringr::str_remove(dataFileName,".parquet"),'_sensor_specific_flags')
+  #' Combines all flags into a single file.
+  allFlags<-base::merge(plausFlags,sensorFlags)
+  allFlags<-base::merge(allFlags,calFlags)
+  allFlags<-base::merge(allFlags,logFlags)
+  
+  #' Removes all measurements where lamp has not stabilized from data and flag files.
+  lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
+  sunaData<-base::merge(sunaData,lampStabilizeFlagsOnly) #' Adds lamp stabilize QF to data file
+  sunaData<-sunaData[(sunaData$nitrateLampStabilizeQF==0),]
+  allFlags<-allFlags[(allFlags$nitrateLampStabilizeQF==0),]
 
-  rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagFile,
-                                                    NameFile = base::paste0(DirOutFlags,'/',sensorFlagFileName,".parquet"),
-                                                    Schm = SchmFlagsOut),silent=TRUE)
-  if(class(rptOutFlags)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write Flags to ',base::paste0(DirOutFlags,'/',sensorFlagFileName,".parquet"),'. ',attr(rptOutFlags, "condition")))
+  #' Rearranges data file to match schema again.
+  sunaData<-sunaData[,-which(colnames(sunaData)=='nitrateLampStabilizeQF')]
+  sunaData<-sunaData[,c(2,3,1,4:37)]  
+  
+  #' Write out data file.  
+  base::dir.create(DirOutData,recursive=TRUE)
+  rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = sunaData,
+                                                    NameFile = base::paste0(DirOutData,'/',dataFileName),
+                                                    Schm = SchmData),silent=TRUE)
+  if(class(rptOutData)[1] == 'try-error'){
+    log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutData,'/',dataFileName,".parquet"),'. ',attr(rptOutData, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Flags written successfully in ', base::paste0(DirOutFlags,'/',sensorFlagFileName,".parquet")))
+    log$info(base::paste0('Data written successfully in ', base::paste0(DirOutData,'/',dataFileName,".parquet")))
   }
   
-
+  #' Write out flags file.  
+  base::dir.create(DirOutFlags,recursive=TRUE)
+  allFlagFileName<-paste0(stringr::str_remove(dataFileName,".parquet"),'_all_flags')
+  
+  rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = allFlags,
+                                                    NameFile = base::paste0(DirOutFlags,'/',allFlagFileName,".parquet"),
+                                                    Schm = SchmFlagsOut),silent=TRUE)
+  if(class(rptOutFlags)[1] == 'try-error'){
+    log$error(base::paste0('Cannot write Flags to ',base::paste0(DirOutFlags,'/',allFlagFileName,".parquet"),'. ',attr(rptOutFlags, "condition")))
+    stop()
+  } else {
+    log$info(base::paste0('Flags written successfully in ', base::paste0(DirOutFlags,'/',allFlagFileName,".parquet")))
+  }
   
 }
 
