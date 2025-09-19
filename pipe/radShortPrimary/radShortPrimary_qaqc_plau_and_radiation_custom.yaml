@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau-rad:sha-e646145
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau-rad:sha-b9e9154
   cmd:
   - sh
   - "-c"
@@ -53,6 +53,8 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "FlagsRad=Shadow|Cmp22Heater" \
       SchmQf=$SCHEMA_FLAGS_CUSTOM \
+      "termTest=shortwaveRadiation" \
+      "shadowSource=LR" \
       "DirSubCopy=data|location|flags"
 
     EOF
