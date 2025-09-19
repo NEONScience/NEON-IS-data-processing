@@ -352,29 +352,6 @@
         "vctrs"
       ]
     },
-    "eddy4R.qaqc": {
-      "Package": "eddy4R.qaqc",
-      "Version": "0.2.17",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "eddy4R",
-      "RemoteUsername": "NEONScience",
-      "RemoteRef": "deve",
-      "RemoteSha": "4318ea392199d51508bbd207cdf6a44ef6c49df1",
-      "RemoteSubdir": "pack/eddy4R.qaqc",
-      "Hash": "8ae8f9e9f11ef54c2e24ecc97cd68357",
-      "Requirements": [
-        "RcppRoll",
-        "Rmisc",
-        "ggplot2",
-        "gridExtra",
-        "gtable",
-        "lattice",
-        "plyr",
-        "reshape2"
-      ]
-    },
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.2",
