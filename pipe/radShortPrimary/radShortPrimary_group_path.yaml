@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pressureAir_group_path_ptb330a
+  name: radShortPrimary_group_path
 transform:
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
@@ -9,13 +9,9 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - export GROUP=$GROUP_1
-  - python3 -m group_path.group_path_main
-  - export GROUP=$GROUP_2
   - python3 -m group_path.group_path_main
   env:
-    GROUP_1: pressure-air_
-    GROUP_2: pressure-air-buoy_
+    GROUP: rad-short-primary_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
@@ -42,30 +38,24 @@ input:
   - pfs:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
-      repo: pressureAir_group_assignment
-      glob: /pressure*/(*/*/*)
+      repo: radShortPrimary_group_assignment
+      glob: /rad-short-primary/(*/*/*)
       joinOn: $1
   - union: 
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: ptb330a_fill_date_gaps_and_regularize
-        glob: /*/(*/*/*)
+        repo: cmp22_fill_date_gaps_and_regularize
+        glob: /cmp22/(*/*/*)
         joinOn: $1
-#    - pfs:
-#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-#        name: GROUP_FOCUS_PATH
-#        repo: 
-#        glob: /(*/*/*)
-#        joinOn: $1
 parallelism_spec:
-  constant: 4
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 300M
+  memory: 600M
   cpu: 0.4
 resource_limits:
-  memory: 1G
+  memory: 2G
   cpu: 1.2
 sidecar_resource_requests:
   memory: 3G
@@ -74,4 +64,18 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
