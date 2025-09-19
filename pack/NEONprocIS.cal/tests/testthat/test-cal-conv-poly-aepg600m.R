@@ -60,17 +60,34 @@ test_that("Unit test of def-cal-conv-poly-aepg600m.R", {
    # Happy path 1
    
    # infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
+   # infoCal has no F0
    
-   infoCal <- list(cal=data.frame(Name=c('CVALA1','CVALA2','CVALF0'),Value=c(10,1,5),stringsAsFactors=FALSE))
+   infoCal_noF0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2'),Value=c(10,1),stringsAsFactors=FALSE))
    
    
-   vector_cval_aepg600m <- NEONprocIS.cal::def.cal.conv.poly.aepg600m (data = data,
-                                                        infoCal = infoCal,
+   vector_cval_noF0_aepg600m <- NEONprocIS.cal::def.cal.conv.poly.aepg600m (data = data,
+                                                        infoCal = infoCal_noF0,
                                                         varConv = base::names(data)[1],
                                                         log = NULL)
+  
+    
+   expect_true (is.vector(vector_cval_noF0_aepg600m))
+   expect_true (all(is.na(vector_cval_noF0_aepg600m))) 
    
-   expect_true (is.vector(vector_cval_aepg600m))
-   expect_true (all(!is.na(vector_cval_aepg600m))) 
+   infoCal_F0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2','CVALF0'),Value=c(10,1,5),stringsAsFactors=FALSE))
+   
+   vector_cval_F0_aepg600m <- NEONprocIS.cal::def.cal.conv.poly.aepg600m (data = data,
+                                                                       infoCal = infoCal_F0,
+                                                                       varConv = base::names(data)[1],
+                                                                       log = NULL)
+   
+   infoCal_F0_P0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2','CVALF0', 'CVALP0'),Value=c(10,1,5,5),stringsAsFactors=FALSE))
+   
+   
+   vector_cval_F0_P0_aepg600m <- NEONprocIS.cal::def.cal.conv.poly.aepg600m (data = data,
+                                                                       infoCal = infoCal_F0_P0,
+                                                                       varConv = base::names(data)[1],
+                                                                       log = NULL)
    
    # Happy path 2 infoCal is not passed in, defaulted to NULL. Returns NA
    
