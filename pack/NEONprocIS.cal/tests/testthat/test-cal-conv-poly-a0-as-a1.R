@@ -1,10 +1,11 @@
 ##############################################################################################
-#' @title Unit test of def.cal.conv.poly.a0.as.a1.R,
-#' Convert raw to calibrated data using NEON CVALA polynomial calibration coefficients with new origin F0 for 
-#' Belfort primary precip sensor strain gauges
+#' @title Unit test of def.cal.conv.poly.a0.as.a1
+#' Convert CVALA0 to CVALA1 and to a 1 degree polynomial 
+
 #' @description
-#' Definition function. Apply NEON calibration polynomial function with calibration coefficients and a new origin F0 for 
-#' Belfort primary precip sensor strain gauges
+#' Definition function. Apply polynomial to data. If CVAL uses A0 when it should be A1, it needs conversion to
+#' level 1 polynomial before calculating. A0 is traditionally an offset, but in the calibration it 
+#' is treated as the multiplier. (eg #bucket tips* A0 = mm precip)
 
 #' @param data Numeric data frame of raw measurements. 
 #' @param infoCal A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
@@ -27,8 +28,8 @@
 
 #' @examples
 #' data=data.frame(data=c(1,2,3))
-#' infoCal <- list(Name=c('CVALA1','CVALA2','CVALF0'),Value=c(10,1,5),stringsAsFactors=FALSE)
-#' def.cal.conv.poly.a0.as.a1(data=data,infoCal=infoCal)
+#' infoCal_noF0 <- list(cal=data.frame(Name=c('CVALA0'),Value=c(.4985),stringsAsFactors=FALSE))
+#' def.cal.conv.poly.tip(data=data,infoCal=infoCal)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.b}
@@ -36,19 +37,19 @@
 #' @seealso \link[NEONprocIS.cal]{wrap.cal.conv}
 #' 
 # changelog and author contributions / copyrights
-#   Mija Choi (2025-09-17)
+#   Mija Choi (2025-09-19)
 #     Original Creation
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of def-cal-conv-poly-a0.as.a1.R\n")
+context("\n                       Unit test of def.cal.conv.poly.a0.as.a1.R\n")
 
-# Unit test of def-cal-conv-poly-a0.as.a1.R
-test_that("Unit test of def-cal-conv-poly-a0.as.a1.R", {
+# Unit test of .conv-poly-a0.as.a1.R
+test_that("Unit test of def.cal.conv.polya0.as.a1.R", {
    # The input json has Name, Value, and .attrs
    
    testDir = "testdata/"
-   testFileCal = "calibration_CVALM.xml"
-   testFileCalPath <- paste0(testDir, testFileCal)
+   # testFileCal = "calibration_CVALM.xml"
+   # testFileCalPath <- paste0(testDir, testFileCal)
    
    testData = "L0_data.csv"
    testDataPath <- paste0(testDir, testData)
@@ -60,19 +61,19 @@ test_that("Unit test of def-cal-conv-poly-a0.as.a1.R", {
    # Happy path 1
    
    # infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
-   # infoCal has no CVALA0 only
+   # infoCal has CVALA0 only
    
-   infoCal <- data.frame(Name=c('CVALA0'),Value=c(.4985),stringsAsFactors=FALSE)
+   infoCal <- list(cal=data.frame(Name=c('CVALA0'),Value=c(.4985),stringsAsFactors=FALSE))
    
    
-   vector_cval_noF0_a0_as_a1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
-                                                        infoCal = infoCal_noF0,
+   
+   vector_cval_a0_as_a1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
+                                                        infoCal = infoCal,
                                                         varConv = base::names(data)[1],
                                                         log = NULL)
   
     
-   expect_true (is.vector(vector_cval_noF0_a0.as.a1))
-   expect_true (all(is.na(vector_cval_noF0_a0_as_a1))) 
+   expect_true (is.vector(vector_cval_a0_as_a1))
    
    infoCal_F0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2','CVALF0'),Value=c(10,1,5),stringsAsFactors=FALSE))
    
@@ -93,8 +94,8 @@ test_that("Unit test of def-cal-conv-poly-a0.as.a1.R", {
    
    vector_cval_a0_as_a1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data, log = NULL)
    
-   expect_true (is.vector(vector_cval_a0.as.a1))
-   expect_true (all(is.na(vector_cval_a0.as.a1))) 
+   expect_true (is.vector(vector_cval_a0_as_a1))
+   expect_true (all(is.na(vector_cval_a0_as_a1))) 
    
    
    # Sad path 1 - data is not an array.  Error out due to "Input is not a data frame."

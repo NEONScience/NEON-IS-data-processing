@@ -2,6 +2,7 @@
 
 export(def.cal.conv.poly)
 export(def.cal.conv.poly.aepg600m)
+export(def.cal.conv.poly.a0.as.a1)
 export(def.cal.conv.poly.b)
 export(def.cal.conv.poly.m)
 export(def.cal.conv.poly.split)
