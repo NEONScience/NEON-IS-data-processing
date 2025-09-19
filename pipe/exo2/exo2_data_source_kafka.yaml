@@ -79,7 +79,13 @@ transform:
       import_trigger_glob="${import_trigger}/*"
     fi
 
-    mkdir -p "${OUT_PATH}/${SOURCE_TYPE}"
+    mkdir -p "${OUT_PATH}/${SOURCE_TYPE_1}"
+    mkdir -p "${OUT_PATH}/${SOURCE_TYPE_2}"
+    mkdir -p "${OUT_PATH}/${SOURCE_TYPE_3}"
+    mkdir -p "${OUT_PATH}/${SOURCE_TYPE_4}"
+    mkdir -p "${OUT_PATH}/${SOURCE_TYPE_5}"
+    mkdir -p "${OUT_PATH}/${SOURCE_TYPE_6}"
+    mkdir -p "${OUT_PATH}/${SOURCE_TYPE_7}"
     
     for site_kafka in $import_trigger_glob; do
       site_file=$(basename $site_kafka) # Strip off any path prefix
