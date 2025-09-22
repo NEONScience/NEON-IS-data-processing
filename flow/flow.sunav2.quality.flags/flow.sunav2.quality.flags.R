@@ -54,7 +54,11 @@
 #' Bobby Hensley (2025-09-18)
 #' Updated so that measurements prior to lamp stabilization (never intended to be
 #' used in downstream pipeline) are removed.
+#'
+#' Nora Catolico (2025-09-22)
+#' combined input df and updated error logging
 # 
+
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -120,7 +124,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
     withCallingHandlers(
       wrap.sunav2.quality.flags(
         DirIn=idxFileIn,
-        DirOut=Para$DirOut,
+        DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
         SchmFlagsOut=SchmFlagsOut,
         log=log

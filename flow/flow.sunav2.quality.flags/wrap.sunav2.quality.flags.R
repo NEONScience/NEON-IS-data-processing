@@ -9,7 +9,7 @@
 #'
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #'  
-#' @param DirOut Character value. The base file path for the output data. 
+#' @param DirOutBase Character value. The base file path for the output data. 
 #' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
@@ -47,7 +47,7 @@
 #' 
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
-                                      DirOut,
+                                      DirOutBase,
                                       SchmDataOut=NULL,
                                       SchmFlagsOut=NULL,
                                       log=NULL
@@ -58,11 +58,15 @@ wrap.sunav2.quality.flags <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirInData <- paste0(DirIn,"/data")
   DirInFlags <- paste0(DirIn,"/flags")
   DirInThresholds <- paste0(DirIn,"/threshold")
+  DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutData <- base::paste0(DirOut,"/data")
+  base::dir.create(DirOutData,recursive=TRUE)
   DirOutFlags <- base::paste0(DirOut,"/flags")
+  base::dir.create(DirOutFlags,recursive=TRUE)
   
   #' Read in parquet file of SUNA data.
   dataFileName<-base::list.files(DirInData,full.names=FALSE)
@@ -201,7 +205,6 @@ wrap.sunav2.quality.flags <- function(DirIn,
   sunaData<-sunaData[,c(2,3,1,4:37)]  
   
   #' Write out data file.  
-  base::dir.create(DirOutData,recursive=TRUE)
   rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = sunaData,
                                                     NameFile = base::paste0(DirOutData,'/',dataFileName),
                                                     Schm = SchmDataOut),silent=TRUE)
@@ -213,7 +216,6 @@ wrap.sunav2.quality.flags <- function(DirIn,
   }
   
   #' Write out flags file.  
-  base::dir.create(DirOutFlags,recursive=TRUE)
   allFlagFileName<-paste0(stringr::str_remove(dataFileName,".parquet"),'_all_flags')
   
   rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = allFlags,
