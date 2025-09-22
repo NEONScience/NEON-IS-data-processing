@@ -12,16 +12,14 @@
 #' 1. "DirIn=value", The base file path to the input data, QA/QC plausibility flags and quality flag thresholds. 
 #' #/pfs/BASE_REPO/date/location/sunav2/cfgloc, where files will then be in /data, /flags and /threshold sub-folders.
 #' 
-#' 2. "DirInAdditional=value", The file path to the log file flags and calibration flags.                           
-#' 
 #' 2. "DirOut=value", The base file path for the output data.
 #' 
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #'  
-#' 4. "SchmData=value" (optional), The avro schema for the input and output data file.
+#' 4. "FileSchmData=value" (optional), The avro schema for the input and output data file.
 #' 
-#' 5. "SchmFlagsOut=value" (optional), The avro schema for the combined flag file.   
+#' 5. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
 #' 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -42,10 +40,9 @@
 #' Stepping through the code in R studio                               
 # Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620",
-          "DirInAdditional=~/pfs/nitrate_group_path/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620/flags",
-         "DirOut=~/pfs/out",
-         "DirErr=~/pfs/out/errored_datums")
+# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620",
+#          "DirOut=~/pfs/out",
+#          "DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -85,37 +82,33 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirInAdditional","DirOut","DirErr"),
-                                      NameParaOptn = c("SchmData","SchmFlagsOut"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),
+                                      NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input data directory: ', Para$DirIn))
-log$debug(base::paste0('Additional input data directory: ', Para$DirInAdditional))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Schema for output data: ', Para$SchmData))
-log$debug(base::paste0('Schema for output flags: ', Para$SchmFlagsOut))
+log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
+log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
-if(base::is.null(Para$SchmData) || Para$SchmData == 'NA'){
-  SchmData <- NULL
+if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
+  SchmDataOut <- NULL
 } else {
-  SchmData <- base::paste0(base::readLines(Para$SchmData),collapse='')
+  SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
 }
-if(base::is.null(Para$SchmFlagsOut) || Para$SchmFlagsOut == 'NA'){
+if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
   SchmFlagsOut <- NULL
 } else {
-  SchmFlagsOut <- base::paste0(base::readLines(Para$SchmFlagsOut),collapse='')
+  SchmFlagsOut <- base::paste0(base::readLines(Para$FileSchmQf),collapse='')
 }
+
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
-                              nameDirSub = 'data',
-                              log = log)
-DirInAdditional <-
-  NEONprocIS.base::def.dir.in(DirBgn = Para$DirInAdditional,
-                              nameDirSub = 'flags',
+                              nameDirSub = c('data','flags'),
                               log = log)
 
 # Process each datum path
@@ -128,7 +121,8 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
       wrap.sunav2.quality.flags(
         DirIn=idxFileIn,
         DirOut=Para$DirOut,
-        SchmFlagsOut=FileSchmQf,
+        SchmDataOut=SchmDataOut,
+        SchmFlagsOut=SchmFlagsOut,
         log=log
       ),
       error = function(err) {

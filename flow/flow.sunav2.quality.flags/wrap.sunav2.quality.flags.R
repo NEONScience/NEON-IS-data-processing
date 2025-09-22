@@ -8,12 +8,10 @@
 #' Measurements where the lamp has not had enough time to stabilze  (nitrateLampStabilizeQF=1) are removed. 
 #'
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
-#' 
-#' @param DirInAdditional Character value.  The file path to the log file flags and calibration flags.
 #'  
 #' @param DirOut Character value. The base file path for the output data. 
 #' 
-#' @param SchmData (optional), A json-formatted character string containing the schema for the data file.
+#' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
 #' 
 #' @param SchmFlagsOut (optional), A json-formatted character string containing the schema for the output flags. 
@@ -32,7 +30,7 @@
 #' @examples
 #' # Not run
 # DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620" 
-# DirInAdditional<-"~/pfs/nitrate_group_path/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620/flags"
+# DirIn<-"~/pfs/nitrate_group_path/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620/flags"
 # DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620" 
 # SchmData<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_all_flags.avsc'),collapse='')
@@ -49,9 +47,8 @@
 #' 
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
-                                      DirInAdditional,
                                       DirOut,
-                                      SchmData=NULL,
+                                      SchmDataOut=NULL,
                                       SchmFlagsOut=NULL,
                                       log=NULL
 ){
@@ -62,30 +59,54 @@ wrap.sunav2.quality.flags <- function(DirIn,
   } 
   
   DirInData <- paste0(DirIn,"/data")
-  DirInPlaus <- paste0(DirIn,"/flags")
+  DirInFlags <- paste0(DirIn,"/flags")
   DirInThresholds <- paste0(DirIn,"/threshold")
   DirOutData <- base::paste0(DirOut,"/data")
   DirOutFlags <- base::paste0(DirOut,"/flags")
   
   #' Read in parquet file of SUNA data.
   dataFileName<-base::list.files(DirInData,full.names=FALSE)
-  sunaData<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', dataFileName),
-                                             log = log),silent = FALSE)
+  if(length(dataFileName)==0){
+    log$error(base::paste0('Data file not found in ', DirInData)) 
+    stop()
+  } else {
+    sunaData<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', dataFileName),
+                                                       log = log),silent = FALSE)
+    log$debug(base::paste0('Successfully read in file: ',dataFileName))
+  }
   
   #' Read in parquet file of QAQC plausibility flags.
-  plausFileName<-base::list.files(DirInPlaus,full.names=FALSE)
-  plausFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInPlaus, '/', plausFileName),
-                                                     log = log),silent = FALSE)
+  plausFileName<-grep("flagsPlaus",base::list.files(DirInFlags,full.names=FALSE),value=TRUE)
+  if(length(plausFileName)==0){
+    log$error(base::paste0('Plausibility flags not found in ', DirInFlags)) 
+    stop()
+  } else {
+    plausFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInFlags, '/', plausFileName),
+                                                         log = log),silent = FALSE)
+    log$debug(base::paste0('Successfully read in file: ',plausFileName))
+  }
   
   #' Read in parquet file of calibration flags.
-  calFileName<-grep("flagsCal",base::list.files(DirInAdditional,full.names=FALSE),value=TRUE)  
-  calFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInAdditional, '/', calFileName),
-                                                     log = log),silent = FALSE)
+  calFileName<-grep("flagsCal",base::list.files(DirInFlags,full.names=FALSE),value=TRUE)
+  if(length(calFileName)==0){
+    log$error(base::paste0('Calibration flags not found in ', DirInFlags)) 
+    stop()
+  } else {
+    calFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInFlags, '/', calFileName),
+                                                       log = log),silent = FALSE)
+    log$debug(base::paste0('Successfully read in file: ',calFileName))
+  }
   
   #' Read in parquet file of logged file flags.
-  logFileName<-grep("logFlags",base::list.files(DirInAdditional,full.names=FALSE),value=TRUE)  
-  logFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInAdditional, '/', logFileName),
-                                                     log = log),silent = FALSE)
+  logFileName<-grep("logFlags",base::list.files(DirInFlags,full.names=FALSE),value=TRUE)
+  if(length(calFileName)==0){
+    log$error(base::paste0('Log flags not found in ', DirInFlags)) 
+    stop()
+  } else {
+    logFlags<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInFlags, '/', logFileName),
+                                                       log = log),silent = FALSE)
+    log$debug(base::paste0('Successfully read in file: ',logFileName))
+  }
   
   #' Convert measurements to be tested from class character to numeric.
   sunaData$relative_humidity<-as.numeric(sunaData$relative_humidity)
@@ -183,7 +204,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   base::dir.create(DirOutData,recursive=TRUE)
   rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = sunaData,
                                                     NameFile = base::paste0(DirOutData,'/',dataFileName),
-                                                    Schm = SchmData),silent=TRUE)
+                                                    Schm = SchmDataOut),silent=TRUE)
   if(class(rptOutData)[1] == 'try-error'){
     log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutData,'/',dataFileName,".parquet"),'. ',attr(rptOutData, "condition")))
     stop()
