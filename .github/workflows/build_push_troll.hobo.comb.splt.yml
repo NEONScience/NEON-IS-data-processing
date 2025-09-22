@@ -6,7 +6,7 @@ on:
       - 'master'
     paths:
       - 'flow/flow.troll.hobo.comb.splt/**'
-  workflow_dispatch: {} # Allows trigger of workflow from web interface
+  workflow_dispatch: {} # Allows trigger of workflow from web interface 
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
