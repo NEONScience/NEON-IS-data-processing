@@ -9,7 +9,7 @@
 #'
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #'  
-#' @param DirOutBase Character value. The base file path for the output data. 
+#' @param DirOut Character value. The base file path for the output data. 
 #' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
@@ -30,9 +30,8 @@
 #' @examples
 #' # Not run
 # DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620" 
-# DirIn<-"~/pfs/nitrate_group_path/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620/flags"
 # DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620" 
-# SchmData<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_all_flags.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'
@@ -44,6 +43,10 @@
 #' Bobby Hensley (2025-09-18)
 #' Updated so that measurements prior to lamp stabilization (never intended to be
 #' used in downstream pipeline) are removed.
+#' 
+#' Bobby Hensley (2025-09-22)
+#' Updated to use single input directory and added check that data and flag file
+#' have same number of measurements. 
 #' 
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
@@ -62,7 +65,6 @@ wrap.sunav2.quality.flags <- function(DirIn,
   DirInData <- paste0(DirIn,"/data")
   DirInFlags <- paste0(DirIn,"/flags")
   DirInThresholds <- paste0(DirIn,"/threshold")
-  DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutData <- base::paste0(DirOut,"/data")
   base::dir.create(DirOutData,recursive=TRUE)
   DirOutFlags <- base::paste0(DirOut,"/flags")
@@ -203,6 +205,14 @@ wrap.sunav2.quality.flags <- function(DirIn,
   #' Rearranges data file to match schema again.
   sunaData<-sunaData[,-which(colnames(sunaData)=='nitrateLampStabilizeQF')]
   sunaData<-sunaData[,c(2,3,1,4:37)]  
+  
+  #' Checks that data file and flag file have same number of measurements
+  if(nrow(sunaData) != nrow(allFlags)){
+    log$error(base::paste0('Error: Data and flags have different number of measuremnts'))
+    stop()
+  } else {
+    log$info(base::paste0('Data and flags have same number of measurements'))
+  }
   
   #' Write out data file.  
   rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = sunaData,
