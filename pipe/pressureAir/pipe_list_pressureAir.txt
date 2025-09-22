@@ -7,3 +7,6 @@ pressureAir_analyze_pad_and_qaqc_plau.yaml
 pressureAir_pre_stats_qm.yaml
 pressureAir_stats_group_and_compute.yaml
 pressureAir_qm_group_and_compute.yaml
+pressureAir_srf_loader.yaml
+pressureAir_srf_assignment.yaml
+pressureAir_level1_group_consolidate_srf.yaml
