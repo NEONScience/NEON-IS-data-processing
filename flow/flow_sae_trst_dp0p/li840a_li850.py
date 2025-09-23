@@ -39,7 +39,8 @@ class Li840a(L0toL0p):
 def main() -> None:
 
     # terms with calibration
-   
+    li840a = Li840a()
+    li840a.l0tol0p()
     li840a.l0tol0p()
 
     log.debug("done.")

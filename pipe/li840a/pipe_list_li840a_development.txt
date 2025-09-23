@@ -6,12 +6,12 @@ li840a_calibration_loader.yaml
 li840a_calibration_assignment.yaml
 li840a_calibration_group_and_validate.yaml
 li840a_location_asset.yaml
-li840a_location_asset_assignment.yaml  --not working
+li840a_location_asset_assignment.yaml
 li840a_location_group_and_restructure.yaml
 li840a_location_loader.yaml
 li840a_location_active_dates_assignment.yaml
-
 li840a_fill_date_gaps_and_regularize.yaml
+
 li840a_l0p_data.yaml
 li840a_threshold_loader.yaml
 li840a_thresh_select_ts_pad.yaml
