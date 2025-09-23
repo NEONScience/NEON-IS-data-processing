@@ -199,6 +199,13 @@ wrap.troll.cond.conv <- function(DirIn,
     TrollData$baroPresExpUncert<-NA
     TrollData$baroPresQF<-1
   }else{
+    
+    #' Checks that files have same readout times
+    if(any(TrollData$readout_time != BaroData$startDateTime)){
+      log$error(base::paste0('Error: Troll and Baro data have different readout times for ',DirIn))
+      stop()
+    }
+    
     #Keep relevant BARO data
     TrollData$baroPressure[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresMean[TrollData$readout_time == BaroData$startDateTime] 
     TrollData$baroPresExpUncert[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresExpUncert[TrollData$readout_time == BaroData$startDateTime]
