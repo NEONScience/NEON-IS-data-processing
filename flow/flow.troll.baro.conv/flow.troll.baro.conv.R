@@ -53,10 +53,14 @@
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable). See below for details.
 #' 
-#' #' 5. "FileSchmUcrt=value" (optional), where values is the full path to the avro schema for the output uncertainty file. 
+#' 6. "FileSchmUcrt=value" (optional), where values is the full path to the avro schema for the output uncertainty file. 
 #' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable).
+#' 
+#' 7. DirSubCopy (optional) Character vector. The names of additional subfolders at 
+#' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
+#' output path (i.e. not combined but carried through as-is).
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
