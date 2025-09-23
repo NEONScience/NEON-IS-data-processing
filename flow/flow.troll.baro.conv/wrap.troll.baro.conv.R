@@ -177,9 +177,9 @@ wrap.troll.cond.conv <- function(DirIn,
     base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInTrollData, '/', fileTrollData),
                                              log = log),
               silent = FALSE)
-  if (base::any(base::class(data) == 'try-error')) {
+  if (base::any(base::class(TrollData) == 'try-error')) {
     # Generate error and stop execution
-    log$error(base::paste0('File ', dirData, '/', fileTrollData, ' is unreadable.'))
+    log$error(base::paste0('Troll data file ', DirInTrollData, '/', fileTrollData, ' is unreadable.'))
     base::stop()
   }
   
@@ -191,22 +191,24 @@ wrap.troll.cond.conv <- function(DirIn,
     base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInBaroData, '/', fileBaroData),
                                              log = log),
               silent = FALSE)
-  if (base::any(base::class(data) == 'try-error')) {
+  if (base::any(base::class(BaroData) == 'try-error')) {
     # Generate error and stop execution
-    log$error(base::paste0('File ', dirData, '/', fileBaroData, ' is unreadable.'))
-    base::stop()
+    log$info(base::paste0('Baro data file for ', DirIn, ' does not exist or is unreadable.'))
+    #base::stop()
+    TrollData$baroPressure<-NA
+    TrollData$baroPresExpUncert<-NA
+    TrollData$baroPresQF<-1
+  }else{
+    #Keep relevant BARO data
+    TrollData$baroPressure[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresMean[TrollData$readout_time == BaroData$startDateTime] 
+    TrollData$baroPresExpUncert[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresExpUncert[TrollData$readout_time == BaroData$startDateTime]
+    TrollData$baroPresQF[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresFinalQF[TrollData$readout_time == BaroData$startDateTime]
+    
+    #The surface water pressure is determined by subtracting the air pressure of the atmosphere from the measured pressure.
+    TrollData$pressure_raw<-TrollData$pressure
+    TrollData$pressure <- as.numeric(TrollData$pressure_raw) - as.numeric(TrollData$baroPressure)
   }
   
-  #Keep relevant BARO data
-  TrollData$baroPressure[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresMean[TrollData$readout_time == BaroData$startDateTime] 
-  TrollData$baroPresExpUncert[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresExpUncert[TrollData$readout_time == BaroData$startDateTime]
-  TrollData$baroPresQF[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresFinalQF[TrollData$readout_time == BaroData$startDateTime]
-  
-  
-  
-  #The surface water pressure is determined by subtracting the air pressure of the atmosphere from the measured pressure.
-  TrollData$pressure_raw<-TrollData$pressure
-  TrollData$pressure <- as.numeric(TrollData$pressure_raw) - as.numeric(TrollData$baroPressure)
   #don't produce data where baro is flagged
   TrollData$pressure[TrollData$baroPresQF==1]<-NA
   
