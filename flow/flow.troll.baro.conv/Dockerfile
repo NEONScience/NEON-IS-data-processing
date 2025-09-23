@@ -22,6 +22,7 @@ WORKDIR /home/app
 # Copy in application code
 COPY ${FLOW_DIR}/${APP_DIR}/flow.troll.baro.conv.R .
 COPY ${FLOW_DIR}/${APP_DIR}/wrap.troll.baro.conv.R .
+COPY ${FLOW_DIR}/${APP_DIR}/def.dir.in.partial.R .
 
 # Run as app user
 RUN chown app:app -R /home/app
