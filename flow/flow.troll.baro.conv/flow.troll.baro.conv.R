@@ -57,10 +57,6 @@
 #' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable).
-#' 
-#' 7. DirSubCopy (optional) Character vector. The names of additional subfolders at 
-#' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
-#' output path (i.e. not combined but carried through as-is).
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -85,7 +81,6 @@
 #' Stepping through the code in Rstudio 
 # Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_group_path/2022/06/15/subsurf-moor-temp-cond_PRPO103100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# DirSubCopy<-c('hobou24','group')
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums") #,"FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_QF")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
@@ -124,7 +119,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","FileSchmUcrt","DirSubCopy"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","FileSchmUcrt"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -153,22 +148,10 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmUcrt == 'NA'){
 }
 
 
-
-
 # Retrieve optional subdirectories to copy over
-DirSubCopy <-
-  base::unique(base::setdiff(
-    Para$DirSubCopy,
-    c('hobou24','group')
-  ))
-log$debug(base::paste0(
-  'Additional subdirectories to copy: ',
-  base::paste0(DirSubCopy, collapse = ',')
-))
-
+DirSubCopy <- c('hobou24','group')
 
 #what are the expected subdirectories of each input path
-
 nameDirSub <- base::c('leveltroll400')
 log$debug(base::paste0(
   'expected subdirectories: ',
