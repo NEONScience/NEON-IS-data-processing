@@ -236,10 +236,8 @@ wrap.troll.cond.conv <- function(DirIn,
   colInt <- c("baroPresQF") 
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
   
-  source_id <- TrollData$source_id[1]
-  
   # Write out data
-  NameFileOutData <- base::paste0(DirOutData,"/leveltroll400_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet")
+  NameFileOutData <- base::paste0(DirOutData,"/leveltroll400_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet")
   rptDataOut <-
     base::try(NEONprocIS.base::def.wrte.parq(data = dataOut,NameFile = NameFileOutData,Schm = SchmDataOut),
     silent = TRUE)
@@ -251,7 +249,7 @@ wrap.troll.cond.conv <- function(DirIn,
   }
   
   #Write out flags
-  NameFileOutFlags <- base::paste0(DirOutFlags,"/leveltroll400_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecific_baro.parquet")
+  NameFileOutFlags <- base::paste0(DirOutFlags,"/leveltroll400_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecific_baro.parquet")
   rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQfOut),silent=TRUE)
   if(base::any(base::class(rptQfOut) == 'try-error')){
     log$error(base::paste0('Cannot write flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
@@ -261,7 +259,7 @@ wrap.troll.cond.conv <- function(DirIn,
   }
   
   #Write out ucrt
-  NameFileOutUcrt <- base::paste0(DirOutUcrt,"/leveltroll400_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_expn_ucrt_baro.parquet")
+  NameFileOutUcrt <- base::paste0(DirOutUcrt,"/leveltroll400_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_expn_ucrt_baro.parquet")
   rptUcrtOut <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut,NameFile = NameFileOutUcrt,Schm = SchmUcrtOut),silent=TRUE)
   if(base::any(base::class(rptUcrtOut) == 'try-error')){
     log$error(base::paste0('Cannot write barometric pressure uncertainty to ',NameFileOutUcrt,'. ',attr(rptUcrtOut, "condition")))
