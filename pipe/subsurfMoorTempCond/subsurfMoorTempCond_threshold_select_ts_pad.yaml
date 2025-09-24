@@ -26,7 +26,7 @@ transform:
       "TermCtxt1=pressure|subsurface-lake" \
       "TermCtxt2=temperature|subsurface-lake" \
       "TermCtxt3=conductivity|subsurface-lake" \
-      "DirSubCopy=location|data"
+      "DirSubCopy=data|location"
     
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
@@ -49,7 +49,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: subsurfMoorTempCond_group_path
+      repo: subsurfMoorTempCond_baro_conv
       glob: /*/*/*
   - pfs:
       name: FILE_THRESHOLDS
