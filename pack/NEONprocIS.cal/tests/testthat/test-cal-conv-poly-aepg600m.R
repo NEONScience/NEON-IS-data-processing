@@ -47,8 +47,8 @@ test_that("Unit test of def-cal-conv-poly-aepg600m.R", {
    # The input json has Name, Value, and .attrs
    
    testDir = "testdata/"
-   testFileCal = "calibration_CVALM.xml"
-   testFileCalPath <- paste0(testDir, testFileCal)
+   # testFileCal = "calibration_CVALM.xml"
+   # testFileCalPath <- paste0(testDir, testFileCal)
    
    testData = "L0_data.csv"
    testDataPath <- paste0(testDir, testData)
@@ -60,6 +60,7 @@ test_that("Unit test of def-cal-conv-poly-aepg600m.R", {
    # Happy path 1
    
    # infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
+   #
    # infoCal has no F0
    
    infoCal_noF0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2'),Value=c(10,1),stringsAsFactors=FALSE))
@@ -96,8 +97,17 @@ test_that("Unit test of def-cal-conv-poly-aepg600m.R", {
    expect_true (is.vector(vector_cval_aepg600m))
    expect_true (all(is.na(vector_cval_aepg600m))) 
    
+   # Sad path 1 -    # infoCal has no CVALA
    
-   # Sad path 1 - data is not an array.  Error out due to "Input is not a data frame."
+   infoCal_noCVALA <- list(cal=data.frame(Name=c('CVALB1','CVALB2','CVALF0'),Value=c(10,1,5),stringsAsFactors=FALSE))
+   
+   vector_noCVALA <- try(NEONprocIS.cal::def.cal.conv.poly.aepg600m (data = data,
+                                                                   infoCal = infoCal_noCVALA,
+                                                                   log = NULL), silent = TRUE)
+   
+   testthat::expect_true((class(vector_noCVALA)[1] == "try-error"))
+   
+   # Sad path 2 - data is not an array.  Error out due to "Input is not a data frame."
    data <- list (data)
    vector_cvalB <- try(NEONprocIS.cal::def.cal.conv.poly.aepg600m (data = data,
                                                             infoCal = infoCal,
