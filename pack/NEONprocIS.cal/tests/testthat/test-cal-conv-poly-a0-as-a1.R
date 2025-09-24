@@ -50,6 +50,7 @@ test_that("Unit test of def.cal.conv.polya0.as.a1.R", {
    testDir = "testdata/"
    # testFileCal = "calibration_CVALM.xml"
    # testFileCalPath <- paste0(testDir, testFileCal)
+   # infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
    
    testData = "L0_data.csv"
    testDataPath <- paste0(testDir, testData)
@@ -58,39 +59,29 @@ test_that("Unit test of def.cal.conv.polya0.as.a1.R", {
    
    data <- data.frame(data0$resistance)
    
-   # Happy path 1
+   # Case #1 - Happy path, infoCal has CVALA0 only
    
-   # infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
-   # infoCal has CVALA0 only
-   
-   infoCal <- list(cal=data.frame(Name=c('CVALA0'),Value=c(.4985),stringsAsFactors=FALSE))
-   
-   
-   
+   infoCal <- list(cal=data.frame(Name=c('CVALA0'),Value=c(.9485),stringsAsFactors=FALSE))
+
    vector_cval_a0_as_a1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
                                                         infoCal = infoCal,
                                                         varConv = base::names(data)[1],
                                                         log = NULL)
-  
-    
+
    expect_true (is.vector(vector_cval_a0_as_a1))
+   expect_true (all(!is.na(vector_cval_a0_as_a1)))
    
-   infoCal_F0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2','CVALF0'),Value=c(10,1,5),stringsAsFactors=FALSE))
+   # Case #2, infoCal does not have CVALA0 
    
-   vector_cval_F0_a0_as_a1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
-                                                                       infoCal = infoCal_F0,
+   infoCal_noCVALA0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2'),Value=c(10,1),stringsAsFactors=FALSE))
+   
+   vector_cval_noCVALA0 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
+                                                                       infoCal = infoCal_noCVALA0,
                                                                        varConv = base::names(data)[1],
                                                                        log = NULL)
-   
-   infoCal_F0_P0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2','CVALF0', 'CVALP0'),Value=c(10,1,5,5),stringsAsFactors=FALSE))
-   
-   
-   vector_cval_F0_P0_a0asa1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
-                                                                       infoCal = infoCal_F0_P0,
-                                                                       varConv = base::names(data)[1],
-                                                                       log = NULL)
-   
-   # Happy path 2 infoCal is not passed in, defaulted to NULL. Returns NA
+   expect_true (all(vector_cval_noCVALA0 == 0)) 
+ 
+   # Case #3, infoCal is not passed in, defaulted to NULL. Returns NA
    
    vector_cval_a0_as_a1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data, log = NULL)
    
@@ -98,12 +89,12 @@ test_that("Unit test of def.cal.conv.polya0.as.a1.R", {
    expect_true (all(is.na(vector_cval_a0_as_a1))) 
    
    
-   # Sad path 1 - data is not an array.  Error out due to "Input is not a data frame."
+   # Case #4, data is not an array.  Error out due to "Input is not a data frame."
    data <- list (data)
-   vector_cvalB <- try(NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
+   vector_cval_a0_as_a1 <- try(NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
                                                             infoCal = infoCal,
                                                             log = NULL), silent = TRUE)
    
-   testthat::expect_true((class(vector_cvalB)[1] == "try-error"))
+   testthat::expect_true((class(vector_cval_a0_as_a1)[1] == "try-error"))
  
    })
