@@ -31,10 +31,9 @@ transform:
       DirIn=/tmp/pfs/padded_analyzerCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmQf=$SCHEMA_FLAGS \
-      "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike" \
-      "TermTest3=conductivity:null|gap|range(rmv)|step(rmv)|spike" \
+      "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+      "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+      "TermTest3=conductivity:null|gap|range(rmv)|step(rmv)|spike|persistence" \
       DirSubCopy=location
     EOF
   env:
@@ -51,10 +50,10 @@ input:
       name: DATA_PATH
       repo: subsurfMoorTempCond_threshold_select_ts_pad
       glob: /*/*/*
-  - pfs:
-      name: SCHEMA_FLAGS
-      repo: subsurfMoorTempCond_avro_schemas
-      glob: /subsurfMoorTempCond/subsurfMoorTempCond_flags_plausibility.avsc
+  # - pfs:
+  #     name: SCHEMA_FLAGS
+  #     repo: subsurfMoorTempCond_avro_schemas
+  #     glob: /subsurfMoorTempCond/subsurfMoorTempCond_flags_plausibility.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true
