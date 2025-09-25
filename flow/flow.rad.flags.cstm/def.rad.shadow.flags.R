@@ -236,7 +236,7 @@ def.rad.shadow.flags <- function(DirIn,
     
   #convert back to DF
   flagDf <- as.data.frame(dt_flag)
-  is.na(flagDf$shadowQF) <- -1
+  flagDf$shadowQF[is.na(flagDf$shadowQF)] <- -1
   
   return(flagDf)
 }
