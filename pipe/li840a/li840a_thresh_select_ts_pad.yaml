@@ -62,7 +62,7 @@ input:
   - pfs:
       name: REPO_LOCATIONS
       repo: li840a_l0p_data
-      glob: /irgaTurb/*/*/*
+      glob: /irgaStor/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
       repo: li840a_threshold_loader
