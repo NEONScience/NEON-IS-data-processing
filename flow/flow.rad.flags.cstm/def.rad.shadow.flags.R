@@ -29,6 +29,8 @@
 # changelog and author contributions / copyrights
 #  Teresa Burlingame (2025-09-15)
 #     Initial creation
+#  Teresa Burlingame (2025-09-25)
+#     fix logic output and add handling for Az near North.
 ##############################################################################################
 ###### TODO look into making more efficient (does it need to be one sec, does it need to be TF then 0/1 etc)
 #### Add a -1 scenario? After finished if val is not 0/1 make -1? 
@@ -196,14 +198,27 @@ def.rad.shadow.flags <- function(DirIn,
       rod_height <- height
       df_solar_pos[[paste0("shadow_length_", src)]] <- rod_height / tan(df_solar_pos$altitude)
       
-      # Filter for shadows for this source
-      df_shadow <- df_solar_pos %>%
-        filter(
-          (deg_az >= az - deg_buffer & deg_az <= az + deg_buffer) &
-            deg_alt >= alt &
-            .data[[paste0("shadow_length_", src)]] >= len * len_corrector
-        )
+      # Create adjusted azimuth ranges
+      az_min <- (az - deg_buffer + 360) %% 360
+      az_max <- (az + deg_buffer) %% 360
       
+      if (az_min > az_max) {
+        # Wraps around 0°/360° - need OR condition
+        df_shadow <- df_solar_pos %>%
+          filter(
+            (deg_az >= az_min | deg_az <= az_max) &
+              deg_alt >= alt &
+              .data[[paste0("shadow_length_", src)]] >= len * len_corrector
+          )
+      } else {
+        # Normal range - use AND condition  
+        df_shadow <- df_solar_pos %>%
+          filter(
+            (deg_az >= az_min & deg_az <= az_max) &
+              deg_alt >= alt &
+              .data[[paste0("shadow_length_", src)]] >= len * len_corrector
+          )
+      }
       # Convert to data.table and create time windows
       dt_shadow <- as.data.table(df_shadow)
       dt_shadow[, `:=`(
@@ -212,10 +227,11 @@ def.rad.shadow.flags <- function(DirIn,
       )]
       setkey(dt_shadow, time_start, time_end)
       
-      # Overlap join - flag
-      dt_flag[, shadowQF := shadowQF | as.integer(
-        readout_time %inrange% list(dt_shadow$time_start, dt_shadow$time_end)
-      )]
+      # Perform logical OR operation
+      dt_flag[, shadowQF := shadowQF | (readout_time %inrange% list(dt_shadow$time_start, dt_shadow$time_end))]
+      
+      # Convert to integer at the very end
+      dt_flag[, shadowQF := as.integer(shadowQF)]
     }
     
   #convert back to DF
