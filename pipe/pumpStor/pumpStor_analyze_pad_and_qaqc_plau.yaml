@@ -49,7 +49,7 @@ input:
   - pfs:
       name: SCHEMA_FLAGS
       repo: pump_avro_schemas
-      glob: /pump/flags_plausibility_pump.avsc
+      glob: /pump/flags_plausibility_pumpStor.avsc
 parallelism_spec:
   constant: 40
 autoscaling: true
