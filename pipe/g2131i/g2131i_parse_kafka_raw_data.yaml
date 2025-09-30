@@ -15,6 +15,7 @@ transform:
     PARSED_START_INDEX: "1" # skip first element 'time' in parse_field for parsing
     PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/g2131i/g2131i_parsed.avsc
     FIELD_START_INDEX: "4" # skip instrument_status for parsing
+    UPDATE_TRIGGER_TABLE: "True"
   secrets:
   - name: l0-bucket
     env_var: BUCKET_NAME
