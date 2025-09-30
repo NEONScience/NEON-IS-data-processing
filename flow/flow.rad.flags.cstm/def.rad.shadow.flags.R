@@ -10,6 +10,11 @@
 #' 
 #' @param DirIn list of incoming directories. Used to check for location/threshold information. Function cannot run without both
 #' 
+#' @param termTest terms to run for shading flag. Looks for thresholds for this term. 
+#' 
+#' @param shadowSource Which type of shadow is expected. Options include LR Cimel Misc to distinguish between 
+#'different types of shading sources from different directions. 
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
@@ -32,9 +37,6 @@
 #  Teresa Burlingame (2025-09-25)
 #     fix logic output and add handling for Az near North.
 ##############################################################################################
-###### TODO look into making more efficient (does it need to be one sec, does it need to be TF then 0/1 etc)
-#### Add a -1 scenario? After finished if val is not 0/1 make -1? 
-
 def.rad.shadow.flags <- function(DirIn, 
                                  flagDf,
                                  termTest = NULL,

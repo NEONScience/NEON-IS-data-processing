@@ -32,6 +32,9 @@
 #' 
 #' @param termTest (Optional). terms to run for shading flag. If NULL and Shadow is in RadFlags will result in errored datum.
 #' 
+#' @param shadowSource (Optional). Which type of shadow is expected. Options include LR Cimel Misc to distinguish between 
+#'different types of shading sources from different directions. If not supplied, but shadow check is run script will fail. 
+#' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data/flags/threshold folders in the input path that are to be copied with a 
 #' symbolic link to the output path (i.e. carried through as-is). Note that the 'stats' and 'flags' directories 

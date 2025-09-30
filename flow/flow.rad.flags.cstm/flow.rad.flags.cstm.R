@@ -6,7 +6,6 @@
 #' 
 #' @description Workflow. Choose which custom flags are relevant to radiation data, source functions to apply QF to data
 #'
-#'
 #' General code workflow:
 #'    Parse input parameters
 #'    Determine datums to process (set of files/folders to process as a single unit)
@@ -53,10 +52,14 @@
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.
 #'
-#' readout_time
-#' all quality flags output by this custom module (retaining the same order)
-#' Ensure that any schema input here matches the column order of the auto-generated schema, 
-#' simply making any desired changes to column names.
+#'5. "termTest=shortwaveRadiation" (optional). Which terms will be checked for thresholds in the radiation shading flag. If
+#'not supplied, but shadow check is run script will fail. 
+#'
+#'6.  "shadowSource=LR". Which type of shadow is expected. Options include LR Cimel Misc to distinguish between 
+#'different types of shading sources from different directions. If not supplied, but shadow check is run script will fail. 
+#'
+#'7. "FlagsRad=Shadow|cmp22Heater", List of tests to run for data product. If not supplied, sensors will be passed through module without
+#' producing custom flags
 #'
 #' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the data folder that are to be copied with a
