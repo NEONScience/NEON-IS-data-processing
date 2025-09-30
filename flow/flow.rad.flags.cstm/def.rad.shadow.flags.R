@@ -36,6 +36,8 @@
 #     Initial creation
 #  Teresa Burlingame (2025-09-25)
 #     fix logic output and add handling for Az near North.
+#   Teresa Burlingame (2025-09-29)
+#     Testing removal of time buffer and testing thresholds being NA to trigger skipping of the flag. 
 ##############################################################################################
 def.rad.shadow.flags <- function(DirIn, 
                                  flagDf,
@@ -51,7 +53,7 @@ def.rad.shadow.flags <- function(DirIn,
   library(lubridate)
   library(dplyr)
   library(data.table)
-  
+
   if(!"readout_time" %in% names(flagDf)){
     log$error("readout_time not in flagDF variable. Invalid configuration.")
     stop()
@@ -144,25 +146,46 @@ def.rad.shadow.flags <- function(DirIn,
     lat_tow <- as.numeric(cfgloc_item[[1]]$reference_location[[1]]$LatTow)
     lon_tow <- as.numeric(cfgloc_item[[1]]$reference_location[[1]]$LonTow)
     
+    #limit total options of shadow sources. Filter for expected. 
     shadow_sources <- c("LR", "Cimel", "Misc")
     shadow_sources <- intersect(shadow_sources, shadowSource) # Only those present
+
+    #if no shadow source set flag to -1.
+    if(is.null(shadow_sources) || all(is.na(shadow_sources))){
+      log$info("No shadow sources, setting flag to -1")
+      flagDf$shadowQF <- -1 
+      return(flagDf)
+    }
     
     dt_flag <- as.data.table(flagDf)
     dt_flag[, shadowQF := 0L]
     
+    #NA handling for missing thresholds 
+    get_threshold <- function(prefix) {
+      key <- paste0(prefix, src)
+      if (key %in% names(threshold_lookup)) {
+        threshold_lookup[[key]]
+      } else {
+        NA
+      }
+    }
+    
+    #cycle through all shadow sources. If any are incomplete it skips to the next one and does not evaluate. 
+
     for(src in shadow_sources) {
+      
       thresholds <- list(
-        Azimuth = threshold_lookup[[paste0("Azimuth", src)]],
-        Length = threshold_lookup[[paste0("Length", src)]],
-        Length_corrector = threshold_lookup[[paste0("Length_corrector", src)]],
-        Altitude = threshold_lookup[[paste0("Altitude", src)]],
-        Height = threshold_lookup[[paste0("Obstruction_height", src)]]
+        Azimuth = get_threshold("Azimuth"),
+        Length = get_threshold("Length"),
+        Length_corrector = get_threshold("Length_corrector"),
+        Altitude = get_threshold("Altitude"),
+        Height = get_threshold("Obstruction_height")
       )
       
       # Validate thresholds
       if (any(is.na(unlist(thresholds)))) {
-        log$error(paste0("Missing threshold values for ", src))
-        stop()
+        log$info(paste0("Missing threshold values for ", src, " skipping source."))
+        next()
       }
       
       # Extract values
@@ -173,12 +196,13 @@ def.rad.shadow.flags <- function(DirIn,
       height <- as.numeric(thresholds$Height)
       
       # Buffer logic (as above)
-      buffer <- case_when(
-        len < 3 ~ 15,
-        len >= 3 & len < 4 ~ 10,
-        len >= 4 ~ 5,
-        TRUE ~ NA_real_
-      )
+      #removing time threshold to shorten window. 
+      # buffer <- case_when(
+      #   len < 3 ~ 15,
+      #   len >= 3 & len < 4 ~ 10,
+      #   len >= 4 ~ 5,
+      #   TRUE ~ NA_real_
+      # )
       
       deg_buffer <- case_when(
         len < 3 ~ 5,
@@ -222,18 +246,28 @@ def.rad.shadow.flags <- function(DirIn,
           )
       }
       # Convert to data.table and create time windows
+      # plus or minus one minute of flag catch. 
       dt_shadow <- as.data.table(df_shadow)
       dt_shadow[, `:=`(
-        time_start = date - buffer * 60,
-        time_end = date + buffer * 60
+        time_start = date - 60,
+        time_end = date + 60
       )]
-      setkey(dt_shadow, time_start, time_end)
       
-      # Perform logical OR operation
-      dt_flag[, shadowQF := shadowQF | (readout_time %inrange% list(dt_shadow$time_start, dt_shadow$time_end))]
+      # Sort by time_start
+      setorder(dt_shadow, time_start)
       
-      # Convert to integer at the very end
+      # Merge overlapping intervals
+      dt_shadow[, group := cumsum(c(TRUE, time_start[-1] > shift(time_end)[-1]))]
+      dt_shadow_merged <- dt_shadow[, .(
+        time_start = min(time_start),
+        time_end = max(time_end)
+      ), by = group]
+      
+      # Now use the merged windows for flagging
+      setkey(dt_shadow_merged, time_start, time_end)
+      dt_flag[, shadowQF := shadowQF | (readout_time %inrange% list(dt_shadow_merged$time_start, dt_shadow_merged$time_end))]
       dt_flag[, shadowQF := as.integer(shadowQF)]
+      
     }
     
   #convert back to DF

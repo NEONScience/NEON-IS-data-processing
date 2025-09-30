@@ -181,7 +181,6 @@ if(base::is.null(FlagsRad) || FlagsRad == 'NA'){
   FlagsRad <- NULL
   log$info("No Custom Flags found for processing")}
 
-
 # term tests for shading. If blank and shadow script sourced will fail
 termTest <- base::unique(Para$termTest)
 
