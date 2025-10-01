@@ -1,0 +1,56 @@
+---
+pipeline:
+  name: hobou24_cond_conv
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-hobo-cond-conv:sha-1c0a5e8
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    #
+    Rscript ./flow.hobo.cond.conv.R \
+        DirIn=$DIR_IN \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmData=$FILE_SCHEMA_DATA_COND_CONV \
+        FileSchmQf=$SCHEMA_FLAGS_SPEC_TEMP
+  env:
+    LOG_LEVEL: INFO
+    SOURCE_TYPE_INDEX: "4"
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: hobou24_calibration_group_and_convert
+      glob: /*/*/*/*/
+  # - pfs:
+  #     name: FILE_SCHEMA_DATA_COND_CONV
+  #     repo: hobou24_avro_schemas
+  #     glob: /aquatroll200/aquatroll200_cond_corrected.avsc
+  # - pfs:
+  #     name: SCHEMA_FLAGS_SPEC_TEMP
+  #     repo: hobou24_avro_schemas
+  #     glob: /hobou24/flags_hobou24_missing_temp.avsc
+parallelism_spec:
+  constant: 6
+autoscaling: true
+resource_requests:
+  memory: 600M
+  cpu: 1.2
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
