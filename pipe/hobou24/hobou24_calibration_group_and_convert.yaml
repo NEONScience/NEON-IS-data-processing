@@ -28,9 +28,9 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       DirSubCopy=flags \
-      "TermFuncConv=conductivity_low:def.cal.conv.poly.b|conductivity_high:def.cal.conv.poly" \
-      "TermQf=conductivity_low|conductivity_high" \
-      "TermFuncUcrt=conductivity_low:def.ucrt.meas.cnst|conductivity_high:def.ucrt.meas.cnst"
+      "TermFuncConv=conductivity_low:def.cal.conv.poly.l|conductivity_high:def.cal.conv.poly.h|temperature:def.cal.conv.poly" \
+      "TermQf=conductivity_low|conductivity_high|temperature" \
+      "TermFuncUcrt=conductivity_low:def.ucrt.meas.cnst|conductivity_high:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst"
     EOF
   env:
     # Environment variable to determine source type
