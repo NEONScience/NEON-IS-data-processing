@@ -1,4 +1,4 @@
-name: "Build-push_flow.troll.comb.splt"
+name: "Build-push_flow.troll.hobo.comb.splt"
 
 on:
   push:
