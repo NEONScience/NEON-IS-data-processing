@@ -52,3 +52,6 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
