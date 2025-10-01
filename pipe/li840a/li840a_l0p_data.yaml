@@ -3,7 +3,7 @@ pipeline:
   name: li840a_l0p_data
 transform:
 #  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sae-trst-dp0p:sha-05aa331
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sae-trst-dp0p:sha-269735d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
