@@ -2,7 +2,7 @@
 pipeline:
   name: hobou24_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-1a9783a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-a6b6bcc
   cmd:
   - sh
   - "-c"
