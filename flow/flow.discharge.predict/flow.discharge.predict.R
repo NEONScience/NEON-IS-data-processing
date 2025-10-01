@@ -1,425 +1,278 @@
 ##############################################################################################
-#' @title
-
+#' @title Workflow for Level Troll 500 and Aqua Troll 200 Science Computations
+#' flow.troll.uncertainty.R
+#' 
 #' @author
-#' Zachary Nickerson \email{nickerson@battelleecology.org}
-
-#' @description
-
-#' @param
-
-#' @return 
-
+#' Nora Catolico \email{ncatolico@battelleecology.org}
+#' 
+#' @description Workflow. Calculate elevation and derive uncertainty  for surface and groundwater troll data products.
+#' 
+#' The arguments are: 
+#' 
+#' 1. "DirIn=value", where value is the  path to input data directory (see below)
+#' The input path is structured as follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number of 
+#' parent and child directories of any name, so long as they are not 'pfs', the same name as subdirectories 
+#' expected at the terminal directory (see below), or recognizable as the 'yyyy/mm/dd' structure 
+#' which indicates the 4-digit year, 2-digit month, and 2-digit day of the data contained in the folder.
+#' 
+#' Nested within this path are the folders:
+#'         /data
+#'         /location
+#'         /uncertainty_coef
+#'         /uncertainty_data
+#'         
+#'        
+#' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
+#' of DirIn.
+#' 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
+#' 
+#' 4. "Context=value", where the value must be designated as either "surfacewater" or "groundwater".
+#' 
+#' 5. "WndwAgr=value", (optional) where value is the aggregation interval for which to compute unceratainty. It is 
+#' formatted as a 3 character sequence, typically representing the number of minutes over which to compute unceratainty 
+#' For example, "WndwAgr=001" refers to a 1-minute aggregation interval, while "WndwAgr=030" refers to a 
+#' 30-minute aggregation interval. Multiple aggregation intervals may be specified by delimiting with a pipe 
+#' (e.g. "WndwAgr=001|030|060"). Note that a separate file will be output for each aggregation interval. 
+#' It is assumed that the length of the file is one day. The aggregation interval must divide one day into 
+#' complete intervals. No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
+#' 
+#' 6. "WndwInst=TRUE", (optional) set to TRUE to include instantaneous uncertainty data output. The defualt value is FALSE. 
+#' No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
+#' 
+#' 7. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
+#' 
+#' 9. "FileSchmUcrtAgr=value" (optional), where values is the full path to the avro schema for the output aggregate 
+#' uncertainty data file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
+#' 
+#' 9. "FileSchmUcrtInst=value" (optional), where values is the full path to the avro schema for the output instantaneous 
+#' uncertainty data file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
+#' 
+#' 10. "FileSchmStats=value" (optional), where values is the full path to the avro schema for the output statistics
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. 
+#' 
+#' 11. "FileSchmSciStats=value" (optional), where values is the full path to the avro schema for the output science statistics
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. 
+#'
+#' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
+#' which uses system environment variables if available.
+#' @return water table elevation calculated from calibrated pressure, density of water, gravity, and sensor elevation.
+#' Data and uncertainty values will be output in Parquet format in DirOut, where the terminal directory 
+#' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
+#'  
+#' If no output schema is provided for the data, the output column/variable names will be determined by the 
+#' sensor type (leveltroll500 or aquatroll200). Output column/variable names for the leveltroll500 will be
+#' readout_time, pressure, pressure_data_quality, temperature, temperature_data quality, elevation, in that order. 
+#' Output column/variable names for the aquatroll200 will be readout_time, pressure, pressure_data_quality, 
+#' temperature, temperature_data quality, conductivity, conductivity_data_quality, elevation, in that order.
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THIS ORDER. Otherwise, they will be labeled incorrectly.
+#' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
-
 #' @keywords Currently none
-
+#' 
 #' @examples
-
+#' Stepping through the code in Rstudio 
+# Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau') #troll data
+# Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_group_path') #uncertainty data
+# Sys.setenv(FILE_SCHEMA_STATS_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc')
+# Sys.setenv(SCHEMA_DATA_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc')
+# Sys.setenv(SCHEMA_UCRT_AGR_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc')
+# Sys.setenv(SCHEMA_UCRT_INST_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc')
+# Sys.setenv(FILE_SCHEMA_STATS_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc')
+# Sys.setenv(SCHEMA_DATA_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_data.avsc')
+# Sys.setenv(SCHEMA_UCRT_AGR_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt.avsc')
+# Sys.setenv(SCHEMA_UCRT_INST_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt_inst.avsc')
+# Sys.setenv(SCHEMA_SCI_TROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030",
+#          "FileSchmData=$SCHEMA_DATA_TROLL_AQUATROLL","FileSchmUcrtAgr=$SCHEMA_UCRT_AGR_TROLL_AQUATROLL","FileSchmUcrtInst=$SCHEMA_UCRT_INST_TROLL_AQUATROLL",
+#          "FileSchmStats=$FILE_SCHEMA_STATS_AQUATROLL","FileSchmSciStats=$SCHEMA_SCI_TROLL")
+#' rm(list=setdiff(ls(),c('arg','log')))
+#' 
 #' @seealso None currently
-
-# changelog and author contributions / copyrights
-#   Zachary Nickerson (2025-09-18)
-#     original creation
+#' changelog and author contributions / copyrights
+#'   Nora Catolico (2021-02-02)
+#'     original creation
+#'   Nora Catolico (2023-03-03)
+#'     updated for no troll data use case
+#'   Nora Catolico (2023-08-30)
+#'     updated for inst SW outputs for L4 discharge
+#'   Nora Catolico (2023-09-26)
+#'     updated for multiple sensors in one day 
+#'   Nora Catolico (2024-01-29)
+#'     updated to include water column height uncertainty for L4 discharge 
+#'     distinguish between average and instantaneous uncertainty outputs
 ##############################################################################################
+options(digits.secs = 3)
+library(foreach)
+library(doParallel)
 
-library(NEONprocIS.base)
-library(stageQCurve)
-library(tidyverse)
+# Source the wrapper function. Assume it is in the working directory
+source("./wrap.troll.uncertainty.R")
 
-# TESTING DEVELOPMENT - ARIK 2025-08-25
-siteID <- "HOPB"
-qHOR <- "132"
-qVER <- "100"
-yyyy <- "2025"
-mm <- "08"
-dd <- "25"
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly = TRUE)
 
-# Set constants
-secInDay <- 60*60*24
-secIn15min <- 60*15
-startDate <- as.POSIXct(paste(yyyy,mm,dd,sep = "-"),tz="UTC")
-endDate <- as.POSIXct(paste(yyyy,mm,dd,sep = "-"),tz="UTC")+secInDay-secIn15min
+# Start logging
+log <- NEONprocIS.base::def.log.init()
 
-# Set pasths and parse configuration files ####
-dirBaM <- "modules/l4_discharge_model/BaM_beta/"
-dirConfig <- paste0(dirBaM,"BaM_BaRatin/")
-nameRegex <- "^\"|\" .*"
-configRegex <- "^\'|\' .*"
-predRegex <- "[0-9]{1,}"
-Config_BaM <- readLines(paste0(dirBaM,"Config_BaM.txt"))
-RunOptionsName <- gsub(nameRegex,"",
-                       Config_BaM[2])
-ModelName <- gsub(nameRegex,"",
-                  Config_BaM[3])
-ControlMatrixName <- gsub(nameRegex,"",
-                          Config_BaM[4])
-DataName <- gsub(nameRegex,"",
-                 Config_BaM[5])
-cookedMCMCName <- gsub(nameRegex,"",
-                       readLines(paste0(dirConfig,
-                                        gsub(nameRegex,"",
-                                             Config_BaM[8])))[1])
-PredMasterName <- gsub(nameRegex,"",
-                       Config_BaM[11])
-ConfigPredictions <- readLines(paste0(dirConfig,PredMasterName))
-Config_Pred_Maxpost <- readLines(paste0(dirConfig,
-                                        gsub(configRegex,"",
-                                             ConfigPredictions[2])))
-Config_Pred_hU <- readLines(paste0(dirConfig,
-                                   gsub(configRegex,"",
-                                        ConfigPredictions[3])))
-Config_Pred_TotalU <- readLines(paste0(dirConfig,
-                                       gsub(configRegex,"",
-                                            ConfigPredictions[4])))
-stageSeries <- gsub(configRegex,"",
-                    Config_Pred_Maxpost[1])
-stageSpaghettis <- gsub(configRegex,"",
-                        Config_Pred_hU[1])
-QMaxpostSpagName <- gsub(configRegex,"",
-                         Config_Pred_Maxpost[7])
-QGaugeUncSpagName <- gsub(configRegex,"",
-                          Config_Pred_hU[7])
-QGaugeUncEnvName <- gsub(configRegex,"",
-                         Config_Pred_hU[10])
-QTotalUncSpagName <- gsub(configRegex,"",
-                          Config_Pred_TotalU[7])
-QTotalUncEnvName <- gsub(configRegex,"",
-                         Config_Pred_TotalU[10])
-dataPath <- gsub(configRegex,"",
-                 readLines(paste0(dirConfig,DataName))[1])
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
-# Read in the WCH data - stashed locally from pachctl query ####
-dirHOR <- paste0("surfacewater-physical_",siteID,qHOR,qVER)
-wchFile <- paste(dirHOR,
-                 paste(yyyy,mm,dd,sep = "-"),
-                 "EOS_1_min_001.parquet",
-                 sep = "_")
-EOS_1_min <- NEONprocIS.base::def.read.parq(
-  paste("/home/NEON/nickerson/pfs",
-        "surfacewaterPhysical_level1_group_consolidate_srf",
-        yyyy,mm,dd,
-        dirHOR,
-        "data",
-        wchFile,
-        sep = "/"),
-)
+# Parse the input arguments into parameters
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr","Context"),NameParaOptn = c("FileSchmData","FileSchmUcrtAgr","FileSchmUcrtInst","FileSchmStats","FileSchmSciStats","WndwInst","WndwAgr"),log = log)
 
-# Average to 15 minute WCH data ####
-EOS_1_min_sum <- EOS_1_min%>%
-  dplyr::mutate(roundDate=lubridate::round_date(endDateTime,"15 mins"))%>%
-  dplyr::group_by(roundDate)%>%
-  dplyr::summarise(wchMean=mean(surfacewaterColumnHeight,
-                                na.rm=T),
-                   wchMin=min(surfacewaterColumnHeight,
-                              na.rm=T),
-                   wchMax=max(surfacewaterColumnHeight,
-                              na.rm=T),
-                   wchVar=var(surfacewaterColumnHeight,
-                              na.rm=T),
-                   wchNumPts=sum(!is.na(surfacewaterColumnHeight)),
-                   wchNonSysUncert=mean(surfacewaterColumnNonSysUncert,
-                                        na.rm=T),
-                   wchFinalQF=sum(surfacewaterColumnHeightFinalQF,
-                                  na.rm=T)/n()*100,
-                   wchFinalQFSciRvw=sum(surfacewaterColumnHeightFinalQFSciRvw,
-                                        na.rm=T)/n()*100
-                   )%>%
-  dplyr::mutate(dplyr::across(dplyr::everything(), ~ replace(., is.nan(.), NA)))
+# Echo arguments
+log$debug(base::paste0('Input directory: ', Para$DirIn))
+log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
+log$debug(base::paste0('Context: ', Para$Context))
+log$debug(base::paste0('Instantaneous window: ', Para$WndwInst))
+log$debug(base::paste0('Aggregation interval(s): ', Para$WndwAgr))
+log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
+log$debug(base::paste0('Schema for output aggregate uncertainty: ', Para$FileSchmUcrtAgr))
+log$debug(base::paste0('Schema for output instantaneous uncertainty: ', Para$FileSchmUcrtInst))
+log$debug(base::paste0('Schema for output stats: ', Para$FileSchmStats))
+log$debug(base::paste0('Schema for output science stats: ', Para$FileSchmSciStats))
 
-# Determine if modeling with a current or previous regression ####
+# Read in the schemas so we only have to do it once and not every
+# time in the avro writer.
+if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
+  SchmDataOut <- NULL
+} else {
+  SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
+}
+if(base::is.null(Para$FileSchmUcrtAgr) || Para$FileSchmUcrtAgr == 'NA'){
+  SchmUcrtOutAgr <- NULL
+} else {
+  SchmUcrtOutAgr <- base::paste0(base::readLines(Para$FileSchmUcrtAgr),collapse='')
+}
+if(base::is.null(Para$FileSchmUcrtInst) || Para$FileSchmUcrtInst == 'NA'){
+  SchmUcrtOutInst <- NULL
+} else {
+  SchmUcrtOutInst <- base::paste0(base::readLines(Para$FileSchmUcrtInst),collapse='')
+}
+if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
+  SchmStatsOut <- NULL
+} else {
+  SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
+}
+if(base::is.null(Para$FileSchmSciStats) || Para$FileSchmSciStats == 'NA'){
+  SchmSciStatsOut <- NULL
+} else {
+  SchmSciStatsOut <- base::paste0(base::readLines(Para$FileSchmSciStats),collapse='')
+}
 
-# Read in the gaugeWaterColumnRegression data - stashed local from pachctl query
-gaugeWaterColumnRegression <- read.csv(
-  "/home/NEON/nickerson/pfs/l4discharge_csd_gag_regression_table_loader/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv",
-  header = TRUE,
-  encoding = "UTF-8"
-)
-# Check if there is a regression available 
-regAvailable <- any(gaugeWaterColumnRegression$siteID==siteID
-                    &gaugeWaterColumnRegression$regressionStartDate<=startDate
-                    &gaugeWaterColumnRegression$regressionEndDate>=endDate)
-if(regAvailable){
-  # If yes, subset to that regression
-  gaugeWaterColumnRegression <- gaugeWaterColumnRegression[
-    gaugeWaterColumnRegression$siteID==siteID
-    &gaugeWaterColumnRegression$regressionStartDate<=startDate
-    &gaugeWaterColumnRegression$regressionEndDate>=endDate,
-  ]
+
+# Retrieve context
+if(Para$Context=="groundwater"){
+  Context<-"GW"
+}else if(Para$Context=="surfacewater"){
+  Context<-"SW"
 }else{
-  # If no, subset to most recent regression
-  prevReg <- max(gaugeWaterColumnRegression$regressionID[
-    gaugeWaterColumnRegression$siteID==siteID
-  ])
-  gaugeWaterColumnRegression <- gaugeWaterColumnRegression[
-    gaugeWaterColumnRegression$regressionID==prevReg,
-  ]
+  log$fatal('Context must equal groundwater or surfacewater.')
+  stop()
 }
-regID <- gaugeWaterColumnRegression$regressionID
 
-# Model stage and estimate systematic uncertainty ####
-
-# Read in the curveIdentification data - stashed locally from pachctl query
-gaugePressureRelationship <- read.csv(
-  "/home/NEON/nickerson/pfs/l4discharge_sdrc_gaugePress_table_loader/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv",
-  header = TRUE,
-  encoding = "UTF-8"
-)
-gaugePress <- gaugePressureRelationship[
-  gaugePressureRelationship$regressionID==regID,
-]
-
-# Predict model fit between stage and water column height
-gaugePress_model <- lm(gaugeHeight~calcWaterColumnHeight,
-                       data=gaugePress)
-gaugePress_model_fit <- data.frame(
-  stats::predict(
-    gaugePress_model,
-    newdata = data.frame(calcWaterColumnHeight=EOS_1_min_sum$wchMean),
-    interval = "confidence"))
-gaugePress_model_fit$unc <- gaugePress_model_fit$upr-gaugePress_model_fit$fit
-
-# Add modeled stage to data
-EOS_1_min_sum$calcStage <- gaugePress_model_fit$fit
-
-# Sum systematic and nonsystematic uncertainty and add to data
-EOS_1_min_sum$stageUnc <- EOS_1_min_sum$wchNonSysUncert+gaugePress_model_fit$unc
-
-# Determine if modeling with a current or previous rating curve ####
-
-# Read in the curveIdentification data - stashed locally from pachctl query
-curveIdentification <- read.csv(
-  "/home/NEON/nickerson/pfs/l4discharge_sdrc_curveID_table_loader/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv",
-  header = TRUE,
-  encoding = "UTF-8"
-)
-# Check if there is a curve available 
-curveAvailable <- any(curveIdentification$siteID==siteID
-                      &curveIdentification$curveStartDate<=startDate
-                      &curveIdentification$curveEndDate>=endDate)
-if(curveAvailable){
-  # If yes, subset to that curve
-  curveIdentification <- curveIdentification[
-    curveIdentification$siteID==siteID
-    &curveIdentification$curveStartDate<=startDate
-    &curveIdentification$curveEndDate>=endDate,
-  ]
+# Retrieve instantaneous information
+if(base::is.null(Para$WndwInst) || Para$WndwInst == 'NA'|| Para$WndwInst == "FALSE"){
+  WndwInst <- FALSE
 }else{
-  # If no, subset to most recent curve
-  prevCurve <- max(curveIdentification$curveID[
-    curveIdentification$siteID==siteID
-  ])
-  curveIdentification <- curveIdentification[
-    curveIdentification$curveID==prevCurve,
-  ]
+  WndwInst <- TRUE
 }
-curveID <- curveIdentification$curveID
 
-# Configure priors for BaM! predictive model ####
-
-# Read in the controlInfo data - stashed locally from pachctl query
-surveyDate <- as.Date(curveIdentification$controlSurveyEndDateTime)
-controlInfo <- read.csv(
-  "/home/NEON/nickerson/pfs/l4discharge_sdrc_controlInfo_table_loader/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
-  header = TRUE,
-  encoding = "UTF-8"
-)
-controlInfo <- controlInfo[
-  controlInfo$siteID==siteID
-  &as.Date(controlInfo$endDate)==surveyDate,
-]
-# Read in the priorParameters data - stashed locally from pachctl query
-priorParameters <- read.csv(
-  "/home/NEON/nickerson/pfs/l4discharge_sdrc_prior_table_loader/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
-  header = TRUE,
-  encoding = "UTF-8"
-)
-priorParameters <- priorParameters[
-  priorParameters$siteID==siteID
-  &as.Date(priorParameters$endDate)==surveyDate,
-]
-
-# Configure model run
-stageQCurve::txt.out.run.opts(runType = "pred", 
-                              RunOptionsPath = paste0(dirConfig, 
-                                                      RunOptionsName))
-
-# Write out control activation state
-controlMatrixPath <- paste0(dirConfig, ControlMatrixName)
-priorParamsPath <- paste0(dirConfig, ModelName)
-numCtrls <- nrow(priorParameters)
-Config_ControlMatrix <- matrix(data=NA, nrow = numCtrls, ncol = numCtrls)
-for(rw in 1:numCtrls){
-  for(cl in 1:numCtrls){
-    Config_ControlMatrix[rw,cl] <- controlInfo$controlActivationState[
-      controlInfo$controlNumber == cl & controlInfo$segmentNumber == rw
-    ]
-  }
+# Retrieve aggregation interval(s)
+if(base::is.null(Para$WndwAgr) || Para$WndwAgr == 'NA'){
+  WndwAgr <- NULL
+}else{
+  WndwAgr <- base::as.difftime(base::as.numeric(Para$WndwAgr),units="mins")
 }
-write.table(Config_ControlMatrix, controlMatrixPath, 
-            row.names = F, col.names = F)
 
-# Write out hydraulic control configurations
-Config_Model <- matrix(data = NA, nrow = (4 + 12*numCtrls))
-Config_Model[1] <- '"BaRatin"'
-Config_Model[2:3] <- 1
-Config_Model[4] <- 3 * numCtrls
-for(j in 1:numCtrls){
-  offset <- (j-1)*12
-  #Divide by two and round to three places after the decimal
-  kUnc <- format(
-    priorParameters$priorActivationStageUnc[
-      priorParameters$controlNumber == j
-    ]/1.96, 
-    digits = 3)
-  aUnc <- format(
-    priorParameters$priorCoefficientUnc[
-      priorParameters$controlNumber == j
-    ]/1.96,
-    digits = 3)
-  cUnc <- format(priorParameters$priorExponentUnc[
-      priorParameters$controlNumber == j
-    ]/1.96,
-    digits = 3)
-  Config_Model[offset+5] <- paste0('"k', j, '"')
-  Config_Model[offset+6] <- priorParameters$priorActivationStage[
-    priorParameters$controlNumber == j
-  ]
-  Config_Model[offset+7] <- "'Gaussian'"
-  Config_Model[offset+8] <- paste(
-    priorParameters$priorActivationStage[priorParameters$controlNumber == j],
-    as.character(kUnc),
-    sep = ",")
-  Config_Model[offset+9] <- paste0('"a', j, '"')
-  Config_Model[offset+10] <- priorParameters$priorCoefficient[
-    priorParameters$controlNumber == j
-  ]
-  Config_Model[offset+11] <- "'Gaussian'"
-  Config_Model[offset+12] <- paste(
-    priorParameters$priorCoefficient[priorParameters$controlNumber == j],
-    as.character(aUnc),
-    sep = ",")
-  Config_Model[offset+13] <- paste0('"c', j, '"')
-  Config_Model[offset+14] <- priorParameters$priorExponent[
-    priorParameters$controlNumber == j
-  ]
-  Config_Model[offset+15] <- "'Gaussian'"
-  Config_Model[offset+16] <- paste(
-    priorParameters$priorExponent[priorParameters$controlNumber == j],
-    as.character(cUnc),
-    sep = ",")
+#what are the expected subdirectories of each input path
+nameDirSub <- c('data','flags','location')
+log$debug(base::paste0(
+  'Additional subdirectories to copy: ',
+  base::paste0(nameDirSub, collapse = ',')
+))
+
+# Find all the input paths (datums). We will process each one.
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn=Para$DirIn,nameDirSub=nameDirSub,log=log)
+
+# Create the binning for each aggregation interval
+if(length(WndwAgr)>0){
+  timeBgnDiff <- list()
+  timeEndDiff <- list()
+  for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
+    timeBinDiff <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr[idxWndwAgr],WndwTime=base::as.difftime(1,units='days'))
+    timeBgnDiff[[idxWndwAgr]] <- timeBinDiff$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+    timeEndDiff[[idxWndwAgr]] <- timeBinDiff$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+  } # End loop around aggregation intervals
 }
-write.table(Config_Model, priorParamsPath, row.names = F, col.names = F, quote = F)
 
-# Configure gaugings for BaM! predictive model ####
 
-# Read in the priorParameters data - stashed locally from pachctl query
-gaugeDischargeMeas <- read.csv(
-  "/home/NEON/nickerson/pfs/l4discharge_sdrc_gaugeDsc_table_loader/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv",
-  header = TRUE,
-  encoding = "UTF-8"
-)
-gaugeDischargeMeas <- gaugeDischargeMeas[
-  gaugeDischargeMeas$curveID==curveID,
-]
-
-# Reconfigure the guagings data table
-gaugeDischargeMeas <- gaugeDischargeMeas[
-  ,c("gaugeHeight","gaugeHeightUnc","streamDischarge","streamDischargeUnc")
-]
-names(gaugeDischargeMeas) <- c("H","uH","Q","uQ")
-gaugeDischargeMeas$bH <- NA
-gaugeDischargeMeas$bHindex <- NA
-gaugeDischargeMeas$bQ <- NA
-gaugeDischargeMeas$bQindex <- NA
-
-# Write out configured gaugings from transition output
-write.table(gaugeDischargeMeas,
-            paste0(dirConfig,"data/gaugings.txt"),
-            sep = "\t",
-            row.names = F,
-            quote = F)
-
-# Write configuration files
-Config_Data <- readLines(paste0(dirConfig, DataName))
-Config_Data[3] <- gsub("[0-9]{1,6}",nrow(gaugeDischargeMeas),Config_Data[3])
-writeLines(Config_Data, paste0(dirConfig, DataName))
-
-# Configure spaghettis for BaM! predictive model ####
-
-# Read in the priorParameters data - stashed locally from pachctl query
-sampledParameters <- read.csv(
-  "/home/NEON/nickerson/pfs/l4discharge_sdrc_sampled_table_loader/NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv",
-  header = TRUE,
-  encoding = "UTF-8"
-)
-sampledParameters <- sampledParameters[
-  sampledParameters$curveID==curveID,
-]
-
-# Configure spaghettis
-spagOutPath <- paste0(dirConfig,cookedMCMCName)
-stageQCurve::txt.out.spag.data(spagDataIn = sampledParameters,
-                               spagOutPath = spagOutPath)
-
-# Write out the single spaghetti for the maxPost timeseries
-# Need to remove any NAs introduced during regularization
-actualDataIdx <- which(!is.na(EOS_1_min_sum$calcStage))
-dataForBaM <- EOS_1_min_sum$calcStage[actualDataIdx]
-write.table(dataForBaM,
-            paste0(dirConfig,"data/Ht.txt"),
-            sep = "\t",
-            row.names = F,
-            col.names = F)
-
-# Write out the set of spaghetti for the hu and Totalu
-numSpag <- as.numeric(gsub(" {1,}!.*","",Config_Pred_TotalU[3]))
-kMean <- dataForBaM
-kStd <- EOS_1_min_sum$stageUnc[actualDataIdx]
-#Need to loop through these to the whole list
-stage_noisy <- matrix(NA, ncol = numSpag, nrow = length(dataForBaM))
-for(j in 1:length(dataForBaM)){
-  stage_noisy[j,] <- rnorm(numSpag,mean = kMean[j],sd = kStd[j])
+# Process each datum path
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
+  log$info(base::paste0('Processing path to datum: ', idxDirIn))
+  
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.troll.uncertainty(
+        DirIn=idxDirIn,
+        DirOutBase=Para$DirOut,
+        Context=Context,
+        WndwAgr=WndwAgr,
+        WndwInst=WndwInst,
+        SchmDataOut=SchmDataOut,
+        SchmUcrtOutAgr=SchmUcrtOutAgr,
+        SchmUcrtOutInst=SchmUcrtOutInst,
+        SchmStatsOut=SchmStatsOut,
+        SchmSciStatsOut=SchmSciStatsOut,
+        timeBgnDiff=timeBgnDiff,
+        timeEndDiff=timeEndDiff,
+        log=log
+      ),
+      error = function(err) {
+        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
+        
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
+      }
+    ),
+    # This simply to avoid returning the error
+    error=function(err) {}
+  )
+  
+  return()
 }
-#Write out the "noisy" file
-write.table(stage_noisy,
-            paste0(dirConfig,"data/Ht_noisy.txt"),
-            sep = "\t",
-            row.names = F,
-            col.names = F)
-
-#__ Update number of observations for each of the prediction files ####
-Config_Pred_Maxpost[2] <- gsub(predRegex,length(dataForBaM),
-                               Config_Pred_Maxpost[2])
-writeLines(Config_Pred_Maxpost,paste0(dirConfig,
-                                      gsub(configRegex,"",
-                                           ConfigPredictions[2])))
-Config_Pred_hU[2] <- gsub(predRegex,length(dataForBaM),
-                          Config_Pred_hU[2])
-writeLines(Config_Pred_hU,paste0(dirConfig,
-                                 gsub(configRegex,"",
-                                      ConfigPredictions[3])))
-Config_Pred_TotalU[2] <- gsub(predRegex,length(dataForBaM),
-                              Config_Pred_TotalU[2])
-writeLines(Config_Pred_TotalU,paste0(dirConfig,
-                                     gsub(configRegex,"",
-                                          ConfigPredictions[4])))
-
-# Run BaM! - prediction mode ####
-setwd(dirBaM)
-system2("BaM_MiniDMSL.exe")
-
-
-#
-
-
-
-
-
-
-
-
-
-
-
