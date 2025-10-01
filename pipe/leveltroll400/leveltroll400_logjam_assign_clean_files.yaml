@@ -24,7 +24,7 @@ input:
   - pfs:
       name: SCHMA_DATA
       repo: leveltroll400_avro_schemas
-      glob: /leveltroll400.avsc
+      glob: /leveltroll400/leveltroll400_log_data.avsc
 parallelism_spec:
   constant: 3
 autoscaling: true
