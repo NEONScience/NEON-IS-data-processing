@@ -48,7 +48,7 @@
 #   Nora Catolico (2024-10-01)
 #     original creation, from def.cal.conv.poly.b by Cove Sturtevant
 ##############################################################################################
-def.cal.conv.poly.b <- function(data = data.frame(data=base::numeric(0)),
+def.cal.conv.poly.l <- function(data = data.frame(data=base::numeric(0)),
                                 infoCal = NULL,
                                 varConv = base::names(data)[1],
                                 calSlct=NULL,
