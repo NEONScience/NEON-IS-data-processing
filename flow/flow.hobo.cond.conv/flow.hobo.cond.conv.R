@@ -67,11 +67,10 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='~/pfs/hobou24_calibration_group_and_convert')
-#' Sys.setenv(DIR_IN='~/pfs/hobou24_logjam_assign_clean_files/hobou24/2022/06/20/49150')
+#' Sys.setenv(DIR_IN='~/pfs/hobou24_calibration_group_and_convert/hobou24/2022/06/10/49150')
 #' Sys.setenv(FILE_SCHEMA_DATA='~/pfs/hobou24_avro_schemas/hobou24/hobou24_cond_corrected.avsc')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_QF")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently

@@ -28,12 +28,13 @@ transform:
     cp -rL /tmp/pfs/structured /tmp/pfs/structuredCopy || : # Allow to fail without exit code (happens if step above produced no output)
     rm -rf /tmp/pfs/filter_joined 
     rm -rf /tmp/pfs/structured 
-    # Run third module - merge data by location   *****************add uncrt back in later**********
+    # Run third module - merge data by location
     Rscript ./flow.loc.data.trnc.comb.R \
       DirIn=/tmp/pfs/structuredCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCombData=data|flags" \
+      "DirSubCombData=data|flags|uncertainty_data" \
+      DirSubCombUcrt=uncertainty_coef \
       DirSubCopy=location
     EOF
   env:
@@ -67,7 +68,7 @@ input:
   - pfs:
       name: DATA_PATH
       #repo: hobou24_calibration_group_and_convert
-      repo: hobou24_logjam_assign_clean_files #************change once cal module is working
+      repo: hobou24_cond_conv
       glob: /hobou24/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true

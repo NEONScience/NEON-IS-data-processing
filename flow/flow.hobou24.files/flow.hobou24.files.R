@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Workflow for Subsurface Tchain File Processing
+#' @title Workflow for Subsurface Tchain Hobo File Processing
 
 #' @author
 #' Kaelin Cawley \email{kcawley@battelleecology.org}
@@ -21,8 +21,7 @@
 #' 4. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
-#' leveltroll500 (does not output conductivity) in your schema.
+#' THE INPUT DATA.
 #' 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -38,7 +37,7 @@
 #' @examples
 #' Stepping through the code in Rstudio 
 #' setwd('/home/NEON/kcawley/NEON-IS-data-processing/flow/flow.subs.files')
-#' Sys.setenv(DIR_IN='/home/NEON/kcawley/pfs/troll_logjam_load_files')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/hobou24_logjam_load_files/49150')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -47,7 +46,7 @@
 
 # changelog and author contributions / copyrights
 #   Kaelin Cawley (2024-12-06) original creation
-# 
+#   Nora Catolico (2025-10-02) update formatting
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -110,14 +109,14 @@ fileData <- base::list.files(DirIn,full.names=TRUE)
 log$debug(base::paste0('hobou24 Files identified:', fileData))
 
 doParallel::registerDoParallel(numCoreUse)
-# Process each datum path for leveltroll400 files
+# Process each datum path for hobou24 files
 foreach::foreach(idxFileIn = fileData) %dopar% {
   log$info(base::paste0('Processing path to file: ', idxFileIn))
   
   # Run the wrapper function for each datum, with error routing HOBO FILES
   tryCatch(
     withCallingHandlers(
-      wrap.subs.HOBOU24.files(
+      wrap.subs.hobou24.files(
         FileIn=idxFileIn,
         DirOut=Para$DirOut,
         SchmDataOut=SchmDataOut,

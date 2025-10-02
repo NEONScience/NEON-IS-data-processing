@@ -3,8 +3,6 @@ pipeline:
   name: hobou24_cond_conv
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-hobo-cond-conv:sha-1c0a5e8
-  # image_pull_secrets:
-  # - battelleecology-quay-read-all-pull-secret
   cmd:
   - sh
   - "-c"
@@ -13,15 +11,13 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    #
-    Rscript ./flow.hobo.cond.conv.R \
+    # Run conversion module
+      Rscript ./flow.hobo.cond.conv.R \
         DirIn=$DIR_IN \
         DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums \
-        FileSchmData=$FILE_SCHEMA_DATA_COND_CONV \
-        FileSchmQf=$SCHEMA_FLAGS_SPEC_TEMP
+        DirErr=/pfs/out/errored_datums
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     SOURCE_TYPE_INDEX: "4"
 input:
   cross:
@@ -33,10 +29,6 @@ input:
   #     name: FILE_SCHEMA_DATA_COND_CONV
   #     repo: hobou24_avro_schemas
   #     glob: /aquatroll200/aquatroll200_cond_corrected.avsc
-  # - pfs:
-  #     name: SCHEMA_FLAGS_SPEC_TEMP
-  #     repo: hobou24_avro_schemas
-  #     glob: /hobou24/flags_hobou24_missing_temp.avsc
 parallelism_spec:
   constant: 6
 autoscaling: true

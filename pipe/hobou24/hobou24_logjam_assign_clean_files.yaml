@@ -11,6 +11,7 @@ transform:
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=$ERR_PATH
+      FileSchmData=$SCHMA_DATA
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-hobou24-files:sha-068749a
   env:
     LOG_LEVEL: DEBUG
@@ -20,6 +21,10 @@ input:
       name: DIR_IN
       repo: hobou24_logjam_load_files
       glob: /*
+  - pfs:
+      name: SCHMA_DATA
+      repo: hobou24_avro_schemas
+      glob: /hobou24/hobou24_log_data.avsc
 parallelism_spec:
   constant: 3
 autoscaling: true

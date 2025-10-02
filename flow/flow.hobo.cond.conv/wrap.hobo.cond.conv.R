@@ -109,13 +109,21 @@ wrap.hobo.cond.conv <- function(DirIn,
                                        log=log)
   }    
   
-  # The flags folder is already populated from the calibration module. Copy over any existing files.
-  fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
-  # Symbolically link each file
-  for(idxFileCopy in fileCopy){
-    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
-    rptCopy <- base::system(cmdCopy)
+  # update the calibration flags file
+  fileFlags <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
+  
+  # --------- Load the flags ----------
+  fileFlags <- fileFlags[1]
+  hoboCalFlags  <-
+    base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInFlags, '/', fileFlags),
+                                             log = log),
+              silent = FALSE)
+  if (base::any(base::class(data) == 'try-error')) {
+    # Generate error and stop execution
+    log$error(base::paste0('File ', dirFlags, '/', fileFlags, ' is unreadable.'))
+    base::stop()
   }
+
   
   # Take stock of our data files. 
   fileData <- base::list.files(dirInData,full.names=FALSE)
@@ -136,20 +144,26 @@ wrap.hobo.cond.conv <- function(DirIn,
   #create missing temperature flag; default all flags to -1 then change them as the test can be performed
   hoboData$missingTempQF <- -1
   hoboData$missingTempQF[!is.na(hoboData$temperature) & hoboData$temperature!="NA" & hoboData$temperature!="NaN"]<-0
-  hoboData$missingTempQF[is.na(hoboData$temperature)|hoboData$temperature=="NA"|hoboData$temperature=="NaN"]<-1
+  hoboData$missingTempQF[is.na(hoboData$temperature)]<-1
   hoboData$temperature<-as.numeric(hoboData$temperature)
   source_id<-hoboData$source_id[1]
   
+  #reduce to single conductivity
+  hoboData$high_or_low<-NA
+  hoboData$high_or_low[!is.na(hoboData$conductivity_high)]<-"high"
+  hoboData$high_or_low[!is.na(hoboData$conductivity_low)]<-"low"
+  
+  hoboData$raw_conductivity<-NA
+  hoboData$raw_conductivity[!is.na(hoboData$high_or_low) & hoboData$high_or_low=="high"]<-hoboData$conductivity_high[!is.na(hoboData$high_or_low) & hoboData$high_or_low=="high"]
+  hoboData$raw_conductivity[!is.na(hoboData$high_or_low) & hoboData$high_or_low=="low"]<-hoboData$conductivity_low[!is.na(hoboData$high_or_low) & hoboData$high_or_low=="low"]
+  hoboData$raw_conductivity<-as.double(hoboData$raw_conductivity)
   #convert actual conductivity to specific conductance
-  hoboData$raw_conductivity<-hoboData$conductivity_high
-  hoboData$raw_conductivity[is.na(hoboData$raw_conductivity)|hoboData$raw_conductivity=="NA"|hoboData$raw_conductivity=="NaN"]<-hoboData$conductivity_low[is.na(hoboData$raw_conductivity)|hoboData$raw_conductivity=="NA"|hoboData$raw_conductivity=="NaN"]
-  hoboData$raw_conductivity<-as.numeric(hoboData$raw_conductivity)
   hoboData$conductivity <- hoboData$raw_conductivity/(1+0.0191*(hoboData$temperature-25))
   hoboData$conductivity[hoboData$missingTempQF>0]<-NA #If no temp stream, then do not output specific conductance. Could potentially report actual conductivity in future. 
   
   #Create dataframe for output data
   dataOut <- hoboData
-  dataCol <- c("source_id","readout_time","temperature","raw_conductivity","conductivity")
+  dataCol <- c("source_id","readout_time","temperature","raw_conductivity","conductivity","high_or_low")
   dataOut <- dataOut[,dataCol]
   
   #Create dataframe for just flags
@@ -159,6 +173,19 @@ wrap.hobo.cond.conv <- function(DirIn,
   #Turn necessary outputs to integer
   colInt <- c("missingTempQF") 
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
+  
+  #reduce conductivity calibration flags to one term
+  hoboCalFlags2<-merge(hoboCalFlags,dataOut,by="readout_time",all.x = TRUE)
+  hoboCalFlags$conductivity_qfExpi<-hoboCalFlags$conductivity_high_qfExpi
+  hoboCalFlags$conductivity_qfExpi[is.na(hoboCalFlags$conductivity_qfExpi)|hoboCalFlags$conductivity_qfExpi=="NA"|hoboCalFlags$conductivity_qfExpi=="NaN"]<-hoboCalFlags$conductivity_low_qfExpi[is.na(hoboCalFlags$conductivity_qfExpi)|hoboCalFlags$conductivity_qfExpi=="NA"|hoboCalFlags$conductivity_qfExpi=="NaN"]
+
+  
+  hoboCalFlags$conductivity_qfSusp<-hoboCalFlags$conductivity_high_qfSusp
+  hoboCalFlags$conductivity_qfSusp[is.na(hoboCalFlags$conductivity_qfSusp)|hoboCalFlags$conductivity_qfSusp=="NA"|hoboCalFlags$conductivity_qfSusp=="NaN"]<-hoboCalFlags$conductivity_low_qfSusp[is.na(hoboCalFlags$conductivity_qfSusp)|hoboCalFlags$conductivity_qfSusp=="NA"|hoboCalFlags$conductivity_qfSusp=="NaN"]
+  hoboCalFlags$conductivity_qfSusp<-as.integer(hoboCalFlags$conductivity_qfSusp)
+  
+  QFCalCol <- c("readout_time","temperature_qfExpi","conductivity_qfExpi","temperature_qfSusp","conductivity_qfSusp")
+  flagsCalOut <- hoboCalFlags[,QFCalCol]
   
 
   # Write out data

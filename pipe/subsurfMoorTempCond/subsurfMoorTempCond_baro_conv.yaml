@@ -11,7 +11,7 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    # Run convresion module
+    # Run conversion module
       Rscript ./flow.troll.baro.conv.R \
         DirIn=$DIR_IN \
         DirOut=/pfs/out \

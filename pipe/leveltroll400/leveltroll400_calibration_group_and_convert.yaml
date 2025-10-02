@@ -28,6 +28,8 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       DirSubCopy=flags \
+      FileSchmData=$FILE_SCHEMA_DATA \
+      FileSchmQf=$FILE_SCHEMA_FLAGS \
       "TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly" \
       "TermQf=pressure|temperature" \
       "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst"
@@ -63,15 +65,14 @@ transform:
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
 input:
   cross:
-  # - pfs:
-  #     name: FILE_SCHEMA_DATA
-  #     repo: troll_avro_schemas
-  #     glob: /leveltroll500/leveltroll500_calibrated.avsc
-  # - pfs:
-  #     name: FILE_SCHEMA_FLAGS
-  #     repo: troll_avro_schemas
-  #     glob: /leveltroll500/flags_calibration_leveltroll500.avsc
-  # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: leveltroll400_avro_schemas
+      glob: /leveltroll400/leveltroll400_log_data.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: leveltroll400_avro_schemas
+      glob: /leveltroll400/flags_calibration_leveltroll400.avsc
   - join:
     - pfs:
         name: CALIBRATION_PATH
