@@ -2,7 +2,7 @@ name: DEV-pressuretransducer-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/pressuretransducer/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface

@@ -69,11 +69,6 @@ transform:
       # Upload to bucket, compacting with any existing file 
       ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
 
-      # Update the airflow triggering table
-      for site_output in "${sites_output[@]}"; do
-        ./update-trigger-table.py -s $site_output -S $OUT_SOURCE_TYPE -D "$OUT_PATH/$OUT_SOURCE_TYPE"
-      done
-
       # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi
@@ -103,18 +98,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class
