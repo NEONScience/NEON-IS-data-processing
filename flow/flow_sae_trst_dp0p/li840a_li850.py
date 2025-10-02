@@ -14,6 +14,9 @@ log = get_logger()
 
 class Li840a(L0toL0p):
 
+    data_columns = {'asrpCo2': 'asrpCO2',
+                    'asrpH2o': 'asrpH2O'}
+                    
 
     def data_conversion(self, filename: str) -> pd.DataFrame:
         df = super().data_conversion(filename)
