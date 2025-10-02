@@ -102,21 +102,21 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: li840a_calibration_assignment
-        glob: /li840a/(2025)/(09)/(*)
+        glob: /li840a/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
         repo: li840a_data_source_trino
-        glob: /li840a/(2025)/(09)/(*)
+        glob: /li840a/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: li840a_data_source_kafka
-        glob: /li840a/(2025)/(09)/(*)
+        glob: /li840a/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
