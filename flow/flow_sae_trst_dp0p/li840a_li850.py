@@ -26,12 +26,9 @@ class Li840a(L0toL0p):
         del df['tempCell']
         df['pres'] = df['presCell'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x)).astype('float32')
         del df['presCell']
-        df['asrpCo2'] = df['asrpCO2']
-        del df['asrpCO2']
-        df['asrpH2o'] = df['asrpH2O']
-        del df['asrpH2O']
         df['rtioMoleDryCo2'] = df['rtioMoleWetCo2']/(1-df['rtioMoleWetH2o'])
         df['rtioMoleDryH2o'] = df['rtioMoleWetH2o']/(1-df['rtioMoleWetH2o'])
+        df.rename(columns=self.data_columns, inplace=True)
         log.debug(f'{df.columns}')
         return df
 
