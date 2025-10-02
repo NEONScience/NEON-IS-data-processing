@@ -39,6 +39,11 @@
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
 #' 
+#' @param SchmCalQfOut (optional) A json-formatted character string containing the schema for the updated calibration flags output
+#' by this function. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA.
+#' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
 #' output path (i.e. not combined but carried through as-is).
@@ -78,6 +83,7 @@ wrap.hobo.cond.conv <- function(DirIn,
                                DirOutBase,
                                SchmDataOut=NULL,
                                SchmQfOut=NULL,
+                               SchmCalQfOut=NULL,
                                DirSubCopy=NULL,
                                log=NULL
 ){
@@ -208,13 +214,22 @@ wrap.hobo.cond.conv <- function(DirIn,
   }
   
   #Write out flags
-  NameFileOutFlags <- base::paste0(DirOutFlags,"/hobou24_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc_MissingTemp.parquet")
+  NameFileOutFlags <- base::paste0(DirOutFlags,"/hobou24_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsMissingTemp.parquet")
   rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQfOut),silent=TRUE)
   if(base::any(base::class(rptQfOut) == 'try-error')){
     log$error(base::paste0('Cannot write flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Flags written successfully in ', NameFileOutFlags))
+    log$info(base::paste0('Missing Temp Flags written successfully in ', NameFileOutFlags))
+  }
+  
+  NameFileOutCalFlags <- base::paste0(DirOutFlags,"/hobou24_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCal.parquet")
+  rptQfCalOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsCalOut,NameFile = NameFileOutCalFlags,Schm = SchmCalQfOut),silent=TRUE)
+  if(base::any(base::class(rptQfCalOut) == 'try-error')){
+    log$error(base::paste0('Cannot write flags to ',NameFileOutCalFlags,'. ',attr(rptQfCalOut, "condition")))
+    stop()
+  } else {
+    log$info(base::paste0('Missing Temp Flags written successfully in ', NameFileOutCalFlags))
   }
   
 } # End loop around datum paths

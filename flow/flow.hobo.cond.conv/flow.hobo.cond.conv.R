@@ -46,6 +46,11 @@
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable). See below for details.
 #'
+#' 6. "FileSchmCalQf=value" (optional), where values is the full path to the avro schema for the output calibration flags file. 
+#' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
+#' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
+#' nested within term/variable). See below for details.
+#' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
@@ -106,7 +111,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","DirSubCopy"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","FileSchmCalQf","DirSubCopy"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -127,6 +132,11 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
   SchmQfOut <- NULL
 } else {
   SchmQfOut <- base::paste0(base::readLines(Para$FileSchmQf),collapse='')
+}
+if(base::is.null(Para$FileSchmCalQf) || Para$FileSchmCalQf == 'NA'){
+  SchmCalQfOut <- NULL
+} else {
+  SchmCalQfOut <- base::paste0(base::readLines(Para$FileSchmCalQf),collapse='')
 }
 
 
@@ -168,6 +178,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
         SchmQfOut=SchmQfOut,
+        SchmCalQfOut=SchmCalQfOut,
         DirSubCopy=DirSubCopy,
         log=log
       ),

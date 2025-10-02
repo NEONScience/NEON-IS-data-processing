@@ -24,13 +24,13 @@ transform:
       DirIn=/tmp/pfs/date_filled \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirRglr=data|flags" \
+      "DirRglr=data|uncertainty_data|flags" \
       MethRglr=CybiEc \
       WndwRglr=Trlg \
       IdxWndw=IdxWndwMin \
       RptTimeWndw=FALSE \
       DropNotNumc=FALSE \
-      "DirSubCopy=location"
+      "DirSubCopy=location|uncertainty_coef"
     EOF
   env:
     # Environment variables for date gap filler
