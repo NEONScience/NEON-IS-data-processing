@@ -41,7 +41,7 @@
 #   Kaelin Cawley (2024-12-06) original creation
 #' 
 ##############################################################################################
-wrap.subs.HOBOU24.files <- function(FileIn,
+wrap.subs.hobou24.files <- function(FileIn,
                              DirOut,
                              SchmDataOut=NULL,
                              log=NULL
