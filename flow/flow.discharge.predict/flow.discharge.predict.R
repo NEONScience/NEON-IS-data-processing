@@ -1,11 +1,14 @@
 ##############################################################################################
-#' @title Workflow for Level Troll 500 and Aqua Troll 200 Science Computations
-#' flow.troll.uncertainty.R
+#' @title Workflow to Model 1-Min Water Column Height to 15-Min Discharge Data
+#' flow.discharge.predict.R
 #' 
 #' @author
-#' Nora Catolico \email{ncatolico@battelleecology.org}
+#' Zachary Nickerson \email{nickerson@battelleecology.org}
 #' 
-#' @description Workflow. Calculate elevation and derive uncertainty  for surface and groundwater troll data products.
+#' @description Workflow. Average water column height data to 15-min; model 
+#' continuous stage based on the relationship between gauge height and water 
+#' column height; model continuous discharge using a 3rd party Bayesian model 
+#' executable.
 #' 
 #' The arguments are: 
 #' 
@@ -69,6 +72,7 @@
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
+
 #' @return water table elevation calculated from calibrated pressure, density of water, gravity, and sensor elevation.
 #' Data and uncertainty values will be output in Parquet format in DirOut, where the terminal directory 
 #' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
@@ -79,11 +83,12 @@
 #' Output column/variable names for the aquatroll200 will be readout_time, pressure, pressure_data_quality, 
 #' temperature, temperature_data quality, conductivity, conductivity_data_quality, elevation, in that order.
 #' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THIS ORDER. Otherwise, they will be labeled incorrectly.
-#' 
+
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+
 #' @keywords Currently none
-#' 
+
 #' @examples
 #' Stepping through the code in Rstudio 
 # Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau') #troll data
@@ -104,25 +109,17 @@
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
+
 #' changelog and author contributions / copyrights
-#'   Nora Catolico (2021-02-02)
+#'   Zachary Nickerson (2025-10-02)
 #'     original creation
-#'   Nora Catolico (2023-03-03)
-#'     updated for no troll data use case
-#'   Nora Catolico (2023-08-30)
-#'     updated for inst SW outputs for L4 discharge
-#'   Nora Catolico (2023-09-26)
-#'     updated for multiple sensors in one day 
-#'   Nora Catolico (2024-01-29)
-#'     updated to include water column height uncertainty for L4 discharge 
-#'     distinguish between average and instantaneous uncertainty outputs
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.troll.uncertainty.R")
+source("./wrap.discharge.predict.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
