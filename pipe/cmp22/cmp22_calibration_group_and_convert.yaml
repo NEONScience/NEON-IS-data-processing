@@ -29,12 +29,13 @@ transform:
           FileSchmL0=$FILE_SCHEMA_L0 \
           DirSubCopy=calibration
 
-    # Run calibration conversion module
-    #!!! NOTE: THese parameters for testing ENG request. Need to re-eval 
+    # # Run calibration conversion module
     Rscript ./flow.cal.conv.R  \
       DirIn=/tmp/pfs/kafka_merged \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmData=$FILE_SCHEMA_DATA \
+      FileSchmQf=$FILE_SCHEMA_FLAGS \
       TermFuncConv=voltage:def.cal.conv.poly \
       TermQf=voltage \
       TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly \
@@ -73,7 +74,7 @@ transform:
     OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
-    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE COPY IF USING COMBINED MODULE.
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
 input:
@@ -82,19 +83,19 @@ input:
       name: FILE_SCHEMA_L0
       repo: cmp22_avro_schemas
       glob: /cmp22/cmp22.avsc
-  # - pfs:
-  #     name: FILE_SCHEMA_DATA
-  #     repo: cmp22_avro_schemas
-  #     glob: /cmp22/cmp22_calibrated.avsc
-  # - pfs:
-  #     name: FILE_SCHEMA_FLAGS
-  #     repo: cmp22_avro_schemas
-  #     glob: /cmp22/flags_calibration_cmp22.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: cmp22_avro_schemas
+      glob: /cmp22/cmp22_calibrated.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: cmp22_avro_schemas
+      glob: /cmp22/flags_calibration_cmp22.avsc
   - pfs:
       name: FILE_UNCERTAINTY_FDAS
       repo: cmp22_uncertainty_fdas
       glob: /fdas_calibration_uncertainty_general.json
-  # Outer join all days so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
+  # Outer join all days so that varying sensors between kafka and archive loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
         name: CALIBRATION_PATH
@@ -105,7 +106,7 @@ input:
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
-        repo: cmp22_data_source_trino
+        repo: cmp22_data_source_gcs
         glob: /cmp22/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
