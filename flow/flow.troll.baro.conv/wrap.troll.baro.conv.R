@@ -115,6 +115,8 @@ wrap.troll.cond.conv <- function(DirIn,
   DirInTrollData <- fs::path(DirInTrollCFGLOC,'data')
   DirInTrollFlags <- fs::path(DirInTrollCFGLOC,'flags')
   DirInTrollLoc <- fs::path(DirInTrollCFGLOC,'location')
+  DirInTrollUcrt <- fs::path(DirInTrollCFGLOC,'uncertainty_data')
+  DirInTrollUcrtCoef <- fs::path(DirInTrollCFGLOC,'uncertainty_coef')
   if(length(DirInTrollData)==0){
     # Generate error and stop execution
     log$error(base::paste0('No Troll data found in ', DirIn))
@@ -133,13 +135,13 @@ wrap.troll.cond.conv <- function(DirIn,
   
   
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
-  DirOutData <- base::paste0(DirOut,'/pressure/',CFGLOC,'/data')
+  DirOutPressure <- base::paste0(DirOut,'/pressure/',CFGLOC)
+  base::dir.create(DirOutPressure,recursive=TRUE)
+  DirOutData <- base::paste0(DirOutPressure,'/data')
   base::dir.create(DirOutData,recursive=TRUE)
-  DirOutFlags <- base::paste0(DirOut,'/pressure/',CFGLOC,'/flags')
+  DirOutFlags <- base::paste0(DirOutPressure,'/flags')
   base::dir.create(DirOutFlags,recursive=TRUE)
-  DirOutLoc <- base::paste0(DirOut,'/pressure/',CFGLOC,'/location')
-  base::dir.create(DirOutLoc,recursive=TRUE)
-  DirOutUcrt <- base::paste0(DirOut,'/pressure/',CFGLOC,'/uncertainty_data')
+  DirOutUcrt <- base::paste0(DirOutPressure,'/uncertainty_data')
   base::dir.create(DirOutUcrt,recursive=TRUE)
   
   
@@ -149,7 +151,21 @@ wrap.troll.cond.conv <- function(DirIn,
                                        DirDest=DirOut,
                                        LnkSubObj=FALSE,
                                        log=log)
-  }    
+  }   
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirInTrollLoc) > 0){
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirInTrollLoc),
+                                       DirDest=DirOutPressure,
+                                       LnkSubObj=FALSE,
+                                       log=log)
+  }   
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirInTrollUcrtCoef) > 0){
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirInTrollUcrtCoef),
+                                       DirDest=DirOutPressure,
+                                       LnkSubObj=FALSE,
+                                       log=log)
+  }  
   
   # The flags folder is already populated from the calibration module. Copy over any existing files.
   fileCopy <- base::list.files(DirInTrollFlags,recursive=TRUE) # Files to copy over
@@ -158,11 +174,11 @@ wrap.troll.cond.conv <- function(DirIn,
     cmdCopy <- base::paste0('ln -s ',base::paste0(DirInTrollFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
     rptCopy <- base::system(cmdCopy)
   }
-  # copy over location files
-  fileCopy <- base::list.files(DirInTrollLoc,recursive=TRUE) # Files to copy over
+  # copy over uncertainty files
+  fileCopy <- base::list.files(DirInTrollUcrt,recursive=TRUE) # Files to copy over
   # Symbolically link each file
   for(idxFileCopy in fileCopy){
-    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInTrollLoc,'/',idxFileCopy),' ',base::paste0(DirOutLoc,'/',idxFileCopy))
+    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInTrollUcrt,'/',idxFileCopy),' ',base::paste0(DirOutUcrt,'/',idxFileCopy))
     rptCopy <- base::system(cmdCopy)
   }
   

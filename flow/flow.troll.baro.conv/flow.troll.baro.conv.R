@@ -57,6 +57,12 @@
 #' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable).
+#' 
+#' 7. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' pipes, at the same level as the data folder in the input path that are to be copied with a 
+#' symbolic link to the output path. Note that it is acceptable to include the
+#' "stats" directory if stats files generated from other processing modules (differently named) are to be 
+#' passed through. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -119,7 +125,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","FileSchmUcrt"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","FileSchmUcrt","DirSubCopy"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -147,9 +153,17 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmUcrt == 'NA'){
   SchmUcrtOut <- base::paste0(base::readLines(Para$FileSchmUcrt),collapse='')
 }
 
-
 # Retrieve optional subdirectories to copy over
-DirSubCopy <- c('hobou24','group')
+# DirSubCopy <-
+#   base::unique(base::setdiff(
+#     Para$DirSubCopy,
+#     c('hobou24','group')
+#   ))
+# log$debug(base::paste0(
+#   'Additional subdirectories to copy: ',
+#   base::paste0(DirSubCopy, collapse = ',')
+# ))
+DirSubCopy<-c('hobou24','group')
 
 #what are the expected subdirectories of each input path
 nameDirSub <- base::c('leveltroll400')

@@ -44,8 +44,8 @@ transform:
         DirIn=/tmp/pfs/padded_analyzerCopy \
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
-        "TermTest1=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence" \
-        "TermTest2=conductivity:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        "TermTest1=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+        "TermTest2=conductivity:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
         DirSubCopy=location
     elif [ $source_type = "pressure" ]; then 
       # Leveltroll
@@ -53,14 +53,14 @@ transform:
         DirIn=/tmp/pfs/padded_analyzerCopy \
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
-        "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
         DirSubCopy=location
     fi
     EOF
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /tmp/pfs/padded_analyzer
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: '3'
     ERR_PATH: /pfs/out/errored_datums
     # Environment variables for qaqc plausibility
@@ -71,7 +71,7 @@ input:
   - pfs:
       name: DATA_PATH
       repo: subsurfMoorTempCond_threshold_select_ts_pad
-      glob: /(*/*/*)/*/*
+      glob: /(*/*/*)/(subsurf-moor-temp-cond_PRPO103100)/*
   # - pfs:
   #     name: SCHEMA_FLAGS
   #     repo: subsurfMoorTempCond_avro_schemas

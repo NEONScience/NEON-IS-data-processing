@@ -51,6 +51,12 @@
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable). See below for details.
 #' 
+#' 7. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' pipes, at the same level as the data folder in the input path that are to be copied with a 
+#' symbolic link to the output path. Note that it is acceptable to include the
+#' "stats" directory if stats files generated from other processing modules (differently named) are to be 
+#' passed through. 
+#' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
