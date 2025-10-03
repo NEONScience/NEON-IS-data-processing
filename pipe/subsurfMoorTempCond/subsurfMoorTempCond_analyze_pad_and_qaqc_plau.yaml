@@ -13,11 +13,20 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
 
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/pfs/padded_analyzer
     rm -rf /tmp/pfs/padded_analyzerCopy
     mkdir -p /tmp/pfs/padded_analyzer
+    
+    # Get source type /SOURCE_TYPE
+    echo "DataPath detected: $DATA_PATH"
+    unset source_type
+    export SOURCE_TYPE_PATH=$DATA_PATH
+    source_type=$(echo $SOURCE_TYPE_PATH | cut -f 8 -d "/")
+    echo "SourceType detected: $source_type"
+    #
 
     # Run first module - padded_timeseries_analyzer
     python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
@@ -25,16 +34,28 @@ transform:
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/pfs/padded_analyzer 
+    
+    
 
     # Run second module - qaqc plausibility
-    Rscript ./flow.qaqc.plau.R \
-      DirIn=/tmp/pfs/padded_analyzerCopy \
-      DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums \
-      "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike|persistence" \
-      "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence" \
-      "TermTest3=conductivity:null|gap|range(rmv)|step(rmv)|spike|persistence" \
-      DirSubCopy=location
+    if [ $source_type = "hobou24" ]; then 
+      # hobou24
+      Rscript ./flow.qaqc.plau.R \
+        DirIn=/tmp/pfs/padded_analyzerCopy \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        "TermTest1=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        "TermTest2=conductivity:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        DirSubCopy=location
+    elif [ $source_type = "pressure" ]; then 
+      # Leveltroll
+      Rscript ./flow.qaqc.plau.R \
+        DirIn=/tmp/pfs/padded_analyzerCopy \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        DirSubCopy=location
+    fi
     EOF
   env:
     # Environment variables for padded timeseries analyzer
@@ -44,12 +65,13 @@ transform:
     ERR_PATH: /pfs/out/errored_datums
     # Environment variables for qaqc plausibility
     PARALLELIZATION_INTERNAL: '4'
+    
 input:
   cross:
   - pfs:
       name: DATA_PATH
       repo: subsurfMoorTempCond_threshold_select_ts_pad
-      glob: /*/*/*
+      glob: /(*/*/*)/*/*
   # - pfs:
   #     name: SCHEMA_FLAGS
   #     repo: subsurfMoorTempCond_avro_schemas
