@@ -71,6 +71,14 @@
 #' be added in quadrature to yield the combined individual measurement uncertainty. Any variables in the output data frame(s) 
 #' of the uncertainty functions indicated here that begin with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty function) will be 
 #' added in quadrature to represent the combined L0' uncertainty for the indicated term. 
+#' \code{idxDataCal} Character string. Column index(es) in the calibrated output data frame that correspond 
+#' to the uncertainty estimates produced by the uncertainty function specified in FuncUcrtMeas. 
+#' Separate multiple indexes with pipes, with no white space. For example, if 
+#' produces uncertainty estimates for two variables, and those two variables are found 
+#' in columns 3 and 4 in the calibrated output data (produced elsewhere), then the entry in idxDataCal 
+#' will be "3|4". This enables the correct association of uncertainty data and calibrated output data. If
+#' a schema for the calibrated output is included in Meta$SchmaDataCal (see Meta input below), the names of
+#' the uncertainty data columns will be adjusted accordingly (see return information below).
 #'
 #' @param ucrtCoefFdas (optional). A data frame of FDAS uncertainty coefficients, as produced by 
 #' NEONprocIS.cal::def.read.ucrt.coef.fdas. See that function for details. Must be provided if any FDAS uncertainty functions
@@ -119,9 +127,11 @@
 #'
 #' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
 #' calibration and uncertainty functions. This can contain whatever information might be needed in the
-#' calibration and/or uncertainty functions in addition to calibration and uncertainty information. If the location 
-#' directory is found in DirIn (not nested further), all location metadata files in that directory will be read in 
-#' and combined with NEONprocIS.base::wrap.loc.meta.comb and added to the Meta object in Meta$locations.  
+#' calibration and/or uncertainty functions in addition to calibration and uncertainty information. 
+#' By default, the datum path specified in input DirIn will be included in Meta$PathDatum. 
+#' If the 'location' directory is found in DirIn (not nested further), all location metadata files in that 
+#' directory will be read in and combined with NEONprocIS.base::wrap.loc.meta.comb and added to the Meta 
+#' object in Meta$Locations.  
 #'  
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
@@ -222,7 +232,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
                                NumDayExpiMax=NA,
                                SchmDataOutList=NULL,
                                SchmQf=NULL,
-                               Meta=list(),
+                               Meta=list(PathDatum=DirIn),
                                DirSubCopy=NULL,
                                log=NULL
 ){
@@ -399,7 +409,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
   if (numFileLoc > 0) {
     log$debug(base::paste0('Loading location metadata found in ', dirLoc))
     loc <- NEONprocIS.base::wrap.loc.meta.comb(NameFile=fs::path(dirLoc,fileLoc))
-    Meta$locations <- loc # Add to Meta object to be passed into the calibration functions
+    Meta$Locations <- loc # Add to Meta object to be passed into the calibration functions
   }
   
   # ------- Apply the calibration function to the selected terms ---------
@@ -439,6 +449,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
   
   
   # ------- Compile uncertainty coefficients for all variables with cal info ---------
+  # TODO: Include Meta here and add output schema to it with any field mappings for uncertainty data
   log$debug('Compiling uncertainty coefficients.')
   ucrtCoef <- NULL
   ucrtCoef <-
@@ -483,19 +494,35 @@ wrap.cal.conv.dp0p <- function(DirIn,
   # ------- Apply the uncertainty function to the selected terms ---------
   log$debug('Computing any uncertainty data.')
   ucrtData <- NULL
+  Meta$ucrtCoefFdas <- ucrtCoefFdas
   ucrtData <-
     NEONprocIS.cal::wrap.ucrt.dp0p(
       data = data,
       FuncUcrt = FuncUcrt,
-      ucrtCoefFdas = ucrtCoefFdas,
       calSlct = calSlct,
-      mappNameVar = mappNameVar,
-      Meta = Meta,
+      Meta = Meta, 
       log = log
     )
   
+  
+  
+  
+  # The following was pulled out of wrap.ucrt.dp0p. 
+  # It might need to be placed back in wrap.ucrt.dp0p in order to use the column mappings for each function call
+  # Get output variable name by mapping output columns to the schema??- FIX ME
+    nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==varIdx]
+    
+    # Append the output variable name as a prefix to each column
+    if(!base::is.null(nameVarUcrtOut)){
+      base::names(ucrtDataIdx) <- base::paste0(nameVarUcrtOut,'_',base::names(ucrtDataIdx))
+    }
+  
+    
+    
+    
+  
   if (base::length(ucrtData) > 0) {
-    # Combine uncertainty data frames for all variables
+    # Combine uncertainty data frames for all variables and rename with the schema
     base::names(ucrtData) <- NULL # Preserves column names
     ucrtData <- base::do.call(base::cbind, ucrtData)
     ucrtData <-

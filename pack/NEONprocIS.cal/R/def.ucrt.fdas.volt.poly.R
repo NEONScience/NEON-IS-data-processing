@@ -26,8 +26,12 @@
 #' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
 #' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is. 
 #' 
-#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
-#' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.
+#' @param Meta Named list of metadata for use in this function. Meta is required to contain
+#' list element ucrtCoefFdas, which is a data frame of FDAS uncertainty coefficients, as read by 
+#' NEONprocIS.cal::def.read.ucrt.coef.fdas. Columns include:\cr
+#' \code{Name} Character. Name of the coefficient.\cr
+#' \code{Value} Character. Value of the coefficient.\cr
+#' \code{.attrs} Character. Relevant attribute (i.e. units)\cr
 #'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -99,6 +103,13 @@ def.ucrt.fdas.volt.poly <- function(data = data.frame(data=base::numeric(0)),
     log$debug('No calibration information supplied, returning NA values for FDAS uncertainty.')
     return(ucrt)
   }
+  
+  
+  
+  # Add the FDAS uncertainty coefs to those from the cal file - check this. migrated  from wrap.ucrt.dp0p
+  infoCal$ucrt <- base::rbind(infoCal$ucrt,Meta$ucrtCoefFdas,stringsAsFactors=FALSE)
+  
+  
   
   # Check format of infoCal
   if (!NEONprocIS.cal::def.validate.info.cal(infoCal,

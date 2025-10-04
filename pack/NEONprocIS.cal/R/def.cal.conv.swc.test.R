@@ -20,14 +20,14 @@
 #' information about the calibration files and time periods that apply to the variable, 
 #' as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
 #' 
-#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
-#' NEONprocIS.cal::wrap.cal.conv for what this input is.
+#' @param Meta (Optional) List object containing additional metadata for use in 
+#' this function as needed. Defaults to an empty list. 
 #'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
 
-#' @return A  Numeric vector of calibrated data\cr
+#' @return The input data frame 'data' transformed by this function.
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

@@ -26,7 +26,8 @@
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
 
-#' @return A data frame with the following variables:\cr
+#' @return A named list of data frames, each list named for the variable for which uncertainty 
+#' estimates are contained within. Each uncertainty data frame contains the following variables:\cr
 #' \code{ucrtMeas} - combined measurement uncertainty for an individual reading. Includes the
 #' repeatability and reproducibility of the sensor and the lab DAS and uncertainty of the
 #' calibration procedures and coefficients including uncertainty in the standard (truth).
@@ -65,10 +66,10 @@
 #     Also enable uncertainty comps of multiple variables with this function call
 ##############################################################################################
 def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
-                                varUcrt = base::names(data)[1],
-                                calSlct=NULL,
-                                Meta=list(),
-                                log = NULL) {
+                               varUcrt = base::names(data)[1],
+                               calSlct=NULL,
+                               Meta=list(),
+                               log = NULL) {
   # Initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()

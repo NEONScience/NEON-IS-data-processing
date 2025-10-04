@@ -197,17 +197,17 @@
 #' Must be provided if FDAS uncertainty applies. These coefficients will be added to the uncertainty coefficients found in any calibration
 #' files and output to the ucrt_coef folder, as well as input into any uncertainty functions indicated in TermFuncUcrt.
 #'
-#' 11. "PathMeta=value" (optional), where value is a named list of paths (directories or files), relative or absolute,
-#'  and separated by pipes (|), that will be passed to any/all functions specified for calibration and uncertainty 
-#'  for use within those functions (in the 'Meta' list object). Use the format: "PathMeta=name1:path1|name2:path2|name3:path3", etc. 
-#'  In this example, name1 will be the name of the list element and path1 will be the path string. The same goes for 
-#'  name2:path2, name3:path3, etc. If any path is relative  (does not begin with a forward-slash), the path will 
-#'  be prepended with the path to the datum being processed (see the DirIn input above). Note that if the "location" 
-#'  directory is found in the datum path (alongside "data" and "calibration"), one list element of the Meta object 
-#'  passed to calibration and uncertainty functions will automatically be 'locations', which will contain the combined 
+#' 11. "Meta=value" (optional), where value is a named list of values that will be passed to any/all functions 
+#'  specified for calibration and uncertainty for use within those functions (in the 'Meta' list object). 
+#'  Use the format: "Meta=name1:value1|name2:value2|name3:value3", etc. 
+#'  In this example, name1 will be the name of the list element and value1 will be the string value. The same goes for 
+#'  name2:value2, name3:value3, etc. 
+#'  The path to the datum being processed will automatically be included in list element "PathDatum" of the Meta object . 
+#'  In addition, if the "location" directory is found in the datum path (alongside "data" and "calibration"), 
+#'  one list element will automatically be 'Locations', which will contain the combined 
 #'  location metadata read from all files found in that directory. Note that it is up to the calibration and uncertainty
-#'  functions themselves to know what do with with any location metadata or directory/file paths sent in the Meta
-#'  object. Most calibration functions do nothing with this metadata.
+#'  functions themselves to know what do with with the information included in the Meta list object. 
+#'  Most calibration and uncertainty functions do nothing with this metadata.
 #' 
 #' 12. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
 #' the same level as the data folder in the input path that are to be copied with a symbolic link to the
@@ -338,13 +338,13 @@ Para <-
       "TermQf",
       base::paste0("UcrtFuncTerm",1:100),
       "FileUcrtFdas",
-      "PathMeta",
+      "Meta",
       "DirSubCopy"
     ),
     ValuParaOptn = base::list(
       TermQf = NULL,
       NumDayExpiMax = NA,
-      PathMeta = NULL
+      Meta = NULL
     ),
     TypePara = base::list(NumDayExpiMax =
                             'numeric'),
@@ -474,31 +474,31 @@ if (base::is.null(Para$FileUcrtFdas) && !base::is.null(FuncUcrt) && base::any(!b
 }
 
 # Additional metadata to be sent into calibration and uncertainty functions
-if(!base::is.null(Para$PathMeta) && 
-   base::length(Para$PathMeta) %% 2 > 0){
+if(!base::is.null(Para$Meta) && 
+   base::length(Para$Meta) %% 2 > 0){
   log$fatal('Input argument PathMeta must contain name:path pairs, separated by pipes.')
   stop()
 }
-if (!base::is.null(Para$PathMeta) &&
-    base::length(Para$PathMeta) > 0) {
+if (!base::is.null(Para$Meta) &&
+    base::length(Para$Meta) > 0) {
   Meta <-
     NEONprocIS.base::def.vect.pars.pair(
-      vect = Para$PathMeta,
-      NameCol = c('name', 'path'),
+      vect = Para$Meta,
+      NameCol = c('name', 'value'),
       log = log
     )
   if(base::any(base::duplicated(Meta$name))){
-    log$fatal('Names of PathMeta argument must be unique (e.g. PathMeta=name1:path2|name2:path2).')
+    log$fatal('Names of Meta argument must be unique (e.g. Meta=name1:path2|name2:path2).')
     stop()
   }
   Meta <- stats::setNames(base::as.list(Meta$path),Meta$name)
   log$debug(base::paste0(
-    'Paths sent in as additional metadata for use in calibration and uncertainty functions: ',
+    'Additional metadata for use in calibration and uncertainty functions: ',
     paste0(paste0(names(Meta),'=',unlist(Meta)), collapse = ', ')
   ))
 } else {
   Meta <- base::list()
-  log$debug('Paths sent in as additional metadata for use in calibration and uncertainty functions: None')
+  log$debug('Additional metadata for use in calibration and uncertainty functions: None')
 }
 
 # Retrieve optional subdirectories to copy over
@@ -527,14 +527,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
-  # Prepend local paths in Meta object
   idxMeta <- Meta
-  str01 <- substr(idxMeta,1,1)
-  setPrp <- str01 != '/'
-  idxMeta[setPrp] <- base::lapply(idxMeta[setPrp],
-                                  FUN=function(pathIdx){
-                                    fs::path(idxDirIn,pathIdx)
-                                  })
+  idxMeta$PathDatum <- idxDirIn # Include datum path in Meta list object
   
   # Run the wrapper function for each datum, with error routing
   tryCatch(
