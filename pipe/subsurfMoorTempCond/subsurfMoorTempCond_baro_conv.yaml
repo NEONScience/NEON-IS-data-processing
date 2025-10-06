@@ -2,7 +2,7 @@
 pipeline:
   name: subsurfMoorTempCond_baro_conv
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-baro-conv:sha-c6d808c
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-baro-conv:sha-022a82b
   cmd:
   - sh
   - "-c"
@@ -15,7 +15,8 @@ transform:
       Rscript ./flow.troll.baro.conv.R \
         DirIn=$DIR_IN \
         DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums
+        DirErr=/pfs/out/errored_datums \
+        "DirSubCopy=hobou24|group"
   env:
     LOG_LEVEL: INFO
     SOURCE_TYPE_INDEX: "4"
