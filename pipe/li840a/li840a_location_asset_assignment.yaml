@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pump_location_active_dates_assignment
+  name: li840a_location_asset_assignment
 transform:
   cmd: ["/bin/bash"]
   stdin:
@@ -12,7 +12,7 @@ transform:
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-      TypeFile=namedLocation
+      TypeFile=asset
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.1
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
@@ -22,26 +22,26 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: pump_location_loader
-      glob: /pump/*
+      repo: li840a_location_asset
+      glob: /li840a/*
   - pfs:
       name: FILE_YEAR
-      repo: pump_cron_daily_and_date_control
+      repo: li840a_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 4
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 0.5
+  memory: 400M
+  cpu: 1.5
 resource_limits:
-  memory: 500M
-  cpu: 1.0
+  memory: 800M
+  cpu: 2
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.3
 datum_set_spec:
-  number: 1
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class

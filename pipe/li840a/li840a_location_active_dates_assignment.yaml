@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pump_location_active_dates_assignment
+  name: li840a_location_active_dates_assignment
 transform:
   cmd: ["/bin/bash"]
   stdin:
@@ -22,26 +22,26 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: pump_location_loader
-      glob: /pump/*
+      repo: li840a_location_loader
+      glob: /li840a/*
   - pfs:
       name: FILE_YEAR
-      repo: pump_cron_daily_and_date_control
+      repo: li840a_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 4
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 300M
-  cpu: 0.5
+  cpu: 1.2
 resource_limits:
   memory: 500M
-  cpu: 1.0
+  cpu: 1.6
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.3
 datum_set_spec:
-  number: 1
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class

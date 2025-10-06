@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pump_location_loader
+  name: li840a_location_loader
 transform:
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
@@ -12,7 +12,7 @@ transform:
   - python3 -m location_loader.location_loader_main
   env:
     LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: pump
+    SOURCE_TYPE: li840a
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
@@ -22,16 +22,16 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: pump_cron_daily_and_date_control_tick
+    repo: li840a_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 autoscaling: true
 resource_requests:
   memory: 300M
-  cpu: 0.3
+  cpu: 0.5
 resource_limits:
   memory: 800M
-  cpu: 0.8
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 300M
   cpu: 0.3
