@@ -17,7 +17,6 @@
 #'         /data
 #'         /location
 #'         /flags
-#'         /uncertainty_coef
 #'         /uncertainty_data
 #'         
 #' The data folder holds 1 data file with the naming format:
@@ -27,30 +26,18 @@
 #' SOURCETYPE_SOURCEID_locations.json
 #' CFGLOC.json
 #' 
-#' The uncertainty_coef folder holds 1 file with the naming format:
-#' SOURCETYPE_CFGLOC_YYYY-MM-DD_uncertaintyData.parquet
-#' 
-#' The uncertainty_data folder holds 1 file with the naming format:
-#' SOURCETYPE_CFGLOC_YYYY-MM-DD_uncertaintyCoef.json
-#' 
 #' 
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
 #' @param SchmDataOut (optional) A json-formatted character string containing the schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
-#' leveltroll500 (does not output conductivity) in your schema.
+#' THE INPUT DATA.
 #' 
 #' @param SchmUcrtOut (optional) A json-formatted character string containing the schema for the output uncertainty data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
-#' leveltroll500 (does not output conductivity) in your schema.
-#' 
-#' @param SchmStatsOut (optional) A json-formatted character string containing the schema for the output statistics
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. 
+#' THE INPUT DATA.
 #' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
@@ -81,8 +68,7 @@
 wrap.subsurf.depth.ucrt <- function(DirIn,
                                    DirOutBase,
                                    SchmDataOut=NULL,
-                                   SchmUcrtOutInst=NULL,
-                                   SchmStatsOut=NULL,
+                                   SchmUcrtOut=NULL,
                                    log=NULL
 ){
   
@@ -107,7 +93,6 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
   DirInTrollFlags <- fs::path(DirInTrollCFGLOC,'flags')
   DirInTrollLoc <- fs::path(DirInTrollCFGLOC,'location')
   DirInTrollUcrt <- fs::path(DirInTrollCFGLOC,'uncertainty_data')
-  DirInTrollUcrtCoef <- fs::path(DirInTrollCFGLOC,'uncertainty_coef')
 
   
   
@@ -203,7 +188,6 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     DirInHoboFlags <- fs::path(hoboDir,'flags')
     DirInHoboLoc <- fs::path(hoboDir,'location')
     DirInHoboUcrt <- fs::path(hoboDir,'uncertainty_data')
-    DirInHoboUcrtCoef <- fs::path(hoboDir,'uncertainty_coef')
     
     
     # --------- determine thermistor depth ------------
@@ -380,14 +364,15 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     dataOut <- dataOut[,dataCol]
     
     #Write out instantaneous data
+    NameFile <- base::paste0(DirOutData,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_001.parquet")
     rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
-                                                     NameFile = base::paste0(DirOutData,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_001.parquet"), 
+                                                     NameFile = NameFile, 
                                                      Schm = SchmDataOut),silent=TRUE)
     if(any(grepl('try-error',class(rptDataOut)))){
       log$error(base::paste0('Writing the output data failed for: ',NameFile,". ErrorCode: ",attr(rptDataOut,"condition")))
       stop()
     } else {
-      log$info(base::paste0(NameFile,"Data written out."))
+      log$info(base::paste0("Data written out for ",NameFile))
     }
     
     #Create dataframe for output instantaneous uncertainty data
@@ -399,92 +384,24 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     
     #Write out instantaneous Ucrt
-    rptUcrtOut <- try(NEONprocIS.base::def.wrte.parq(Ucrt = UcrtOut, 
-                                                     NameFile = base::paste0(DirOutUcrt,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt__001.parquet"), 
+    NameFileUcrt <- base::paste0(DirOutUcrt,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_001.parquet")
+    rptUcrtOut <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut, 
+                                                     NameFile = NameFileUcrt, 
                                                      Schm = SchmUcrtOut),silent=TRUE)
     if(any(grepl('try-error',class(rptUcrtOut)))){
       log$error(base::paste0('Writing the output failed for: ',NameFile,". ErrorCode: ",attr(rptUcrtOut,"condition")))
       stop()
     } else {
-      log$info(base::paste0(NameFile," written out."))
+      log$info(base::paste0("Ucrt file written out for ",NameFileUcrt))
     }
 
     
   }
   
-  
-  
-  
-
+} # End loop around datum paths
   
 
   
 
   
-  
 
-  ######## Uncertainty for instantaneous data
-  if(WndwInst==TRUE){
-    if(sensor=="aquahobo200"){
-      #temp and pressure uncert calculated earlier in pipeline
-      
-    }
-    #calculate instantaneous elevation uncert
-    uncertaintyData$elevation_ucrtMeas<-NA
-    if(!is.null(LocationHist) & length(LocationHist)>0){
-      for(i in 1:length(uncertaintyData$pressure_ucrtMeas)){
-        U_CVALA1_pressure<-uncertaintyData$pressure_ucrtMeas[i]
-        uncertaintyData$elevation_ucrtMeas[i]<-(1*hoboData$survey_uncert[i]^2+((1000/(density*gravity))^2)*U_CVALA1_pressure^2)^0.5
-      }
-    }else{
-      uncertaintyData$elevation_ucrtMeas<-NA
-    }
-    uncertaintyData$elevation_ucrtComb<-uncertaintyData$elevation_ucrtMeas
-    uncertaintyData$elevation_ucrtExpn<-2*uncertaintyData$elevation_ucrtMeas
-
-    #Create dataframes for output uncertainties
-    uncertaintyData$startDateTime<-uncertaintyData$readout_time
-    timeDiff<-uncertaintyData$startDateTime[2]-uncertaintyData$startDateTime[1]
-    uncertaintyData$endDateTime<-uncertaintyData$readout_time+timeDiff
-    if(Context=='GW'){
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn") #GW aquahobo
-    }else if(sensor=='aquahobo200'){
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn","pressure_ucrtRep") #SW aquahobo (includes inst water column meas repeatability)
-    }else{
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","pressure_ucrtRep") #SW levelhobo (includes inst water column meas repeatability)
-    }
-    ucrtOut_inst <- uncertaintyData[,ucrtCol_inst]
-    #standardize naming
-    if(Context=='GW'){
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
-    }else if(sensor=='aquahobo200'){
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert","waterColumnHeightMeasUncert")
-    }else{
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","waterColumnHeightMeasUncert")
-    }
-    #write out instantaneous uncertainty data
-    #ucrtOut_inst[,-c(1:2)] <-round(ucrtOut_inst[,-c(1:2)],2)
-    ucrtOut_inst$startDateTime<-as.POSIXct(ucrtOut_inst$startDateTime)
-    ucrtOut_inst$endDateTime<-as.POSIXct(ucrtOut_inst$endDateTime)
-    #GW inst is 5-min, SW inst is 1-min
-    if(Context=='GW'){
-      rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst,
-                                                            NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"),
-                                                            Schm = SchmUcrtOutInst),silent=TRUE)
-    }else{
-      rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst,
-                                                            NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_001.parquet"),
-                                                            Schm = SchmUcrtOutInst),silent=TRUE)
-    }
-
-
-    if(any(grepl('try-error',class(ucrtOut_inst)))){
-      log$error(base::paste0('Writing the output data failed: ',attr(ucrtOut_inst,"condition")))
-      stop()
-    } else {
-      log$info("Instantaneous uncertainty data written out.")
-    }
-  }
-
-  return()
-} 

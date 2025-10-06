@@ -28,22 +28,15 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "WndwInst=TRUE", (optional) set to TRUE to include instantaneous uncertainty data output. The defualt value is FALSE. 
-#' No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
-#' 
-#' 5. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
+#' 4. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. 
 #' 
-#' 6. "FileSchmUcrt=value" (optional), where values is the full path to the avro schema for the output  
+#' 5. "FileSchmUcrt=value" (optional), where values is the full path to the avro schema for the output  
 #' uncertainty data file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
-#' 
-#' 7. "FileSchmStats=value" (optional), where values is the full path to the avro schema for the output statistics
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. 
 #' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -58,8 +51,8 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau') #hobo data
-# Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_group_path') #uncertainty data
+# Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_analyze_pad_and_qaqc_plau') #hobo data
+# Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_baro_conv') #uncertainty data
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -94,7 +87,7 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmUcrt","FileSchmStats"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmUcrt"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -102,7 +95,6 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output uncertainty: ', Para$FileSchmUcrt))
-log$debug(base::paste0('Schema for output stats: ', Para$FileSchmStats))
 
 # Read in the schemas so we only have to do it once and not every
 # time in the avro writer.
@@ -115,11 +107,6 @@ if(base::is.null(Para$FileSchmUcrt) || Para$FileSchmUcrt == 'NA'){
   SchmUcrtOut <- NULL
 } else {
   SchmUcrtOut <- base::paste0(base::readLines(Para$FileSchmUcrt),collapse='')
-}
-if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
-  SchmStatsOut <- NULL
-} else {
-  SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
 }
 
 #what are the expected subdirectories of each input path
@@ -146,7 +133,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
         SchmUcrtOut=SchmUcrtOut,
-        SchmStatsOut=SchmStatsOut,
         log=log
       ),
       error = function(err) {
