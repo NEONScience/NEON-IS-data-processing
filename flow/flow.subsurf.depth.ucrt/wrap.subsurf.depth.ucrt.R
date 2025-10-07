@@ -79,7 +79,6 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
   
 
   # Gather info about the input directory (including date), and create base output directory
-
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- timeBgn + base::as.difftime(1,units='days')
@@ -182,7 +181,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
   
   doParallel::registerDoParallel(numCoreUse)
   foreach::foreach(hoboDir = DirInHoboCFGLOC) %dopar% {
-    log$info(base::paste0('Processing path to datum: ', hoboDir))
+    log$info(base::paste0('Processing path to hobo datum: ', hoboDir))
     
     DirInHoboData <- fs::path(hoboDir,'data')
     DirInHoboFlags <- fs::path(hoboDir,'flags')
@@ -318,7 +317,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     hoboUcrt$rawConductivity_ucrtExpn<-NA
     hoboUcrt$rawConductivity_ucrtExpn[!is.na(hoboUcrt$high_or_low) & hoboUcrt$high_or_low == 'low']<-hoboUcrt$conductivity_low_ucrtExpn[!is.na(hoboUcrt$high_or_low) & hoboUcrt$high_or_low == 'low']
     hoboUcrt$rawConductivity_ucrtExpn[!is.na(hoboUcrt$high_or_low) & hoboUcrt$high_or_low == 'high']<-hoboUcrt$conductivity_high_ucrtExpn[!is.na(hoboUcrt$high_or_low) & hoboUcrt$high_or_low == 'high']
-    hoboUcrt$specCond_ucrtMeas-NA
+    hoboUcrt$specCond_ucrtMeas<-NA
     hoboUcrt$specCond_ucrtComb<-NA
     hoboUcrt$specCond_ucrtExpn<-NA
     

@@ -51,7 +51,7 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_analyze_pad_and_qaqc_plau') #hobo data
+# Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_depth_ucrt_group/2022/06/15') #hobo data
 # Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_baro_conv') #uncertainty data
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
@@ -112,7 +112,7 @@ if(base::is.null(Para$FileSchmUcrt) || Para$FileSchmUcrt == 'NA'){
 #what are the expected subdirectories of each input path
 nameDirSub <- c('hobou24','pressure')
 log$debug(base::paste0(
-  'Additional subdirectories to copy: ',
+  'expected subdirectories: ',
   base::paste0(nameDirSub, collapse = ',')
 ))
 
@@ -123,7 +123,7 @@ DirIn <- NEONprocIS.base::def.dir.in(DirBgn=Para$DirIn,nameDirSub=nameDirSub,log
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
-  log$info(base::paste0('Processing path to datum: ', idxDirIn))
+  log$info(base::paste0('Processing path to group datum: ', idxDirIn))
   
   # Run the wrapper function for each datum, with error routing
   tryCatch(
