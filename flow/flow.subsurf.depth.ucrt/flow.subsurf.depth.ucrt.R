@@ -110,7 +110,7 @@ if(base::is.null(Para$FileSchmUcrt) || Para$FileSchmUcrt == 'NA'){
 }
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data','flags','location')
+nameDirSub <- c('hobou24','pressure')
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
   base::paste0(nameDirSub, collapse = ',')
