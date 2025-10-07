@@ -390,20 +390,20 @@ wrap.subs.leveltroll400.files <- function(FileIn,
             log$info(base::paste0('Data written successfully in ', base::paste0(DirOutLogFile,csv_name,".parquet")))
           }
           
-          #write out flags
-          DirOutFlags <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',Asset,'/flags/')
-          base::dir.create(DirOutFlags,recursive=TRUE)
-          csv_name_flags <-paste0(sensor,'_',Asset,'_',year,'-',month,'-',day,'_logFlags')
-          
-          rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
-                                                            NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),
-                                                            Schm = SchmFlagsOut),silent=TRUE)
-          if(class(rptOutFlags)[1] == 'try-error'){
-            log$error(base::paste0('Cannot write Flags to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
-            stop()
-          } else {
-            log$info(base::paste0('Flags written successfully in ', base::paste0(DirOutFlags,'/',csv_name_flags,".parquet")))
-          }
+          # #write out flags
+          # DirOutFlags <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',Asset,'/flags/')
+          # base::dir.create(DirOutFlags,recursive=TRUE)
+          # csv_name_flags <-paste0(sensor,'_',Asset,'_',year,'-',month,'-',day,'_logFlags')
+          # 
+          # rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
+          #                                                   NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),
+          #                                                   Schm = SchmFlagsOut),silent=TRUE)
+          # if(class(rptOutFlags)[1] == 'try-error'){
+          #   log$error(base::paste0('Cannot write Flags to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+          #   stop()
+          # } else {
+          #   log$info(base::paste0('Flags written successfully in ', base::paste0(DirOutFlags,'/',csv_name_flags,".parquet")))
+          # }
           
         }#end of days loop
       }else{

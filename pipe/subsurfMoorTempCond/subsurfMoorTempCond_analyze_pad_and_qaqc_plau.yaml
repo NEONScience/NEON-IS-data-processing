@@ -45,7 +45,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         "TermTest1=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
-        "TermTest2=conductivity:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+        "TermTest2=conductivity:null|gap|range|step|spike|persistence" \
         DirSubCopy=location
     elif [ $source_type = "pressure" ]; then 
       # Leveltroll

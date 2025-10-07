@@ -5,10 +5,10 @@ subsurfMoorTempCond_group_path.yaml
 subsurfMoorTempCond_baro_conv.yaml
 subsurfMoorTempCond_threshold.yaml
 subsurfMoorTempCond_threshold_select_ts_pad.yaml
-subsurfMoorTempCond_analyze_pad_and_qaqc_plau.yaml
+subsurfMoorTempCond_analyze_pad_and_qaqc_plau.yaml #need to add back in "rmv"
 subsurfMoorTempCond_depth_ucrt_group.yaml
-
 subsurfMoorTempCond_qm_group_and_compute.yaml
+
 subsurfMoorTempCond_level1_grp_reshape.yaml
 subsurfMoorTempCond_srf_loader.yaml
 subsurfMoorTempCond_srf_assignment.yaml
