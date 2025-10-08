@@ -186,7 +186,6 @@ wrap.hobo.cond.conv <- function(DirIn,
   highOrLow <- hoboData[,highOrLowCol]
   highOrLow <-unique(highOrLow)
   hoboCalFlags <- hoboCalFlags[order(hoboCalFlags$readout_time), ]
-  hoboCalFlags$high_or_low<-NA
   hoboCalFlags<-merge(hoboCalFlags,highOrLow,by="readout_time")
   
   hoboCalFlags$conductivity_qfExpi<-NA
