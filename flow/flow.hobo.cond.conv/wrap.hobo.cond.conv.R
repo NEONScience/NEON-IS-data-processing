@@ -198,6 +198,7 @@ wrap.hobo.cond.conv <- function(DirIn,
   
   QFCalCol <- c("readout_time","temperature_qfExpi","conductivity_qfExpi","temperature_qfSusp","conductivity_qfSusp")
   flagsCalOut <- hoboCalFlags[,QFCalCol]
+  names(flagsCalOut)<-c("readout_time","temperatureVaildCalQF","conductivityVaildCalQF","temperatureSuspectCalQF","conductivitySuspectCalQF")
   
 
   # Write out data
