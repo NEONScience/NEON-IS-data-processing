@@ -363,7 +363,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     dataOut <- dataOut[,dataCol]
     
     #Write out instantaneous data
-    NameFile <- base::paste0(DirOutData,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_001.parquet")
+    NameFile <- base::paste0(DirOutData,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_030.parquet")
     rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                      NameFile = NameFile, 
                                                      Schm = SchmDataOut),silent=TRUE)
