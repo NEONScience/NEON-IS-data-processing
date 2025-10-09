@@ -79,20 +79,21 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
   # Initialize the uncertainty data and uncertainty coefficients output lists
   ucrtData <- list()
   ucrtCoef <- list()
-    
+  dataConv <- data
+  
   # Run through each variable to be calibrated
   for(varIdx in varConv){
     
     # Check to see if data to be calibrated is a numeric array
     chk <-
-      NEONprocIS.base::def.validate.vector(data[[varIdx]], TestEmpty = FALSE, TestNumc = TRUE, log = log)
+      NEONprocIS.base::def.validate.vector(dataConv[[varIdx]], TestEmpty = FALSE, TestNumc = TRUE, log = log)
     if (!chk) {
       stop()
     }
 
     # Pull cal information for this variable and initialize output
     calSlctIdx <- calSlct[[varIdx]]
-    dataVarIdx <- data[[varIdx]]
+    dataVarIdx <- dataConv[[varIdx]]
     dataConvIdx <- as.numeric(NA)*dataVarIdx
     dataConvIdxAlt <- dataConvIdx # Produce a second calibrated output
     dataUcrtIdx <- data.frame(ucrtMeas=dataConvIdx) # Uncertainty for each var must be a data frame. At least one var should be ucrtMeas
@@ -192,16 +193,16 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
     # ---------- Place calibrated & uncertainty data in the output --------
     
     # Replace raw data with calibrated data.
-    data[[varIdx]] <- dataConvIdx
-    data[[varIdxAlt]] <- dataConvIdxAlt
+    dataConv[[varIdx]] <- dataConvIdx
+    dataConv[[varIdxAlt]] <- dataConvIdxAlt
     
     # Re-arrange the data frame to insert the new variable immediately 
     #   after the first calibrated variable (not required, just an example)
-    nameVar <- names(data)
+    nameVar <- names(dataConv)
     numVar <- length(nameVar)
     idxVarConv <- which(nameVar == varIdx)
     if(idxVarConv < numVar-1){
-      data <- data[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
+      dataConv <- dataConv[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
     } 
     
     # Compute combined uncertainty (add in quadrature any vars starting with ucrtMeas and ucrtFdas)
@@ -239,11 +240,11 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
   } # End loop around variables
   
   # Remove schema that came with the data (it no longer matches the output because we added variables)
-  attr(data,'schema') <- NULL
+  attr(dataConv,'schema') <- NULL
   
   # Normally we would just return the calibrated data frame. 
   #   But if we include a list, our other outputs will be detected and used
-  rpt <- list(data = data,
+  rpt <- list(data = dataConv,
               ucrtData = ucrtData,
               ucrtCoef = ucrtCoef)
   return(rpt)
