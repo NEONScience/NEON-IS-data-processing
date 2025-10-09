@@ -207,16 +207,16 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.cal.conv.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" "TermFuncConv=resistance:def.cal.conv.poly" "NumDayExpiMax=NA" "TermFuncUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly"
+#' Rscript flow.cal.conv.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" ConvFuncTerm1=def.cal.conv.poly:resistance" "NumDayExpiMax=NA" "UcrtFuncTerm1=def.ucrt.meas.cnst:resistance","UcrtFuncTerm2=def.ucrt.fdas.rstc.poly:resistance"
 #'
 #' Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/prt_calibration_filter/prt/2019/01/01')
-#' Rscript flow.cal.conv.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" TermFuncConv=resistance:def.cal.conv.poly" "NumDayExpiMax=NA" "TermUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly"
+#' Rscript flow.cal.conv.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" ConvFuncTerm1=def.cal.conv.poly:resistance" "NumDayExpiMax=NA" "UcrtFuncTerm1=def.ucrt.meas.cnst:resistance","UcrtFuncTerm2=def.ucrt.fdas.rstc.poly:resistance"
 #'
 #' Stepping through the code in Rstudio
 #' Sys.setenv(DIR_IN='/scratch/pfs/prt_calibration_filter')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/prt_calibrated.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_calibration.avsc", TermFuncConv=resistance:def.cal.conv.poly", "NumDayExpiMax=NA", "TermUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly")
+#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/prt_calibrated.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_calibration.avsc", ConvFuncTerm1=def.cal.conv.poly:resistance", "NumDayExpiMax=NA", "UcrtFuncTerm1=def.ucrt.meas.cnst:resistance,"UcrtFuncTerm2=def.ucrt.fdas.rstc.poly:resistance")
 #' # Then copy and paste rest of workflow into the command window
 
 #' @seealso None currently
