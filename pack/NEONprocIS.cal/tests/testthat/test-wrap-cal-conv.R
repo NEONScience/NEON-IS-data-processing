@@ -1,10 +1,10 @@
 ##############################################################################################
-#' @title Unit test of wrap.cal.conv.R, Wrapper for applying calibration conversion to NEON L0 data
+#' @title Unit test of wrap.cal.conv.dp0p.R, Wrapper for applying calibration conversion to NEON L0 data
 #' @author
 #' Mija Choi \email{choim@battelleecology.org}
 
 #' @description
-#' Run unit tests for wrap.cal.conv.R, wrapper function.
+#' Run unit tests for wrap.cal.conv.dp0p.R, wrapper function.
 #' @description
 #' Wrapper function. Apply calibration conversion function to NEON L0 data, thus generating NEON
 #' L0' data.
@@ -107,13 +107,13 @@ test_that("testing calibration conversion wrapper", {
       log = NULL
     )
   
-  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, log = NULL)
+  df_wcc <- NEONprocIS.cal::wrap.cal.conv.dp0p (data, calSlct, FuncConv, log = NULL)
   
   expect_true (is.data.frame(df_wcc) & all(!(is.na(df_wcc[1:3, 1]))))
   
   cat("\n       |====== Test 1:::::::  infoCal is not empty and            ========================================|\n")
   cat("\n       |------       :::::::  and there is a calibration file available within the time range given ======|\n")
-  cat("\n       |------ wrap.cal.conv returns the calibration information with                   ==================|\n")
+  cat("\n       |------ wrap.cal.conv.dp0p returns the calibration information with                   ==================|\n")
   cat("\n       |------ the first 3 rows have meaningful values and the rest NA                  ==================|\n")
   cat("\n       |==================================================================================================|\n")
   
@@ -126,13 +126,13 @@ test_that("testing calibration conversion wrapper", {
   calSlct <- NEONprocIS.cal::wrap.cal.slct (DirCal = DirCal,NameVarExpc = character(0),TimeBgn = TimeBgn,
                                             TimeEnd = TimeEnd,NumDayExpiMax = NumDayExpiMax,log = NULL)
   
-  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, log = NULL)
+  df_wcc <- NEONprocIS.cal::wrap.cal.conv.dp0p (data, calSlct, FuncConv, log = NULL)
   
   expect_true (is.data.frame(df_wcc) & all((is.na(df_wcc[]))))
   
   cat("\n       |====== Test 2:::::::  infoCal is not empty, but           ========================================|\n")
   cat("\n       |------       :::::::  there is NO calibration file available within the time range given =========|\n")
-  cat("\n       |------ wrap.cal.conv returns all NAs                                            ==================|\n")
+  cat("\n       |------ wrap.cal.conv.dp0p returns all NAs                                            ==================|\n")
 
  # Test 3  There are calibration files available within the time range, but infoCal is empty
   cat("\n       |====== Test 3:::::::  infoCal is empty                    ========================================|\n")
@@ -150,5 +150,5 @@ test_that("testing calibration conversion wrapper", {
       NumDayExpiMax = NumDayExpiMax,
       log = NULL
     )
-  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, log = NULL)
+  df_wcc <- NEONprocIS.cal::wrap.cal.conv.dp0p (data, calSlct, FuncConv, log = NULL)
 })

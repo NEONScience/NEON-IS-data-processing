@@ -16,8 +16,12 @@
 #' which uncertainty output will be computed (all other columns will be ignored). Defaults to the first
 #' column in \code{data}.
 #' 
-#' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
-#' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is. 
+#' @param calSlct A named list of data frames, list element corresponding to the variables in
+#' FuncUcrt. The data frame in each list element holds information about the calibration files and 
+#' time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
+#' See documentation for that function. Assign NULL to list elements (variables) for which calibration
+#' information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
+#' uncertainty).
 #' 
 #' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
 #' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.
@@ -27,7 +31,7 @@
 #' created and used within the function.
 
 #' @return A named list of data frames, each list named for the variable for which uncertainty 
-#' estimates are contained within. Each uncertainty data frame contains the following variables:\cr
+#' estimates are computed (matching varUcrt). Each uncertainty data frame contains the following variables:\cr
 #' \code{ucrtMeas} - combined measurement uncertainty for an individual reading. Includes the
 #' repeatability and reproducibility of the sensor and the lab DAS and uncertainty of the
 #' calibration procedures and coefficients including uncertainty in the standard (truth).
@@ -40,10 +44,18 @@
 #' @keywords calibration, uncertainty, L0'
 
 #' @examples
+#' # Not run
 #' data <- data.frame(data=c(1,6,7,0,10))
-#' infoCal <- list(ucrt = data.frame(Name=c('U_CVALA1','U_CVALA3'),Value=c(0.1,5),stringsAsFactors=FALSE))
-#' def.ucrt.meas.mult(data=data,infoCal=infoCal)
+#' calSlct <- NEONprocIS.cal::wrap.cal.slct(
+#'   DirCal = "/path/to/datum/calibration/folder",
+#'   NameVarExpc = "data",
+#'   TimeBgn = as.POSIXct('2020-01-01',tz='GMT'),
+#'   TimeEnd = as.POSIXct('2020-01-02',tz='GMT'),
+#'   NumDayExpiMax = NA
+#')
+#' def.ucrt.meas.mult(data=data,calSlct=calSlct)
 
+#' @seealso \link[NEONprocIS.cal]{wrap.cal.slct}
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.rstc.poly}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.volt.poly}
@@ -64,6 +76,7 @@
 #   Cove Sturtevant (2025-09-17)
 #     Refactor to loop through applicable calibration files within this function
 #     Also enable uncertainty comps of multiple variables with this function call
+#     Return a list of data frames named for the variables specified in varUcrt
 ##############################################################################################
 def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
                                varUcrt = base::names(data)[1],
@@ -75,7 +88,7 @@ def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Ensure input is data frame with the target variable in it
+  # Ensure input is data frame with the target variables in it
   chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c(varUcrt,'readout_time'),TestEmpty=FALSE, log = log)
   if (!chk) {
     stop()

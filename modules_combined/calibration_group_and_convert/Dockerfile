@@ -68,7 +68,7 @@ RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
 # Copy in R code
 COPY ./flow/flow.cal.conv/flow.cal.conv.R .
-COPY ./flow/flow.cal.conv/wrap.cal.conv.dp0p.R .
+COPY ./flow/flow.cal.conv/wrap.cal.conv.R .
 
 # Run as app user
 USER appuser

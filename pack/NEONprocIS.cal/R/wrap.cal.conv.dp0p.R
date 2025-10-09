@@ -33,7 +33,7 @@
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
-#' @return A data frame of the converted (calibrated) L0' data, limited to the variables in FuncConv.
+#' @return A data frame of the converted (calibrated) L0' data.
 
 #' @references Currently none
 
@@ -62,11 +62,11 @@
 #   Cove Sturtevant (2025-08-10)
 #     Refactor to loop through applicable calibration files within individual cal funcs
 ##############################################################################################
-wrap.cal.conv <- function(data,
-                          calSlct,
-                          FuncConv,
-                          Meta=list(),
-                          log=NULL){
+wrap.cal.conv.dp0p <- function(data,
+                               calSlct,
+                               FuncConv,
+                               Meta=list(),
+                               log=NULL){
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()

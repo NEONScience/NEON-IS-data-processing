@@ -18,7 +18,7 @@
 #' uncertainty functions this variable may not need to be in the input data frame. Defaults to the first
 #' column in \code{data}.
 #' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
-#' NEONprocIS.cal::wrap.cal.conv for what this input is. 
+#' NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is. 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -39,7 +39,7 @@
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.m}
-#' @seealso \link[NEONprocIS.cal]{wrap.cal.conv}
+#' @seealso \link[NEONprocIS.cal]{wrap.cal.conv.dp0p}
 #' @references Currently none
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 

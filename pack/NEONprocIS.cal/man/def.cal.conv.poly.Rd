@@ -26,7 +26,7 @@ information about the calibration files and time periods that apply to the varia
 as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
 
 \item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
-NEONprocIS.cal::wrap.cal.conv for what this input is.}
+NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -64,7 +64,7 @@ NEON.DOC.000785 TIS Calibrated Measurements and Level 1 Data Products Uncertaint
 
 \link[NEONprocIS.cal]{def.cal.conv.poly.m}
 
-\link[NEONprocIS.cal]{wrap.cal.conv}
+\link[NEONprocIS.cal]{wrap.cal.conv.dp0p}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}

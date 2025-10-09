@@ -28,7 +28,7 @@ uncertainty functions this variable may not need to be in the input data frame. 
 column in \code{data}.}
 
 \item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
-NEONprocIS.cal::wrap.cal.conv for what this input is.}
+NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -55,7 +55,7 @@ NEON.DOC.000785 TIS Calibrated Measurements and Level 1 Data Products Uncertaint
 
 \link[NEONprocIS.cal]{def.cal.conv.poly}
 
-\link[NEONprocIS.cal]{wrap.cal.conv}
+\link[NEONprocIS.cal]{wrap.cal.conv.dp0p}
 }
 \author{
 Nora Catolico \email{ncatolico@battelleecology.org}

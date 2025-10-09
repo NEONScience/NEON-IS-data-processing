@@ -88,28 +88,22 @@
 #' argument to indicate additional functions and associated L0 term(s) to calibrate, incrementing the X integer with each 
 #' additional argument. For example, if another L0 term "voltage" also uses the
 #' def.cal.conv.poly function, create and additional argument "ConvFuncTerm2=def.cal.conv.poly:voltage". Note
-#' the increment in X. An unlimited number of ConvFuncTermX arguments are allowed. 
+#' the increment in X. An limit of 100 ConvFuncTermX arguments are allowed (but could be expanded if necessary). 
 #'    In most cases a single call to a calibration function will convert a single L0 term, as shown in the examples above. 
 #' However, this is not required. A calibration function can produce multiple calibrated outputs from a single L0 
 #' input term, and/or multiple L0 input terms can produce a single calibrated output. The relationship between L0 
-#' input term(s) and calibrated output term(s) can be one:one, one:many, many:one, or many:many. If multiple L0 
+#' input term(s) and calibrated output term(s) can be (n)one:one, (n)one:many, many:one, or many:many. If multiple L0 
 #' terms are used/converted in the same call to the calibration function, delimit the terms with pipes (|). For example, 
 #' if both L0 terms "resistance" and "voltage" are used to produce one or more calibrated outputs in the same call to 
 #' the calibration function def.cal.conv.cust, the argument would be "ConvFuncTermX=def.cal.conv.cust:resistance|voltage".
-#'    Note that any and all calibration functions specified here must accept arguments "data", "infoCal", "varCal", "slctCal", 
+#'    Note that any and all calibration functions specified here must accept arguments "data", "varCal", "slctCal", 
 #' "Meta", and "log", even if they are unused in the function. See any def.cal.conv.____.R function in the NEONprocIS.cal package for 
-#' explanation of these inputs, but in short, the entire input data frame and available calibration information and additional 
+#' explanation of these inputs, but in short, the entire data frame and available calibration information and additional 
 #' metadata (see the PathMeta argument below) are passed into each calibration function.
-#' 
-#'    In the typical case where standard calibration functions are used (such as the def.cal.conv.poly series)
-#' and term(s) listed in this set of arguments match L0 term(s) in the input data, the calibrated output will overwrite the 
-#' original L0 data (the columns may be relabeled as specified in the output schema provided in FileSchmData). 
-#' However, if the L0 terms are desired to be retained, or there is a special case where a 
-#' calibrated output is generated without any L0 terms, the ConvFuncTermX argument need not specify any L0 term(s), or the
-#' specified L0 term(s) need not match any terms in the L0 data, so long as the specified (custom) calibration function knows 
-#' how to handle this. The calibrated output data frame is entirely 
-#' dependent on the transformations that each calibration function performs on the input data frame, performed in sequence 
-#' according to the ConvFuncTermX arguments. For example, consider two ConvFuncTermX arguments
+#'    *NOTE*: The calibrated output data frame is entirely dependent on the transformations that each calibration 
+#' function performs on the input data frame, performed in sequence according to the ConvFuncTermX arguments. 
+#' Thus, the input data frame for calibration functions listed in arguments ConvFuncTerm2 and higher will not be the 
+#' same as the L0 data frame. For example, consider two ConvFuncTermX arguments
 #' specified as follows: "ConvFuncTerm1=def.cal.conv.poly:voltage" and "ConvFuncTerm2=def.cal.conv.cust:". The first 
 #' function is a standard polynomial conversion function requiring the L0 term to be converted, and its calibrated output 
 #' replaces the data in the "voltage" column of the data frame. The output will then be passed into the def.cal.conv.cust 
@@ -117,10 +111,8 @@
 #' arguments ConvFuncTerm3, ConvFuncTerm4, etc. Thus, the user should know what operations each function performs in order to 
 #' create a schema for the final output data frame. Best practice is to first run this code without specifying an output schema 
 #' to verify the outputs and column ordering. Then provide an output schema to relabel the output columns as desired. 
-#' 
-#' If this argument is not included, no calibration conversion will be performed for any L0 data, and the output data will be
+#'    If this argument is not included, no calibration conversion will be performed for any L0 data, and the output data will be
 #' identical to the input data, aside from any relabeling of the columns as specified in FileSchmData. 
-#' 
 #'
 #' 7. "NumDayExpiMax=value" (optional), where value contains the max days since expiration that calibration information is
 #' still considered usable. Calibrations beyond this allowance period are treated as if they do not exist. Thus,
@@ -143,55 +135,41 @@
 #' expected subfolders in the calibration directory. If no subfolder exists matching the term names here, the valid
 #' calibration flag will be 1, and the suspect calibration flag will be -1.
 #'
-#'Make this UcrtFuncTermX
 #' 9. "UcrtFuncTermX=value (optional), where X is an integer beginning at 1 and value contains the uncertainty
 #' function and associated term(s) to pass to a single call to that function. Begin each "value" 
 #' with the uncertainty function to use within the NEONprocIS.cal package, followed by a 
-#' colon (:), and then the L0 term name(s) to pass to it. 
-#'
-#' Custom uncertainty functions may output any amount of variables/columns as needed, but the variable naming is important. 
-#' At least one output column name from the measurement uncertainty function must contain "ucrtMeas", and any number of output 
-#' columns also containing "ucrtMeas" indicate other sources of uncertainty (except FDAS) that should be added in quadrature to yield
-#' the combined individual measurement uncertainty. Indeed, combined and expanded individual measurement uncertainty are also output in 
-#' the resulting uncertainty data file. Any variables in the output data frame(s) of the uncertainty 
-#' functions indicated here that begin with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty function) will be 
-#' added in quadrature to represent the combined L0' uncertainty for the indicated term. 
-
-#'
-#' 9. "TermFuncUcrt=value" (optional), where value contains the combination of the L0 term and the associated uncertainty 
-#' function to use within the NEONprocIS.cal package to compute individual measurement uncertainty. The argument is formatted 
-#' as term:functionMeas,functionFdas|term:functionMeas,functionFdas... where term is the L0 term, functionMeas is the function 
-#' to use for computing in the individual measurement (calibration) uncertainty, and functionFdas is the function to use for 
-#' computing the FDAS uncertainty, if applicable. Note that functionMeas is required, whereas functionFdas is not, and they are
-#' separated by a comma if both are input. Multiple term:functionMeas,functionFdas sets are separated by pipes (|). 
-#' For example, "TermFuncUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly|relative_humidity:def.ucrt.meas.mult" 
-#' indicates that the function def.ucrt.meas.cnst will be used to compute the individual measurement (calibration) uncertainty 
-#' for the term 'resistance' and the function def.ucrt.fdas.rstc.poly will be used to compute the FDAS uncertainty for this same term. 
-#' The function def.ucrt.meas.mult will be used to compute the individual measurement (calibration) uncertainty for the term 
-#' 'relative_humidity', and FDAS uncertainty will not be computed.  
-#' Note that any and all uncertainty functions specified here must accept arguments "data", "infoCal", "varUcrt", "slctCal", 
-#' and "log", even if they are unused in the function. See any def.ucrt.meas.____.R function in the NEONprocIS.cal package for 
-#' explanation of these inputs, but in short, the entire L0 data frame and available calibration information are passed into each 
-#' uncertainty function.
-#' In the typical case, a term listed in this argument will match a L0 term in the input data. However, it need not match any of 
-#' the L0 terms in the input data, so long as it the specified (custom) uncertainty function knows this and the term matches one 
-#' of the terms listed in the TermFuncConv. 
-#' Custom uncertainty functions may output any amount of variables/columns as needed, but the variable naming is important. 
-#' At least one output column name from the measurement uncertainty function must start with "ucrtMeas", and any number of output 
-#' columns beginning with "ucrtMeas" indicate other sources of uncertainty (except FDAS) that should be added in quadrature to yield
-#' the combined individual measurement uncertainty. Indeed, combined and expanded individual measurement uncertainty are also output in 
-#' the resulting uncertainty data file. Any variables in the output data frame(s) of the uncertainty 
-#' functions indicated here that begin with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty function) will be 
-#' added in quadrature to represent the combined L0' uncertainty for the indicated term. 
-#' Note that there is no option to provide an alternate output schema for uncertainty data, as column naming is depended on for 
-#' downstream processing and needs to be consistent with the calibrated data. Output column naming is a combination of the term, 
-#' un underscore, and the column names output from the uncertainty functions (e.g. resistance_ucrtMeas).If an output schema was provided 
-#' in FileSchmData, any mappings between input terms and output (converted) terms will also be performed for uncertainty data. For example, 
-#' if term "resistance" was converted to "temp", and "ucrtMeas" is an output column from the measurement uncertainty function, then the column 
-#' output by this script  would be temp_ucrtMeas. 
+#' colon (:), and then the L0 term name(s) to pass to it. This argument is very similar 
+#' to the argument for ConvFuncTermX, (see that argument for how to construct these inputs) with the 
+#' following exceptions:
+#'    The input data frame to the specified uncertainty functions is always the original L0 data 
+#'       frame. Order of these arguments does not matter.  
+#'    UcrtFuncTermX arguments that specify the same term are treated as multiple sources of uncertainty, 
+#'       and will be added in quadrature to compute the combined uncertainty. 
+#' A common use case will be the computation of both calibration/measurement uncertainty and FDAS uncertainty.
+#' For example, if the calibration/measurement uncertainty function for the L0 term "voltage" is calculated in
+#' def.ucrt.meas.mult and the fdas uncertainty is calculated in def.ucrt.fdas.volt.poly, the following arguments
+#' should be input: "UcrtFuncTerm1=def.ucrt.meas.mult:voltage" and "UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage".
+#'    Custom uncertainty functions may output any amount of columns as needed, but output format and 
+#' the column naming are important. All uncertainty functions output a named list, where each list element is
+#' named for the variable for which the uncertainty data applies. If multiple uncertainty functions output 
+#' the same list name (variable), the uncertainty data frames within are considered as multiple sources of 
+#' uncertainty for that variable. This is okay and expected, except that the column names across all 
+#' uncertainty data frames for the same variable must be unique in order for the sources of uncertainty to be
+#' successfully combined and later used in downstream modules. Any columns of data frames sharing the same
+#' list name and beginning with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty functions) will be 
+#' added in quadrature to represent the combined L0' uncertainty for the indicated variable. 
+#'    Note that there is no option to provide an alternate output schema for uncertainty data, as column naming 
+#' is depended on for  downstream processing and needs to be consistent with the calibrated data. Output column 
+#' naming is a combination of the term, un underscore, and the column names output from the uncertainty functions 
+#' (e.g. voltage_ucrtMeas). If an output schema was provided in FileSchmData, any mappings between the internal output 
+#' calibrated data frame and the output data schema will also be performed for uncertainty data. For example, 
+#' if column "voltage" in the final calibrated data frame is changed to "par" using the schema in FileSchmData,
+#' and "ucrtMeas" is an output column from the measurement uncertainty function specified for "voltage", then the column 
+#' in the uncertainty data frame output by this script would be par_ucrtMeas. 
 #' Finally, note that all uncertainty coefficients in the calibration files and FDAS uncertainty (if applicable) will be output 
-#' in the ucrt_coef folder for all terms with calibration information supplied in the calibration folder, regardless of whether they are 
-#' specified here for output of individual measurement uncertainty data (output in the ucrt_data folder).
+#' in the ucrt_coef folder for all terms with calibration information supplied in the calibration folder, regardless of 
+#' whether they are specified here for output of individual measurement uncertainty data (output in the ucrt_data folder).
+#' The same name transformation will be applied to those terms.
 #'
 #' 10. "FileUcrtFdas=value" (optional), where value is the full path to the uncertainty coefficients for the FDAS.
 #' Must be provided if FDAS uncertainty applies. These coefficients will be added to the uncertainty coefficients found in any calibration
@@ -306,7 +284,7 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.cal.conv.dp0p.R")
+source("./wrap.cal.conv.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -395,8 +373,12 @@ if(base::length(nameParaConv > 0)){
                              return(base::data.frame(FuncConv=func,var=var))
                            })
   FuncConv <- base::do.call(rbind,FuncConv)
+  
+  # Sort by ConvFuncTermX argument (order matters)
+  FuncConv <- FuncConv[base::order(base::row.names(FuncConv)),]
+  
   log$debug(base::paste0(
-    'Functions and associated terms to calibrate: ',
+    'Calibration functions and associated terms to apply: ',
     base::paste0(apply(as.matrix(FuncConv),1,base::paste0,collapse=':'), collapse = ', ')
   ))
   
@@ -419,25 +401,23 @@ if(base::length(nameParaUcrt > 0)){
   spltUcrt <- Para[nameParaUcrt]
   FuncUcrt <- base::lapply(spltUcrt,
                            FUN=function(argSplt){
-                             # Parse the uncertainty funcs (meas vs. fdas)
                              func <- argSplt[1]
-                             funcUcrtSplt <- base::strsplit(func,',')[[1]]
-                             funcUcrtSplt <- data.frame(FuncUcrtMeas=funcUcrtSplt[1],FuncUcrtFdas=funcUcrtSplt[2],stringsAsFactors=FALSE)
-                             
-                             # Parse the variables
                              var <- setdiff(utils::tail(x=argSplt,n=-1),func)
                              if (base::length(var) == 0){
                                var<-NA
                              } else {
                                var <- base::paste0(var,collapse="|")
                              }
-                             funcUcrtSplt$var <- var
-                             return(funcUcrtSplt)
+                             return(base::data.frame(FuncUcrt=func,var=var))
                            })
   FuncUcrt <- base::do.call(rbind,FuncUcrt)
+  
+  # Sort by ConvFuncTermX argument (order doesn't matter here, but doing for consistency with FuncConv)
+  FuncUcrt <- FuncUcrt[base::order(base::row.names(FuncUcrt)),]
+  
   log$debug(base::paste0(
-    'Functions and associated terms to compute uncertainty: ',
-    base::paste0(lapply(spltUcrt,base::paste0,collapse=':'), collapse = ', ')
+    'Uncertainty functions and associated terms to apply: ',
+    base::paste0(apply(as.matrix(FuncUcrt),1,base::paste0,collapse=':'), collapse = ', ')
   ))
   
 } else {
@@ -501,6 +481,9 @@ if (!base::is.null(Para$Meta) &&
   log$debug('Additional metadata for use in calibration and uncertainty functions: None')
 }
 
+# Add any FDAS uncertainty coefs to Meta
+Meta$ucrtCoefFdas <- ucrtCoefFdas
+
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
@@ -533,18 +516,17 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.cal.conv.dp0p(DirIn=idxDirIn,
-                         DirOutBase=Para$DirOut,
-                         FuncConv=FuncConv,
-                         FuncUcrt=FuncUcrt,
-                         ucrtCoefFdas=ucrtCoefFdas,
-                         TermQf=Para$TermQf,
-                         NumDayExpiMax=NumDayExpiMax,
-                         SchmDataOutList=SchmDataOutList,
-                         SchmQf=SchmQf,
-                         Meta=idxMeta,
-                         DirSubCopy=DirSubCopy,
-                         log=log
+      wrap.cal.conv(DirIn=idxDirIn,
+                    DirOutBase=Para$DirOut,
+                    FuncConv=FuncConv,
+                    FuncUcrt=FuncUcrt,
+                    TermQf=Para$TermQf,
+                    NumDayExpiMax=NumDayExpiMax,
+                    SchmDataOutList=SchmDataOutList,
+                    SchmQf=SchmQf,
+                    Meta=idxMeta,
+                    DirSubCopy=DirSubCopy,
+                    log=log
       ),
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"

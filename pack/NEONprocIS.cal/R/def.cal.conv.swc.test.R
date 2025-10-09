@@ -44,7 +44,7 @@
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.b}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.m}
-#' @seealso \link[NEONprocIS.cal]{wrap.cal.conv}
+#' @seealso \link[NEONprocIS.cal]{wrap.cal.conv.dp0p}
 
 #' @export
 
@@ -118,9 +118,16 @@ def.cal.conv.swc.test <- function(data = data.frame(data=base::numeric(0)),
       
       # --------- Apply calibration function ----------
       
-      # Convert data using the calibration function. Produce two outputs. 
-      dataConvOutIdx[setCal] <- 111
-      dataConvOutIdx2[setCal] <- 222
+      # Construct the polynomial calibration function (probably not the correct one for this product)
+      func <- NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
+      
+      # Convert data using the calibration function
+      dataConvOutIdx[setCal] <- stats::predict(object = func, newdata = dataConvIdx[setCal])
+      
+
+      # Produce alternate computation in a 2nd output variable
+      zOfst <- Meta$Locations[[1]]$geolocations[[1]]$z_offset # Get the z offset from the location info in Meta$Locations
+      dataConvOutIdx2[setCal] <- zOfst + as.numeric(tail(strsplit(varIdx,character(0))[[1]],1)) # Dummy calc. that varies by measurement index
       
       # -----------------------------------------------
       
@@ -129,16 +136,18 @@ def.cal.conv.swc.test <- function(data = data.frame(data=base::numeric(0)),
     
     # ---------- Place calibrated data in the output --------
     
-    # Replace raw data with calibrated data
+    # Replace raw data with calibrated data.
     data[[varIdx]] <- dataConvOutIdx
-    data[[paste0(varIdx,'2')]] <- dataConvOutIdx2
+    data[[paste0(varIdx,'Alt')]] <- dataConvOutIdx2
     
     # Re-arrange the data frame to insert the new variable immediately 
     #   after the first calibrated variable (not required, just an example)
     nameVar <- names(data)
     numVar <- length(nameVar)
     idxVarConv <- which(nameVar == varIdx)
-    data <- data[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
+    if(idxVarConv < numVar-1){
+      data <- data[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
+    } 
     
     # -------------------------------------------------------
     

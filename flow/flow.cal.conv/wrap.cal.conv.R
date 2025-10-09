@@ -41,7 +41,7 @@
 #' @param FuncConv (optional) A data frame indicating the calibration functions to apply and (optionally) the 
 #' L0 terms to apply them to. The columns of the data frame are:
 #' \code{FuncConv}: Character. The calibration conversion function within the NEONprocIS.cal package . Note that 
-#' any and all calibration functions specified here must accept arguments "data", "infoCal", "varCal", "slctCal", 
+#' any and all calibration functions specified here must accept arguments "data", "varCal", "slctCal", 
 #' "Meta", and "log", even if they are unused in the function. See any def.cal.conv.____.R 
 #' function in the NEONprocIS.cal package for explanation of these inputs, but in short, the entire input data frame and 
 #' available calibration information are passed into each calibration function. 
@@ -51,39 +51,25 @@
 #' as the calibration conversion function is able to handle the case, for example if multiple L0 terms are used to create 
 #' a single calibrated output. \cr
 #' 
-#' @param FuncUcrt (optional) A data frame indicating the terms for which to generate L0' uncertainty data and their 
-#' corresponding functions. The columns of the data frame are:
-#' \code{var}: Character. The name of the variable/term to compute L0' uncertainty. Typically this must match a 
-#' column name in input (L0) data, but it is not required so long as the uncertainty function handles this case, for example 
-#' if multiple L0 terms are used to create a single uncertainty output. In the latter case, provide the term name of the 
-#' single uncertainty output.  \cr
-#' \code{FuncUcrtMeas}: Character. The function within the NEONprocIS.cal package to use for computing the individual measurement 
-#' (calibration) uncertainty for the term listed in the \code{var} column of the same row. Note that any and all uncertainty 
-#' functions specified here must accept arguments "data", "infoCal", "varUcrt", "slctCal", and "log", even if they are unused 
-#' in the function. See any def.ucrt.meas.____.R function in the NEONprocIS.cal package for explanation of these inputs, 
-#' but in short, the entire L0 data frame and available calibration information are passed into each uncertainty function. \cr
-#' \code{FuncUcrtFdas}: Character. The function within the NEONprocIS.cal package to use for computing the FDAS uncertainty, 
-#' if applicable. If not applicable for the term, use NA. The same input requirements as the function specified in 
-#' \code{FuncUcrtMeas} apply here also.
-#' Custom uncertainty functions may output any amount of variables/columns as needed, but the variable naming is important. 
-#' At least one output column name from the measurement uncertainty function in \code{FuncUcrtMeas} must start with "ucrtMeas", 
-#' and any number of output columns beginning with "ucrtMeas" indicate other sources of uncertainty (except FDAS) that should 
-#' be added in quadrature to yield the combined individual measurement uncertainty. Any variables in the output data frame(s) 
-#' of the uncertainty functions indicated here that begin with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty function) will be 
-#' added in quadrature to represent the combined L0' uncertainty for the indicated term. 
-#' \code{idxDataCal} Character string. Column index(es) in the calibrated output data frame that correspond 
-#' to the uncertainty estimates produced by the uncertainty function specified in FuncUcrtMeas. 
-#' Separate multiple indexes with pipes, with no white space. For example, if 
-#' produces uncertainty estimates for two variables, and those two variables are found 
-#' in columns 3 and 4 in the calibrated output data (produced elsewhere), then the entry in idxDataCal 
-#' will be "3|4". This enables the correct association of uncertainty data and calibrated output data. If
-#' a schema for the calibrated output is included in Meta$SchmaDataCal (see Meta input below), the names of
-#' the uncertainty data columns will be adjusted accordingly (see return information below).
-#'
-#' @param ucrtCoefFdas (optional). A data frame of FDAS uncertainty coefficients, as produced by 
-#' NEONprocIS.cal::def.read.ucrt.coef.fdas. See that function for details. Must be provided if any FDAS uncertainty functions
-#' are indicated in \code{FuncUcrt$FuncUcrtFdas}. These coefficients will be added to the uncertainty coefficients found in any calibration
-#' files and output to the ucrt_coef folder, as well as input into any uncertainty functions indicated in \code{FuncUcrt$FuncUcrtFdas}.
+#' @param FuncUcrt A data frame of the functions and variables for which individual measurement 
+#' and/or FDAS uncertainty is to be calculated. Columns include:\cr
+#' \code{FuncUcrt} A character string indicating the individual measurement (calibration) or FDAS 
+#' uncertainty function within the NEONprocIS.cal package. For most NEON data products, 
+#' this will be "def.ucrt.meas.cnst" or "def.ucrt.meas.mult" for measurement/calibration 
+#' uncertainty, and "def.ucrt.fdas.rstc.poly" or "def.ucrt.fdas.volt.poly" for FDAS 
+#' (data acquisition system) uncertainty. Note that any alternative function must accept 
+#' the same arguments as these functions, even if they are unused, and return the same 
+#' output format. See one of those functions for details. \cr
+#' \code{var} Character. The variable(s) in input data frame 'data' that will be used in the 
+#' uncertainty function specified in FuncUcrt. In most cases, this will be a single L0 
+#' variable for which to compute uncertainty, but it can be any character string so long 
+#' as the specified (custom) uncertainty function knows what to do with it. Note that the 
+#' uncertainty function is responsible for naming the output list containing 
+#' uncertainty data frames for each variable, and that any overlap in the names across 
+#' the output list will cause the uncertainty data frames to be combined (intentionally -
+#' see return information). Thus, ensure that the column names of data frames for the 
+#' same variable (list name) are unique. In the standard measurement and FDAS uncertainty functions, 
+#' the output list names will match the name of the L0 variable specified in \code{var}.\cr
 #'
 #' @param TermQf (optional) A character vector of L0 terms/variables for which to provide calibration
 #' flags. For example, if calibration information is expected for the terms "resistance" and
@@ -131,7 +117,12 @@
 #' By default, the datum path specified in input DirIn will be included in Meta$PathDatum. 
 #' If the 'location' directory is found in DirIn (not nested further), all location metadata files in that 
 #' directory will be read in and combined with NEONprocIS.base::wrap.loc.meta.comb and added to the Meta 
-#' object in Meta$Locations.  
+#' object in Meta$Locations. Note that if any uncertainty function needs FDAS uncertainty coefficients, they
+#' should be included in Meta$ucrtCoefFdas. Meta$ucrtCoefFdas should be a data frame of FDAS uncertainty 
+#' coefficients, as produced by NEONprocIS.cal::def.read.ucrt.coef.fdas. See that function for details. 
+#' These coefficients will be added to the uncertainty coefficients found in any calibration
+#' files and output to the ucrt_coef folder, as well as input into any uncertainty functions 
+#' indicated in \code{FuncUcrt$FuncUcrtFdas}.
 #'  
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
@@ -163,8 +154,7 @@
 #' \code{uncertainty_coef}: All uncertainty coefficients in the calibration files and FDAS uncertainty (if applicable) will be 
 #' output in the uncertainty_coef folder (json format) for all terms with calibration information supplied in the calibration folder,
 #' regardless of whether they are specified in the input arguemnts for output of individual measurement uncertainty data 
-#' (output in the uncertainty_data folder).
-#' \cr
+#' (output in the uncertainty_data folder). \cr
 #' \code{uncertainty_data}: L0' uncertainty data. In addition to all outputs produced by the uncertainty functions listed in 
 #' \code{FuncUcrt}, combined and expanded individual measurement uncertainty are also output in the resulting uncertainty data file. 
 #' Note that there is no option to provide an alternate output schema for uncertainty data, as column naming is depended on for 
@@ -188,26 +178,27 @@
 #' FuncConv <- data.frame(FuncConv='def.cal.conv.poly',
 #'                        var='resistance',
 #'                        stringsAsFactors=FALSE)
-#' FuncUcrt <- data.frame(var='resistance',
-#'                        FuncUcrtMeas='def.ucrt.meas.cnst',
-#'                        FuncUcrtFdas='def.ucrt.fdas.rstc.poly',
+#' FuncUcrt <- data.frame(FuncUcrt=c('def.ucrt.meas.cnst','def.ucrt.fdas.rstc.poly')
+#'                        var=c('resistance','resistance'),
 #'                        stringsAsFactors=FALSE)
-#' ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'fdas_calibration_uncertainty_general.json')
+#' Meta <- list() 
+#' Meta$ucrtCoefFdas <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'fdas_calibration_uncertainty_general.json')
 #' SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'prt_calibrated.avsc')
 #' SchmQf <- base::paste0(base::readLines('flags_calibration.avsc'), collapse = '')
 #' 
-#' wrap.cal.conv.dp0p(DirIn="~/pfs/hmp155_data_calibration_group",
+#' wrap.cal.conv(DirIn="~/pfs/hmp155_data_calibration_group",
 #'                    DirOutBase="~/pfs/out",
 #'                    FuncConv=FuncConv,
 #'                    FuncUcrt=FuncUcrt,
-#'                    ucrtCoefFdas=ucrtCoefFdas,
 #'                    TermQf='resistance',
 #'                    NumDayExpiMax=NA,
 #'                    SchmDataOutList=SchmDataOutList,
-#'                    SchmQf=SchmQf
+#'                    SchmQf=SchmQf,
+#'                    Meta = Meta
 #' )
 
 #' @seealso \link[NEONprocIS.base]{wrap.loc.meta.comb}
+#' @seealso \link[NEONprocIS.cal]{def.read.ucrt.coef.fdas}
 
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-07-21)
@@ -222,19 +213,19 @@
 #     Read in and pass location metadata to calibration routine if present
 #     Refactor to allow greater flexibility in custom functions, like calibrating multiple 
 #       variables in a single function call, creating new variables, etc.
+#     Remove ucrtCoefFdas input parameter and assume it is included in Meta$ucrtCoefFdas
 ##############################################################################################
-wrap.cal.conv.dp0p <- function(DirIn,
-                               DirOutBase,
-                               FuncConv=NULL,
-                               FuncUcrt=NULL,
-                               ucrtCoefFdas=NULL,
-                               TermQf=NULL,
-                               NumDayExpiMax=NA,
-                               SchmDataOutList=NULL,
-                               SchmQf=NULL,
-                               Meta=list(PathDatum=DirIn),
-                               DirSubCopy=NULL,
-                               log=NULL
+wrap.cal.conv <- function(DirIn,
+                          DirOutBase,
+                          FuncConv=NULL,
+                          FuncUcrt=NULL,
+                          TermQf=NULL,
+                          NumDayExpiMax=NA,
+                          SchmDataOutList=NULL,
+                          SchmQf=NULL,
+                          Meta=list(PathDatum=DirIn,ucrtCoefFdas=NULL),
+                          DirSubCopy=NULL,
+                          log=NULL
 ){
   
   # Start logging if not already
@@ -325,7 +316,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
                                   log = log)
   }
   
-  if (!base::is.null(FuncUcrt)) {
+  if (!base::is.null(FuncUcrt) || !base::is.null(FuncConv)) {
     dirOutUcrtData <- base::paste0(dirOut, '/uncertainty_data')
     NEONprocIS.base::def.dir.crea(DirBgn = '',
                                   DirSub = dirOutUcrtData,
@@ -368,32 +359,16 @@ wrap.cal.conv.dp0p <- function(DirIn,
   if (!valiData) {
     base::stop()
   }
+  numData <- base::nrow(data)
   
-  
-  #!!!!!!!!!!!!!!!!!!!!!!!!! This won't work if custom functions insert/change vars
-  
-  # Create a mapping between terms in the input data and terms in the output data (if we have an output schema)
-  nameVarIn <- base::names(data)
-  nameVarAdd <- setdiff(FuncConv$var,nameVarIn)
-  if (!base::is.null(SchmDataOutList)) {
-    nameVarOut <- SchmDataOutList$var$name
-  } else {
-    nameVarOut <- c(nameVarIn,nameVarAdd)
-  }
-  mappNameVar <-
-    NEONprocIS.base::def.var.mapp.in.out(
-      nameVarIn = c(nameVarIn,nameVarAdd),
-      nameVarOut = nameVarOut,
-      nameVarDfltSame = varCal,
-      log = log
-    )
-  
-  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
   # ------- Select which calibrations apply to this day --------
   log$debug('Selecting calibrations applicable to this day')
   calSlct <- NULL
-  varCalExpc <- base::setdiff(base::unique(base::unlist(base::strsplit(c(FuncConv$var,FuncUcrt$var,TermQf),"|",fixed=TRUE))),NA)
+  varCalExpc <- NULL
+  if(!base::is.null(c(FuncConv$var,FuncUcrt$var,TermQf))){
+    varCalExpc <- base::setdiff(base::unique(base::unlist(base::strsplit(c(FuncConv$var,FuncUcrt$var,TermQf),"|",fixed=TRUE))),NA)
+  } 
   calSlct <- NEONprocIS.cal::wrap.cal.slct(
     DirCal = dirCal,
     NameVarExpc = varCalExpc,
@@ -412,54 +387,148 @@ wrap.cal.conv.dp0p <- function(DirIn,
     Meta$Locations <- loc # Add to Meta object to be passed into the calibration functions
   }
   
-  # ------- Apply the calibration function to the selected terms ---------
-  log$debug('Applying any calibration conversions.')
+  
+  # ------- Initialize output --------
   dataConv <- NULL
-  dataConv <-
-    NEONprocIS.cal::wrap.cal.conv(
-      data = data,
-      calSlct = calSlct,
-      FuncConv = FuncConv,
-      Meta = Meta,
+  qfCal <- NULL
+  ucrtCoef <- NULL 
+  ucrtData <- NULL
+  
+  
+  # ------- Apply the calibration function to the selected terms ---------
+  # NOTE: All standard cal funcs just do calibration. BUT, this framework is flexible enough
+  #    that they can return a named list that includes more than the calibrated data.  
+  #    See the following code block for details.
+  log$debug('Applying any calibration conversions.')
+  if(base::is.null(FuncConv) || base::nrow(FuncConv) == 0){
+    dataConv <- data
+  } else {
+    dataConv <-
+      NEONprocIS.cal::wrap.cal.conv.dp0p(
+        data = data,
+        calSlct = calSlct,
+        FuncConv = FuncConv,
+        Meta = Meta,
+        log = log
+      )
+  }
+  
+  # Did the cal function return a list output rather than a data frame? If so,
+  #   it's a cal function that might also produce uncertainty data (list element 
+  #   "ucrtData"), uncertainty coefficients (list element "ucrtCoef") and/or 
+  #   calibration flags (list element "qfCal").
+  #   Make sure these outputs match the format of the outputs from the default
+  #   process. See the following functions:
+  #     ucrtData: named list of data frames as returned by NEONprocIS.cal::wrap.ucrt.dp0p
+  #     ucrtCoef: named list of data frames as returned by NEONprocIS.cal::wrap.ucrt.coef
+  #     qfCal: named list of data frames as returned by NEONprocIS.cal::wrap.ucrt.coef
+  #
+  #   Detect if it has produced any of these
+  if(base::is.list(dataConv) && !base::is.data.frame(dataConv)){
+    log$info('List output returned from calibration conversion. Looking for any outputs named: "data", "ucrtData", "ucrtCoef", and/or "qfCal". For each found the corresponding default processing will not be run.')
+    
+    # Look for uncertainty data 
+    ucrtData <- dataConv$ucrtData
+    if (!base::is.null(ucrtData)){
+      log$info('Found uncertainty data, using this instead of computing with any uncertainty functions in FuncUcrt.')
+    }
+    
+    # Look for calibration flags
+    qfCal <- dataConv$qfCal
+    if (!base::is.null(qfCal)){
+      log$info('Found calibration flags, using these instead of computing with standard code (note that input TermQf will be ignored).')
+    }
+    
+    # Look for uncertainty coefficients (data frame)
+    ucrtCoef <- dataConv$ucrtCoef
+    if (!base::is.null(ucrtCoef)){
+      log$info('Found uncertainty coefficients, using these instead of computing with standard code.')
+    }
+    
+    # Look for data (calibrated data)
+    dataConv <- dataConv$data
+    if (!base::is.null(dataConv)){
+      log$info('Found calibrated data (phew!).')
+    }
+  }
+  
+  # --------------- Variable mapping to output schema ------------------
+  # Create a mapping between terms in the calibrated data frame and the output 
+  #   schema (if we have one). This same mapping will be applied to the terms 
+  #   coming out of the calibration flags, uncertainty functions and 
+  #   uncertainty coefficients.
+  nameVarIn <- base::names(dataConv)
+  if (!base::is.null(SchmDataOutList)) {
+    nameVarOut <- SchmDataOutList$var$name
+  } else {
+    nameVarOut <- nameVarIn
+  }
+  mappNameVar <-
+    NEONprocIS.base::def.var.mapp.in.out(
+      nameVarIn = nameVarIn,
+      nameVarOut = nameVarOut,
+      nameVarDfltSame = varCal,
       log = log
     )
   
   
   # ------- Populate valid calibration and suspect calibration flags for selected variables with cal info ---------
-  log$debug('Populating any calibration flags.')
-  qfCal <- NULL
-  qfCal <-
-    NEONprocIS.cal::wrap.qf.cal(
-      data = data,
-      calSlct = calSlct[TermQf],
-      mappNameVar = mappNameVar,
-      log = log
-    )
-  
-  # Combine the flag output
-  if (!base::is.null(TermQf)) {
-    base::names(qfCal$qfExpi) <-
-      base::paste0(base::names(qfCal$qfExpi), '_qfExpi')
-    base::names(qfCal$qfSusp) <-
-      base::paste0(base::names(qfCal$qfSusp), '_qfSusp')
+  if(base::is.null(qfCal)){
+    log$debug('Populating any calibration flags.')
     qfCal <-
-      base::list(data['readout_time'], qfCal$qfExpi, qfCal$qfSusp)
+      NEONprocIS.cal::wrap.qf.cal(
+        data = data,
+        calSlct = calSlct[TermQf],
+        log = log
+      )
+  }
+  
+
+  # Combine the flag output and map names to the output schema (if provided)
+  numDataQf <- base::unlist(base::lapply(qfCal,base::nrow))
+  if (!base::is.null(numDataQf)) {
+    
+    # Error-check
+    if(!base::all(numDataQf == numData)){
+      log$error('Quality flags do not have the same number of rows as the data.')
+      stop()
+    }
+    
+    # Construct column names for quality flags as a combo of the variable name and flag type.
+    #   Also perform any mapping of term names done by the output data schema
+    typeQf <- base::names(qfCal)
+    for(typeQfIdx in typeQf){
+
+      #  Get output variable names from the schema mapping (if input)
+      nameVarIn <- base::names(qfCal[[typeQfIdx]])
+      nameVarOut <- mappNameVar$nameVarOut[base::match(nameVarIn,mappNameVar$nameVarOut)]
+      setNoMtch <- base::is.na(nameVarOut)
+      nameVarOut[setNoMtch] <- nameVarIn[setNoMtch] # Retain names for any mapping not found
+      
+      # Rename the columns using a combo of the variable name and flag type
+      base::names(qfCal[[typeQfIdx]]) <-
+        base::paste0(nameVarOut, '_',typeQfIdx)
+    }
+    
+    # Add readout time to the flags output and compile into a single data frame
+    base::names(qfCal) <- NULL
+    qfCal <- base::append(data['readout_time'],qfCal) 
     qfCal <- base::do.call(base::cbind, qfCal)
   }
   
   
   # ------- Compile uncertainty coefficients for all variables with cal info ---------
-  # TODO: Include Meta here and add output schema to it with any field mappings for uncertainty data
-  log$debug('Compiling uncertainty coefficients.')
-  ucrtCoef <- NULL
-  ucrtCoef <-
-    NEONprocIS.cal::wrap.ucrt.coef(
-      calSlct = calSlct,
-      ucrtCoefFdas = ucrtCoefFdas,
-      mappNameVar = mappNameVar,
-      log = log
-    )
-  
+  if(base::is.null(ucrtCoef)){
+    log$debug('Compiling uncertainty coefficients.')
+    ucrtCoef <-
+      NEONprocIS.cal::wrap.ucrt.coef(
+        calSlct = calSlct,
+        ucrtCoefFdas = Meta$ucrtCoefFdas,
+        mappNameVar = NULL, # Mapping is done below
+        log = log
+      )
+  }
+    
   # Simplify & make pretty the uncertainty information
   ucrtCoef <-
     base::Reduce(f = base::rbind, x = ucrtCoef) # merge uncertainty coefs for all terms
@@ -488,41 +557,59 @@ wrap.cal.conv.dp0p <- function(DirIn,
         'Value',
         '.attrs'
       ) # rename columns
+  
+    
+    # Apply the term mappings to uncertainty coefs 
+    idxMtchVarOut <- base::match(ucrtCoef$term,mappNameVar$nameVarIn)
+    setNotNa <- !is.na(idxMtchVarOut)
+    ucrtCoef$term[setNotNa] <- mappNameVar$nameVarOut[idxMtchVarOut[setNotNa]]
+    
   }
   
-  
   # ------- Apply the uncertainty function to the selected terms ---------
-  log$debug('Computing any uncertainty data.')
-  ucrtData <- NULL
-  Meta$ucrtCoefFdas <- ucrtCoefFdas
-  ucrtData <-
-    NEONprocIS.cal::wrap.ucrt.dp0p(
-      data = data,
-      FuncUcrt = FuncUcrt,
-      calSlct = calSlct,
-      Meta = Meta, 
-      log = log
-    )
+  if(base::is.null(ucrtData)){
+    log$debug('Computing any uncertainty data.')
+    Meta$ucrtCoefFdas <- ucrtCoefFdas # Do this earlier in flow.cal.conv
+    ucrtData <-
+      NEONprocIS.cal::wrap.ucrt.dp0p(
+        data = data,
+        FuncUcrt = FuncUcrt,
+        calSlct = calSlct,
+        Meta = Meta, 
+        log = log
+      )
+  }
   
-  
-  
-  
-  # The following was pulled out of wrap.ucrt.dp0p. 
-  # It might need to be placed back in wrap.ucrt.dp0p in order to use the column mappings for each function call
-  # Get output variable name by mapping output columns to the schema??- FIX ME
-    nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==varIdx]
-    
-    # Append the output variable name as a prefix to each column
-    if(!base::is.null(nameVarUcrtOut)){
-      base::names(ucrtDataIdx) <- base::paste0(nameVarUcrtOut,'_',base::names(ucrtDataIdx))
-    }
-  
-    
-    
-    
-  
+  # Append the output variable name as a prefix to each uncertainty data column,
+  #   apply any mappings to the calibrated output variable transformations,
+  #   and combine all uncertainty data frames into a single data frame with 
+  #   readout_time included
   if (base::length(ucrtData) > 0) {
-    # Combine uncertainty data frames for all variables and rename with the schema
+
+    ucrtData <- base::lapply(base::names(ucrtData),FUN=function(varIdx){
+      
+      # Get output variable name from the mapping 
+      nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==varIdx]
+      
+      if(base::length(nameVarUcrtOut) == 0){
+        nameVarUcrtOut <- varIdx
+      } else {
+        nameVarUcrtOut <- nameVarUcrtOut[1]
+      }
+      
+      # Append the output variable name as a prefix to each column
+      nameColUcrtIdx <- base::names(ucrtData[[varIdx]])
+      if(base::length(nameVarUcrtOut) != 0){
+        nameColUcrtOut <- base::paste0(nameVarUcrtOut,'_',nameColUcrtIdx)
+      } else {
+        nameColUcrtOut <- base::paste0(nameVarUcrtOut,'_',varIdx)
+      }
+      base::names(ucrtData[[varIdx]]) <- nameColUcrtOut
+      
+      return(ucrtData[[varIdx]])
+    })
+    
+    # Combine uncertainty data frames for all variables
     base::names(ucrtData) <- NULL # Preserves column names
     ucrtData <- base::do.call(base::cbind, ucrtData)
     ucrtData <-
@@ -532,33 +619,14 @@ wrap.cal.conv.dp0p <- function(DirIn,
   
   # ------------ Output ---------------
   
-  # Replace the original data with the calibrated data
-  # data[, base::names(dataConv)] <- dataConv
-  data <- dataConv
-  
-  # If no output schema was provided, use the same schema as the input data
-  if (base::is.null(SchmDataOutList)) {
-    # Use the same schema as the input data to write the output data.
-    idxSchmDataOut <- base::attr(data, 'schema')
-    
-    # If we created new variables, add them to the schema as double
-    for(idxVarAdd in nameVarAdd){
-      txtEval <- base::paste0('arrow::schema(',idxVarAdd,'=arrow::float32())')
-      schmAdd <- base::eval(base::parse(text=txtEval))
-      idxSchmDataOut <- arrow::unify_schemas(idxSchmDataOut,schmAdd)
-    }
-  } else {
-    idxSchmDataOut <- SchmDataOutList$schmJson
-  }
-  
   # Write out the calibrated data
   NameFileOutData <- base::paste0(dirOutData, '/', fileData)
   rptData <-
     base::try(NEONprocIS.base::def.wrte.parq(
-      data = data,
+      data = dataConv,
       NameFile = NameFileOutData,
       NameFileSchm = NULL,
-      Schm = idxSchmDataOut
+      Schm = SchmDataOutList$schmJson
     ),
     silent = FALSE)
   if (base::any(base::class(rptData) == 'try-error')) {
@@ -574,7 +642,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
   }
   
   # Write out the valid calibration flags
-  if (!base::is.null(TermQf)) {
+  if (!base::is.null(numDataQf)) {
     NameFileOutQf <-
       NEONprocIS.base::def.file.name.out(nameFileIn = fileData, 
                                          prfx = base::paste0(dirOutQf, '/'),
@@ -644,7 +712,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
 
   
   # Write out uncertainty data
-  if (!base::is.null(FuncUcrt)) {
+  if (base::length(ucrtData) > 0) {
     NameFileOutUcrtData <-
       NEONprocIS.base::def.file.name.out(nameFileIn = fileData, sufx = '_uncertaintyData')
     NameFileOutUcrtData <-

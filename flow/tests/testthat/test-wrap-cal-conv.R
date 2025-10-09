@@ -1,10 +1,10 @@
 ########################################################################################################
-#' @title Unit test of wrap.cal.conv.dp0p.R, calibration conversion module for NEON IS data processing
+#' @title Unit test of wrap.cal.conv.R, calibration conversion module for NEON IS data processing
 
 #' @author
 #' Mija Choi\email{choim@battelleecology.org} \cr
 #'
-#' @description wrap.cal.conv.dp0p.R is to apply calibration and uncertainty functions to L0 data and save applicable
+#' @description wrap.cal.conv.R is to apply calibration and uncertainty functions to L0 data and save applicable
 #' uncertainty coefficients. Optionally compute FDAS (datalogger) uncertainty.
 #' Valid date ranges and certificate numbers in calibration files are used to determine the most relevant calibration to apply.
 #' The most relevant cal follows this choice order (1 chosen first):
@@ -177,7 +177,7 @@
 #' SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'prt_calibrated.avsc')
 #' SchmQf <- base::paste0(base::readLines('flags_calibration.avsc'), collapse = '')
 #'
-#' wrap.cal.conv.dp0p(DirIn="~/pfs/hmp155_data_calibration_group",
+#' wrap.cal.conv(DirIn="~/pfs/hmp155_data_calibration_group",
 #'                    DirOutBase="~/pfs/out",
 #'                    FuncConv=FuncConv,
 #'                    FuncUcrt=FuncUcrt,
@@ -198,12 +198,12 @@
 #     Original Creation
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of wrap.cal.conv.dp0p.R\n")
+context("\n                       Unit test of wrap.cal.conv.R\n")
 
-# Unit test of wrap.cal.conv.dp0p.R
-test_that("Unit test of wrap.cal.conv.dp0p.R", {
+# Unit test of wrap.cal.conv.R
+test_that("Unit test of wrap.cal.conv.R", {
   
-  source('../../flow.cal.conv/wrap.cal.conv.dp0p.R')
+  source('../../flow.cal.conv/wrap.cal.conv.R')
   library(stringr)
   #
   testOutputBase = "pfs/out"
@@ -216,7 +216,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   
   testInputDir <- 'pfs/prt_noDir_inCalibration/14491/2019/01/01'
   
-  returnedOutputDir <-try(wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputBase),silent = TRUE)
+  returnedOutputDir <-try(wrap.cal.conv(DirIn = testInputDir, DirOutBase = testOutputBase),silent = TRUE)
   
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   #
@@ -233,7 +233,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   fileData <- base::dir(testInputDataDir)
   fileUncertCoef <- base::dir(testOutputUncertCoefDir)
   
-  returnedOutputDir <- wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputBase)
+  returnedOutputDir <- wrap.cal.conv(DirIn = testInputDir, DirOutBase = testOutputBase)
   
   testthat::expect_true (any(file.exists(testOutputBase, fileData, recursive = TRUE)))
   testthat::expect_true (any(file.exists(testOutputBase, fileUncertCoef, recursive = TRUE)))
@@ -266,7 +266,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   values <- c(2, 3)
   NumDayExpiMax <- data.frame(var = varCal,NumDayExpiMax = values,stringsAsFactors = FALSE)
   
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(
+  returnedOutputDir <- try(wrap.cal.conv(
     DirIn = testInputDir,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
@@ -302,7 +302,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     unlink(testOutputBase, recursive = TRUE)
   }
   
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(
+  returnedOutputDir <- try(wrap.cal.conv(
     DirIn = testInputDirSubCopy,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
@@ -330,7 +330,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   
   SchmDataOutList <- NULL
   
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(
+  returnedOutputDir <- try(wrap.cal.conv(
     DirIn = testInputDir,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
@@ -352,7 +352,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   
   testInputWrongDir <- "pfs/prt_wrong_dir_inCalibration/14491/2019/01/01"
   
-  returnedOutputDir <- wrap.cal.conv.dp0p(
+  returnedOutputDir <- wrap.cal.conv(
     DirIn = testInputWrongDir,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
@@ -371,7 +371,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     unlink(testOutputBase, recursive = TRUE)
   }
   
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(
+  returnedOutputDir <- try(wrap.cal.conv(
     DirIn = testInputDir,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
@@ -393,7 +393,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   
   testInputWrongDataDir <- "pfs/prt_wrong_data/14491/2019/01/01"
   
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(
+  returnedOutputDir <- try(wrap.cal.conv(
     DirIn = testInputWrongDataDir,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,

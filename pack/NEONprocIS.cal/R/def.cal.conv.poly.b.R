@@ -21,7 +21,7 @@
 #' as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
 #' 
 #' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
-#' NEONprocIS.cal::wrap.cal.conv for what this input is.
+#' NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.
 #'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -50,7 +50,7 @@
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.m}
-#' @seealso \link[NEONprocIS.cal]{wrap.cal.conv}
+#' @seealso \link[NEONprocIS.cal]{wrap.cal.conv.dp0p}
 
 #' @export
 
