@@ -158,9 +158,9 @@ input:
     name: import_trigger
     repo: pump_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/pump/*/*/*/*"
+    glob: "/pump/*/*/*"
 parallelism_spec:
-  constant: 10
+  constant: 1
 autoscaling: true
 resource_requests:
   memory: 500M
