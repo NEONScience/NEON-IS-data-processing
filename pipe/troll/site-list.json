@@ -64,6 +64,10 @@
 	"kafka_start_date" : "2024-02-09"
 	},
 	{
+	"site" : "LENO",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
 	"site" : "LEWI",
 	"kafka_start_date" : "2024-01-25"
 	},
