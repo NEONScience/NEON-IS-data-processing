@@ -28,5 +28,5 @@
 
 load_test_dependencies <- function() {
   library(remotes)
-  install_local("/Users/rmarkel/git/NEON-IS-data-processing/pack/NEONprocIS.base")
+  install_local("../../../pack/NEONprocIS.base")
 }
