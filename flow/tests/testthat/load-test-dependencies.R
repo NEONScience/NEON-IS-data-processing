@@ -39,5 +39,10 @@ load_test_dependencies <- function() {
   library(stringr)
   
   library(remotes)
-  install_local("../../../pack/NEONprocIS.base")
+  
+  suppressPackageStartupMessages(
+    if (!require("NEONprocIS.base")) {
+      install_local("../../../pack/NEONprocIS.base")
+    }
+  )
 }
