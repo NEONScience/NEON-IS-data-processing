@@ -41,7 +41,8 @@
 	},
 	{
 	"site" : "DELA",
-	"kafka_start_date" : "2024-01-01"
+	"kafka_start_date" : "2024-01-01",
+	"end_date" : "2025-10-11"
 	},
 	{
 	"site" : "FLNT",
