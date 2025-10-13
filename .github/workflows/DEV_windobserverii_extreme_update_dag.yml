@@ -2,7 +2,7 @@ name: DEV-windobserverii_extreme-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'master'
     paths:
       - 'pipe/windobserverii_extreme/*.yaml'
       - 'pipe/windobserverii_extreme/pipe_list_windobserverii_extreme_development.txt'
