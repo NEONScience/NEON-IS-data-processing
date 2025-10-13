@@ -27,6 +27,17 @@
 ##############################################################################################
 
 load_test_dependencies <- function() {
+  library(rlang)
+  
+  library(devtools)
+  library(testthat)
+  library(usethis)
+  library(covr)
+  library(dplyr)
+  library(arrow)
+  
+  library(stringr)
+  
   library(remotes)
   install_local("../../../pack/NEONprocIS.base")
 }

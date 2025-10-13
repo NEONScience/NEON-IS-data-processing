@@ -67,17 +67,6 @@ load_test_dependencies()
 # Unit test of wrap.loc.grp.asgn.R
 test_that("Unit test of wrap.loc.grp.asgn.R", {
   source('../../flow.loc.grp.asgn/wrap.loc.grp.asgn.R')
-
-  library(rlang)
-
-  library(devtools)
-  library(testthat)
-  library(usethis)
-  library(covr)
-  library(dplyr)
-  library(arrow)
-  
-  library(stringr)
   
   wk_dir <- getwd()
   testOutputDir = "pfs/out"
