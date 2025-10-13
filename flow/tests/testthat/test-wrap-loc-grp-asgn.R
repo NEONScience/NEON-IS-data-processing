@@ -61,21 +61,13 @@
 # Define test context
 context("\n                       Unit test of wrap.loc.grp.asgn.R\n")
 
-
-
-# load_test_dependencies <- function() {
-#   library(remotes)
-#   install_local("/Users/rmarkel/git/NEON-IS-data-processing/pack/NEONprocIS.base")
-# }
-
+source('load-test-dependencies.R')
+load_test_dependencies()
 
 # Unit test of wrap.loc.grp.asgn.R
 test_that("Unit test of wrap.loc.grp.asgn.R", {
   source('../../flow.loc.grp.asgn/wrap.loc.grp.asgn.R')
-  source('load-test-dependencies.R')
-  
-  load_test_dependencies()
-  
+
   library(rlang)
 
   library(devtools)
