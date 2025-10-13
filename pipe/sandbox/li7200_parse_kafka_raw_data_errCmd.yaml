@@ -1,0 +1,124 @@
+---
+pipeline:
+  name: li7200_parse_kafka_raw_data
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+  env:
+    # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
+    # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
+    #   skip first 3 fields (source_id, site_id, readout_time) in parsed schema
+    OUT_PATH: /pfs/out
+    RELATIVE_PATH_INDEX: "4"
+    LOG_LEVEL: INFO 
+    UPDATE_TRIGGER_TABLE: "True"
+    SOURCE_TYPE: "li7200_raw"
+    PARSE_FIELD: "ethernet_output"
+    PARSED_START_INDEX: "1" # skip first element 'time' in parse_field for parsing
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/li7200/li7200_parsed.avsc
+  secrets:
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
+  - name: pdr-secret
+    env_var: PDR_HOST
+    key: hostname
+  - name: pdr-secret
+    env_var: PDR_DBNAME
+    key: database
+  - name: pdr-secret
+    env_var: PDR_USER
+    key: username
+  - name: pdr-secret
+    env_var: PDR_PASSWORD
+    key: password
+  cmd: 
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # run data parser
+    python3 -m raw_data_parsers.raw_data_parser.li7200_data_parser_main
+
+    # Upload L0 files to bucket, compacting with any existing file with the same name
+    # when SOURCE_TYPE is li7200_raw, OUT_SOURCE_TYPE is li7200
+    OUT_SOURCE_TYPE=${SOURCE_TYPE%%_raw} 
+    if [[ -d "$OUT_PATH/$OUT_SOURCE_TYPE" ]]; then
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/**/*.parquet"
+      # /pfs/out/li7200/2023/01/01/12345/data/file.parquet
+      echo "Linking output files to ${linkdir}"
+      # set -x # Uncomment for debugging
+      for f in $out_parquet_glob; do
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+        fsourcetype="${BASH_REMATCH[1]}"
+        fyear="${BASH_REMATCH[2]}"
+        fmonth="${BASH_REMATCH[3]}"
+        fday="${BASH_REMATCH[4]}"
+        fsourceid="${BASH_REMATCH[5]}"
+        fname="${BASH_REMATCH[6]}"
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname}"
+
+      done
+      
+      # Upload to bucket, compacting with any existing file 
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+
+      # set +x # Uncomment for debugging
+      rm -rf $linkdir
+    fi
+
+    EOF
+  err_cmd: 
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    set -x
+    
+    # For some reason this does not work, but the datum is listed as recovered and thus findable and reprocesses every job
+    err_datum=$(echo $DATA_PATH | cut -d "/" -f 8)
+    err_path="/pfs/out/errored_datums/${DATA_PATH}"
+    mkdir -p $err_path
+    touch ${err_path}/error.txt
+    $(echo "${DATA_PATH}" > ${err_path}/${err_datum})
+    
+    set +x
+    
+    EOF
+    
+input:
+  pfs:
+    name: DATA_PATH
+    repo: li7200_data_source_kafka
+    glob: /li7200_raw/*/*/*/*
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 5G
+  cpu: 1.8
+resource_limits:
+  memory: 7G
+  cpu: 3
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
