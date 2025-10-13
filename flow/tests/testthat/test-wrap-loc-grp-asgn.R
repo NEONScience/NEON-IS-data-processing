@@ -71,7 +71,6 @@ test_that("Unit test of wrap.loc.grp.asgn.R", {
   wk_dir <- getwd()
   testOutputDir = "pfs/out"
   
-  
   ### Test group A - location assignment ###
   
   # Test scenario A1:: within the valid time range
