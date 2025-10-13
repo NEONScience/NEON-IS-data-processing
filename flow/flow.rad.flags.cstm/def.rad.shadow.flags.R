@@ -162,7 +162,7 @@ def.rad.shadow.flags <- function(DirIn,
     
     #NA handling for missing thresholds 
     get_threshold <- function(prefix) {
-      key <- paste0(prefix, src)
+      key <- paste0(prefix, '_', src)
       if (key %in% names(threshold_lookup)) {
         threshold_lookup[[key]]
       } else {
