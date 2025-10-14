@@ -138,7 +138,7 @@ def.rad.shadow.flags <- function(DirIn,
     
     #limit total options of shadow sources. Filter for expected. 
     shadow_sources <- c("LR", "Cimel", "Misc")
-    shadow_sources <- intersect(shadow_sources, shadowSource) # Only those present
+    shadow_sources <- dplyr::intersect(shadow_sources, shadowSource) # Only those present
 
     #if no shadow source set flag to -1.
     if(is.null(shadow_sources) || all(is.na(shadow_sources))){
@@ -194,7 +194,7 @@ def.rad.shadow.flags <- function(DirIn,
       #   TRUE ~ NA_real_
       # )
       
-      deg_buffer <- case_when(
+      deg_buffer <- dplyr::case_when(
         len < 3 ~ 5,
         len >= 3 ~ 4,
         TRUE ~ NA_real_
@@ -229,7 +229,7 @@ def.rad.shadow.flags <- function(DirIn,
       } else {
         # Normal range - use AND condition  
         df_shadow <- df_solar_pos %>%
-          filter(
+          dplyr::filter(
             (deg_az >= az_min & deg_az <= az_max) &
               deg_alt >= alt &
               .data[[paste0("shadow_length_", src)]] >= len * len_corrector

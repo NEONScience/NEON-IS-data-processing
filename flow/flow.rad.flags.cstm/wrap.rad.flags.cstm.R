@@ -82,8 +82,6 @@ wrap.rad.flags.cstm <- function(DirIn,
                                 log=NULL
 ){
 
-  ####TODO check libraries and function calls
-  
   library(dplyr)
   
   if(base::is.null(log)){
@@ -112,7 +110,6 @@ wrap.rad.flags.cstm <- function(DirIn,
   } 
   
   #no custom flags were given, passing through module. 
-  # TODO test what happens if none of the available options in here? QF_DF will just be readout time? 
   if (is.null(FlagsRad)){
     log$info("No custom flags specified, skipping datum")
     return()
