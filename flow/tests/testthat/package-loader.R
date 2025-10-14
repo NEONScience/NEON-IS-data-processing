@@ -51,7 +51,7 @@ load_neon_base <- function() {
   load_package("NEONprocIS.base")
 }
 
-load_neon_calibrationn <- function() {
+load_neon_calibration <- function() {
   load_package("NEONprocIS.cal")
 }
 
