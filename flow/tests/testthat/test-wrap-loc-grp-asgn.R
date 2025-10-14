@@ -61,8 +61,8 @@
 # Define test context
 context("\n                       Unit test of wrap.loc.grp.asgn.R\n")
 
-source('load-test-dependencies.R')
-load_test_dependencies()
+source('package-loader.R')
+load_neon_base()
 
 # Unit test of wrap.loc.grp.asgn.R
 test_that("Unit test of wrap.loc.grp.asgn.R", {
