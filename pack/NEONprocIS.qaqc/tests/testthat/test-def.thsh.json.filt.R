@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.thsh.json.filt.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("NameFile is not null and both term and ctxt are null",
           {
             nameFileIn <- "def.read.thsh.qaqc.df/thresholds.json"

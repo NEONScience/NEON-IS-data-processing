@@ -55,6 +55,9 @@
 # Define test context
 #context("\n       |testing def.cal.slct.R, determine applicable date ranges for calibration\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Test def.cal.slct.R, determine applicable date ranges for calibration
 test_that("   Test of def.cal.slct.R, determine applicable date ranges for calibration",
           {

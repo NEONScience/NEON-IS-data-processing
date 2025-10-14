@@ -20,6 +20,10 @@
 #
 # Define test context
 #context("\n       | Unit test of create Parquet schema from Avro schema\n")
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("",
           {
             #1. No params passed in
@@ -45,5 +49,5 @@ test_that("",
             workingDirPath <- getwd()
             schm <- file.path(workingDirPath, "testdata/avro-schema-double.avsc")
             rpt <- try(NEONprocIS.base::def.schm.parq.from.schm.avro(FileSchm = schm),silent = TRUE)
-  
+            
           })

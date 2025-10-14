@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.arg.pars.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("When one of the arguments is not passed as a character, processing stops",
           {
 

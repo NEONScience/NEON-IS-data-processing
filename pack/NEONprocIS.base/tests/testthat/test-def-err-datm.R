@@ -55,6 +55,9 @@
 # Define test context
 #context("\n       | Route datum errors to specified location\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Test Route datum errors to specified location
 test_that("   Testing Route datum errors to specified location", {
   ##########

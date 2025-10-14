@@ -40,7 +40,7 @@ library(remotes)
 
 load_package <- function(package_name) {
   if (!require(package_name, character.only = TRUE)) {
-    path = paste0("../../../pack/", package_name)
+    path = paste0("/", package_name)
     suppressPackageStartupMessages(
       install_local(path)
     )

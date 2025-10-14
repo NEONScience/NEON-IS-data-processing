@@ -57,6 +57,9 @@
 # Define test context
 context("\n                       Unit test of wrap.ucrt.dp01.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap.ucrt.dp01.R
 test_that("Unit test of wrap.ucrt.dp01.R", {
   # The input is a json with elements of Name, Value, and .attrs

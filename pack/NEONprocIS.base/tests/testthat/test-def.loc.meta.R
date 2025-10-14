@@ -42,7 +42,11 @@
 #   Mija Choi (2021-07-30)
 #     Add tests after adding parsing of active periods
 ##############################################################################################
+
 context("Location metadata tests")
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("When no restriction, get all locations",
           {

@@ -100,6 +100,9 @@
 # Define test context
 context("\n       | Unit test of Regularization module for NEON IS data processing \n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Unit test of wrap.rglr.R", {
   source('../../flow.rglr/wrap.rglr.R')
   library(stringr)

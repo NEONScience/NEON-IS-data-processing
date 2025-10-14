@@ -53,6 +53,9 @@
 # Define test context
 context("\n       | Unit test of Compute alpha & beta quality metrics and final quality flag \n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Unit test of def.qm.smmy.R", {
   qfSmmy <-
     data.frame(

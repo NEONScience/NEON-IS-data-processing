@@ -41,6 +41,10 @@
 #   Mija Choi (2023-04-19)
 #      Original Creation
 ##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("   Testing def.pub.tabl.crea.R, Create publication table",
           {
             wk_dir <- getwd()

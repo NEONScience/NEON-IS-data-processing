@@ -52,6 +52,9 @@
 # Define test context
 context("\n                       Unit test of def-cal-conv-poly-m.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of def-cal-conv-poly-m.R
 test_that("Unit test of def-cal-conv-poly-m.R", {
    # The input json has Name, Value, and .attrs

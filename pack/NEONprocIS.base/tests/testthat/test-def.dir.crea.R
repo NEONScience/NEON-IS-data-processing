@@ -27,6 +27,10 @@
 #   Mija Choi (2022-08-02)
 #     Add more tests after the original test was written
 ##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Data directory created without subpath",
 # Test 1, a happy path with valid params
           {

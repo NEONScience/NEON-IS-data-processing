@@ -65,6 +65,9 @@
 # Define test context
 #context("\n       |testing def.cal.meta.R, Compile metadata for calibrations\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Test def.cal.meta.R, Compile metadata for calibrations
 test_that("   Test of def.cal.meta.R, Compile metadata for calibrations",
           {

@@ -1,6 +1,11 @@
 #library(testthat)
 #source("R/def.file.name.out.R")
 
+##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Output path with prefix filename suffix and extension",
           {
             output_filename <-

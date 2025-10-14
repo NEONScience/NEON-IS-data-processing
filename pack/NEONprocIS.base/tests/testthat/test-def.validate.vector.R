@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.validate.vector.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("if not vector, return falseh",
           {
             inputList <- list("a" = "2.5", "b" = TRUE, "c" = 1:3)

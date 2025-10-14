@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.validate.list.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("If the input parameter is not a list, return false",
           {
             input <- c('key1','1.5', 'key3')

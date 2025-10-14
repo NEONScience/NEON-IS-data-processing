@@ -43,6 +43,9 @@
 # Define test context
 context("\n                       Unit test of def.cal.conv.poly.a0.as.a1.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of .conv-poly-a0.as.a1.R
 test_that("Unit test of def.cal.conv.polya0.as.a1.R", {
    # The input json has Name, Value, and .attrs

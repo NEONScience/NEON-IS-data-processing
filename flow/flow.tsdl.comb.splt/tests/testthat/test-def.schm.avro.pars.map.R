@@ -15,6 +15,8 @@ library(testthat)
 
 testthat::context("\n  Unit test of def.schm.avro.pars.map.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("Unit test of def.schm.avro.pars.map.R", {
   source('../../def.schm.avro.pars.map.R')

@@ -1,3 +1,8 @@
+##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Data directory multiple input paths",
           {
             dirBgn <- "def.dir.in/test_input/pfs/27134"

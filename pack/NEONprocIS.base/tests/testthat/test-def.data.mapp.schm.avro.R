@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.data.mapp.schm.avro.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("make sure missing data column are added",
           {
             data <- data.frame("source_id"=c(1,2,3), "site_id"=c('one','two','three'), stringsAsFactors=FALSE)

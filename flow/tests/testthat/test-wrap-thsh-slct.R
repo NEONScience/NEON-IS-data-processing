@@ -91,6 +91,9 @@
 library(testthat)
 context("\n       | Unit test of Quality metrics module for NEON IS data processing \n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Unit test of wrap.thsh.slct.R", {
   source('../../flow.thsh.slct/wrap.thsh.slct.R')
   library(stringr)

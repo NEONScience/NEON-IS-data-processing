@@ -1,3 +1,7 @@
+##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("correct date format",
           {

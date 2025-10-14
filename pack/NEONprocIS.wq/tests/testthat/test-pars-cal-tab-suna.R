@@ -37,6 +37,9 @@
 # Define test context
 context("\n                       Unit test of def.pars.cal.tab.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of def.pars.cal.tab.R
 test_that("Unit test of def.pars.cal.tab.R", {
 

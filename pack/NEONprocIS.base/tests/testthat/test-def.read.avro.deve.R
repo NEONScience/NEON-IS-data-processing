@@ -36,6 +36,9 @@
 #     add the OS info due to ravro filetype constraint and execute this test only if the OS is Linux based
 ##############################################################################################
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file",
           {
             os_type = Sys.info()["sysname"]

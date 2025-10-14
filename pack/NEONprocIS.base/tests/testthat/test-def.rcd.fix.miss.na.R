@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.rcd.fix.miss.na.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("fixing the badtime values",
           {
             data <- NEONprocIS.base::def.read.parq(NameFile ="def.rcd.fix.miss.na/testdata.parquet")

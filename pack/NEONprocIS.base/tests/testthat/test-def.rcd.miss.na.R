@@ -35,7 +35,11 @@
 #   Mija Choi (2022-06-20)
 #     revised to add a negative test
 ##############################################################################################
+
 library(rapportools)
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("retrun extra timestamp in the second file",
           {

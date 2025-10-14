@@ -50,6 +50,9 @@
 # Define test context
 context("\n       testing the applicable calibrations selection and their time ranges for all variables\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Test calibration conversion
 test_that("testing calibration selection", {
   # Create data to calibrate

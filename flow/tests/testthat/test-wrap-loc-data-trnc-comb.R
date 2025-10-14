@@ -71,6 +71,9 @@
 
 context("\n                       Unit test of wrap.loc.data.trnc.comb.R\n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap.loc.data.trnc.comb.R
 test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   source('../../flow.loc.data.trnc.comb/wrap.loc.data.trnc.comb.R')

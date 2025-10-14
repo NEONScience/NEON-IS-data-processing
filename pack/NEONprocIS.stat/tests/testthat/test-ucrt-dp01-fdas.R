@@ -70,6 +70,9 @@
 # Define test context
 context("\n                       Unit test of def.ucrt.dp01.fdas.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of def.ucrt.dp01.fdas.R
 test_that("Unit test of def.ucrt.dp01.fdas.R", {
   # The input is a json with elements of Name, Value, and .attrs

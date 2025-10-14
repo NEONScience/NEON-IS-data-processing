@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.data.conv.type.parq.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("when type is sent as a character",
           {
             data <- data.frame(x=c(1,2,3),y=c('one','two','three'),stringsAsFactors=FALSE)

@@ -39,6 +39,9 @@
 # Define test context
 context("\n                      Read NEON calibration XML file\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Test calibration conversion
 test_that("testing Read NEON calibration XML file", {
   ##########

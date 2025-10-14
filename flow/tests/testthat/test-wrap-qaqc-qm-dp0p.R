@@ -128,6 +128,9 @@ library(testthat)
 # Define test context
 context("\n       | Unit test of Basic QA/QC (plausibility) module for NEON IS data processing \n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Unit test of wrap.qaqc.qm.dp0p.R", {
   source('../../flow.qaqc.qm.dp0p/wrap.qaqc.qm.dp0p.R')
   library(stringr)

@@ -1,5 +1,9 @@
 #library(testthat)
 #source("R/def.read.parq.R")
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Parquet file reader considering only first file in the list",
           {
             inputfilepaths <- c('def.rcd.miss.na/third_test/incorrecttestdata.parquet', 'def.rcd.miss.na/valid_files/testflagsdata.parquet')

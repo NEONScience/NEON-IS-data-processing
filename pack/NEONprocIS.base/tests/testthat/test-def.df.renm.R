@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.df.renm.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Renaming the dataframe",
           {
             original_df <- data.frame(X=c(1,2,3),Y=c(4,5,6))

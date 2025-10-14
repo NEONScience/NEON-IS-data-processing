@@ -92,9 +92,13 @@
 #   Mija Choi (2021-11-10)
 #     original creation
 ##############################################################################################
+
 library(testthat)
 # Define test context
 context("\n       | Unit test of Basic QA/QC (plausibility) module for NEON IS data processing \n")
+
+source('../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("Unit test of wrap.qaqc.plau.R", {
   source('../../flow.qaqc.plau/wrap.qaqc.plau.R')

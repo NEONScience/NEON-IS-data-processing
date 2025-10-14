@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.time.bin.diff.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("divide one day into 30 minutes",
           {
             WndwBin <- base::as.difftime(30,units="mins")

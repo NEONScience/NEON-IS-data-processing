@@ -41,6 +41,9 @@
 # Define test context
 context("\n   | Unit test of def.time.heat.on.R, determining discrete periods a heater was turned on based on heater events\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("calculate the time on dataHeat State is always false",
           {
             time1 <- base::as.POSIXct('2019-05-01 00:10:20', tz = 'GMT')

@@ -1,5 +1,9 @@
 #library(testthat)
 #source("R/def.read.parq.ds.R")
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Read parquet dataset",
           {
             # Successful: read in dataset as class "arrow_dplyr_query"

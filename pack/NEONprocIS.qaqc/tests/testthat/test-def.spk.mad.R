@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.spk.mad.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("method A, basic test",
           {
             data <- c(1,2,3,4,3,2,1,2,3,4,50,3,2,1,2,3,4,3,2,1)

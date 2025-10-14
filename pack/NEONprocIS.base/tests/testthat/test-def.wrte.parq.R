@@ -1,6 +1,8 @@
 #library(testthat)
 #source("R/def.wrte.parq.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("write parquet file with basic parameter",
      {

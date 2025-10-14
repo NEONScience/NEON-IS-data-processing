@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.schm.parq.pars.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("when fileSchm and schm are both null, throw an exceptionr",
           {
             returnData <- try(NEONprocIS.base::def.schm.parq.pars(schm = NULL), silent = TRUE)

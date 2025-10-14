@@ -15,6 +15,8 @@ library(testthat)
 
 testthat::context("\n  Unit test of def.map.char.gsub.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 # Unit test of wrap.loc.repo.strc.R
 test_that("Unit test of def.map.char.gsub.R", {

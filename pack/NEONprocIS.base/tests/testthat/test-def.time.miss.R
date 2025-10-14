@@ -1,6 +1,8 @@
 #library(testthat)
 #source("R/def.time.miss.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("When complete time range is missing",
           {

@@ -35,6 +35,9 @@
 # Define test context
 context("\n                       Unit test of def.ucrt.comb.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of def.ucrt.comb.R
 test_that("Unit test of def.ucrt.comb.R", {
   # Happy path 1

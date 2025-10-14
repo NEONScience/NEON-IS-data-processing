@@ -25,6 +25,9 @@
 ##############################################################################################
 # Define test context
 context("\n                      Unit test of def.dir.copy.symb.R\n")
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
 #
 test_that("Unit test of def.dir.copy.symb.R", {
   # Test 1

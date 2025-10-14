@@ -86,6 +86,9 @@
 # Define test context
 context("\n                       Unit test of wrap.data.comb.ts.R\n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap.data.comb.ts.R
 test_that("Unit test of wrap.data.comb.ts.R", {
   source('../../flow.data.comb.ts/wrap.data.comb.ts.R')

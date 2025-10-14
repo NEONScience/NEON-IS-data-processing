@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.vect.pars.one.many.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("when listVect is not a list, throw an error",
           {
             listVect <- 'key1'

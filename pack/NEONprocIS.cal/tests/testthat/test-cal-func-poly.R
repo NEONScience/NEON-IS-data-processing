@@ -44,6 +44,10 @@
 ##############################################################################################
 # Define test context
 context("\n                       calibration polynomial function from NEON CVAL coefficients\n")
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Test calibration polynomial function
 test_that("testing calibration polynomial function", {
   Sys.setenv(LOG_LEVEL = 'debug')

@@ -1,5 +1,9 @@
 #library(testthat)
 #source("R/def.grp.trnc.actv.R")
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("valid nameFileIn",
           {
             nameFileIn = 'def.grp.trnc.actv/CFGLOC100245.json'

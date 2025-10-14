@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.validate.xml.schema.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("valid xml should return true",
           {
             xmlpath <- 'def.validate.xml.schema/calibration.xml'

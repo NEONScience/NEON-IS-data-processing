@@ -72,6 +72,10 @@
 #   Mija Choi (2023-03-23)
 #      Original Creation
 ##############################################################################################
+
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("   Testing def.read.srf.R, definition function. Read science review file",
           {
             source('../../flow.pub.tabl.srf/wrap.pub.tabl.srf.R')

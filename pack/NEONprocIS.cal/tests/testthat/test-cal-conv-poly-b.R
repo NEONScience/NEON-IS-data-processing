@@ -65,6 +65,9 @@
 # Define test context
 context("\n                       Unit test of def-cal-conv-poly-b.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of def-cal-conv-poly-b.R
 test_that("Unit test of def-cal-conv-poly-b.R", {
  

@@ -50,6 +50,9 @@
 # Define test context
 context("\n       | Unit test of compute instantaneous alpha, beta, and final quality flags \n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("calculate the time on dataHeat State is always false",
           {
             qf <- data.frame(QF1=c(1,-1,1,0,-1),QF2=c(-1,1,0,0,0),stringsAsFactors=FALSE)

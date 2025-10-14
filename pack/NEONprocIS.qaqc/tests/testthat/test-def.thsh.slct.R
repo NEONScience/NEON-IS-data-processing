@@ -52,6 +52,10 @@
 #   Mija Choi (2022-12-01)
 #     added location_name=REALM case to the original test by adding thresholds-REALM.json
 ##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("when one of the threshold matches",
           {
             #thsh, Time, Term, Ctxt = NULL, Site=NULL, NameLoc=NULL, RptThsh = TRUE, log = NULL

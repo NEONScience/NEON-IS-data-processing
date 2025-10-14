@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.vect.pars.pair.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("when length of vector is not multiple of 2, throw an error",
           {
             vect <- c('key1','1.5', 'key3')

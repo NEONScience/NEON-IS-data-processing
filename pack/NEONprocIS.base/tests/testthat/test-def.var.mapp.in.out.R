@@ -1,6 +1,8 @@
 #library(testthat)
 #source("R/def.var.mapp.in.out.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("when length of nameVarIn is not same as nameVarOut, throw an error",
           {

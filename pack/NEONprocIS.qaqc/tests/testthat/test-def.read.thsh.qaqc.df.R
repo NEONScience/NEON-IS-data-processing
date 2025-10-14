@@ -1,5 +1,9 @@
 #library(testthat)
 #source("R/def.read.thsh.qaqc.df.R")
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("if not valid dataframe, return false",
           {
 

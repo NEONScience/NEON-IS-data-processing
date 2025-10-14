@@ -70,6 +70,9 @@
 # Define test context
 context("\n                       Unit test of wrap.kfka.comb.R\n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap.kfka.comb.R
 test_that("Unit test of wrap.kfka.comb.R", {
   

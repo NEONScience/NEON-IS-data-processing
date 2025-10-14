@@ -73,6 +73,9 @@
 # Define test context
 context("\n                       Unit test of wrap.troll.flags.R\n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap.troll.flags.R
 test_that("Unit test of wrap.troll.flags.R", {
   

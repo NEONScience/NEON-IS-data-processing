@@ -15,6 +15,8 @@ library(testthat)
 
 testthat::context("\n  Unit test of wrap.file.comb.tsdl.splt.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 # TODO consider calling a pachyderm data pull/refresh to detect format change?
 

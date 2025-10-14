@@ -1,6 +1,9 @@
 #library(testthat)
 #source("R/def.validate.dataframe.R")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("if not dataframe, return false",
           {
             validDataFrame <- NEONprocIS.base::def.validate.dataframe(dfIn = "test")

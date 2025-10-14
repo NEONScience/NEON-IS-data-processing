@@ -1,3 +1,8 @@
+##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("valid files to merge",
           {file <-  c(
                 'def.file.comb.ts/validFiles/testdata.parquet',

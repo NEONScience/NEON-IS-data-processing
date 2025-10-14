@@ -53,6 +53,9 @@
 # Define test context
 context("\n                       calibration conversion\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Test calibration conversion
 test_that("testing calibration conversion", {
   # Create data to calibrate

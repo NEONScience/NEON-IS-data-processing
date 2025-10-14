@@ -15,6 +15,8 @@ library(testthat)
 
 testthat::context("\n  Unit test of def.find.mtch.str.best.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
 
 test_that("Unit test of def.find.mtch.str.best.R", {
   source('../../def.find.mtch.str.best.R')

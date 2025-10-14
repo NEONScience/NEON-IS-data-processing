@@ -49,6 +49,9 @@
 # Define test context
 context("\n                       Unit test of wrap-qf-cal.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap-qf-cal.R
 test_that("Unit test of wrap-qf-cal.R", {
    testDir = "testdata/"

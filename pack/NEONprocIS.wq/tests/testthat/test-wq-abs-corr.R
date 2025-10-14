@@ -38,6 +38,9 @@
 # Define test context
 context("\n                       Unit test of def.wq.abs.corr.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of def.wq.abs.corr.R
 test_that("Unit test of def.wq.abs.corr.R", {
   

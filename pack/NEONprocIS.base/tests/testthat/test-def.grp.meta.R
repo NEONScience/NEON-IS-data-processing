@@ -21,6 +21,9 @@
 
 context("Group metadata tests")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Valid input file. Return group metadata",
           {
             nameFile <- "def.grp.meta/CFGLOC100245.json"

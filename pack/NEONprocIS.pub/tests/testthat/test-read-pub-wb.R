@@ -26,6 +26,10 @@
 #   Mija Choi (2023-04-05)
 #      Original Creation
 ##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("   Testing def.read.srf.R, definition function. Read science review file",
           {
             wk_dir <- getwd()

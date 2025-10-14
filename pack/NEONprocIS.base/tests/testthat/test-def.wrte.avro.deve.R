@@ -38,6 +38,9 @@
 #'     Execute the test when the OS is Linux-based, skip otherwise
 ##############################################################################################
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file",
           {
             os_type = Sys.info()["sysname"]

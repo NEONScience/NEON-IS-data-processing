@@ -70,6 +70,9 @@
 # Define test context
 context("\n                       Unit test of wrap.ucrt.dp01.cal.cnst.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap.ucrt.dp01.cal.cnst.R
 test_that("Unit test of wrap.ucrt.dp01.cal.cnst.R", {
   log <- NEONprocIS.base::def.log.init()

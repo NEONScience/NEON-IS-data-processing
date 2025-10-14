@@ -51,6 +51,9 @@ library(rapportools)
 # Define test context
 #context("\n       | Filter named location information by date-time range\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Test Filter named location information by date-time range for NEON instrumented systems sensors
 test_that("   Testing Filter named location information by date-time range", {
   ##########

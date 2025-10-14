@@ -65,6 +65,9 @@
 # Define test context
 context("\n                       Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R\n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R
 test_that("Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R", {
   data <- data.frame(readout_time = as.POSIXct(

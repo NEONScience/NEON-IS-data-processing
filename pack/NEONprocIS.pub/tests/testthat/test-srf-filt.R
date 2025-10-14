@@ -51,6 +51,10 @@
 #   Mija Choi (2023-03-29)
 #      Original Creation
 ##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("   Testing def.srf.filt.R, Filter Science Review Flag file ", {
   wk_dir <- getwd()
   DirOutBase = 'pfs/out'

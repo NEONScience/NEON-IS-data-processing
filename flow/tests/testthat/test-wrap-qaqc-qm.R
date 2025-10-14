@@ -148,6 +148,9 @@
 # Define test context
 context("\n       | Unit test of Quality metrics module for NEON IS data processing \n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Unit test of wrap.qaqc.qm.R", {
   source('../../flow.qaqc.qm/wrap.qaqc.qm.R')
   library(stringr)

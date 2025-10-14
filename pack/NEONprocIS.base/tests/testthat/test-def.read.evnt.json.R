@@ -31,6 +31,10 @@
 #   Mija Choi (2022-04-12)
 #     Test revision after the original
 ##############################################################################################
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("   Testing def.read.evnt.json.R, definition function. Read AVRO file",
           {
             workingDirPath <- getwd()

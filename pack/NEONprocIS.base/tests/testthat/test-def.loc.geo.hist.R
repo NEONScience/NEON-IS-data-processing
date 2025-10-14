@@ -47,6 +47,9 @@ library(rapportools)
 # Define test context
 #context("\n       | Read sensor locations json file and return the geolocation history of all the configured locations within the file \n")
 
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 # Read sensor locations json file and return the geolocation history of all the configured locations within the file
 test_that("   Read sensor locations json file and return the geolocation history of all the configured locations within the file ", {
   ##########

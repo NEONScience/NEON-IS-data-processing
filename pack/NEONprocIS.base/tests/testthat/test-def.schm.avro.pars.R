@@ -23,6 +23,10 @@
 #     revised the test after original test was written
 #   Mija Choi (2022-04-07)
 #     Added the comments in the beginning and made minor changes in the original test
+
+source('../../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("when fileSchm and schm are both null, throw an exceptionr",
           {
             rpt <- try(NEONprocIS.base::def.schm.avro.pars(FileSchm = NULL, Schm = NULL), silent = TRUE)

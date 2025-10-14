@@ -101,6 +101,9 @@
 #'Define test context
 context("\n       | Unit test of basic statistics and uncertainty module for NEON IS data processing \n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 test_that("Unit test of wrap.stat.basc.R", {
   source('../../flow.stat.basc/wrap.stat.basc.R')
   library(stringr)

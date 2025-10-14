@@ -54,6 +54,9 @@
 # Define test context
 context("\n                       Unit test of wrap.srf.asgn.R\n")
 
+source('../../../neon-package-loader.R')
+load_neon_base()
+
 # Unit test of wrap.cal.asgn.R
 test_that("Unit test of wrap.srf.asgn.R", {
   source('../../flow.srf.asgn/wrap.srf.asgn.R')
