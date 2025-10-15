@@ -1,88 +1,36 @@
 ##############################################################################################
-#' @title Workflow to Model 1-Min Water Column Height to 15-Min Discharge Data
-#' flow.discharge.predict.R
-#' 
+#' @title Workflow for Troll Log File Processing
+
 #' @author
-#' Zachary Nickerson \email{nickerson@battelleecology.org}
-#' 
-#' @description Workflow. Average water column height data to 15-min; model 
-#' continuous stage based on the relationship between gauge height and water 
-#' column height; model continuous discharge using a 3rd party Bayesian model 
-#' executable.
-#' 
+#' Nora Catolico \email{ncatolico@battelleecology.org}
+
+#' @description Workflow. Validates, cleans, and formats troll log files into daily parquets.
+#'
 #' The arguments are: 
 #' 
-#' 1. "DirIn=value", where value is the  path to input data directory (see below)
-#' The input path is structured as follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number of 
-#' parent and child directories of any name, so long as they are not 'pfs', the same name as subdirectories 
-#' expected at the terminal directory (see below), or recognizable as the 'yyyy/mm/dd' structure 
-#' which indicates the 4-digit year, 2-digit month, and 2-digit day of the data contained in the folder.
+#' 1. "DirIn=value", The input path to the data from a single source ID, structured as follows: 
+#' #/pfs/BASE_REPO/source-id.The source-id folder may have multiple csv log files. 
+#' The source-id is the unique identifier of the sensor.
 #' 
-#' Nested within this path are the folders:
-#'         /data
-#'         /location
-#'         /uncertainty_coef
-#'         /uncertainty_data
-#'         
+#'           
 #'        
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
 #' of DirIn.
 #' 
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
-#' 
-#' 4. "Context=value", where the value must be designated as either "surfacewater" or "groundwater".
-#' 
-#' 5. "WndwAgr=value", (optional) where value is the aggregation interval for which to compute unceratainty. It is 
-#' formatted as a 3 character sequence, typically representing the number of minutes over which to compute unceratainty 
-#' For example, "WndwAgr=001" refers to a 1-minute aggregation interval, while "WndwAgr=030" refers to a 
-#' 30-minute aggregation interval. Multiple aggregation intervals may be specified by delimiting with a pipe 
-#' (e.g. "WndwAgr=001|030|060"). Note that a separate file will be output for each aggregation interval. 
-#' It is assumed that the length of the file is one day. The aggregation interval must divide one day into 
-#' complete intervals. No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
-#' 
-#' 6. "WndwInst=TRUE", (optional) set to TRUE to include instantaneous uncertainty data output. The defualt value is FALSE. 
-#' No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
-#' 
-#' 7. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
+#'  
+#' 4. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
 #' leveltroll500 (does not output conductivity) in your schema.
 #' 
-#' 9. "FileSchmUcrtAgr=value" (optional), where values is the full path to the avro schema for the output aggregate 
-#' uncertainty data file. If this input is not provided, the output schema for the data will be the same as the input data
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
-#' leveltroll500 (does not output conductivity) in your schema.
-#' 
-#' 9. "FileSchmUcrtInst=value" (optional), where values is the full path to the avro schema for the output instantaneous 
-#' uncertainty data file. If this input is not provided, the output schema for the data will be the same as the input data
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
-#' leveltroll500 (does not output conductivity) in your schema.
-#' 
-#' 10. "FileSchmStats=value" (optional), where values is the full path to the avro schema for the output statistics
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. 
-#' 
-#' 11. "FileSchmSciStats=value" (optional), where values is the full path to the avro schema for the output science statistics
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
-
-#' @return water table elevation calculated from calibrated pressure, density of water, gravity, and sensor elevation.
-#' Data and uncertainty values will be output in Parquet format in DirOut, where the terminal directory 
-#' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
-#'  
-#' If no output schema is provided for the data, the output column/variable names will be determined by the 
-#' sensor type (leveltroll500 or aquatroll200). Output column/variable names for the leveltroll500 will be
-#' readout_time, pressure, pressure_data_quality, temperature, temperature_data quality, elevation, in that order. 
-#' Output column/variable names for the aquatroll200 will be readout_time, pressure, pressure_data_quality, 
-#' temperature, temperature_data quality, conductivity, conductivity_data_quality, elevation, in that order.
-#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THIS ORDER. Otherwise, they will be labeled incorrectly.
+#' 
+#' @return Cleaned troll log files in daily parquets.
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -91,32 +39,24 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau') #troll data
-# Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_group_path') #uncertainty data
-# Sys.setenv(FILE_SCHEMA_STATS_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc')
-# Sys.setenv(SCHEMA_DATA_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc')
-# Sys.setenv(SCHEMA_UCRT_AGR_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc')
-# Sys.setenv(SCHEMA_UCRT_INST_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc')
-# Sys.setenv(FILE_SCHEMA_STATS_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc')
-# Sys.setenv(SCHEMA_DATA_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_data.avsc')
-# Sys.setenv(SCHEMA_UCRT_AGR_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt.avsc')
-# Sys.setenv(SCHEMA_UCRT_INST_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt_inst.avsc')
-# Sys.setenv(SCHEMA_SCI_TROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc')
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030",
-#          "FileSchmData=$SCHEMA_DATA_TROLL_AQUATROLL","FileSchmUcrtAgr=$SCHEMA_UCRT_AGR_TROLL_AQUATROLL","FileSchmUcrtInst=$SCHEMA_UCRT_INST_TROLL_AQUATROLL",
-#          "FileSchmStats=$FILE_SCHEMA_STATS_AQUATROLL","FileSchmSciStats=$SCHEMA_SCI_TROLL")
-#' rm(list=setdiff(ls(),c('arg','log')))
-#' 
+Sys.setenv(DIR_IN='/home/NEON/nickerson/pfs/testing')
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+arg <- c("DirIn=$DIR_IN",
+         "DirBaM=/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
+         "DirOut=/home/NEON/nickerson/pfs/out",
+         "DirErr=/home/NEON/nickerson/pfs/out/errored_datums",
+         "FileSchmData=/home/NEON/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc")
+rm(list=setdiff(ls(),c('arg','log')))
+setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict")
+
 #' @seealso None currently
 
-#' changelog and author contributions / copyrights
-#'   Zachary Nickerson (2025-10-02)
-#'     original creation
+# changelog and author contributions / copyrights
+#   Zachary Nickerson (2025-10-15) 
+#     original creation
 ##############################################################################################
 options(digits.secs = 3)
-library(foreach)
-library(doParallel)
+library(lubridate)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.discharge.predict.R")
@@ -127,149 +67,67 @@ arg <- base::commandArgs(trailingOnly = TRUE)
 # Start logging
 log <- NEONprocIS.base::def.log.init()
 
-# Use environment variable to specify how many cores to run on
-numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
-numCoreAvail <- parallel::detectCores()
-if (base::is.na(numCoreUse)){
-  numCoreUse <- 1
-} 
-if(numCoreUse > numCoreAvail){
-  numCoreUse <- numCoreAvail
-}
-log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
-
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr","Context"),NameParaOptn = c("FileSchmData","FileSchmUcrtAgr","FileSchmUcrtInst","FileSchmStats","FileSchmSciStats","WndwInst","WndwAgr"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirBaM","DirOut","DirErr"),
+                                      NameParaOptn = c("FileSchmData"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
+log$debug(base::paste0('Model executable directory: ', Para$DirBam))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Context: ', Para$Context))
-log$debug(base::paste0('Instantaneous window: ', Para$WndwInst))
-log$debug(base::paste0('Aggregation interval(s): ', Para$WndwAgr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
-log$debug(base::paste0('Schema for output aggregate uncertainty: ', Para$FileSchmUcrtAgr))
-log$debug(base::paste0('Schema for output instantaneous uncertainty: ', Para$FileSchmUcrtInst))
-log$debug(base::paste0('Schema for output stats: ', Para$FileSchmStats))
-log$debug(base::paste0('Schema for output science stats: ', Para$FileSchmSciStats))
 
-# Read in the schemas so we only have to do it once and not every
-# time in the avro writer.
+
+# Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
   SchmDataOut <- NULL
 } else {
   SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
 }
-if(base::is.null(Para$FileSchmUcrtAgr) || Para$FileSchmUcrtAgr == 'NA'){
-  SchmUcrtOutAgr <- NULL
-} else {
-  SchmUcrtOutAgr <- base::paste0(base::readLines(Para$FileSchmUcrtAgr),collapse='')
-}
-if(base::is.null(Para$FileSchmUcrtInst) || Para$FileSchmUcrtInst == 'NA'){
-  SchmUcrtOutInst <- NULL
-} else {
-  SchmUcrtOutInst <- base::paste0(base::readLines(Para$FileSchmUcrtInst),collapse='')
-}
-if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
-  SchmStatsOut <- NULL
-} else {
-  SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
-}
-if(base::is.null(Para$FileSchmSciStats) || Para$FileSchmSciStats == 'NA'){
-  SchmSciStatsOut <- NULL
-} else {
-  SchmSciStatsOut <- base::paste0(base::readLines(Para$FileSchmSciStats),collapse='')
-}
-
-
-# Retrieve context
-if(Para$Context=="groundwater"){
-  Context<-"GW"
-}else if(Para$Context=="surfacewater"){
-  Context<-"SW"
-}else{
-  log$fatal('Context must equal groundwater or surfacewater.')
-  stop()
-}
-
-# Retrieve instantaneous information
-if(base::is.null(Para$WndwInst) || Para$WndwInst == 'NA'|| Para$WndwInst == "FALSE"){
-  WndwInst <- FALSE
-}else{
-  WndwInst <- TRUE
-}
-
-# Retrieve aggregation interval(s)
-if(base::is.null(Para$WndwAgr) || Para$WndwAgr == 'NA'){
-  WndwAgr <- NULL
-}else{
-  WndwAgr <- base::as.difftime(base::as.numeric(Para$WndwAgr),units="mins")
-}
-
-#what are the expected subdirectories of each input path
-nameDirSub <- c('data','flags','location')
-log$debug(base::paste0(
-  'Additional subdirectories to copy: ',
-  base::paste0(nameDirSub, collapse = ',')
-))
 
 # Find all the input paths (datums). We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn=Para$DirIn,nameDirSub=nameDirSub,log=log)
-
-# Create the binning for each aggregation interval
-if(length(WndwAgr)>0){
-  timeBgnDiff <- list()
-  timeEndDiff <- list()
-  for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
-    timeBinDiff <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr[idxWndwAgr],WndwTime=base::as.difftime(1,units='days'))
-    timeBgnDiff[[idxWndwAgr]] <- timeBinDiff$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
-    timeEndDiff[[idxWndwAgr]] <- timeBinDiff$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
-  } # End loop around aggregation intervals
-}
-
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
+                                     nameDirSub = NULL,
+                                     log = log)
+log$debug(base::paste0('Directories identified:', fileData))
 
 # Process each datum path
-doParallel::registerDoParallel(numCoreUse)
-foreach::foreach(idxDirIn = DirIn) %dopar% {
-  log$info(base::paste0('Processing path to datum: ', idxDirIn))
-  
+for(idxDirIn in DirIn){
+  # idxDirIn=DirIn[1]
+  log$info(base::paste0('Processing path to file: ', idxDirIn))
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.troll.uncertainty(
+      wrap.discharge.predict(
         DirIn=idxDirIn,
-        DirOutBase=Para$DirOut,
-        Context=Context,
-        WndwAgr=WndwAgr,
-        WndwInst=WndwInst,
+        DirBaM=Para$DirBaM,
+        DirOut=Para$DirOut,
         SchmDataOut=SchmDataOut,
-        SchmUcrtOutAgr=SchmUcrtOutAgr,
-        SchmUcrtOutInst=SchmUcrtOutInst,
-        SchmStatsOut=SchmStatsOut,
-        SchmSciStatsOut=SchmSciStatsOut,
-        timeBgnDiff=timeBgnDiff,
-        timeEndDiff=timeEndDiff,
         log=log
       ),
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
-        
-        # Re-route the failed datum
-        NEONprocIS.base::def.err.datm(
-          err=err,
-          call.stack=call.stack,
-          DirDatm=idxDirIn,
-          DirErrBase=Para$DirErr,
-          RmvDatmOut=TRUE,
-          DirOutBase=Para$DirOut,
-          log=log
-        )
+        log$error(err$message)
+        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn, 
+                                                             log = log)
+        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
+        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
+                                      log = log)
+        csvname <- DirSub %>%
+          strsplit( "/" ) %>%
+          sapply( tail, 1 )
+        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
+        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
+        con <- base::file(nameFileErr, "w")
+        base::close(con)
       }
     ),
     # This simply to avoid returning the error
     error=function(err) {}
   )
-  
-  return()
 }
+
+
+
+
