@@ -39,15 +39,15 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-Sys.setenv(DIR_IN='/home/NEON/nickerson/pfs/testing')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=$DIR_IN",
-         "DirBaM=/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
-         "DirOut=/home/NEON/nickerson/pfs/out",
-         "DirErr=/home/NEON/nickerson/pfs/out/errored_datums",
-         "FileSchmData=/home/NEON/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc")
-rm(list=setdiff(ls(),c('arg','log')))
-setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict")
+# Sys.setenv(DIR_IN='/home/NEON/nickerson/pfs/testing')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=$DIR_IN",
+#          "DirBaM=/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
+#          "DirOut=/home/NEON/nickerson/pfs/out",
+#          "DirErr=/home/NEON/nickerson/pfs/out/errored_datums",
+#          "FileSchmData=/home/NEON/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc")
+# rm(list=setdiff(ls(),c('arg','log')))
+# setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict")
 
 #' @seealso None currently
 
@@ -90,7 +90,7 @@ if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
 DirIn <- NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
                                      nameDirSub = NULL,
                                      log = log)
-log$debug(base::paste0('Directories identified:', fileData))
+log$debug(base::paste0('Directories identified:', DirIn))
 
 # Process each datum path
 for(idxDirIn in DirIn){
