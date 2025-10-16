@@ -27,7 +27,7 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /tmp/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: "pluvio"
+    SOURCE_TYPE: "pluvio_raw"
     SOURCE_TYPE_OUT: "pluvio"
     STARTING_PATH_INDEX: "5"
   secrets:
