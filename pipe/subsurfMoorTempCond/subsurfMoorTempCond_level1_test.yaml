@@ -11,14 +11,15 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    #
+    
+    # Get paths
+    echo "qmPath detected: $QUALITY_METRICS_PATH"
+    echo "statsPath detected: $STATISTICS_PATH"
+    #echo "groupPath detected: $GROUP_PATH"
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf /tmp/interimA
-    rm -rf /tmp/interimB
-    rm -rf /tmp/pfs/interimC
-    mkdir /tmp/interimA
-    mkdir /tmp/interimB
-    mkdir -p /tmp/pfs/interimC
+    #rm -r -f /tmp/pfs/filter_joined
+    #mkdir -p /tmp/pfs/filter_joined
     
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
@@ -47,12 +48,6 @@ transform:
             # Join on Y/M/D/group ID 
             join_indices: [6]
             outer_join: True
-        # - path:
-        #     name: SRF_PATH
-        #     # Filter for data directory
-        #     glob_pattern: /pfs/SRF_PATH/*/**
-        #     # Join on group ID(already joined below by day)
-        #     join_indices: [6]
         # - path:
         #     name: GROUP_PATH
         #     # Grab group information
@@ -88,12 +83,12 @@ input:
   #     joinOn: $1
   #     outer_join: true # Need outer join to pull in with or without SRFs
   #     empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: SRF_PATH
-      repo: subsurfMoorTempCond_srf_assignment
-      glob: /(*/*/*)
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  # - pfs:
+  #     name: SRF_PATH
+  #     repo: subsurfMoorTempCond_srf_assignment
+  #     glob: /(*/*/*)
+  #     joinOn: $1
+  #     empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
 autoscaling: true
