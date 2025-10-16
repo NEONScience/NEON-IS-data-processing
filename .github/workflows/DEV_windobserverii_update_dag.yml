@@ -2,7 +2,7 @@ name: DEV-windobserverii-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'master'
     paths:
       - 'pipe/windobserverii/*.yaml'
       - 'pipe/windobserverii/pipe_list_windobserverii_development.txt'
