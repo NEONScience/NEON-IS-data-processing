@@ -471,7 +471,7 @@ if (!base::is.null(Para$Meta) &&
     log$fatal('Names of Meta argument must be unique (e.g. Meta=name1:path2|name2:path2).')
     stop()
   }
-  Meta <- stats::setNames(base::as.list(Meta$path),Meta$name)
+  Meta <- stats::setNames(base::as.list(Meta$value),Meta$name)
   log$debug(base::paste0(
     'Additional metadata for use in calibration and uncertainty functions: ',
     paste0(paste0(names(Meta),'=',unlist(Meta)), collapse = ', ')
