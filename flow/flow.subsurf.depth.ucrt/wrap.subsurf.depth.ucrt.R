@@ -357,6 +357,16 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     DirOutUcrt <- base::paste0(DirOutHobo,'/uncertainty_data')
     base::dir.create(DirOutUcrt,recursive=TRUE)
     
+    # Copy with a symbolic link the desired subfolders 
+    DirSubCopy <- c('location')
+    if(base::length(DirSubCopy) > 0){
+      
+      NEONprocIS.base::def.dir.copy.symb(DirSrc=DirInHoboLoc,
+                                         DirDest=DirOutHobo,
+                                         LnkSubObj=FALSE,
+                                         log=log)
+    } 
+    
     #Create dataframe for output instantaneous data
     dataOut <- thisHobo
     dataCol <- c("startDateTime","endDateTime","temperature","conductivity","thermistorDepth")

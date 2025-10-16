@@ -2,7 +2,7 @@
 pipeline:
   name: hobou24_cond_conv
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-hobo-cond-conv:sha-77b2103
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-hobo-cond-conv:sha-00d042e
   cmd:
   - sh
   - "-c"
