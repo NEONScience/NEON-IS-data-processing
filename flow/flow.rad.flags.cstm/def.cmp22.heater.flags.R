@@ -41,9 +41,8 @@ if(base::is.null(log)){
 } 
   
 if(!"readout_time" %in% names(flagDf)){
-  log$error("readout_time not in flagDF variable. Invalid configuration, setting flag to -1.")
-  flagsDf$heaterQF <- -1
-  return()
+  log$error("readout_time not in flagDF variable. Invalid configuration.")
+  stop()
 } 
   
 #store names before transformation 
