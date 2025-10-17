@@ -55,8 +55,9 @@ def.rad.shadow.flags <- function(DirIn,
   library(data.table)
 
   if(!"readout_time" %in% names(flagDf)){
-    log$error("readout_time not in flagDF variable. Invalid configuration.")
-    stop()
+    log$error("readout_time not in flagDF variable. Invalid configuration, setting flag to -1.")
+    flagsDf$shadowQF <- -1
+    return()
   } 
   
   #store names before transformation 
@@ -79,18 +80,21 @@ def.rad.shadow.flags <- function(DirIn,
   
  #verify termTest exists, shadowSource exists and termTest is in thresholds. 
   if (is.null(termTest) || is.na(termTest)) {
-    log$info("No terms to test for thresholds")
-    stop()
+    log$info("No terms to test for thresholds, setting flag to -1")
+    flagsDf$shadowQF <- -1
+    return()
   }
   
   if (is.null(shadowSource) || is.na(shadowSource)) {
-    log$info("No shadowSource Provided")
-    stop()
+    log$info("No shadowSource Provided, setting flag to -1")
+    flagsDf$shadowQF <- -1
+    return()
+    
   }
   
   if (!any(termTest %in% thsh$term_name)) {
-    log$error(base::paste0('Missing threshold term: ', termTest))
-    stop()
+    log$error(base::paste0('Missing threshold term: ', termTest, ' setting flag to -1'))
+    flagsDf$shadowQF <- -1
   }
   
   #extract only term of interest/available in thresholds.
@@ -105,8 +109,9 @@ def.rad.shadow.flags <- function(DirIn,
     fileLoc <-base::dir(dirInLoc)
     
     if (length(fileLoc) == 0) {
-      log$error(base::paste0('No location data in ', dirInLoc))
-      stop()
+      log$error(base::paste0('No location data in ', dirInLoc, 'setting flag to -1'))
+      flagsDf$shadowQF <- -1
+      return()
     }
     
     #need locations file for lat/long
@@ -114,8 +119,9 @@ def.rad.shadow.flags <- function(DirIn,
       log$info(base::paste0('grabbing locations file metadata ', fileLoc[grepl(fileLoc, pattern = "locations.json")]))
       fileLoc <- fileLoc[grepl(fileLoc, pattern = "locations.json")]
     } else {
-      log$error(base::paste0('No location data in cannot calculate shadows without lat/long ', dirInLoc))
-      stop()
+      log$error(base::paste0('No location data in cannot calculate shadows without lat/long ', dirInLoc, 'setting flag to -1'))
+      flagsDf$shadowQF <- -1
+      return()
     }
     
     loc <-NEONprocIS.base::def.loc.geo.hist(NameFile = fs::path(dirInLoc, fileLoc))
@@ -126,8 +132,9 @@ def.rad.shadow.flags <- function(DirIn,
       cfgloc_item <- loc[[1]]  # Gets the first CFGLOC item regardless of name
       log$info(base::paste0('Using first loc file: ', names(loc[1])))
     } else if (length(loc) == 0 || is.null(loc) || is.na(loc)) {
-      log$error('No location data available')
-      stop()
+      log$error('No location data available, setting flag to -1')
+      flagsDf$shadowQF <- -1
+      return()
     } else {
       cfgloc_item <- loc[[1]]  # Gets the first CFGLOC item regardless of name
     }
@@ -184,21 +191,13 @@ def.rad.shadow.flags <- function(DirIn,
       len_corrector <- as.numeric(thresholds$Length_corrector)
       alt <- as.numeric(thresholds$Altitude)
       height <- as.numeric(thresholds$Height)
-      
-      # Buffer logic (as above)
-      #removing time threshold to shorten window. 
-      # buffer <- case_when(
-      #   len < 3 ~ 15,
-      #   len >= 3 & len < 4 ~ 10,
-      #   len >= 4 ~ 5,
-      #   TRUE ~ NA_real_
-      # )
-      
+    
       deg_buffer <- dplyr::case_when(
         len < 3 ~ 5,
         len >= 3 ~ 4,
         TRUE ~ NA_real_
       )
+      
       df_solar_pos <- data.frame(date = flagDf$readout_time)
       df_solar_pos$lat = lat_tow
       df_solar_pos$lon =  lon_tow
