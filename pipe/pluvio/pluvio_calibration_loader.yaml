@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_calibration_loader
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v3.0.0
   cmd:
   - sh
   - "-c"
