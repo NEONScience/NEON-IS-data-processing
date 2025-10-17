@@ -2,33 +2,18 @@
 pipeline:
   name: pluvio_calibration_loader
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:sha-c694dca
   cmd:
-  - sh
-  - "-c"
-  - |-
-    /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-sstrict-mode/
-    set -euo pipefail
-    IFS=$'\n\t'
-    
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf $OUT_PATH
-    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
-    
-    python3 -m calval_loader.load_all_calval_files #run the calibration loader
-    
-    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
-      cp -r $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
-    fi
-    
-    EOF
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m calval_loader.load_all_calval_files
   env:
     CVAL_INGEST_BUCKET: neon-cval
-    OUT_PATH: /tmp/out
+    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: "pluvio_raw"
-    SOURCE_TYPE_OUT: "pluvio"
+    SOURCE_TYPE: "pluvio"
+    SCHEMA_NAME: "pluvio_raw"
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
