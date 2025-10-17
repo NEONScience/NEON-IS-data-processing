@@ -28,15 +28,10 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
+#' 4. "FileSchmStats=value" (optional), where values is the full path to the avro schema for the output stats 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. 
-#' 
-#' 5. "FileSchmUcrt=value" (optional), where values is the full path to the avro schema for the output  
-#' uncertainty data file. If this input is not provided, the output schema for the data will be the same as the input data
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA.
 #' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -87,26 +82,20 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmUcrt"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmStats"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
-log$debug(base::paste0('Schema for output uncertainty: ', Para$FileSchmUcrt))
+log$debug(base::paste0('Schema for output data: ', Para$FileSchmStats))
 
 # Read in the schemas so we only have to do it once and not every
 # time in the avro writer.
-if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
-  SchmDataOut <- NULL
+if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
+  SchmStatsOut <- NULL
 } else {
-  SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
-}
-if(base::is.null(Para$FileSchmUcrt) || Para$FileSchmUcrt == 'NA'){
-  SchmUcrtOut <- NULL
-} else {
-  SchmUcrtOut <- base::paste0(base::readLines(Para$FileSchmUcrt),collapse='')
+  SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
 }
 
 #what are the expected subdirectories of each input path
@@ -131,8 +120,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.subsurf.depth.ucrt(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmDataOut=SchmDataOut,
-        SchmUcrtOut=SchmUcrtOut,
+        SchmStatsOut=SchmStatsOut,
         log=log
       ),
       error = function(err) {

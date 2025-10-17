@@ -29,12 +29,7 @@
 #' 
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
-#' @param SchmDataOut (optional) A json-formatted character string containing the schema for the output data 
-#' file. If this input is not provided, the output schema for the data will be the same as the input data
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA.
-#' 
-#' @param SchmUcrtOut (optional) A json-formatted character string containing the schema for the output uncertainty data 
+#' @param SchmStatsOut (optional) A json-formatted character string containing the schema for the output stats 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
@@ -67,8 +62,7 @@
 ##############################################################################################
 wrap.subsurf.depth.ucrt <- function(DirIn,
                                    DirOutBase,
-                                   SchmDataOut=NULL,
-                                   SchmUcrtOut=NULL,
+                                   SchmStatsOut=NULL,
                                    log=NULL
 ){
   
@@ -352,10 +346,8 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
     DirOutHobo <- base::paste0(DirOut,'/hobou24/',CFGLOC)
     base::dir.create(DirOutHobo,recursive=TRUE)
-    DirOutData <- base::paste0(DirOutHobo,'/data')
-    base::dir.create(DirOutData,recursive=TRUE)
-    DirOutUcrt <- base::paste0(DirOutHobo,'/uncertainty_data')
-    base::dir.create(DirOutUcrt,recursive=TRUE)
+    DirOutStats <- base::paste0(DirOutHobo,'/stats')
+    base::dir.create(DirOutStats,recursive=TRUE)
     
     # Copy with a symbolic link the desired subfolders 
     DirSubCopy <- c('location')
@@ -372,38 +364,26 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     dataCol <- c("startDateTime","endDateTime","temperature","conductivity","thermistorDepth")
     dataOut <- dataOut[,dataCol]
     
+    #Create dataframe for output instantaneous uncertainty data
+    ucrtOut <- merge(ucrtOut,ucrtOutDepth,by='readout_time')
+    ucrtOut$startDateTime<-as.POSIXct(ucrtOut$readout_time)
+    ucrtCol <- c("startDateTime","depth_ucrtExpn","temperature_ucrtExpn","specCond_ucrtExpn")
+    ucrtOut <- ucrtOut[,ucrtCol]
+    
+    #merge data frames
+    statsOut <- merge(dataOut,ucrtOut,by='startDateTime')
+    
     #Write out instantaneous data
-    NameFile <- base::paste0(DirOutData,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_030.parquet")
-    rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
+    NameFile <- base::paste0(DirOutStats,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_030.parquet")
+    rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = statsOut, 
                                                      NameFile = NameFile, 
-                                                     Schm = SchmDataOut),silent=TRUE)
+                                                     Schm = SchmStatsOut),silent=TRUE)
     if(any(grepl('try-error',class(rptDataOut)))){
       log$error(base::paste0('Writing the output data failed for: ',NameFile,". ErrorCode: ",attr(rptDataOut,"condition")))
       stop()
     } else {
       log$info(base::paste0("Data written out for ",NameFile))
     }
-    
-    #Create dataframe for output instantaneous uncertainty data
-    ucrtOut <- merge(ucrtOut,ucrtOutDepth,by='readout_time')
-    ucrtOut$startDateTime<-as.POSIXct(ucrtOut$readout_time)
-    ucrtOut$endDateTime<-as.POSIXct(ucrtOut$readout_time)
-    ucrtCol <- c("startDateTime","endDateTime","depth_ucrtExpn","temperature_ucrtExpn","specCond_ucrtExpn")
-    ucrtOut <- ucrtOut[,ucrtCol]
-    
-    
-    #Write out instantaneous Ucrt
-    NameFileUcrt <- base::paste0(DirOutUcrt,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_030.parquet")
-    rptUcrtOut <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut, 
-                                                     NameFile = NameFileUcrt, 
-                                                     Schm = SchmUcrtOut),silent=TRUE)
-    if(any(grepl('try-error',class(rptUcrtOut)))){
-      log$error(base::paste0('Writing the output failed for: ',NameFile,". ErrorCode: ",attr(rptUcrtOut,"condition")))
-      stop()
-    } else {
-      log$info(base::paste0("Ucrt file written out for ",NameFileUcrt))
-    }
-
     
   }
   
