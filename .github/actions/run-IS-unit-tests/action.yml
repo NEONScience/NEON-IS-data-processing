@@ -145,6 +145,7 @@ runs:
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
           git config push.default current
+          git pull
           git add "${{ env.MODULE_NAME }}-coverage.html"
           echo "Attempting to create a test_coverage directory"
           mkdir -p pack/test_coverage
