@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_calibration_loader
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:sha-c694dca
   cmd:
   - sh
   - "-c"
@@ -15,6 +15,12 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    
+    # NOTE: sunav2_raw is the name for both the sensor_type and the avro_schema_name in the database
+    #   This is because the airflow transitions use the sunav2_raw L0 data
+    #   When Airflow transitions are no longer active, best to update the sensor_type
+    #   to "sunav2" in the database and use the commented env vars in the typical 
+    #   workflow for this pipeline (i.e. not loading to a tempdir and renaming)
     
     python3 -m calval_loader.load_all_calval_files #run the calibration loader
     
@@ -29,6 +35,8 @@ transform:
     LOG_LEVEL: INFO
     SOURCE_TYPE: "sunav2_raw"
     SOURCE_TYPE_OUT: "sunav2"
+    # SOURCE_TYPE: "sunav2"
+    # SCHEMA_NAME: "sunav2_raw"
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
