@@ -2,7 +2,7 @@
 pipeline:
   name: li7200_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.12.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -77,6 +77,29 @@ transform:
     fi
 
     EOF
+  err_cmd: 
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    set -x
+    
+    # For some reason this does not work, but the datum is listed as recovered and thus findable and reprocesses every job
+    err_datum=$(echo $DATA_PATH | cut -d "/" -f 8)
+    err_path="/pfs/out/errored_datums/${DATA_PATH}"
+    mkdir -p $err_path
+    touch ${err_path}/error.txt
+    $(echo "${DATA_PATH}" > ${err_path}/${err_datum})
+    
+    set +x
+    
+    EOF
+    
 input:
   pfs:
     name: DATA_PATH
