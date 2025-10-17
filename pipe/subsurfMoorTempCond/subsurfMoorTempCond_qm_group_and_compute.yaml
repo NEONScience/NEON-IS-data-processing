@@ -25,6 +25,7 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_TROLL \
       Tmi=030 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
@@ -46,6 +47,7 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_HOBO \
       Tmi=030 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
@@ -102,10 +104,14 @@ transform:
     PARALLELIZATION_INTERNAL: '1' # Option for quality metrics module
 input:
   cross:
-  # - pfs:
-  #     name: FILE_SCHEMA_QM_INST
-  #     repo: subsurfMoorTempCond_avro_schemas
-  #     glob: /subsurfMoorTempCond/subsurfMoorTempCond_dp01_quality_metrics_instantaneous.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM_TROLL
+      repo: subsurfMoorTempCond_avro_schemas
+      glob: /subsurfMoorTempCond_dp01_pressure_QF.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM_HOBO
+      repo: subsurfMoorTempCond_avro_schemas
+      glob: /subsurfMoorTempCond_dp01_hobo_QF.avsc
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH

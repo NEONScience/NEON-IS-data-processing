@@ -46,10 +46,10 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_depth_ucrt_group/2022/06/15') #hobo data
+# Sys.setenv(DIR_IN='~/pfs/subs_test/2022/06/16/subsurf-moor-temp-cond_PRPO103501') #hobo data
 # Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_baro_conv/2022/06/15') #uncertainty data
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
+# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmStats=~/pfs/subsurfMoorTempCond_avro_schemas/subsurfMoorTempCond_dp01_stats.avsc")
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
