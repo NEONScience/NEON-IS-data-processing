@@ -71,7 +71,7 @@ input:
   - pfs:
       name: DATA_PATH
       repo: subsurfMoorTempCond_threshold_select_ts_pad
-      glob: /(*/*/*)/(subsurf-moor-temp-cond_PRPO103100)/*
+      glob: /(*/*/*)/*/*
   # - pfs:
   #     name: SCHEMA_FLAGS
   #     repo: subsurfMoorTempCond_avro_schemas
