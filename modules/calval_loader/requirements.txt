@@ -1,7 +1,8 @@
 functions-framework==3.5.0
 betterproto==2.0.0b4
 certifi==2024.7.4
-environs==6.0.0
+environs==11.0.0
+marshmallow==3.21.3
 python-pachyderm==7.4.0
 google-cloud==0.34.0
 google-cloud-logging==3.1.2
