@@ -116,7 +116,7 @@ def.rad.shadow.flags <- function(DirIn,
     } else {
       log$error(base::paste0('No geolocation data in path ', dirInLoc, ' cannot calculate shadows without lat/long setting flag to -1'))
       flagDf$shadowQF <- -1
-      return()
+      return(flagDf)
     }
     
     loc <-NEONprocIS.base::def.loc.geo.hist(NameFile = fs::path(dirInLoc, fileLoc))
