@@ -24,6 +24,7 @@
 
 #' @examples 
 #' # NOT RUN
+#' flagDf <- def.cmp22.heater.flags(data, flagDf, log)
 
 #' @seealso Currently none
 

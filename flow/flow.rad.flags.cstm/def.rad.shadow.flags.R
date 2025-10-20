@@ -28,6 +28,7 @@
 
 #' @examples 
 #' # NOT RUN
+#'  flagDf <- def.rad.shadow.flags(DirIn, flagDf, termTest,shadowSource, log)
 
 #' @seealso Currently none
 

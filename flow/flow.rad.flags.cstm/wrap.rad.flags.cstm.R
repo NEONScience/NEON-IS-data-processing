@@ -28,9 +28,9 @@
 #'
 #' @param SchmQf (Optional). A json-formatted character string containing the schema for the custom flags being applied.
 #' 
-#' @param RadFlags (Optional). A list of flags to run. If not provided it will fail the script. 
+#' @param FlagsRad (Optional). A list of flags to run. If not provided it will bypass script without producing any flags 
 #' 
-#' @param termTest (Optional). terms to run for shading flag. If NULL and Shadow is in RadFlags will result in errored datum.
+#' @param termTest (Optional). terms to run for shading flag. If NULL and Shadow is in FlagsRad will result in errored datum.
 #' 
 #' @param shadowSource (Optional). Which type of shadow is expected. Options include LR Cimel Misc to distinguish between 
 #'different types of shading sources from different directions. If not supplied, but shadow check is run script will fail. 
@@ -63,7 +63,7 @@
 #' DirIn='/scratch/pfs/cmp_analyze_pad_and_qaqc_plau/2025/03/31/'
 #' DirOutBase='/scratch/pfs/out_tb'
 
-#' wrap.rad.flags.cstm(DirIn,DirOutBase,DirSubCopy,RadFlags,termTest)
+#' wrap.rad.flags.cstm(DirIn,DirOutBase,DirSubCopy,FlagsRad,termTest)
 
 #' @seealso Currently none
 
