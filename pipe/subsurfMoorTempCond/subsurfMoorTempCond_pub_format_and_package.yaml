@@ -50,7 +50,7 @@ transform:
   env:
     # Environment variables for 2nd (part A) module: pub_workbook_loader.
     OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
-    PRODUCTS: NEON.DOM.SITE.DP1.20264.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+    PRODUCTS: NEON.DOM.SITE.DP1.20055.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
 
     # Environment variables for 2nd module (part B): pub_transformer.
     LOG_LEVEL: INFO

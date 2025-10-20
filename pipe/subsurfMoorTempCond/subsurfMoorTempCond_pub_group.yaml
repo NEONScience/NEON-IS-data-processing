@@ -25,7 +25,7 @@ input:
   join:
   - pfs: 
       name: DATA_PATH
-      repo: subsurfMoorTempCond_level1_grp_cons_srf
+      repo: subsurfMoorTempCond_level1_group_consolidate_srf
       # Glob should be monthly and joined with pub_control to hold pub until month is likely complete
       glob: /(*/*)
       joinOn: $1
