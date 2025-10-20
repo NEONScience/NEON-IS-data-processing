@@ -50,9 +50,9 @@ transform:
       DirIn=$OUT_PATH_ARRAY_PARSER \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "TermFuncConv1=def.cal.conv.test.multi.out:rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
-      "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
       "DirSubCopy=calibration"
+      #"TermFuncConv1=def.cal.conv.test.multi.out:rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
+      #"TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
       
     # Copy over the location info to the output
     export OUT_PATH=$OUT_PATH_JOINER_LOC
@@ -146,28 +146,28 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: enviroscan_calibration_assignment
-        glob: /enviroscan/(2025)/(09)/(05)
+        glob: /enviroscan/(2020)/(08)/(16)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
-        name: DATA_PATH_TRINO
+        name: DATA_PATH_ARCHIVE
         repo: enviroscan_data_source_trino
-        glob: /enviroscan/(2025)/(09)/(05)
+        glob: /enviroscan/(2020)/(08)/(16)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: enviroscan_data_source_kafka
-        glob: /enviroscan/(2025)/(09)/(05)
+        glob: /enviroscan/(2020)/(08)/(16)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: LOCATION_PATH
         repo: enviroscan_location_asset_assignment
-        glob: /enviroscan/(2025)/(09)/(05)
+        glob: /enviroscan/(2020)/(08)/(16)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
