@@ -11,7 +11,7 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    #
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/interimA
     rm -rf /tmp/interimB
@@ -19,29 +19,30 @@ transform:
     mkdir /tmp/interimA
     mkdir /tmp/interimB
     mkdir -p /tmp/pfs/interimC
-    #
+    
     # Set some environment variables for the first module
     export OUT_PATH=$OUT_PATH_1
-    #
+    
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
     # Set some environment variables for the second module
     export OUT_PATH=$OUT_PATH_2
     export CONFIG=$CONFIG2
-    #
+    
     # Run second module - filter-joiner to bring in SRF (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
     # Clean up 1st interim directory (this is the only one we can clean up bc the rest use symlinks)
     rm -rf /tmp/interimA  
+    
     # Set some environment variables for the 3rd module
     export OUT_PATH=$OUT_PATH_3
-    #
+    
     # Run third module - level 1 consolidate (using environment variables below as input parameters)
     python3 -m level1_consolidate.level1_consolidate_main
-    #
+    
     # Run fourth module - pub workbook loader (using environment variables below as input parameters)
     python3 -m pub_workbook_loader.pub_workbook_loader_main
-    #
+    
     # Run fifth and final module - create pub tables and apply science review flags (if any)
     Rscript ./flow.pub.tabl.srf.R \
       DirIn=/tmp/pfs/interimC \
@@ -50,8 +51,7 @@ transform:
       "DirData=stats|quality_metrics" \
       PathPubWb=$PUB_WORKBOOKS \
       "DirSubCopy=science_review_flags|group|location"
-    #
-    #
+    
     # Export Level 1 data to bucket
     export OUT_PATH=/pfs/out
     linkdir=$(mktemp -d)
@@ -125,10 +125,10 @@ transform:
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
     LOG_LEVEL: INFO # Shared among all modules
 
-# Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 
-# Can't do this in first filter-joiner bc there are only data in the srf assignment
-# repo for groups that have applicable SRFs for the day. Need to pass through the
-# consolidated output with an outer join.
+  # Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 
+  # Can't do this in first filter-joiner bc there are only data in the srf assignment
+  # repo for groups that have applicable SRFs for the day. Need to pass through the
+  # consolidated output with an outer join.
     CONFIG2: |
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
@@ -148,27 +148,27 @@ transform:
             glob_pattern: /pfs/SRF_PATH/*/*/*/*/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
-    OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for the this module 
+    OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for the this module /tmp/interimB
 
-# Environment variables for level 1 consolidation
+    # Environment variables for level 1 consolidation
     IN_PATH: /tmp/interimB
-    OUT_PATH_3: /tmp/pfs/interimC # This will be transfered to OUT_PATH for the second module
+    OUT_PATH_3:  /tmp/pfs/interimC # This will be transfered to OUT_PATH for the second module /tmp/pfs/interimC
     GROUP_INDEX: "6" # path index of names of group-level metadata to include in the output 
     GROUP_METADATA_INDEX: "7"
-    GROUP_METADATA_NAMES: group,science_review_flags
+    GROUP_METADATA_NAMES: group, science_review_flags
     # path index of names of directories to include in the output
     DATA_TYPE_INDEX: "9"
-    DATA_TYPE_NAMES: location,data,uncertainty_data,quality_metrics
+    DATA_TYPE_NAMES: location,stats,quality_metrics
     
-# Environment variables for pub_workbook_loader
+    # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /tmp/pub_workbooks
     PRODUCTS: NEON.DOM.SITE.DP1.20055.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
   
-# Environment variables for pub table and srf module
+    # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /tmp/pub_workbooks
     PARALLELIZATION_INTERNAL: '2'
-
-# Environment variables for the L1 archiver
+    
+    # Environment variables for the L1 archiver
     GROUP_PREFIX: subsurf-moor-temp-cond # no ending "_"
 
   secrets:
