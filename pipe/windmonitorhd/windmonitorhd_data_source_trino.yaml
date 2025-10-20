@@ -2,7 +2,7 @@
 pipeline:
   name: windmonitorhd_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.5
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.3.0
   cmd:
   - sh
   - "-c"
