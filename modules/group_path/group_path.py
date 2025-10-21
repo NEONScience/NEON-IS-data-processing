@@ -2,6 +2,8 @@
 # ---------------------------------------------------------------------------
 from pathlib import Path
 import sys
+import geojson
+
 from typing import NamedTuple,List,Iterator,Tuple
 
 from structlog import get_logger
@@ -129,8 +131,19 @@ class GroupPath:
                     link_path = Path(self.out_path,year,month,day,group,data_type,*remainder)
                     link_path.parent.mkdir(parents=True,exist_ok=True)
                     if not link_path.exists():
-                        log.debug(f'file: {path_group.group_file_path} link: {link_path}')
-                        link_path.symlink_to(path_group.group_file_path)
+                                    
+                        # Edit the group file to filter for the group this is going to
+                        group_index=path_group.groups.index(group)
+                        with open(str(path_group.group_file_path), 'r') as file:
+                            geojson_data = geojson.load(file)
+                            features = geojson_data['features']
+                            feature_keep = features[group_index]
+                            geojson_data['features'] = feature_keep
+                            file_data = geojson.dumps(geojson_data, indent=4, sort_keys=True, default=str)
+                            with open(link_path, 'w') as file:
+                                log.debug(f'writing filtered group file: {link_path}')
+                                file.write(file_data)
+                                
             except Exception:
                 err_msg = sys.exc_info()
                 err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
@@ -203,4 +216,24 @@ class GroupPath:
             part = parts[index]
             key += part
         return key
+    
+    def filter_group_file():
+            # import group json
+            group_path = os.path.join(group_metadata_path, group)
+            group_file = os.listdir(group_path)[0]
+            with open(os.path.join(group_path, group_file)) as f:
+                group_data = json.load(f)
+        
+            # construct output path
+            site = group_data["features"][0]["site"]
+            year = data_path_parts[year_index]
+            month = data_path_parts[month_index]
+            day = data_path_parts[day_index]
+
+            # Get additional group properties
+            domain = group_data["features"][0]["domain"]
+            hor = group_data["features"][0]["HOR"]
+            ver = group_data["features"][0]["VER"]
+            visibility = group_data["features"][0]["visibility_code"]
+
     
