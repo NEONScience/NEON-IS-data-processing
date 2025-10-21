@@ -138,7 +138,7 @@ class GroupPath:
                             geojson_data = geojson.load(file)
                             features = geojson_data['features']
                             feature_keep = features[group_index]
-                            geojson_data['features'] = feature_keep
+                            geojson_data['features'] = [feature_keep]
                             file_data = geojson.dumps(geojson_data, indent=4, sort_keys=True, default=str)
                             with open(link_path, 'w') as file:
                                 log.debug(f'writing filtered group file: {link_path}')
