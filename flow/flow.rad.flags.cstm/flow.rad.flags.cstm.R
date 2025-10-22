@@ -6,7 +6,6 @@
 #' 
 #' @description Workflow. Choose which custom flags are relevant to radiation data, source functions to apply QF to data
 #'
-#'
 #' General code workflow:
 #'    Parse input parameters
 #'    Determine datums to process (set of files/folders to process as a single unit)
@@ -45,20 +44,21 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "SchmQF=value" (optional), custom flags for radiation sensors
-#' readout_time
-#' heaterQF
-#' shadowQF
+#' 4. "SchmQF=value" (optional), custom flags for radiation sensors 
 #' 
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.
 #'
-#' readout_time
-#' all quality flags output by this custom module (retaining the same order)
-#' Ensure that any schema input here matches the column order of the auto-generated schema, 
-#' simply making any desired changes to column names.
+#' 5. "termTest=shortwaveRadiation" (optional). Which terms will be checked for thresholds in the radiation shading flag. If
+#' not supplied, but shadow check is run script will fail. 
 #'
-#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 6.  "shadowSource". (optional) Which type of shadow is expected. Options include LR Cimel Misc to distinguish between 
+#' different types of shading sources from different directions. If not supplied, but shadow check is run script will fail. 
+#'
+#' 7. "FlagsRad=Shadow|cmp22Heater", List of tests to run for data product. If not supplied, sensors will be passed through module without
+#' producing custom flags
+#'
+#' 8. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the data folder that are to be copied with a
 #' symbolic link to the output path. May NOT include 'data'. 
 #'
@@ -126,7 +126,9 @@ Para <-
     NameParaOptn = c(
                      "DirSubCopy",
                      "SchmQf",
-                     "FlagsRad"
+                     "FlagsRad",
+                     "termTest",
+                     "shadowSource"
                      ),
     log = log
   )
@@ -168,13 +170,28 @@ DirIn <-
                               nameDirSub =  nameDirSub,
                               log = log)
 
-#flag functions to run. If not explicitly true in Paramaters will be set to false. 
+#flag functions to run. If blank functions will be passed over and data will just pass through 
 
 FlagsRad <- base::unique(Para$FlagsRad)
 
 if(base::is.null(FlagsRad) || FlagsRad == 'NA'){
   FlagsRad <- NULL
   log$info("No Custom Flags found for processing")}
+
+# term tests for shading. If blank and shadow script sourced will fail
+termTest <- base::unique(Para$termTest)
+
+if(base::is.null(termTest) || termTest == 'NA'){
+  termTest <- NULL
+  log$info("No termTest found for processing")}
+
+# source of shading for shading. If blank and shadow script sourced will fail
+shadowSource <- base::unique(Para$shadowSource)
+
+if(base::is.null(shadowSource) || shadowSource == 'NA'){
+  shadowSource <- NULL
+  log$info("No shadowSource found for processing")}
+
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
@@ -189,6 +206,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                               SchmQf=FileSchmQf, 
                               DirSubCopy=DirSubCopy,
                               FlagsRad=FlagsRad,
+                              termTest=termTest,
+                              shadowSource=shadowSource,
                               log=log
       ),
       error = function(err) {
