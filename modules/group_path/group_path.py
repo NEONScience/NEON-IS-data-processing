@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------------
 from pathlib import Path
 import sys
-import geojson
+import json
 
 from typing import NamedTuple,List,Iterator,Tuple
 
@@ -135,11 +135,11 @@ class GroupPath:
                         # Edit the group file to filter for the group this is going to
                         group_index=path_group.groups.index(group)
                         with open(str(path_group.group_file_path), 'r') as file:
-                            geojson_data = geojson.load(file)
-                            features = geojson_data['features']
+                            json_data = json.load(file)
+                            features = json_data['features']
                             feature_keep = features[group_index]
-                            geojson_data['features'] = [feature_keep]
-                            file_data = geojson.dumps(geojson_data, indent=4, sort_keys=True, default=str)
+                            json_data['features'] = [feature_keep]
+                            file_data = json.dumps(json_data, indent=4, default=str)
                             with open(link_path, 'w') as file:
                                 log.debug(f'writing filtered group file: {link_path}')
                                 file.write(file_data)
