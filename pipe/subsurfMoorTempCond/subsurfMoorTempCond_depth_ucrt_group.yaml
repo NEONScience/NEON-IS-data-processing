@@ -2,7 +2,7 @@
 pipeline:
   name: subsurfMoorTempCond_depth_ucrt_group
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-subsurf-depth-ucrt-group:sha-c267c1d
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-subsurf-depth-ucrt-group:sha-fd54b52
   cmd:
   - sh
   - "-c"
@@ -27,6 +27,7 @@ transform:
     Rscript ./flow.subsurf.depth.ucrt.R \
       DirIn=/tmp/pfs/filter_joined \
       FileSchmStats=$FILE_SCHEMA_STATS \
+      FileSchmFlags=$FILE_SCHEMA_FLAGS \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums
     EOF
@@ -62,6 +63,10 @@ input:
       name: FILE_SCHEMA_STATS
       repo: subsurfMoorTempCond_avro_schemas
       glob: /subsurfMoorTempCond_dp01_stats.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: subsurfMoorTempCond_avro_schemas
+      glob: /subsurfMoorTempCond_thermistorHeightQF.avsc
   - join:
     - pfs:
         name: QAQC_PATH
