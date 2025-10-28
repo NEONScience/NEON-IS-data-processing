@@ -453,7 +453,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     #Create dataframe for output instantaneous flags
     flagsOut <- thisHobo
-    flagsCol <- c("startDateTime","endDateTime","thermistorHeightQF")
+    flagsCol <- c("readout_time","thermistorHeightQF")
     flagsOut <- flagsOut[,flagsCol]
     
     #Create dataframe for output instantaneous uncertainty data
