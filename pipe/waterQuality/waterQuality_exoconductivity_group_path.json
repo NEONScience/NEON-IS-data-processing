@@ -2,7 +2,7 @@
   "pipeline": {
     "name": "waterQuality_exoconductivity_group_path"
   },
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.0",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.1",
     "cmd": [
       "/bin/bash"
     ],
