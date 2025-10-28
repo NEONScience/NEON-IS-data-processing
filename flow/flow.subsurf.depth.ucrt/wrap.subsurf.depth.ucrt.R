@@ -34,6 +34,11 @@
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
 #' 
+#' @param SchmFlagsOut (optional) A json-formatted character string containing the schema for the output flags 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA.
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
@@ -49,7 +54,7 @@
 #' @examples 
 #' # NOT RUN
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# DirIn <-"~/pfs/subsurfMoorTempCond_baro_conv/2022/06/12/subsurf-moor-temp-cond_PRPO103100"
+# DirIn <-"~/pfs/subs_test/2022/06/16/subsurf-moor-temp-cond_PRPO103501"
 #'wrap.subsurf.depth.ucrt <- function(DirIn=DirIn,
 #'                               DirOutBase="~/pfs/out",
 #'                               log=log)
@@ -63,6 +68,7 @@
 wrap.subsurf.depth.ucrt <- function(DirIn,
                                    DirOutBase,
                                    SchmStatsOut=NULL,
+                                   SchmFlagsOut=NULL,
                                    log=NULL
 ){
   
@@ -89,7 +95,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
 
   
   
-  # --------- get troll depth ----------
+  # --------- get water column ----------
   
   # Take stock of our data files. 
   fileData <- base::list.files(DirInTrollData,full.names=FALSE)
@@ -113,9 +119,85 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
   #calculate water column height
   trollData$waterColumn<-1000*trollData$pressure/(density*gravity)
   
+  
+  
+  # --------- get troll location ----------
+  
+  ##### Read in location data #####
+  trollLoc <- NULL
+  trollFileLoc <- base::dir(DirInTrollLoc,full.names=TRUE)
+  
+  #Could be multiple source IDs in a day. Account for all.
+  trollSources<-unique(trollData$source_id[!is.na(trollData$source_id)])
+  
+  if(length(trollSources)>0){
+    for(j in 1:length(trollSources)){
+      trollSource_j<-trollSources[j]
+      trollData_j<-trollData[!is.na(trollData$source_id) & trollData$source_id==trollSource_j,]
+      #####if no "_locations" file then check that the data file is all NA's. If there is data, STOP. If NA's, move on.
+      if(!is.null(trollFileLoc) & base::length(trollFileLoc)<1){
+        #case where there are no files
+        log$debug(base::paste0('No troll location data files in ',trollFileLoc, 'for source id ',trollSource_j))
+        trollLocationHist <-NULL
+      } else if(!is.null(trollFileLoc) & any(grepl(trollSource_j,trollFileLoc))){
+        # Choose the _locations.json file
+        trollLocationData <- base::paste0(trollFileLoc[grep(trollSource_j,trollFileLoc)])
+        log$debug(base::paste0("location datum(s) found, reading in: ",trollLocationData))
+        trollLocationHist <- NEONprocIS.base::def.loc.geo.hist(trollLocationData, log = NULL)
+      } else { 
+        #case where there is only a CFGLOC file
+        trollLocationHist <-NULL
+        log$debug(base::paste0('Location file is missing for ',DirInTroll))
+        stop()
+      }
+      
+      # Which location history matches each readout_time
+      if(length(trollData_j$readout_time)>0){
+        trollData_all_j<-NULL
+        if(!is.null(trollLocationHist) & length(trollLocationHist$CFGLOC)>0){
+          for(k in 1:length(trollLocationHist$CFGLOC)){
+            startDate<-trollLocationHist$CFGLOC[[k]]$start_date
+            endDate<-trollLocationHist$CFGLOC[[k]]$end_date
+            trollData_subset<-trollData_j[trollData_j$readout_time>=startDate & trollData_j$readout_time<endDate,]
+            if(is.null(trollLocationHist$CFGLOC[[k]]$z_offset)|is.na(trollLocationHist$CFGLOC[[k]]$z_offset)){
+              trollData_subset$trollHeight<-0
+            }else{
+              trollData_subset$trollHeight<- trollLocationHist$CFGLOC[[k]]$z_offset
+            }
+            if(k==1){
+              trollData_all_j<-trollData_subset
+            }else{
+              trollData_all_j<-rbind(trollData_all_j,trollData_subset)
+            }
+          }
+          trollData_j<-trollData_all_j
+        }
+      }
+      if(j==1){
+        trollData_all<-trollData_j
+      }else{
+        trollData_all<-rbind(trollData_all,trollData_j)
+      }
+    }
+    
+    #add back in NA data
+    trollNA<-trollData[is.na(trollData$source_id),]
+    trollData<-rbind(trollData_all,trollNA)
+    trollData<-trollData[order(trollData$readout_time),]
+  }else{
+    trollNA <-NULL
+    trollData_all <- NULL
+    trollLocationHist <-NULL
+  }
+  
+  trollData$thermistorHeightQF <- 0
+  trollData$thermistorHeightQF[trollData$trollHeight==0] <- 1
+  
   #Create dataframe for output instantaneous data
-  waterCol <- c("readout_time","waterColumn") 
+  waterCol <- c("readout_time","waterColumn","trollHeight","thermistorHeightQF") 
   waterColumn <- trollData[,waterCol]
+  
+  
   
   
   # --------- get troll depth uncertainty ----------
@@ -161,7 +243,10 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     depthUcrt$depth_ucrtMeas[n] <- uDSensor
     depthUcrt$depth_ucrtExpn[n] <- 2*uDSensor 
   }
-  ucrtOutDepth<-depthUcrt[,c("readout_time","depth_ucrtExpn")]
+  depthUcrt$thermistorHeight_ucrtMeas <- uESensor
+  depthUcrt$thermistorHeight_ucrtExpn <- 2*uESensor 
+  ucrtOutDepth<-depthUcrt[,c("readout_time","depth_ucrtExpn","thermistorHeight_ucrtExpn")]
+  
   
   
   
@@ -280,6 +365,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     # merge in troll data
     thisHobo <- merge(hoboData,waterColumn,by='readout_time')
     thisHobo$thermistorDepth <- thisHobo$waterColumn - thisHobo$z_offset
+    thisHobo$thermistorHeightAboveSubstrate <- thisHobo$trollHeight + thisHobo$z_offset
     
     
     
@@ -339,7 +425,6 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     }
     hoboUcrt$specCond_ucrtComb<-hoboUcrt$specCond_ucrtMeas
     hoboUcrt$specCond_ucrtExpn<-2*hoboUcrt$specCond_ucrtMeas
-    ucrtOut<-hoboUcrt[,c("readout_time","temperature_ucrtExpn","specCond_ucrtExpn")]
     
     
     # create output directories
@@ -348,6 +433,8 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     base::dir.create(DirOutHobo,recursive=TRUE)
     DirOutStats <- base::paste0(DirOutHobo,'/stats')
     base::dir.create(DirOutStats,recursive=TRUE)
+    DirOutFlags <- base::paste0(DirOutHobo,'/flags')
+    base::dir.create(DirOutFlags,recursive=TRUE)
     
     # Copy with a symbolic link the desired subfolders 
     DirSubCopy <- c('location')
@@ -361,19 +448,25 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     #Create dataframe for output instantaneous data
     dataOut <- thisHobo
-    dataCol <- c("startDateTime","endDateTime","temperature","conductivity","thermistorDepth")
+    dataCol <- c("startDateTime","endDateTime","temperature","conductivity","thermistorDepth","thermistorHeightAboveSubstrate")
     dataOut <- dataOut[,dataCol]
     
+    #Create dataframe for output instantaneous flags
+    flagsOut <- thisHobo
+    flagsCol <- c("startDateTime","endDateTime","thermistorHeightQF")
+    flagsOut <- flagsOut[,flagsCol]
+    
     #Create dataframe for output instantaneous uncertainty data
+    ucrtOut<-hoboUcrt[,c("readout_time","temperature_ucrtExpn","specCond_ucrtExpn")]
     ucrtOut <- merge(ucrtOut,ucrtOutDepth,by='readout_time')
     ucrtOut$startDateTime<-as.POSIXct(ucrtOut$readout_time)
-    ucrtCol <- c("startDateTime","depth_ucrtExpn","temperature_ucrtExpn","specCond_ucrtExpn")
+    ucrtCol <- c("startDateTime","temperature_ucrtExpn","specCond_ucrtExpn","depth_ucrtExpn","thermistorHeight_ucrtExpn")
     ucrtOut <- ucrtOut[,ucrtCol]
     
     #merge data frames
     statsOut <- merge(dataOut,ucrtOut,by='startDateTime')
     
-    #Write out instantaneous data
+    #Write out instantaneous stats
     NameFile <- base::paste0(DirOutStats,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_030.parquet")
     rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = statsOut, 
                                                      NameFile = NameFile, 
@@ -383,6 +476,18 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
       stop()
     } else {
       log$info(base::paste0("Data written out for ",NameFile))
+    }
+    
+    #Write out instantaneous flags
+    NameFile <- base::paste0(DirOutFlags,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_thermistorHeightQF.parquet")
+    rptFlagsOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut, 
+                                                     NameFile = NameFile, 
+                                                     Schm = SchmFlagsOut),silent=TRUE)
+    if(any(grepl('try-error',class(rptFlagsOut)))){
+      log$error(base::paste0('Writing the output flags failed for: ',NameFile,". ErrorCode: ",attr(rptFlagsOut,"condition")))
+      stop()
+    } else {
+      log$info(base::paste0("Flags written out for ",NameFile))
     }
     
   }

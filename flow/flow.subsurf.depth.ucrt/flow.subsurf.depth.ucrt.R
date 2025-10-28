@@ -33,6 +33,11 @@
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. 
 #' 
+#' 5. "FileSchmFlags=value" (optional), where values is the full path to the avro schema for the output flags 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. 
+#' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #' @return water table elevation calculated from calibrated pressure, density of water, gravity, and sensor elevation.
@@ -46,7 +51,7 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='~/pfs/subs_test/2022/06/16/subsurf-moor-temp-cond_PRPO103501') #hobo data
+# Sys.setenv(DIR_IN='~/pfs/subs_test/2022/06/16/subsurf-moor-temp-cond_PRPO103501') #combined test data
 # Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_baro_conv/2022/06/15') #uncertainty data
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmStats=~/pfs/subsurfMoorTempCond_avro_schemas/subsurfMoorTempCond_dp01_stats.avsc")
@@ -82,13 +87,14 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmStats"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmStats","FileSchmFlags"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Schema for output data: ', Para$FileSchmStats))
+log$debug(base::paste0('Schema for output stats: ', Para$FileSchmStats))
+log$debug(base::paste0('Schema for output flags: ', Para$FileSchmFlags))
 
 # Read in the schemas so we only have to do it once and not every
 # time in the avro writer.
@@ -96,6 +102,11 @@ if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
   SchmStatsOut <- NULL
 } else {
   SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
+}
+if(base::is.null(Para$FileSchmFlags) || Para$FileSchmFlags == 'NA'){
+  SchmFlagsOut <- NULL
+} else {
+  SchmFlagsOut <- base::paste0(base::readLines(Para$FileSchmFlags),collapse='')
 }
 
 #what are the expected subdirectories of each input path
@@ -121,6 +132,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
         SchmStatsOut=SchmStatsOut,
+        SchmFlagsOut=SchmFlagsOut,
         log=log
       ),
       error = function(err) {
