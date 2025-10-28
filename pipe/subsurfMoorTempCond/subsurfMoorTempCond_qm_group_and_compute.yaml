@@ -79,6 +79,12 @@ transform:
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/hobou24/*/flags/**
             # Join on named location (already joined below by day)
             join_indices: [6]
+        - path:
+            name: DEPTH_FLAGS_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/DEPTH_FLAGS_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
     CONFIG_TROLL: |
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
@@ -122,6 +128,12 @@ input:
     - pfs:
         name: REGULARIZED_FLAGS_PATH
         repo: subsurfMoorTempCond_baro_conv
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: DEPTH_FLAGS_PATH
+        repo: subsurfMoorTempCond_depth_ucrt_group
         glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
