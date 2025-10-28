@@ -192,9 +192,10 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
   
   trollData$thermistorHeightQF <- 0
   trollData$thermistorHeightQF[trollData$trollHeight==0] <- 1
+  trollData$thermistorHeightFinalQF <- trollData$thermistorHeightQF
   
   #Create dataframe for output instantaneous data
-  waterCol <- c("readout_time","waterColumn","trollHeight","thermistorHeightQF") 
+  waterCol <- c("readout_time","waterColumn","trollHeight","thermistorHeightQF","thermistorHeightFinalQF") 
   waterColumn <- trollData[,waterCol]
   
   
@@ -453,7 +454,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     #Create dataframe for output instantaneous flags
     flagsOut <- thisHobo
-    flagsCol <- c("readout_time","thermistorHeightQF")
+    flagsCol <- c("readout_time","thermistorHeightQF","thermistorHeightFinalQF")
     flagsOut <- flagsOut[,flagsCol]
     
     #Create dataframe for output instantaneous uncertainty data
