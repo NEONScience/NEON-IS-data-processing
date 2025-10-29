@@ -40,7 +40,7 @@
 #' Stepping through the code in R studio                               
 # Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620",
+# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100",
 #          "DirOut=~/pfs/out",
 #          "DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
