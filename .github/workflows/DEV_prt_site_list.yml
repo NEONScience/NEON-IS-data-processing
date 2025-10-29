@@ -2,7 +2,7 @@ name: DEV-prt-site-list
 on:
   push:
     branches:
-      - 'none'
+      - 'prt'
     paths:
       - 'pipe/prt/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
