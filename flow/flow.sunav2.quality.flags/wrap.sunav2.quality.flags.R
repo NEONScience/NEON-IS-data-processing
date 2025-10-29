@@ -212,11 +212,19 @@ wrap.sunav2.quality.flags <- function(DirIn,
     log$error(base::paste0('Error: Data and flags have different number of measuremnts'))
     stop()
   } else {
-    log$info(base::paste0('Data and flags have same number of measurements'))
+    log$debug(base::paste0('Data and flags have same number of measurements'))
   }
   
+  #replace with NA's so that falgged data is excluded from averaging
+  dataOut<-merge(sunaData,allFlags,by='readout_time')
+  dataOut$nitrate[dataOut$nitrateHumidityQF==1]<-NA
+  dataOut$nitrate[dataOut$nitrateLampTempQF==1]<-NA
+  dataOut$nitrate[dataOut$nitrateLightDarkRatioQF==1]<-NA
+  dataOut$nitrate[dataOut$nitrateLampStabilizeQF==1]<-NA
+  dataOut<-dataOut[,which(colnames(dataOut)%in%colnames(sunaData))]
+  
   #' Write out data file.  
-  rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = sunaData,
+  rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
                                                     NameFile = base::paste0(DirOutData,'/',dataFileName),
                                                     Schm = SchmDataOut),silent=TRUE)
   if(class(rptOutData)[1] == 'try-error'){
