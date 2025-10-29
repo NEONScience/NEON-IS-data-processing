@@ -244,8 +244,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     depthUcrt$depth_ucrtMeas[n] <- uDSensor
     depthUcrt$depth_ucrtExpn[n] <- 2*uDSensor 
   }
-  depthUcrt$thermistorHeight_ucrtMeas <- uESensor
-  depthUcrt$thermistorHeight_ucrtExpn <- 2*uESensor 
+  depthUcrt$thermistorHeight_ucrtExpn <- uESensor 
   ucrtOutDepth<-depthUcrt[,c("readout_time","depth_ucrtExpn","thermistorHeight_ucrtExpn")]
   
   
@@ -366,7 +365,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     # merge in troll data
     thisHobo <- merge(hoboData,waterColumn,by='readout_time')
     thisHobo$thermistorDepth <- thisHobo$waterColumn - thisHobo$z_offset
-    thisHobo$thermistorHeightAboveSubstrate <- thisHobo$trollHeight + thisHobo$z_offset
+    thisHobo$thermistorHeightFromAnchor <- thisHobo$trollHeight + thisHobo$z_offset
     
     
     
@@ -449,7 +448,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     #Create dataframe for output instantaneous data
     dataOut <- thisHobo
-    dataCol <- c("startDateTime","endDateTime","temperature","conductivity","thermistorDepth","thermistorHeightAboveSubstrate")
+    dataCol <- c("startDateTime","endDateTime","temperature","conductivity","thermistorDepth","thermistorHeightFromAnchor")
     dataOut <- dataOut[,dataCol]
     
     #Create dataframe for output instantaneous flags
