@@ -65,9 +65,10 @@ wrap.sunav2.quality.flags <- function(DirIn,
   DirInData <- paste0(DirIn,"/data")
   DirInFlags <- paste0(DirIn,"/flags")
   DirInThresholds <- paste0(DirIn,"/threshold")
-  DirOutData <- base::paste0(DirOutBase,"/data")
+  DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
+  DirOutData <- base::paste0(DirOut,"/data")
   base::dir.create(DirOutData,recursive=TRUE)
-  DirOutFlags <- base::paste0(DirOutBase,"/flags")
+  DirOutFlags <- base::paste0(DirOut,"/flags")
   base::dir.create(DirOutFlags,recursive=TRUE)
   
   #' Read in parquet file of SUNA data.
