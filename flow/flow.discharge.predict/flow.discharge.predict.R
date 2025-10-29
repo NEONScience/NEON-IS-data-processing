@@ -39,13 +39,13 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='/home/NEON/nickerson/pfs/testing')
+# Sys.setenv(DIR_IN='~/pfs/testing')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN",
-#          "DirBaM=/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
-#          "DirOut=/home/NEON/nickerson/pfs/out",
-#          "DirErr=/home/NEON/nickerson/pfs/out/errored_datums",
-#          "FileSchmData=/home/NEON/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc")
+#          #"DirBaM=/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
+#          "DirOut=~/pfs/out",
+#          "DirErr=~/pfs/out/errored_datums")
+         #"FileSchmData=~/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
 # setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict")
 
@@ -60,6 +60,7 @@ library(lubridate)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.discharge.predict.R")
+#source("./BaM_beta")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
