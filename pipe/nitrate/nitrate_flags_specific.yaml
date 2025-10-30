@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_flags_specific
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-flags-specific:sha-17df9ef
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-flags-specific:sha-2b2d433
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
@@ -20,12 +20,12 @@ input:
   - pfs:
       name: DIR_IN
       repo: nitrate_analyze_pad_and_qaqc_plau
-      # /source_type/YYYY/MM/DD
-      glob: /*/*/*/*/
+      # /YYYY/MM/DD/group/sourcetype/CFGLOC
+      glob: /(*/*/*/*)
   - pfs:
       name: SCHEMA_FLAGS
       repo: sunav2_avro_schemas
-      glob: /sunav2/sunav2_sensor_specific_flags.avsc
+      glob: /sunav2/sunav2_all_flags.avsc
 parallelism_spec:
   constant: 6
 autoscaling: true

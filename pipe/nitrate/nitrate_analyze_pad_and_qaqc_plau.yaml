@@ -32,7 +32,7 @@ transform:
       DirIn=/tmp/pfs/padded_analyzerCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "TermTest1=nitrate:range|step|persistence|spike" \
+      "TermTest1=nitrate:range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
       "DirSubCopy=threshold|flags"
     EOF
   env:
