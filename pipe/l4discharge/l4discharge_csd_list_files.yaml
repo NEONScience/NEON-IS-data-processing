@@ -2,15 +2,15 @@
 pipeline:
   name: l4discharge_csd_list_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-b0e7738
   cmd: ["/bin/bash"]
   env:
-    LOGJAM_INGEST_BUCKET: neon-int-l4-discharge-proc
+    INGEST_BUCKET: neon-int-l4-discharge-proc
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   stdin:
   - "#!/bin/bash"
-  - python3 -m logjam_loader.logjam_loader
+  - python3 -m csd_loader.csd_loader
 input:
   join:
   - pfs:

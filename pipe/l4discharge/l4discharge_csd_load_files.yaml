@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: l4discharge_logjam_load_files
+  name: l4discharge_csd_load_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-b0e7738
   cmd:
   - /bin/bash
   stdin:
@@ -10,10 +10,10 @@ transform:
   - python3 --version
   - python3 -c "import environs; print(environs.__version__)"
   - python3 -c "import marshmallow; print(marshmallow.__version__)"
-  - python3 -m logjam_loader.load_all_logjam_files
+  - python3 -m csd_loader.load_all_csd_files
   
   env:
-    LOGJAM_INGEST_BUCKET: neon-int-l4-discharge-proc
+    INGEST_BUCKET: neon-int-l4-discharge-proc
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     STARTING_PATH_INDEX: "7"

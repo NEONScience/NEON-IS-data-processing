@@ -15,7 +15,7 @@ def csd_loader() -> None:
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
     path_names = storage_client.list_blobs(ingest_bucket)
-    path_names = [path for path in path_names if "v2-dev/csd_corrected" in path]
+    path_names = [path for path in path_names if "v2-dev/csd_corrected" in path.name]
     
     for blob in path_names:
         file_name = os.path.splitext(blob.name)[0]
