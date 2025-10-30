@@ -18,7 +18,7 @@ from io import StringIO
 
 def load() -> None:
     env = environs.Env()
-    ingest_bucket_name = env.str('LOGJAM_INGEST_BUCKET')
+    ingest_bucket_name = env.str('INGEST_BUCKET')
     in_path: Path = env.path('IN_PATH')
     print("IN_PATH value is:", in_path)
     output_directory: Path = env.path('OUT_PATH')
@@ -32,7 +32,7 @@ def load() -> None:
         now = datetime.datetime.now()
         try:
             data_path_start = Path(*in_path.parts[0:starting_path_index + 1])  # starting index
-            print("Starting New Datum in the load_all_logjam_files pipeline ", data_path_start)
+            print("Starting New Datum in the load_all_csd_files pipeline ", data_path_start)
             for path in data_path_start.rglob('*'):
                 if path.is_file():
                     pathname, extension = os.path.splitext(path)

@@ -15,12 +15,12 @@ def csd_loader() -> None:
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
     path_names = storage_client.list_blobs(ingest_bucket)
-    print("path_names:  ", path_names)
+    path_names = [path for path in path_names if "v2-dev/csd_corrected" in path]
+    
     for blob in path_names:
-        
         file_name = os.path.splitext(blob.name)[0]
         print("file_name is:  ", file_name)
-        file_path = Path(output_directory, blob.updated.strftime("%Y"), blob.updated.strftime("%m"), blob.updated.strftime("%d"), file_name+".csv")         
+        file_path = Path(output_directory, blob.updated.strftime("%Y"), blob.updated.strftime("%m"), blob.updated.strftime("%d"), file_name+".csv")        
         file_path.parent.mkdir(parents=True, exist_ok=True)
         print("file_path is:  ", file_path)
         log_file= open(file_path, "w")
