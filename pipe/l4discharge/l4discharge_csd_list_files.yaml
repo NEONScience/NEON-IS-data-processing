@@ -1,0 +1,34 @@
+---
+pipeline:
+  name: l4discharge_csd_list_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
+  cmd: ["/bin/bash"]
+  env:
+    LOGJAM_INGEST_BUCKET: neon-int-l4-discharge-proc
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+  stdin:
+  - "#!/bin/bash"
+  - python3 -m logjam_loader.logjam_loader
+input:
+  join:
+  - pfs:
+      repo: l4discharge_cron_monthly_and_pub_control_tick
+      glob: /(*-*)-*
+      empty_files: true
+      joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
+      outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 1
+resource_limits:
+  memory: 1.5G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.4
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

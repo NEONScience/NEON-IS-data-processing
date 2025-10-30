@@ -26,33 +26,42 @@ transform:
       # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: QUALITY_METRICS_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/**
-            # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
+            name: OS_TABLE1
+            glob_pattern: /pfs/OS_TABLE1/**
+            join_indices: [3]
         - path:
-            name: STATISTICS_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/**
-            # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
+            name: OS_TABLE2
+            glob_pattern: /pfs/OS_TABLE2/**
+            join_indices: [3]
         - path:
-            name: GROUP_PATH
-            # Grab group information
-            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
-            # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
+            name: OS_TABLE3
+            glob_pattern: /pfs/OS_TABLE3/**
+            join_indices: [3]
         - path:
-            name: GROUP_PATH
-            # Grab location information
-            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/location/**
-            # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
-    OUT_PATH_1: /tmp/interimA # Transfered to OUT_PATH for the first module
+            name: OS_TABLE4
+            glob_pattern: /pfs/OS_TABLE4/**
+            join_indices: [3]
+        - path:
+            name: OS_TABLE5
+            glob_pattern: /pfs/OS_TABLE5/**
+            join_indices: [3]
+        - path:
+            name: OS_TABLE6
+            glob_pattern: /pfs/OS_TABLE6/**
+            join_indices: [3]
+        - path:
+            name: OS_TABLE7
+            glob_pattern: /pfs/OS_TABLE7/**
+            join_indices: [3]
+        - path:
+            name: OS_TABLE8
+            glob_pattern: /pfs/OS_TABLE8/**
+            join_indices: [3]
+        
+    OUT_PATH: /pfs/out # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: INFO # Shared among all modules
+    LOG_LEVEL: DEBUG # Shared among all modules
     
 input:
   join:

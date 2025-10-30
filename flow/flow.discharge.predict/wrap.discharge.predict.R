@@ -65,7 +65,7 @@ wrap.discharge.predict <- function(DirIn,
   library(lubridate)
   
   # Determine the type of file available ####
-  correctedFile <- list.files(DirIn,pattern = "CSD_15_mint")
+  correctedFile <- list.files(DirIn,pattern = "CSD_15_min")
   uncorrectedFile <- list.files(DirIn,pattern = "EOS_1_min")
   
   # Workflow for predicting uncorrected discharge ####
@@ -84,6 +84,7 @@ wrap.discharge.predict <- function(DirIn,
     configRegex <- "^\'|\' .*"
     predRegex <- "[0-9]{1,}"
     Config_BaM <- readLines(paste0(DirBaM,"/Config_BaM.txt"))
+    
     RunOptionsName <- gsub(nameRegex,"",
                            Config_BaM[2])
     ModelName <- gsub(nameRegex,"",
@@ -295,7 +296,7 @@ wrap.discharge.predict <- function(DirIn,
     curveID <- curveIdentification$curveID
     
     for(c in 1:length(curveID)){
-      c=1
+      #c=1
       currCurve <- curveIdentification[c,]
       # Configure priors for BaM! predictive model ####
       
@@ -346,8 +347,10 @@ wrap.discharge.predict <- function(DirIn,
           ]
         }
       }
+      
       write.table(Config_ControlMatrix, controlMatrixPath, 
                   row.names = F, col.names = F)
+      
       
       # Write out hydraulic control configurations
       Config_Model <- matrix(data = NA, nrow = (4 + 12*numCtrls))
