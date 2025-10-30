@@ -144,7 +144,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   #' Perform lamp temperature test (New condition need to be created. Using default for now).
   # lampTempThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Maximum Lamp Temperature"),]
   # maxLampTemp<-lampTempThreshold$number_value
-  maxLampTemp=35
+  maxLampTemp=35 #' Hard-coded until thresholds are updated.
   sensorFlags$nitrateLampTempQF<-NA
   for(i in 1:nrow(sunaData)){
     if(is.na(sunaData[i,which(colnames(sunaData)=='lamp_temperature')])){
@@ -173,7 +173,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   #' Identifies light measurement number within burst and performs lamp stabilization test.
   # lampStabilizeThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Lamp Stabilization Points"),]
   # lampStabilizePoints<-lampStabilizeThreshold$number_value
-  lampStabilizePoints=9
+  lampStabilizePoints=9 #' Hard-coded until thresholds are updated.
   sensorFlags$burstNumber<-0 #' Assumes each burst starts with a dark measurement.
   for(i in 2:nrow(sunaData)){
     if(is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
@@ -189,12 +189,23 @@ wrap.sunav2.quality.flags <- function(DirIn,
     if(sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]<=lampStabilizePoints){
       sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampStabilizeQF')]=1}
     }
-  sensorFlags<-sensorFlags[,-which(colnames(sensorFlags)=='burstNumber')] #' Drops this column since it's no longer needed.
   
   #' Combines all flags into a single file.
   allFlags<-base::merge(plausFlags,sensorFlags)
   allFlags<-base::merge(allFlags,calFlags)
   allFlags<-base::merge(allFlags,logFlags)
+  
+  #' Revert plausibility flags for last measurement of each burst to prevent over-flagging.
+  #' (Plausibility tests were run across bursts, where the time step is much larger than between measuremnts within bursts)
+  for(i in 3:nrow(allFlags)){
+    if((allFlags[i,which(colnames(allFlags)=='burstNumber')]==0)&(allFlags[i-2,which(colnames(allFlags)=='nitrateStepQF')]==0)){
+      allFlags[i-1,which(colnames(allFlags)=='nitrateStepQF')]=0}
+  } 
+  for(i in 3:nrow(allFlags)){
+    if((allFlags[i,which(colnames(allFlags)=='burstNumber')]==0)&(allFlags[i-2,which(colnames(allFlags)=='nitratePersistenceQF')]==0)){
+      allFlags[i-1,which(colnames(allFlags)=='nitratePersistenceQF')]=0}
+  } 
+  allFlags<-allFlags[,-which(colnames(allFlags)=='burstNumber')] #' Drops this column since it's no longer needed.
   
   #' Removes all measurements where lamp has not stabilized from data and flag files.
   lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
