@@ -46,7 +46,10 @@
 #' 
 #' Bobby Hensley (2025-09-22)
 #' Updated to use single input directory and added check that data and flag file
-#' have same number of measurements. 
+#' have same number of measurements.
+#' 
+#'  Bobby Hensley (2025-10-30)
+#'  Updated to revert over-flagged measuremnts at end of burst. 
 #' 
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
