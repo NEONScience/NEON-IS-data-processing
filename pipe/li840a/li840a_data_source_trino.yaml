@@ -2,7 +2,7 @@
 pipeline:
   name: li840a_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.3.0
   cmd:
   - sh
   - "-c"
@@ -144,3 +144,4 @@ datum_set_spec:
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
+

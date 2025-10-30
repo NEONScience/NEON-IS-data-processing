@@ -54,10 +54,6 @@ ARG APP_DIR2="flow.rad.flags.cstm"
 COPY ./${MODULE_DIR}/${APP_DIR2}/renv.lock ./renv.lock2
 RUN R -e 'renv::restore(lockfile="./renv.lock2")'
 
-# Create app user
-RUN groupadd appuser && \
-    useradd appuser -g appuser
-
 # Copy in application code
 COPY ./${MODULE_DIR}/${APP_DIR2}/wrap.rad.flags.cstm.R .
 COPY ./${MODULE_DIR}/${APP_DIR2}/flow.rad.flags.cstm.R .
