@@ -49,6 +49,9 @@ runs:
           packages: |
               fs
               devtools
+              testthat
+              covr
+              report
               rapportools
               arrow@19.0.1.1
               dplyr@1.1.3
@@ -84,6 +87,9 @@ runs:
           library("NEONprocIS.cal")
           }
           #
+          library(testthat)
+          library(covr)
+          library(report)
           library(dplyr)
           library(arrow)
           library(jsonlite)
