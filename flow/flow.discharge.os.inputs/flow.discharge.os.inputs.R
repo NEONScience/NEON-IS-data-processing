@@ -1,0 +1,115 @@
+##############################################################################################
+#' @title Workflow for Continuous Discharge Processing
+
+#' @author
+#' Zachary Nickerson \email{ncatolico@battelleecology.org}
+
+#' @description Workflow. Validates, cleans, and formats troll log files into daily parquets.
+#'
+#' The arguments are: 
+#' 
+#' 1. "DirIn=value", The input path to the data from a single source ID, structured as follows: 
+#' #/pfs/BASE_REPO/source-id.The source-id folder may have multiple csv log files. 
+#' The source-id is the unique identifier of the sensor.           
+#'        
+#' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
+#' of DirIn.
+#' 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of \code{DirIn}. 
+#'
+#' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
+#' which uses system environment variables if available.
+#' 
+#' @return Cleaned troll log files in daily parquets.
+
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+
+#' @keywords Currently none
+
+#' @examples
+#' Stepping through the code in Rstudio 
+Sys.setenv(DIR_IN='~/pfs/testing')
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+arg <- c("DirIn=$DIR_IN",
+         "DirOut=~/pfs/out",
+         "DirErr=~/pfs/out/errored_datums")
+rm(list=setdiff(ls(),c('arg','log')))
+setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.os.inputs")
+
+#' @seealso None currently
+
+# changelog and author contributions / copyrights
+#   Zachary Nickerson (2025-10-15) 
+#     original creation
+##############################################################################################
+options(digits.secs = 3)
+library(lubridate)
+
+# Source the wrapper function. Assume it is in the working directory
+source("./wrap.discharge.os.inputs.R")
+#source("./BaM_beta")
+
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly = TRUE)
+
+# Start logging
+log <- NEONprocIS.base::def.log.init()
+
+# Parse the input arguments into parameters
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),log = log)
+
+# Echo arguments
+log$debug(base::paste0('Input directory: ', Para$DirIn))
+log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
+
+# Find all the input paths (datums). We will process each one.
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
+                                     nameDirSub = NULL,
+                                     log = log)
+log$debug(base::paste0('Directories identified:', DirIn))
+
+# Process each datum path
+for(idxDirIn in DirIn){
+  idxDirIn=DirIn[1]
+  log$info(base::paste0('Processing path to file: ', idxDirIn))
+  
+  ## ZN LEFT OFF HERE ##
+  
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.discharge.predict(
+        DirIn=idxDirIn,
+        DirBaM=Para$DirBaM,
+        DirOut=Para$DirOut,
+        SchmDataOut=SchmDataOut,
+        log=log
+      ),
+      error = function(err) {
+        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(err$message)
+        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn, 
+                                                             log = log)
+        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
+        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
+                                      log = log)
+        csvname <- DirSub %>%
+          strsplit( "/" ) %>%
+          sapply( tail, 1 )
+        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
+        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
+        con <- base::file(nameFileErr, "w")
+        base::close(con)
+      }
+    ),
+    # This simply to avoid returning the error
+    error=function(err) {}
+  )
+}
+
+
+
+
