@@ -88,6 +88,7 @@ Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","minPoi
 
 # Echo arguments
 log$debug(base::paste0('Input data directory: ', Para$DirIn))
+log$debug(base::paste0('Minimum points: ', Para$minPoints))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output stats: ', Para$SchmStats))
@@ -121,6 +122,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
     withCallingHandlers(
       wrap.sunav2.insufficient.data(
         DirIn=idxFileIn,
+        minPoints=Para$minPoints,
         DirOut=Para$DirOut,
         SchmStats=SchmStats,
         SchmQMsOut=SchmQMsOut,

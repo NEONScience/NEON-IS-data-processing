@@ -126,7 +126,7 @@ wrap.sunav2.insufficient.data <- function(DirIn,
                                                     NameFile = base::paste0(DirOutQMs,'/',qmFileName),
                                                     Schm = SchmQMsOut),silent=TRUE)
   if(class(rptOutQMs)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write updated QMs to ',base::paste0(DirOutQMs,'/',qmFileName,".parquet"),'. ',attr(rptOutFlags, "condition")))
+    log$error(base::paste0('Cannot write updated QMs to ',base::paste0(DirOutQMs,'/',qmFileName,".parquet"),'. ',attr(rptOutQMs, "condition")))
     stop()
   } else {
     log$info(base::paste0('Updated QMs written successfully in ', base::paste0(DirOutQMs,'/',qmFileName,".parquet")))
