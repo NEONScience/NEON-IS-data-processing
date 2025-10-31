@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_csd_load_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-b0e7738
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-d09beeb
   cmd:
   - /bin/bash
   stdin:
@@ -24,7 +24,7 @@ input:
   pfs:
     name: IN_PATH
     repo: l4discharge_csd_list_files
-    glob: /v2-dev/csd_corrected/
+    glob: /*/*/*/v2-dev/csd_corrected/*
     empty_files: true
 parallelism_spec:
   constant: 10
