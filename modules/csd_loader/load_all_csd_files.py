@@ -40,27 +40,32 @@ def load() -> None:
                     path_split = pathname.split('/')
                     print("path_split is: ", path_split)
                     
-                    folder = path_split[-4]
+                    year = path_split[-6]
+                    print("year is: ", year)
+                    
+                    month = path_split[-5]
+                    print("month is: ", month)
+                    
+                    day = path_split[-4]
+                    print("day is: ", day)
+                    
+                    group = path_split[-3]
+                    print("group is: ", group)
+                    
+                    folder = path_split[-2]
                     print("folder is: ", folder)
-                    
-                    sourcetype = path_split[-3]
-                    print("sourcetype is: ", sourcetype)
-                    
-                    asset = path_split[-2]
-                    print("asset is: ", asset)
 
                     filename = path_split[-1] + ".csv"
                     if filename == '.csv.csv':
                         print("Not a recognized file.")
                     else:
                         print("FileName is: ", filename)
-                        gcs_path = os.path.join(folder,sourcetype,asset,filename)
+                        gcs_path = os.path.join(year,month,day,group,folder,filename)
                         print("gcs_path is: ", gcs_path)
                     
                         blob = ingest_bucket.blob(gcs_path)
                         try:
-                            output_path = Path(output_directory,asset,filename)
-                            print('Output Path is:', output_path)
+                            output_path = Path(output_directory,year,month,day,group,folder,filename)
                             output_path.parent.mkdir(parents=True, exist_ok=True)
                             print('Output Path is:', output_path)
                             with open(output_path, "wb") as output_file:
