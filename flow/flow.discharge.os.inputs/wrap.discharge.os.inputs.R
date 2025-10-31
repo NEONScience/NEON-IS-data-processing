@@ -49,7 +49,8 @@
 #   Zachary Nickerson (2025-10-31)
 #     original creation
 ##############################################################################################
-wrap.discharge.os.inputs <- function(DirInBase,
+wrap.discharge.os.inputs <- function(DirTables,
+                                     DirIn,
                                      DirOutBase,
                                      log=NULL
 ){
@@ -75,7 +76,6 @@ wrap.discharge.os.inputs <- function(DirInBase,
                        gsub("^.*\\.001\\.","",
                             fileName))]] <- fileName
   }
-
   
   # For each subdirectory, write out the appropriate data
   
