@@ -5,7 +5,7 @@
 #' Bobby Hensley \email{hensley@battelleecology.org}
 #' 
 #' @description Wrapper function. Uses thresholds to apply sensor-specific quality flags to SUNA data.  
-#' Measurements where the lamp has not had enough time to stabilze  (nitrateLampStabilizeQF=1) are removed. 
+#' Measurements where the lamp has not had enough time to stabilize  (nitrateLampStabilizeQF=1) are removed. 
 #'
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #'  
@@ -200,7 +200,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   allFlags<-base::merge(allFlags,logFlags)
   
   #' Revert plausibility flags for last measurement of each burst to prevent over-flagging.
-  #' (Plausibility tests were run across bursts, where the time step is much larger than between measuremnts within bursts)
+  #' (Plausibility tests were run across bursts, where the time step is much larger than between measurements within bursts)
   for(i in 3:nrow(allFlags)){
     if((allFlags[i,which(colnames(allFlags)=='burstNumber')]==0)&(allFlags[i-2,which(colnames(allFlags)=='nitrateStepQF')]==0)){
       allFlags[i-1,which(colnames(allFlags)=='nitrateStepQF')]=0}
