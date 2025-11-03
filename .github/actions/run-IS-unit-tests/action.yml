@@ -78,15 +78,6 @@ runs:
       - name: Add coverage summary to job summary
         shell: bash
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
-        
-      # Upload Coverage Report to codecov.io
-      # Currently fails due to missing token
-      # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     file: ./test-summary.xml
-      #     flags: unittests
-      #     name: codecov-umbrella
   
       # Uploads the coverage.html file as a workflow artifact
       # Find the r-coverage-report artifact on the workflow run details page. 
@@ -98,19 +89,3 @@ runs:
           name: r-coverage-report
           path: ${{ env.MODULE_NAME }}-coverage.html
           retention-days: 30 # Adjust retention days as needed
-
-      # Commit HTML coverage report to test_coverage directory in repo
-      # - name: Add/update the test coverage.html to ./pack/test_coverage/
-      #   shell: bash
-      #   run: |
-      #     set -euo pipefail
-      #     IFS=$'\n\t'
-      #     git config --local user.email "actions@github.com"
-      #     git config --local user.name "gitHub Actions"
-      #     echo "Attempting to create a test_coverage directory"
-      #     mkdir -p pack/test_coverage
-      #     echo "Directory creation successful (or already existed)."
-      #     mv "${{ env.MODULE_NAME }}-coverage.html" ./pack/test_coverage/
-      #     git add "./pack/test_coverage/${{ env.MODULE_NAME }}-coverage.html"
-      #     git commit -m "Add ${{ env.MODULE_NAME }}-coverage.html to test_coverage directory"
-      #     git push
