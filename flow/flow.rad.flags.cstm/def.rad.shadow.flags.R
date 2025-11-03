@@ -173,6 +173,7 @@ def.rad.shadow.flags <- function(DirIn,
     #cycle through all shadow sources. If any are incomplete it skips to the next one and does not evaluate. 
 
     for(src in shadow_sources) {
+      log$info(paste0("Processing shadow source: ", src))
       
       thresholds <- list(
         Azimuth = get_threshold("Azimuth"),
@@ -182,11 +183,15 @@ def.rad.shadow.flags <- function(DirIn,
         Height = get_threshold("Obstruction_height")
       )
       
+      log$info(paste0("Thresholds for ", src, ": ", paste(names(thresholds), unlist(thresholds), sep="=", collapse=", ")))
+      
       # Validate thresholds
       if (any(is.na(unlist(thresholds)))) {
         log$info(paste0("Missing threshold values for ", src, " skipping source."))
         next
       }
+      
+      log$info(paste0("Successfully loaded thresholds for ", src))
       
       # Extract values
       az <- as.numeric(thresholds$Azimuth)
