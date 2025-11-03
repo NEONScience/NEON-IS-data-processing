@@ -38,7 +38,9 @@
 #  Teresa Burlingame (2025-09-25)
 #     fix logic output and add handling for Az near North.
 #   Teresa Burlingame (2025-09-29)
-#     Testing removal of time buffer and testing thresholds being NA to trigger skipping of the flag. 
+#    Removal of time buffer and testing thresholds being NA to trigger skipping of the flag. 
+#   Teresa Burlingame (2025-11-03)
+#    Adding logic for instances of more than one location file.
 ##############################################################################################
 def.rad.shadow.flags <- function(DirIn, 
                                  flagDf,
@@ -118,6 +120,12 @@ def.rad.shadow.flags <- function(DirIn,
       log$error(base::paste0('No geolocation data in path ', dirInLoc, ' cannot calculate shadows without lat/long setting flag to -1'))
       flagDf$shadowQF <- -1
       return(flagDf)
+    }
+    
+    #only use first loc file in the event of 2 sensors in one day (lat long is the same)
+    if (length(fileLoc) > 1 ){
+      log.info('More than one location file present, grabbing first file')
+      fileLoc <- fileLoc[1]
     }
     
     loc <-NEONprocIS.base::def.loc.geo.hist(NameFile = fs::path(dirInLoc, fileLoc))
