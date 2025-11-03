@@ -3,10 +3,9 @@ name: "Run IS base package unit tests"
 on:
   push:
     branches:
-     - 'master'
+      - master
     paths:
-      - 'pack/NEONprocIS.base/**'
-      
+      - pack/NEONprocIS.base/**
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -21,8 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
         contents: write
-        pull-requests: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v5

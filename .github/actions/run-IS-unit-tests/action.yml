@@ -83,7 +83,8 @@ runs:
         shell: bash
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
         
-      # Upload Coverage Report  
+      # Upload Coverage Report to codecov.io
+      # - Currently fails due to missing token
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -95,14 +96,14 @@ runs:
       # Find the r-coverage-report artifact on the workflow run details page. 
       # Download the artifact and open the coverage.html file in your browser 
       # to explore the detailed test coverage report, including line-by-line coverage information.
-
       - name: Upload coverage.html artifact
         uses: actions/upload-artifact@v4
         with:
           name: r-coverage-report
           path: ${{ env.MODULE_NAME }}-coverage.html
           retention-days: 1 # Adjust retention days as needed
-          
+
+      # Commit HTML coverage report to test_coverage directory in repo
       - name: Add/update the test coverage.html to ./pack/test_coverage/
         shell: bash
         run: |
