@@ -115,6 +115,7 @@ runs:
           echo "Directory creation successful (or already existed)."
           mv "${{ env.MODULE_NAME }}-coverage.html" ./pack/test_coverage/
           git add "./pack/test_coverage/${{ env.MODULE_NAME }}-coverage.html"
-          git commit -m "Add the test coverage.html to test_coverage directory"  || echo "No coverage added"
+          git commit -m "Add the test coverage.html to test_coverage directory"
+          git log
           git status
 # git push origin  || echo "No changes to commit"
