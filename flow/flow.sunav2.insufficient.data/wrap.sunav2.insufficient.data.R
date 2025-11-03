@@ -48,7 +48,7 @@
 wrap.sunav2.insufficient.data <- function(DirIn,
                                       minPoints,
                                       DirOut,
-                                      SchmStatsOut=NULL,
+                                      SchmStats=NULL,
                                       SchmQMsOut=NULL,
                                       log=NULL
 ){
