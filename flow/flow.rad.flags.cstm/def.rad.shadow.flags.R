@@ -38,7 +38,9 @@
 #  Teresa Burlingame (2025-09-25)
 #     fix logic output and add handling for Az near North.
 #   Teresa Burlingame (2025-09-29)
-#     Testing removal of time buffer and testing thresholds being NA to trigger skipping of the flag. 
+#    Removal of time buffer and testing thresholds being NA to trigger skipping of the flag. 
+#   Teresa Burlingame (2025-11-03)
+#    Adding logic for instances of more than one location file.
 ##############################################################################################
 def.rad.shadow.flags <- function(DirIn, 
                                  flagDf,
@@ -120,6 +122,12 @@ def.rad.shadow.flags <- function(DirIn,
       return(flagDf)
     }
     
+    #only use first loc file in the event of 2 sensors in one day (lat long is the same)
+    if (length(fileLoc) > 1 ){
+      log$info('More than one location file present, grabbing first file')
+      fileLoc <- fileLoc[1]
+    }
+    
     loc <-NEONprocIS.base::def.loc.geo.hist(NameFile = fs::path(dirInLoc, fileLoc))
     
     #checks on loc file to ensure we have just one lat/long. Since it's tower lat/long it should not change regardless of location history. 
@@ -165,6 +173,7 @@ def.rad.shadow.flags <- function(DirIn,
     #cycle through all shadow sources. If any are incomplete it skips to the next one and does not evaluate. 
 
     for(src in shadow_sources) {
+      log$info(paste0("Processing shadow source: ", src))
       
       thresholds <- list(
         Azimuth = get_threshold("Azimuth"),
@@ -174,11 +183,15 @@ def.rad.shadow.flags <- function(DirIn,
         Height = get_threshold("Obstruction_height")
       )
       
+      log$info(paste0("Thresholds for ", src, ": ", paste(names(thresholds), unlist(thresholds), sep="=", collapse=", ")))
+      
       # Validate thresholds
       if (any(is.na(unlist(thresholds)))) {
         log$info(paste0("Missing threshold values for ", src, " skipping source."))
-        next()
+        next
       }
+      
+      log$info(paste0("Successfully loaded thresholds for ", src))
       
       # Extract values
       az <- as.numeric(thresholds$Azimuth)
