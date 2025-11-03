@@ -26,15 +26,11 @@ runs:
           needs: coverage
           cache: always
 
-      # - name: Add libR.so to LD_LIBRARY_PATH
-      #   shell: bash
-      #   run: |
-      #     LIBR_DIR=$(dirname $(find /opt -name "libR.so" | head -n 1))
-      #     echo "LD_LIBRARY_PATH=$LIBR_DIR:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-
-      # - name: Install Avro
-      #   shell: bash
-      #   run: sudo apt install libavro23
+      - name: Add libR.so to LD_LIBRARY_PATH
+        shell: bash
+        run: |
+          LIBR_DIR=$(dirname $(find /opt -name "libR.so" | head -n 1))
+          echo "LD_LIBRARY_PATH=$LIBR_DIR:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
       - name: Run ${{ env.MODULE_NAME }} unit test coverage using covr package
         shell: Rscript {0}
@@ -84,13 +80,13 @@ runs:
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
         
       # Upload Coverage Report to codecov.io
-      # - Currently fails due to missing token
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./test-summary.xml
-          flags: unittests
-          name: codecov-umbrella
+      # Currently fails due to missing token
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     file: ./test-summary.xml
+      #     flags: unittests
+      #     name: codecov-umbrella
   
       # Uploads the coverage.html file as a workflow artifact
       # Find the r-coverage-report artifact on the workflow run details page. 

@@ -24,5 +24,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Install Avro
+        run: sudo apt install libavro23
+
       - name: Run IS ${{ env.MODULE_NAME }} unit tests
         uses: ./.github/actions/run-IS-unit-tests
