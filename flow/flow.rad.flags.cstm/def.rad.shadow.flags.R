@@ -124,7 +124,7 @@ def.rad.shadow.flags <- function(DirIn,
     
     #only use first loc file in the event of 2 sensors in one day (lat long is the same)
     if (length(fileLoc) > 1 ){
-      log.info('More than one location file present, grabbing first file')
+      log$info('More than one location file present, grabbing first file')
       fileLoc <- fileLoc[1]
     }
     
@@ -185,7 +185,7 @@ def.rad.shadow.flags <- function(DirIn,
       # Validate thresholds
       if (any(is.na(unlist(thresholds)))) {
         log$info(paste0("Missing threshold values for ", src, " skipping source."))
-        next()
+        next
       }
       
       # Extract values
