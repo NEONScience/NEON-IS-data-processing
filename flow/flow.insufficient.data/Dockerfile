@@ -1,10 +1,10 @@
-# Dockerfile for NEON IS Data Processing - sunav2 expanded uncertainty
+# Dockerfile for NEON IS Data Processing - insufficient data
 
-# Start with the NEON IS cal package image 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v2.1.1
+# Start with the NEON IS base package image 
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
 
 ARG FLOW_DIR="./flow"
-ARG APP_DIR="flow.sunav2.exp.uncert"
+ARG APP_DIR="flow.insufficient.data"
 
 # maintainer handle
 MAINTAINER "Bobby Hensley" hensley@battelleecology.org
@@ -15,6 +15,6 @@ COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in sunav2 flag workflow
-COPY ${FLOW_DIR}/${APP_DIR}/flow.sunav2.exp.uncert.R .
-COPY ${FLOW_DIR}/${APP_DIR}/wrap.sunav2.exp.uncert.R .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.insufficient.data.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.insufficient.data.R .
 

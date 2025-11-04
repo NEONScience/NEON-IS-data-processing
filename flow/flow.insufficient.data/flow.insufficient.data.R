@@ -35,7 +35,7 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.sunav2.insufficient.data <- function(DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",                        
+#' flow.insufficient.data <- function(DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",                        
 #'                               minPoints=10,
 #'                               DirOut<-"~/pfs/nitrate_null_gap_ucrt_updated/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733" ,
 #'                               SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse=''), 
@@ -63,7 +63,7 @@ library(doParallel)
 library(lubridate)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.sunav2.insufficient.data.R")
+source("./wrap.insufficient.data.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -120,7 +120,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.sunav2.insufficient.data(
+      wrap.insufficient.data(
         DirIn=idxFileIn,
         minPoints=Para$minPoints,
         DirOut=Para$DirOut,

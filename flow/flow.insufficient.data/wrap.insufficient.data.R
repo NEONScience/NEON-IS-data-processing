@@ -45,7 +45,7 @@
 #' Initial creation.
 #' 
 ##############################################################################################
-wrap.sunav2.insufficient.data <- function(DirIn,
+wrap.insufficient.data <- function(DirIn,
                                       minPoints,
                                       DirOut,
                                       SchmStats=NULL,
