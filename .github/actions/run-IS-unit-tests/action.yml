@@ -90,4 +90,3 @@ runs:
           path: |
             ${{ env.MODULE_NAME }}-coverage.html
             lib/
-          retention-days: 30 # Adjust retention days as needed
