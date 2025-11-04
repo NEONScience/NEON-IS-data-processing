@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_null_gap_ucrt
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-d590e7a
   cmd:
   - sh
   - "-c"
@@ -11,9 +11,20 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
 
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
+    
+    # Run second module - basic stats
+    Rscript ./flow.sunav2.exp.uncert.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirSubCopy=location|quality_metrics"
     
     EOF
   env:
@@ -55,7 +66,7 @@ transform:
             glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/uncertainty*/**
             # Join on Y/M/D/group ID 
             join_indices: [3,4,5,6]
-    OUT_PATH: /pfs/out # Transfered to OUT_PATH for the first module
+    OUT_PATH: /tmp/pfs/filter_joined
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
     LOG_LEVEL: INFO # Shared among all modules
