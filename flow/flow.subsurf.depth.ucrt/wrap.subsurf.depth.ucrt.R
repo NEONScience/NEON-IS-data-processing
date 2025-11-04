@@ -238,7 +238,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     baroPresExpUncert <- depthUcrt$baroPresExpUncert[n] 
     baroPressure_ucrtMeas <- baroPresExpUncert/2 #uA1air
     pressure_ucrtMeas <- depthUcrt$pressure_ucrtMeas[n]#uA1wat
-    uESensor <- 0.1 #kPa ~0.01m
+    uESensor <- 0.01 #m
     #uncertainty of individual sensor depth measurements
     uDSensor <- (((1000/(density*gravity))^2 * pressure_ucrtMeas^2) + ((-1000/(density*gravity))^2 * baroPressure_ucrtMeas^2) + uESensor^2)^0.5
     depthUcrt$depth_ucrtMeas[n] <- uDSensor
