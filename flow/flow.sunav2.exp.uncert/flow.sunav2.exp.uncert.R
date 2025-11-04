@@ -17,7 +17,8 @@
 #' 
 #' 4. "SchmStats=value" (optional), The avro schema for the input and output stats file.
 #' 
-#' 
+#' 5. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' pipes, that are to be copied with a symbolic link to the output path. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -38,7 +39,8 @@
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",
 #           "DirOut=~/pfs/out",
-#           "DirErr=~/pfs/out/errored_datums")
+#           "DirErr=~/pfs/out/errored_datums",
+#          "DirSubCopy=location|quality_metrics")
 # rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -46,6 +48,8 @@
 # changelog and author contributions / copyrights
 #' Bobby Hensley (2025-10-31)
 #' Initial creation.
+#' Nora Catolico (2025-11-04)
+#' add in copied directories
 
 ##############################################################################################
 options(digits.secs = 3)
@@ -75,13 +79,14 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),
-                                      NameParaOptn = c("SchmStats"),log = log)
+                                      NameParaOptn = c("SchmStats","DirSubCopy"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input data directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output stats: ', Para$SchmStats))
+log$debug(base::paste0('Director to copy: ', Para$DirSubCopy))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$SchmStats) || Para$SchmStats == 'NA'){
@@ -97,6 +102,10 @@ DirIn <-
                               nameDirSub = c('stats','uncertainty_coef'),
                               log = log)
 
+# Retrieve optional subdirectories to copy over
+DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'stats'))
+log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
+
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxFileIn = DirIn) %dopar% {
@@ -106,8 +115,9 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
     withCallingHandlers(
       wrap.sunav2.exp.uncert(
         DirIn=idxFileIn,
-        DirOut=Para$DirOut,
+        DirOutBase=Para$DirOut,
         SchmStats=SchmStats,
+        DirSubCopy=DirSubCopy,
         log=log
       ),
       error = function(err) {
