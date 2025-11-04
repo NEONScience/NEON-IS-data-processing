@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - sunav2 uncertainty module combined with filter-joiner 
 
 # Start with the base R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-stat-r:v1.0.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v2.1.1
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
