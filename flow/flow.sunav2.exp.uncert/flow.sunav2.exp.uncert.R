@@ -35,12 +35,11 @@
 #'                               SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse=''), 
 #'                               log=log)
 #' Stepping through the code in R studio                               
-Sys.setenv(DIR_IN='/home/NEON/hensley/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",
-          "DirOut=~/pfs/out",
-          "DirErr=~/pfs/out/errored_datums")
- rm(list=setdiff(ls(),c('arg','log')))
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",
+#           "DirOut=~/pfs/out",
+#           "DirErr=~/pfs/out/errored_datums")
+# rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
 

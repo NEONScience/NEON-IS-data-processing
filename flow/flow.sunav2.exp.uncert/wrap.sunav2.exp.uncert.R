@@ -136,10 +136,10 @@ wrap.sunav2.exp.uncert <- function(DirIn,
                                                     NameFile = base::paste0(DirOutStats,'/',statsFileName),
                                                     Schm = NULL),silent=TRUE)
   if(class(rptOutStats)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName,".parquet"),'. ',attr(rptOutStats, "condition")))
+    log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName),'. ',attr(rptOutStats, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Updated stats written successfully in ', base::paste0(DirOutStats,'/',statsFileName,".parquet")))
+    log$info(base::paste0('Updated stats written successfully in ', base::paste0(DirOutStats,'/',statsFileName)))
   }
   
   
