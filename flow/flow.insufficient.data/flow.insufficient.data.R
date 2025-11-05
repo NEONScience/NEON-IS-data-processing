@@ -21,9 +21,11 @@
 #' 
 #' 5. "SchmStats=value" (optional), The avro schema for the input and output stats file.
 #' 
-#' 6. "SchmQMsOut=value" (optional), The avro schema for the updated QMs (insufficientDataQF added).   
+#' 6. "SchmQMs=value" (optional), The avro schema for the updated QMs (insufficientDataQF added).   
 #' 
-#'
+#' 7. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' pipes, that are to be copied with a symbolic link to the output path. 
+#' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #' 
@@ -39,28 +41,27 @@
 #'                               minPoints=10,
 #'                               DirOut<-"~/pfs/nitrate_null_gap_ucrt_updated/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733" ,
 #'                               SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse=''), 
-#'                               SchmQMsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse=''),
+#'                               SchmQMs<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse=''),
 #'                               log=log)
 #' Stepping through the code in R studio                               
-Sys.setenv(DIR_IN='/home/NEON/hensley/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",
-          "minPoints=10",
-          "DirOut=~/pfs/out",
-          "DirErr=~/pfs/out/errored_datums")
- rm(list=setdiff(ls(),c('arg','log')))
+# Sys.setenv(DIR_IN='~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",
+#           "minPoints=10","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","DirSubCopy=location")
+# rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
 
 # changelog and author contributions / copyrights
 #' Bobby Hensley (2025-10-31)
 #' Initial creation.
+#' Nora Catolico (2025-11-04)
+#' add in copied directories
 
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
 library(doParallel)
-library(lubridate)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.insufficient.data.R")
@@ -84,7 +85,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","minPoints","DirOut","DirErr"),
-                                      NameParaOptn = c("SchmStats","SchmQMsOut"),log = log)
+                                      NameParaOptn = c("SchmStats","SchmQMs","DirSubCopy"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input data directory: ', Para$DirIn))
@@ -92,7 +93,8 @@ log$debug(base::paste0('Minimum points: ', Para$minPoints))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output stats: ', Para$SchmStats))
-log$debug(base::paste0('Schema for output QMs: ', Para$SchmQMsOut))
+log$debug(base::paste0('Schema for output QMs: ', Para$SchmQMs))
+log$debug(base::paste0('Director to copy: ', Para$DirSubCopy))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$SchmStats) || Para$SchmStats == 'NA'){
@@ -100,10 +102,10 @@ if(base::is.null(Para$SchmStats) || Para$SchmStats == 'NA'){
 } else {
   SchmStats <- base::paste0(base::readLines(Para$SchmStats),collapse='')
 }
-if(base::is.null(Para$SchmQMsOut) || Para$SchmQMsOut == 'NA'){
-  SchmQMsOut <- NULL
+if(base::is.null(Para$SchmQMs) || Para$SchmQMs == 'NA'){
+  SchmQMs <- NULL
 } else {
-  SchmQMsOut <- base::paste0(base::readLines(Para$SchmQMsOut),collapse='')
+  SchmQMs <- base::paste0(base::readLines(Para$SchmQMs),collapse='')
 }
 
 
@@ -112,6 +114,10 @@ DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
                               nameDirSub = c('stats','quality_metrics'),
                               log = log)
+
+# Retrieve optional subdirectories to copy over
+DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'stats'))
+log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
@@ -123,9 +129,10 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
       wrap.insufficient.data(
         DirIn=idxFileIn,
         minPoints=Para$minPoints,
-        DirOut=Para$DirOut,
+        DirOutBase=Para$DirOut,
         SchmStats=SchmStats,
-        SchmQMsOut=SchmQMsOut,
+        SchmQMs=SchmQMs,
+        DirSubCopy=DirSubCopy,
         log=log
       ),
       error = function(err) {

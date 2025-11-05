@@ -14,17 +14,29 @@ transform:
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
+    rm -rf /tmp/interimA
+    rm -rf /tmp/interimUcrt
     mkdir -p /tmp/pfs/filter_joined
+    mkdir /tmp/interimUcrt
+    
 
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
     
-    # Run second module - basic stats
+    # Run second module - uncertianty
     Rscript ./flow.sunav2.exp.uncert.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/tmp/interimUcrt \
+      DirErr=/pfs/out/errored_datums \
+      "DirSubCopy=location|quality_metrics"
+    
+    # Run third module - insufficient data
+    Rscript ./flow.insufficient.data.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCopy=location|quality_metrics"
+      minPoints=10 \
+      "DirSubCopy=location"
     
     EOF
   env:

@@ -19,6 +19,10 @@
 #' @param SchmQMsOut (optional), A json-formatted character string containing the schema for the output quality metrics parquet 
 #' with insufficient data quality flag added. 
 #' 
+#' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
+#' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
+#' output path (i.e. not combined but carried through as-is).
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
@@ -47,9 +51,10 @@
 ##############################################################################################
 wrap.insufficient.data <- function(DirIn,
                                       minPoints,
-                                      DirOut,
+                                      DirOutBase,
                                       SchmStats=NULL,
                                       SchmQMsOut=NULL,
+                                      DirSubCopy=NULL,
                                       log=NULL
 ){
   
@@ -61,10 +66,19 @@ wrap.insufficient.data <- function(DirIn,
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirInStats <- paste0(DirIn,"/stats")
   DirInQMs <- paste0(DirIn,"/quality_metrics")
+  DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutStats <- base::paste0(DirOut,"/stats")
   base::dir.create(DirOutStats,recursive=TRUE)
   DirOutQMs <- base::paste0(DirOut,"/quality_metrics")
   base::dir.create(DirOutQMs,recursive=TRUE)
+  
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirSubCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,'/',DirSubCopy),
+                                       DirDest=DirOut,
+                                       LnkSubObj=TRUE,
+                                       log=log)
+  }
   
   #' Read in parquet file of averaged stats.
   statsFileName<-base::list.files(DirInStats,full.names=FALSE)
@@ -108,7 +122,7 @@ wrap.insufficient.data <- function(DirIn,
   for(i in 1:nrow(qmData)){
     if(qmData[i,which(colnames(qmData)=='insufficientDataQF')]==1){
       qmData[i,which(colnames(qmData)==finalQfColName)]=1}}
-  qmData <- qmData %>% dplyr::relocate(finalQfColName, .after = last_col()) #' Move finalQF back to the end
+  qmData <- qmData[c(setdiff(names(qmData), finalQfColName), finalQfColName)] #' Move finalQF back to the end
   
   #' Write out stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = statsData,
