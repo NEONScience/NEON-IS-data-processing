@@ -34,11 +34,22 @@
 
 #' @examples
 #' Not run
-# DirTables <- "/home/NEON/nickerson/pfs"
+# dirList <- list.files(Para$DirInTables,pattern = "table_loader")
+# tableNameMap <- list()
+# for(d in 1:length(dirList)){
+#   fileName <- list.files(paste(Para$DirInTables,dirList[d],sep = "/"))
+#   filePath <- list.files(paste(Para$DirInTables,dirList[d],sep = "/"),
+#                          full.names = T)
+#   currFile <- read.csv(filePath,encoding = "UTF-8",header = T)
+#   tableNameMap[[gsub("\\.csv$","",
+#                      gsub("^.*\\.001\\.","",
+#                           fileName))]] <- currFile
+# }
+# ListTables <- tableNameMap
 # DirIn <- "/home/NEON/nickerson/pfs/testing/2024/02/25/l4discharge_HOPB132100/data"
 # DirOutBase <- "/home/NEON/nickerson/pfs/out"
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# wrap.discharge.os.inputs(DirTables=DirTables,
+# wrap.discharge.os.inputs(ListTables=ListTables,
 #                          DirIn=DirInBase,
 #                          DirOutBase=DirOutBase,
 #                          log=log)
@@ -49,7 +60,7 @@
 #   Zachary Nickerson (2025-10-31)
 #     original creation
 ##############################################################################################
-wrap.discharge.os.inputs <- function(DirTables,
+wrap.discharge.os.inputs <- function(ListTables,
                                      DirIn,
                                      DirOutBase,
                                      log=NULL
@@ -60,22 +71,8 @@ wrap.discharge.os.inputs <- function(DirTables,
   # Set constants
   secInDay <- 60*60*24
   
-  # Read in all OS table loader outputs
-  dirList <- list.files(DirTables,pattern = "table_loader")
-  tableNameMap <- list()
-  for(d in 1:length(dirList)){
-    fileName <- list.files(paste(DirTables,dirList[d],sep = "/"))
-    filePath <- list.files(paste(DirTables,dirList[d],sep = "/"),
-                           full.names = T)
-    currFile <- read.csv(filePath,encoding = "UTF-8",header = T)
-    assign(gsub("\\.csv$","",
-                gsub("^.*\\.001\\.","",
-                     fileName)),
-           currFile)
-    tableNameMap[[gsub("\\.csv$","",
-                       gsub("^.*\\.001\\.","",
-                            fileName))]] <- fileName
-  }
+  # Unpack input list
+  list2env(ListTables,envir = .GlobalEnv)
   
   # For each subdirectory, write out the appropriate data
   
@@ -107,7 +104,7 @@ wrap.discharge.os.inputs <- function(DirTables,
     # Write curveIdentification
     write.csv(currCurveData,
               paste(DirOut,
-                    tableNameMap[["sdrc_curveIdentification_pub"]],
+                    "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv",
                     sep = "/"),
               row.names = F)
     # Write controls data associated with this curve
@@ -119,7 +116,7 @@ wrap.discharge.os.inputs <- function(DirTables,
                            %in%surveyDate
                            &sdrc_controlInfo_pub$siteID==siteID,],
       paste(DirOut,
-            tableNameMap[["sdrc_controlInfo_pub"]],
+            "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
             sep = "/"),
       row.names = F)
     write.csv(
@@ -129,7 +126,7 @@ wrap.discharge.os.inputs <- function(DirTables,
                            %in%surveyDate
                            &sdrc_priorParameters_pub$siteID==siteID,],
       paste(DirOut,
-            tableNameMap[["sdrc_priorParameters_pub"]],
+            "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
             sep = "/"),
       row.names = F)
     # Write the rating curve data associated with this curveID
@@ -138,21 +135,21 @@ wrap.discharge.os.inputs <- function(DirTables,
       sdrc_stageDischargeCurveInfo_pub[sdrc_stageDischargeCurveInfo_pub$curveID
                                        %in%curveID,],
       paste(DirOut,
-            tableNameMap[["sdrc_stageDischargeCurveInfo_pub"]],
+            "NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.csv",
             sep = "/"),
       row.names = F)
     write.csv(
       sdrc_gaugeDischargeMeas_pub[sdrc_gaugeDischargeMeas_pub$curveID
                                        %in%curveID,],
       paste(DirOut,
-            tableNameMap[["sdrc_gaugeDischargeMeas_pub"]],
+            "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv",
             sep = "/"),
       row.names = F)
     write.csv(
       sdrc_sampledParameters_pub[sdrc_sampledParameters_pub$curveID
                                   %in%curveID,],
       paste(DirOut,
-            tableNameMap[["sdrc_sampledParameters_pub"]],
+            "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv",
             sep = "/"),
       row.names = F)
   }
@@ -175,7 +172,7 @@ wrap.discharge.os.inputs <- function(DirTables,
     # Write gaugeWaterColumnRegression
     write.csv(currRegData,
               paste(DirOut,
-                    tableNameMap[["csd_gaugeWaterColumnRegression_pub"]],
+                    "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv",
                     sep = "/"),
               row.names = F)
     # Write the gauge-pressure relationship data associated with this curveID
@@ -185,7 +182,7 @@ wrap.discharge.os.inputs <- function(DirTables,
         sdrc_gaugePressureRelationship_pub$regressionID
         %in%regressionID,],
       paste(DirOut,
-            tableNameMap[["sdrc_gaugePressureRelationship_pub"]],
+            "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv",
             sep = "/"),
       row.names = F)
   }

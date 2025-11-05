@@ -1,8 +1,8 @@
 ##############################################################################################
-#' @title Workflow for Troll Log File Processing
+#' @title Workflow for Continuous Discharge Processing
 
 #' @author
-#' Nora Catolico \email{ncatolico@battelleecology.org}
+#' Zachary Nickerson \email{ncatolico@battelleecology.org}
 
 #' @description Workflow. Validates, cleans, and formats troll log files into daily parquets.
 #'
