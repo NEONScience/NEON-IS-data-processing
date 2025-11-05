@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_null_gap_ucrt
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-d590e7a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-fee1f15
   cmd:
   - sh
   - "-c"
@@ -14,10 +14,9 @@ transform:
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
-    rm -rf /tmp/interimA
-    rm -rf /tmp/interimUcrt
+    rm -rf /tmp/pfs/interimUcrt
     mkdir -p /tmp/pfs/filter_joined
-    mkdir /tmp/interimUcrt
+    mkdir /tmp/pfs/interimUcrt
     
 
     # Run first module - filter-joiner (using environment variables below as input parameters)
@@ -26,13 +25,13 @@ transform:
     # Run second module - uncertianty
     Rscript ./flow.sunav2.exp.uncert.R \
       DirIn=/tmp/pfs/filter_joined \
-      DirOut=/pfs/tmp/interimUcrt \
+      DirOut=/tmp/pfs/interimUcrt \
       DirErr=/pfs/out/errored_datums \
       "DirSubCopy=location|quality_metrics"
     
     # Run third module - insufficient data
     Rscript ./flow.insufficient.data.R \
-      DirIn=/tmp/pfs/filter_joined \
+      DirIn=/tmp/pfs/interimUcrt \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       minPoints=10 \
