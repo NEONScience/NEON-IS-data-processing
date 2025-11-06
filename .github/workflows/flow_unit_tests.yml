@@ -1,9 +1,9 @@
 name: "Run Flow unit tests"
 
 on:
-  # push:
-  #   branches:
-  #     - master
+  push:
+    branches:
+      - jw-flow-tests
   #   paths:
   #     - flow/**
   workflow_dispatch: {} # Allows trigger of workflow from web interface
