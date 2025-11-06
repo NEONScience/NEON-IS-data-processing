@@ -72,7 +72,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_FLAGS
       repo: leveltroll400_avro_schemas
-      glob: /leveltroll400/flags_calibration_leveltroll400.avsc
+      glob: /leveltroll400/leveltroll400_flags_calibration.avsc
   - join:
     - pfs:
         name: CALIBRATION_PATH

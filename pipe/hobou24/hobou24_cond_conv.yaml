@@ -15,7 +15,10 @@ transform:
       Rscript ./flow.hobo.cond.conv.R \
         DirIn=$DIR_IN \
         DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums
+        DirErr=/pfs/out/errored_datums \
+        FileSchmData=$FILE_SCHEMA_DATA \
+        FileSchmQf=$FILE_SCHEMA_FLAGS_TEMP \
+        FileSchmCalQf=$FILE_SCHEMA_FLAGS_CAL
   env:
     LOG_LEVEL: DEBUG
     SOURCE_TYPE_INDEX: "4"
@@ -25,10 +28,18 @@ input:
       name: DIR_IN
       repo: hobou24_calibration_group_and_convert
       glob: /*/*/*/*/
-  # - pfs:
-  #     name: FILE_SCHEMA_DATA_COND_CONV
-  #     repo: hobou24_avro_schemas
-  #     glob: /aquatroll200/aquatroll200_cond_corrected.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: hobou24_avro_schemas
+      glob: /hobou24/hobou24_cond_corrected.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS_TEMP
+      repo: hobou24_avro_schemas
+      glob: /hobou24/hobou24_flags_missing_temp.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS_CAL
+      repo: hobou24_avro_schemas
+      glob: /hobou24/hobou24_flags_calibration.avsc
 parallelism_spec:
   constant: 6
 autoscaling: true
