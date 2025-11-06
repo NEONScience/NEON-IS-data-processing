@@ -13,7 +13,6 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    
 
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/pfs/padded_analyzer
@@ -34,7 +33,6 @@ transform:
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/pfs/padded_analyzer 
-    
     
 
     # Run second module - qaqc plausibility
@@ -67,15 +65,10 @@ transform:
     PARALLELIZATION_INTERNAL: '4'
     
 input:
-  cross:
   - pfs:
       name: DATA_PATH
       repo: subsurfMoorTempCond_threshold_select_ts_pad
       glob: /(*/*/*)/*/*
-  # - pfs:
-  #     name: SCHEMA_FLAGS
-  #     repo: subsurfMoorTempCond_avro_schemas
-  #     glob: /subsurfMoorTempCond/subsurfMoorTempCond_flags_plausibility.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

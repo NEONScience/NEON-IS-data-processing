@@ -26,14 +26,6 @@ input:
       name: DIR_IN
       repo: subsurfMoorTempCond_group_path
       glob: /*/*/*/*/
-  # - pfs:
-  #     name: FILE_SCHEMA_DATA
-  #     repo: leveltroll400_avro_schemas
-  #     glob: /leveltroll400/.avsc
-  # - pfs:
-  #     name: FILE_SCHEMA_FLAGS
-  #     repo: leveltroll400_avro_schemas
-  #     glob: /leveltroll400/.avsc
 parallelism_spec:
   constant: 6
 autoscaling: true
