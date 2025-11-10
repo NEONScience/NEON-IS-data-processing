@@ -58,7 +58,7 @@ jobs:
               subdir="pack/eddy4R.base",
               dependencies=c(NA, TRUE)[2],
               repos=c(BiocManager::repositories(), "https://cran.rstudio.com/"),
-              upgrade_dependencies=FALSE
+              upgrade="never"
           )
           devtools::install_github(
               repo="NEONScience/eddy4R",
@@ -66,7 +66,7 @@ jobs:
               subdir="pack/eddy4R.qaqc",
               dependencies=c(NA, TRUE)[2],
               repos=c(BiocManager::repositories(), "https://cran.rstudio.com/"),
-              upgrade_dependencies=FALSE
+              upgrade="never"
           )
 
           # Install NEON packages
