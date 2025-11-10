@@ -1,9 +1,9 @@
 name: "Run Flow unit tests"
 
 on:
-  push:
-    branches:
-      - jw-flow-tests
+  # push:
+  #   branches:
+  #     - jw-flow-tests
   #   paths:
   #     - flow/**
   workflow_dispatch: {} # Allows trigger of workflow from web interface
@@ -25,8 +25,13 @@ jobs:
         with:
           packages: |
             BiocManager
-            devtools
+            bit
             covr
+            data.table
+            devtools
+            dplyr
+            fastmatch
+            ff
             testthat
           extra-packages: |
               any::xml2
@@ -35,10 +40,10 @@ jobs:
 
       - name: Run Flow unit test coverage using covr package
         shell: Rscript {0}
+        env: 
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Install Eddy4R and Dependencies
-          BiocManager::install(version = "3.14")
-          BiocManager::install(c("rhdf5", "Rhdf5lib", "rhdf5filters"))
           install.packages(c(
               "https://cran.r-project.org/src/contrib/Archive/DataCombine/DataCombine_0.2.21.tar.gz",
               "https://cran.r-project.org/src/contrib/Archive/ffbase/ffbase_0.13.3.tar.gz"
@@ -46,8 +51,20 @@ jobs:
               repos = NULL, 
               type = "source"
           )
-          remotes::install_git("https://github.com/NEONScience/eddy4R.git", ref = "ca559f517a601b83d64e8f7e906fb05f30c30d39", subdir = "pack/eddy4R.base")
-          remotes::install_git("https://github.com/NEONScience/eddy4R.git", ref = "ca559f517a601b83d64e8f7e906fb05f30c30d39", subdir = "pack/eddy4R.qaqc")
+          devtools::install_github(
+              repo="NEONScience/eddy4R",
+              ref="ca559f517a601b83d64e8f7e906fb05f30c30d39",
+              subdir="pack/eddy4R.base",
+              dependencies=c(NA, TRUE)[2],
+              repos=c(BiocManager::repositories(), "https://cran.rstudio.com/")
+          )
+          devtools::install_github(
+              repo="NEONScience/eddy4R",
+              ref="ca559f517a601b83d64e8f7e906fb05f30c30d39",
+              subdir="pack/eddy4R.qaqc",
+              dependencies=c(NA, TRUE)[2],
+              repos=c(BiocManager::repositories(), "https://cran.rstudio.com/")
+          )
 
           # Install NEON packages
           devtools::install("./pack/NEONprocIS.base")
