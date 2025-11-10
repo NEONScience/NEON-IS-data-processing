@@ -77,14 +77,14 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests: 
-  memory: 900M
-  cpu: 3.5
+  memory: 1.3G
+  cpu: 4.2
 resource_limits:
   memory: 2G
   cpu: 5
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 0.6
 datum_set_spec:
   number: 1
 scheduling_spec:
