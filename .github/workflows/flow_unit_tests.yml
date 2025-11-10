@@ -24,6 +24,7 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
+            arrow@14.0.0
             BiocManager
             bit
             covr
