@@ -8,12 +8,12 @@ on:
   #     - flow/**
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
+env:
+  TEST_DIR: ./flow/tests/testthat
+
 jobs:
   run-unit-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./flow/tests/testthat
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -73,12 +73,12 @@ jobs:
           )
 
           # Install NEON packages
-          devtools::install("../../../pack/NEONprocIS.base", upgrade="never")
-          devtools::install("../../../pack/NEONprocIS.cal", upgrade="never")
-          devtools::install("../../../pack/NEONprocIS.pub", upgrade="never")
-          devtools::install("../../../pack/NEONprocIS.qaqc", upgrade="never")
-          devtools::install("../../../pack/NEONprocIS.stat", upgrade="never")
-          devtools::install("../../../pack/NEONprocIS.wq", upgrade="never")
+          devtools::install("./pack/NEONprocIS.base", upgrade="never")
+          devtools::install("./pack/NEONprocIS.cal", upgrade="never")
+          devtools::install("./pack/NEONprocIS.pub", upgrade="never")
+          devtools::install("./pack/NEONprocIS.qaqc", upgrade="never")
+          devtools::install("./pack/NEONprocIS.stat", upgrade="never")
+          devtools::install("./pack/NEONprocIS.wq", upgrade="never")
 
           library(NEONprocIS.base)
           library(NEONprocIS.cal)
@@ -98,6 +98,7 @@ jobs:
           library(dplyr)
 
           # Determine tests and source files
+          setwd("${{ env.TEST_DIR }}")
           source_files <- list.files(path = "../..", pattern = "^wrap.*\\.R$", full.names = TRUE, recursive = TRUE)
           test_files <- list.files(path = ".", pattern = "^test-.*\\.R$", full.names = TRUE, recursive = TRUE)
 
@@ -111,7 +112,7 @@ jobs:
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: test-summary.xml
+          filename: ${{ env.TEST_DIR }}/test-summary.xml
           badge: true
           hide_complexity: false
           format: markdown
@@ -131,5 +132,5 @@ jobs:
         with:
           name: r-coverage-report
           path: |
-            flow-coverage.html
-            lib/
+            ${{ env.TEST_DIR }}/flow-coverage.html
+            ${{ env.TEST_DIR }}/lib/
