@@ -102,10 +102,12 @@ jobs:
           source_files <- list.files(path = "../..", pattern = "^wrap.*\\.R$", full.names = TRUE, recursive = TRUE)
           test_files <- list.files(path = ".", pattern = "^test-.*\\.R$", full.names = TRUE, recursive = TRUE)
 
+          # Calculate coverage
           cov <- covr::file_coverage(source_files = source_files, test_files = test_files)
-          # Generates an interactive HTML report
+          attr(cov, "package") <- list(package = "Flow")
+          # Generate interactive HTML report
           covr::report(cov, file="flow-coverage.html")
-          # Generates a Cobertura XML file
+          # Generate Cobertura XML file
           covr::to_cobertura(cov, filename = "test-summary.xml")
 
       # Generate Markdown Summary
