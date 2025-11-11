@@ -12,6 +12,7 @@ transform:
     PARSE_FIELD: ""
     PARSED_START_INDEX: "1"
     PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/t7610/t7610.avsc
+    ERR_PATH: /pfs/out/errored_datums
   secrets:
   - name: l0-bucket
     env_var: BUCKET_NAME

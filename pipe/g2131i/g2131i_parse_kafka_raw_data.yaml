@@ -2,7 +2,7 @@
 pipeline:
   name: g2131i_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -16,6 +16,7 @@ transform:
     PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/g2131i/g2131i_parsed.avsc
     FIELD_START_INDEX: "4" # skip instrument_status for parsing
     UPDATE_TRIGGER_TABLE: "True"
+    ERR_PATH: /pfs/out/errored_datums
   secrets:
   - name: l0-bucket
     env_var: BUCKET_NAME
