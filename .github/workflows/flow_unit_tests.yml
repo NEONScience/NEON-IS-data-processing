@@ -70,12 +70,12 @@ jobs:
           )
 
           # Install NEON packages
-          devtools::install("./pack/NEONprocIS.base")
-          devtools::install("./pack/NEONprocIS.cal")
-          devtools::install("./pack/NEONprocIS.pub")
-          devtools::install("./pack/NEONprocIS.qaqc")
-          devtools::install("./pack/NEONprocIS.stat")
-          devtools::install("./pack/NEONprocIS.wq")
+          devtools::install("./pack/NEONprocIS.base", upgrade="never")
+          devtools::install("./pack/NEONprocIS.cal", upgrade="never")
+          devtools::install("./pack/NEONprocIS.pub", upgrade="never")
+          devtools::install("./pack/NEONprocIS.qaqc", upgrade="never")
+          devtools::install("./pack/NEONprocIS.stat", upgrade="never")
+          devtools::install("./pack/NEONprocIS.wq", upgrade="never")
 
           library(NEONprocIS.base)
           library(NEONprocIS.cal)
