@@ -158,13 +158,13 @@ input:
         empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 500M
+  memory: 1G
   cpu: .5
 resource_limits:
-  memory: 1G
+  memory: 2G
   cpu: 1.3
 sidecar_resource_requests:
-  memory: 3G
+  memory: 3.5G
   cpu: 1.3
 datum_set_spec:
   number: 1
