@@ -81,7 +81,7 @@
 # Sys.setenv(DIR_IN='~/pfs/hobou24_calibration_group_and_convert/hobou24/2022/06/12/49150')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out/test20251106","DirErr=~/pfs/out/errored_datums","FileSchmData=~/pfs/avro_schemas/hobou24/hobou24_cond_corrected.avsc",
-#         "FileSchmCalQf=~/pfs/avro_schemas/hobou24/flags_calibration_hobou24.avsc","FileSchmQf=~/pfs/avro_schemas/hobou24/flags_hobou24_missing_temp.avsc")
+#         "FileSchmCalQf=~/pfs/avro_schemas/hobou24/hobou24_flags_calibration.avsc","FileSchmQf=~/pfs/avro_schemas/hobou24/hobou24_flags_missing_temp.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -125,6 +125,7 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+log$debug(base::paste0('Schema for output flags: ', Para$FileSchmCalQf))
 
 
 # Read in the schemas so we only have to do it once and not every
