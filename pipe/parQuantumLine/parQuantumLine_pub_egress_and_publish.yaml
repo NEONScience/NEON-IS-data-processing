@@ -156,6 +156,8 @@ input:
         outer_join: True # We want to run even if no data so pub_sync runs
         group_by: $1
         empty_files: true
+parallelism_spec:
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 1.5G
