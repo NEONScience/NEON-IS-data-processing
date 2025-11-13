@@ -244,7 +244,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     depthUcrt$depth_ucrtMeas[n] <- uDSensor
     depthUcrt$depth_ucrtExpn[n] <- 2*uDSensor 
   }
-  depthUcrt$thermistorHeight_ucrtExpn <- uESensor 
+  depthUcrt$thermistorHeight_ucrtExpn <- (uESensor^2 + uESensor^2)^0.5
   ucrtOutDepth<-depthUcrt[,c("readout_time","depth_ucrtExpn","thermistorHeight_ucrtExpn")]
   
   
@@ -425,7 +425,9 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     }
     hoboUcrt$specCond_ucrtComb<-hoboUcrt$specCond_ucrtMeas
     hoboUcrt$specCond_ucrtExpn<-2*hoboUcrt$specCond_ucrtMeas
-    
+    hoboUcrt<-merge(hoboUcrt,thisHobo,by='readout_time')
+    hoboUcrt$specCond_ucrtExpn[is.na(hoboUcrt$conductivity)]<-NA
+    hoboUcrt$temperature_ucrtExpn[is.na(hoboUcrt$temperature)]<-NA
     
     # create output directories
     DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
@@ -465,6 +467,8 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     #merge data frames
     statsOut <- merge(dataOut,ucrtOut,by='startDateTime')
+    statsOut$depth_ucrtExpn[is.na(statsOut$thermistorDepth)]<-NA
+    statsOut$thermistorHeight_ucrtExpn[is.na(statsOut$thermistorHeightFromAnchor)]<-NA
     
     #Write out instantaneous stats
     NameFile <- base::paste0(DirOutStats,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_030.parquet")
