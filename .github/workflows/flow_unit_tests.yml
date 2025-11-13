@@ -1,0 +1,140 @@
+name: "Run Flow unit tests"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - flow/**
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+env:
+  TEST_DIR: ./flow/tests/testthat
+
+jobs:
+  run-unit-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 4.1.3
+
+      - name: Install R packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            arrow@14.0.0
+            BiocManager
+            bit
+            covr
+            data.table
+            devtools
+            dplyr
+            fastmatch
+            ff
+            testthat
+          extra-packages: |
+              any::xml2
+          needs: coverage
+          cache: always
+
+      - name: Run Flow unit test coverage using covr package
+        shell: Rscript {0}
+        env: 
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Install Eddy4R and Dependencies
+          install.packages(c(
+              "https://cran.r-project.org/src/contrib/Archive/DataCombine/DataCombine_0.2.21.tar.gz",
+              "https://cran.r-project.org/src/contrib/Archive/ffbase/ffbase_0.13.3.tar.gz"
+              ), 
+              repos = NULL, 
+              type = "source"
+          )
+          devtools::install_github(
+              repo="NEONScience/eddy4R",
+              ref="ca559f517a601b83d64e8f7e906fb05f30c30d39",
+              subdir="pack/eddy4R.base",
+              dependencies=c(NA, TRUE)[2],
+              repos=c(BiocManager::repositories(), "https://cran.rstudio.com/"),
+              upgrade="never"
+          )
+          devtools::install_github(
+              repo="NEONScience/eddy4R",
+              ref="ca559f517a601b83d64e8f7e906fb05f30c30d39",
+              subdir="pack/eddy4R.qaqc",
+              dependencies=c(NA, TRUE)[2],
+              repos=c(BiocManager::repositories(), "https://cran.rstudio.com/"),
+              upgrade="never"
+          )
+
+          # Install NEON packages
+          devtools::install("./pack/NEONprocIS.base", upgrade="never")
+          devtools::install("./pack/NEONprocIS.cal", upgrade="never")
+          devtools::install("./pack/NEONprocIS.pub", upgrade="never")
+          devtools::install("./pack/NEONprocIS.qaqc", upgrade="never")
+          devtools::install("./pack/NEONprocIS.stat", upgrade="never")
+          devtools::install("./pack/NEONprocIS.wq", upgrade="never")
+
+          library(NEONprocIS.base)
+          library(NEONprocIS.cal)
+          library(NEONprocIS.pub)
+          library(NEONprocIS.qaqc)
+          library(NEONprocIS.stat)
+          library(NEONprocIS.wq)
+          library(eddy4R.base)
+          library(eddy4R.qaqc)
+          library(testthat)
+          library(covr)
+          library(base)
+          library(utils)
+          library(arrow)
+          library(rlang)
+          library(stringr)
+          library(dplyr)
+
+          # Determine tests and source files
+          setwd("${{ env.TEST_DIR }}")
+          source_files <- list.files(path = "../..", pattern = "^wrap.*\\.R$", full.names = TRUE, recursive = TRUE)
+          test_files <- list.files(path = ".", pattern = "^test-.*\\.R$", full.names = TRUE, recursive = TRUE)
+
+          # Calculate coverage
+          cov <- covr::file_coverage(source_files = source_files, test_files = test_files)
+          attr(cov, "package") <- list(package = "Flow")
+          # Generate interactive HTML report
+          covr::report(cov, file="flow-coverage.html")
+          # Generate Cobertura XML file
+          covr::to_cobertura(cov, filename = "test-summary.xml")
+
+      # Generate Markdown Summary
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: ${{ env.TEST_DIR }}/test-summary.xml
+          badge: true
+          hide_complexity: false
+          format: markdown
+          output: both
+
+      # Display in Job Summary
+      - name: Add coverage summary to job summary
+        shell: bash
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+      # Uploads the HTML report as a workflow artifact
+      # Find the r-coverage-report artifact on the workflow run details page.
+      # Download the artifact and open the coverage.html file in your browser
+      # to explore the detailed test coverage report, including line-by-line coverage information.
+      - name: Upload coverage.html artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-coverage-report
+          path: |
+            ${{ env.TEST_DIR }}/flow-coverage.html
+            ${{ env.TEST_DIR }}/lib/
