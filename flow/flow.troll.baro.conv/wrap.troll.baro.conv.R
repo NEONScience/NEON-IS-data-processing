@@ -210,25 +210,34 @@ wrap.troll.cond.conv <- function(DirIn,
   if (base::any(base::class(BaroData) == 'try-error')) {
     # Generate error and stop execution
     log$info(base::paste0('Baro data file for ', DirIn, ' does not exist or is unreadable.'))
-    #base::stop()
     TrollData$baroPressure<-NA
     TrollData$baroPresExpUncert<-NA
     TrollData$baroPresQF<-1
   }else{
     
-    #' Checks that files have same readout times
-    if(any(TrollData$readout_time != BaroData$startDateTime)){
-      log$error(base::paste0('Error: Troll and Baro data have different readout times for ',DirIn))
+    # Check that files have same readout times
+    if (!all(TrollData$readout_time %in% BaroData$startDateTime)) {
+      log$error(base::paste0('Error: Troll and Baro data have different readout times for ', DirIn))
       stop()
     }
     
-    #Keep relevant BARO data
-    TrollData$baroPressure[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresMean[TrollData$readout_time == BaroData$startDateTime] 
-    TrollData$baroPresExpUncert[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresExpUncert[TrollData$readout_time == BaroData$startDateTime]
-    TrollData$baroPresQF[TrollData$readout_time == BaroData$startDateTime] <- BaroData$staPresFinalQF[TrollData$readout_time == BaroData$startDateTime]
+    # Create a match index for efficient joining
+    match_idx <- match(TrollData$readout_time, BaroData$startDateTime)
     
-    #The surface water pressure is determined by subtracting the air pressure of the atmosphere from the measured pressure.
-    TrollData$pressure_raw<-TrollData$pressure
+    # Check for any unmatched times
+    if (any(is.na(match_idx))) {
+      log$warn(base::paste0('Warning: Some Troll times not found in Baro data for ', DirIn))
+    }
+    
+    # Keep relevant BARO data using vectorized assignment
+    TrollData$baroPressure <- BaroData$staPresMean[match_idx]
+    TrollData$baroPresExpUncert <- BaroData$staPresExpUncert[match_idx]
+    TrollData$baroPresQF <- BaroData$staPresFinalQF[match_idx]
+    TrollData$baroPresQF[is.na(TrollData$baroPresQF)] <- 0
+    
+    # The surface water pressure is determined by subtracting the air pressure 
+    # of the atmosphere from the measured pressure.
+    TrollData$pressure_raw <- TrollData$pressure
     TrollData$pressure <- as.numeric(TrollData$pressure_raw) - as.numeric(TrollData$baroPressure)
   }
   
