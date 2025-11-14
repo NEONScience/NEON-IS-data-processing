@@ -1,0 +1,52 @@
+---
+pipeline:
+  name: l4discharge_csd_fill_regression_table_loader
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-os-table-loader:v1.0.0
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m os_table_loader.main
+  env:
+    # File output options are 'csv' or 'parquet'. 
+    FILE_TYPE: csv
+    OUT_PATH: /pfs/out
+    PARTIAL_TABLE_NAME: csd_gapFillingRegression_pub
+    DB_CONFIG_SOURCE: mount
+    LOG_LEVEL: DEBUG 
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    name: IN_PATH 
+    repo: l4discharge_csd_fill_regression_table_loader_control_tick
+    glob: /*
+autoscaling: true
+resource_requests:
+  memory: 100M
+  cpu: 0.1
+resource_limits:
+  memory: 300M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 500M
+  cpu: 0.1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
