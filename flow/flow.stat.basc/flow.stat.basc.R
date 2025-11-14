@@ -133,6 +133,8 @@
 #     allow existing files in stats folder to be passed through
 #   Cove Sturtevant (2022-06-15)
 #     Move main functionality to wrapper function and add error routing
+#   Nora Catolico (2025-11-14)
+#     added use case of 1 data point for buoy campbell logger
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
