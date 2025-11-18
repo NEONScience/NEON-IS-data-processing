@@ -1,241 +1,40 @@
 ---
 pipeline:
   name: l4discharge_group_and_parse
-  transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
-  cmd:
-  - sh
-  - "-c"
-  - |-
-    /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
-    set -euo pipefail
-    IFS=$'\n\t'
-    
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf /tmp/interimA
-    rm -rf /tmp/interimB
-    mkdir /tmp/interimA
-    mkdir /tmp/interimB
-    
-    # Run first module - filter-joiner (using environment variables below as input parameters). Join CSD and SWE tables.
-    python3 -m filter_joiner.filter_joiner_main
-    
-    # Set some environment variables for the second module
-    export OUT_PATH=$OUT_PATH_2
-    export CONFIG=$CONFIG2
-    
-    # Run second module - filter-joiner (using environment variables below as input parameters). Join OS tables.
-    python3 -m filter_joiner.filter_joiner_main
-    
-    # Set some environment variables for the third module
-    export OUT_PATH=$OUT_PATH_3
-    export CONFIG=$CONFIG3
-    
-    # Run third module - filter-joiner (using environment variables below as input parameters). Join all tables.
-    python3 -m filter_joiner.filter_joiner_main
-    
-    
-    EOF
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/flow.discharge.parse.os.inputs:sha-
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - Rscript ./flow.discharge.parse.os.inputs.R
+      DirIn=$DIR_IN
+      DirInOS=$DIR_IN_OS
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
   env:
-    # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
-    # these repos in order to pull them in with or without the SRF
-    CONFIG: |
-      ---
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      # Use unix-style glob pattern to select the desired directories in each repo 
-      input_paths:
-        - path:
-            name: CSD_DATA
-            glob_pattern: /pfs/CSD_DATA/*/*/*/*/**
-            # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
-            outer_join: True
-        - path:
-            name: SWE_DATA
-            glob_pattern: /pfs/SWE_DATA/*/*/*/*/**
-            # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
-            outer_join: True
-        
-    OUT_PATH: /tmp/interimA # Transfered to OUT_PATH for the first module
-    RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
-    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
-    
-  # Below are the environment variables for 2nd filter-joiner for the OS tables
-    CONFIG2: |
-      ---
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      # Use unix-style glob pattern to select the desired directories in each repo 
-      input_paths:
-        - path:
-            name: OS_TABLE1
-            glob_pattern: /pfs/OS_TABLE1/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE2
-            glob_pattern: /pfs/OS_TABLE2/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE3
-            glob_pattern: /pfs/OS_TABLE3/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE4
-            glob_pattern: /pfs/OS_TABLE4/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE5
-            glob_pattern: /pfs/OS_TABLE5/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE6
-            glob_pattern: /pfs/OS_TABLE6/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE7
-            glob_pattern: /pfs/OS_TABLE7/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE8
-            glob_pattern: /pfs/OS_TABLE8/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE9
-            glob_pattern: /pfs/OS_TABLE9/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE10
-            glob_pattern: /pfs/OS_TABLE10/*
-            join_indices: [1]
-        - path:
-            name: OS_TABLE11
-            glob_pattern: /pfs/OS_TABLE11/*
-            join_indices: [1]
-    OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for the this module
-    
-    # Below are the environment variables for 3rd filter-joiner bringing together all files
-    CONFIG3: |
-      ---
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      # Use unix-style glob pattern to select the desired directories in each repo 
-      input_paths:
-        - path:
-            name: CONSOLIDATED_PATH
-            # Filter for data directory
-            glob_pattern: /tmp/interimA/*/*/*/*/**
-            # Join on group ID (already joined below by day)
-            join_indices: [6]
-            outer_join: True
-        - path:
-            name: OS_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/interimB/*/*/*/*/**
-            # Join on group ID(already joined below by day)
-            join_indices: [1]
-    OUT_PATH_3: /pfs/out # This will be transfered to OUT_PATH for the this module
-    
+    LOG_LEVEL: INFO
 input:
-  join:
+  cross:
   - pfs:
-      name: CSD_DATA
-      repo: l4discharge_csd_load_files
-      glob: /2024/03/20
-      joinOn: $1/$2/$3
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      name: DIR_IN
+      repo: l4discharge_csd_swe_group
+      # /YYYY/MM/DD/group
+      glob: /*/*/*/*
   - pfs:
-      name: SWE_DATA
-      repo: l4discharge_group_path
-      glob: /2024/03/20
-      joinOn: $1/$2/$3
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE1
-      repo: l4discharge_csd_gag_regression_table_loader
+      name: DIR_IN_OS
+      repo: l4discharge_os_table_group
       glob: /*
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE2
-      repo: l4discharge_sdrc_controlInfo_table_loader
-      glob: /*
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE3
-      repo: l4discharge_sdrc_curveID_table_loader
-      glob: /*
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE4
-      repo: l4discharge_sdrc_gaugeDsc_table_loader
-      glob: /*
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE5
-      repo: l4discharge_sdrc_gaugePress_table_loader 
-      glob: /*
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE6
-      repo: l4discharge_sdrc_prior_table_loader 
-      glob: /*
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE7
-      repo: l4discharge_sdrc_sampled_table_loader 
-      glob: /*
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE8
-      repo: l4discharge_sdrc_stageDscCurve_table_loader  
-      glob: /*
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE9
-      repo: l4discharge_csd_fill_reg_table_loader 
-      glob: /*
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE10
-      repo: l4discharge_csd_mapping_table_loader 
-      glob: /*
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: OS_TABLE11
-      repo: l4discharge_csd_shift_table_loader 
-      glob: /*
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 6
 autoscaling: true
 resource_requests:
-  memory: 1G
-  cpu: 2.2
+  memory: 500M
+  cpu: 1.2
 resource_limits:
-  memory: 2G
-  cpu: 3.5
+  memory: 1G
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1
