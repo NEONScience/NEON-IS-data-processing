@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: l4discharge_group
+  name: l4discharge_os_table_group
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
   cmd:
@@ -12,13 +12,15 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
-    # Run first module - filter-joiner (using environment variables below as input parameters)
+
+    # Run first module - filter-joiner (using environment variables below as input parameters). Join CSD and SWE tables.
     python3 -m filter_joiner.filter_joiner_main
     
     EOF
   env:
     # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
     # these repos in order to pull them in with or without the SRF
+  # Below are the environment variables for 2nd filter-joiner for the OS tables
     CONFIG: |
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
@@ -27,38 +29,49 @@ transform:
       input_paths:
         - path:
             name: OS_TABLE1
-            glob_pattern: /pfs/OS_TABLE1/**
-            join_indices: [3]
+            glob_pattern: /pfs/OS_TABLE1/*
+            join_indices: [1]
         - path:
             name: OS_TABLE2
-            glob_pattern: /pfs/OS_TABLE2/**
-            join_indices: [3]
+            glob_pattern: /pfs/OS_TABLE2/*
+            join_indices: [1]
         - path:
             name: OS_TABLE3
-            glob_pattern: /pfs/OS_TABLE3/**
-            join_indices: [3]
+            glob_pattern: /pfs/OS_TABLE3/*
+            join_indices: [1]
         - path:
             name: OS_TABLE4
-            glob_pattern: /pfs/OS_TABLE4/**
-            join_indices: [3]
+            glob_pattern: /pfs/OS_TABLE4/*
+            join_indices: [1]
         - path:
             name: OS_TABLE5
-            glob_pattern: /pfs/OS_TABLE5/**
-            join_indices: [3]
+            glob_pattern: /pfs/OS_TABLE5/*
+            join_indices: [1]
         - path:
             name: OS_TABLE6
-            glob_pattern: /pfs/OS_TABLE6/**
-            join_indices: [3]
+            glob_pattern: /pfs/OS_TABLE6/*
+            join_indices: [1]
         - path:
             name: OS_TABLE7
-            glob_pattern: /pfs/OS_TABLE7/**
-            join_indices: [3]
+            glob_pattern: /pfs/OS_TABLE7/*
+            join_indices: [1]
         - path:
             name: OS_TABLE8
-            glob_pattern: /pfs/OS_TABLE8/**
-            join_indices: [3]
-        
-    OUT_PATH: /pfs/out # Transfered to OUT_PATH for the first module
+            glob_pattern: /pfs/OS_TABLE8/*
+            join_indices: [1]
+        - path:
+            name: OS_TABLE9
+            glob_pattern: /pfs/OS_TABLE9/*
+            join_indices: [1]
+        - path:
+            name: OS_TABLE10
+            glob_pattern: /pfs/OS_TABLE10/*
+            join_indices: [1]
+        - path:
+            name: OS_TABLE11
+            glob_pattern: /pfs/OS_TABLE11/*
+            join_indices: [1]
+    OUT_PATH: /pfs/out # This will be transfered to OUT_PATH for the this module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
     LOG_LEVEL: DEBUG # Shared among all modules
@@ -114,6 +127,24 @@ input:
   - pfs:
       name: OS_TABLE8
       repo: l4discharge_sdrc_stageDscCurve_table_loader  
+      glob: /*
+      joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: OS_TABLE9
+      repo: l4discharge_csd_fill_reg_table_loader 
+      glob: /*
+      joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: OS_TABLE10
+      repo: l4discharge_csd_mapping_table_loader 
+      glob: /*
+      joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: OS_TABLE11
+      repo: l4discharge_csd_shift_table_loader 
       glob: /*
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY

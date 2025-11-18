@@ -1,0 +1,78 @@
+---
+pipeline:
+  name: l4discharge_csd_swe_group
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Run first module - filter-joiner (using environment variables below as input parameters). Join CSD and SWE tables.
+    python3 -m filter_joiner.filter_joiner_main
+    
+    EOF
+  env:
+    # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
+    # these repos in order to pull them in with or without the SRF
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: CSD_DATA
+            glob_pattern: /pfs/CSD_DATA/*/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+            outer_join: True
+        - path:
+            name: SWE_DATA
+            glob_pattern: /pfs/SWE_DATA/*/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+            outer_join: True
+        
+    OUT_PATH: /pfs/out # Transfered to OUT_PATH for the first module
+    RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
+    LOG_LEVEL: DEBUG # Shared among all modules
+    
+input:
+  join:
+  - pfs:
+      name: CSD_DATA
+      repo: l4discharge_csd_load_files
+      glob: /2024/03/20
+      joinOn: $1/$2/$3
+      outer_join: true # Need outer join to pull in with or without SRFs
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: SWE_DATA
+      repo: l4discharge_group_path
+      glob: /2024/03/20
+      joinOn: $1/$2/$3
+      outer_join: true # Need outer join to pull in with or without SRFs
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 2.2
+resource_limits:
+  memory: 2G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
