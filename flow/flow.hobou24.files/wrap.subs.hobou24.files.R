@@ -146,13 +146,13 @@ wrap.subs.hobou24.files <- function(FileIn,
     
     # Convert timestamps to UTC, if needed
     timeData <- log_file[start:nrow(log_file),allCols == "Date Time"]
-    timePOSIX <- base::as.POSIXct(timeData, format = "%m/%d/%y %H:%M:%S %p", tz = log_file_TZ)
-    #timeSOM <- format(timePOSIX, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-    day <- format(timePOSIX, format = "%Y-%m-%d", tz = "UTC")
+    time_posix <- as.POSIXct(timeData, format="%m/%d/%y %I:%M:%S %p", tz = log_file_TZ)
+    time_utc <- format(time_posix, tz="UTC", usetz=TRUE)
+    time_utc_posix <- as.POSIXct(time_utc, format="%Y-%m-%d %H:%M:%S", tz="UTC")
     
     # Populate the output file with timestamps
-    log_data$readout_time <- timePOSIX
-    log_data$day <- day
+    log_data$readout_time <- time_utc_posix
+    log_data$day <- format(log_data$readout_time, format = "%Y-%m-%d", tz = "UTC")
     
     # Populate conductivity data, I think it should all be in uS/cm
     if(rangeType == "lowOnly" | rangeType == "highAndLow"){

@@ -2,7 +2,7 @@
 pipeline:
   name: subsurfMoorTempCond_depth_ucrt_group
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-subsurf-depth-ucrt-group:sha-df8ccb6
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-subsurf-depth-ucrt-group:sha-0afb223
   cmd:
   - sh
   - "-c"
