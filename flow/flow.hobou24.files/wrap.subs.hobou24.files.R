@@ -104,12 +104,17 @@ wrap.subs.hobou24.files <- function(FileIn,
     col11<-base::gsub(",.*","",log_file$V10[start-1])
 
     allCols <- c(col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11)
+    allCols <- gsub("Full Range", "High Range", allCols)
+    
     
     # Pull out timezone
     log_file_TZ <- gsub(".*, ","",log_file[start-1,allCols == "Date Time"])
     # Pull out low range conductivity units
     log_file_low_units <- gsub("Low Range, | \\(.*$","",log_file[start-1,allCols == "Low Range"])
     # Pull out high range conductivity units
+    if(length(log_file[start-1,allCols == "Full Range"])>0){
+      log_file[start-1,] <- gsub("Full Range", "High Range", log_file[start-1,])
+    }
     log_file_high_units <- gsub("High Range, | \\(.*$","",log_file[start-1,allCols == "High Range"])
     # Pull out temp units
     log_file_temp_units <- gsub("Temp, | \\(.*$","",log_file[start-1,allCols == "Temp"])

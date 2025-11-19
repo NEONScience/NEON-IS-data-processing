@@ -245,6 +245,8 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     depthUcrt$depth_ucrtExpn[n] <- 2*uDSensor 
   }
   depthUcrt$thermistorHeight_ucrtExpn <- (uESensor^2 + uESensor^2)^0.5
+  depthUcrt<-merge(depthUcrt,waterColumn,by='readout_time')
+  depthUcrt$thermistorHeight_ucrtExpn[depthUcrt$thermistorHeightQF==1] <- NA
   ucrtOutDepth<-depthUcrt[,c("readout_time","depth_ucrtExpn","thermistorHeight_ucrtExpn")]
   
   
@@ -366,7 +368,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     thisHobo <- merge(hoboData,waterColumn,by='readout_time')
     thisHobo$thermistorDepth <- thisHobo$waterColumn - thisHobo$z_offset
     thisHobo$thermistorHeightFromAnchor <- thisHobo$trollHeight + thisHobo$z_offset
-    
+    thisHobo$thermistorHeightFromAnchor[thisHobo$thermistorHeightQF==1] <- NA 
     
     
     # --------- determine conductivity and temperature uncertainty ------------
