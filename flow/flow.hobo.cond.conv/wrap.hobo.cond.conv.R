@@ -155,13 +155,21 @@ wrap.hobo.cond.conv <- function(DirIn,
   source_id<-hoboData$source_id[1]
   
   #reduce to single conductivity
-  hoboData$high_or_low<-NA
-  hoboData$high_or_low[!is.na(hoboData$conductivity_high)]<-"high"
-  hoboData$high_or_low[!is.na(hoboData$conductivity_low)]<-"low"
+  hoboData$high_or_low <- ifelse(
+    is.na(hoboData$conductivity_high) & !is.na(hoboData$conductivity_low), "low",
+    ifelse(
+      !is.na(hoboData$conductivity_high) & !is.na(hoboData$conductivity_low) & 
+        (hoboData$conductivity_high + hoboData$conductivity_low) / 2 < 1000, "low", 
+      "high"
+    )
+  )
   
   hoboData$raw_conductivity<-NA
-  hoboData$raw_conductivity[!is.na(hoboData$high_or_low) & hoboData$high_or_low=="high"]<-hoboData$conductivity_high[!is.na(hoboData$high_or_low) & hoboData$high_or_low=="high"]
-  hoboData$raw_conductivity[!is.na(hoboData$high_or_low) & hoboData$high_or_low=="low"]<-hoboData$conductivity_low[!is.na(hoboData$high_or_low) & hoboData$high_or_low=="low"]
+  hoboData$raw_conductivity <- ifelse(
+    hoboData$high_or_low == "high", 
+    hoboData$conductivity_high, 
+    hoboData$conductivity_low
+  )
   hoboData$raw_conductivity<-as.double(hoboData$raw_conductivity)
   #convert actual conductivity to specific conductance
   hoboData$conductivity <- hoboData$raw_conductivity/(1+0.0191*(hoboData$temperature-25))
@@ -188,13 +196,17 @@ wrap.hobo.cond.conv <- function(DirIn,
   hoboCalFlags <- hoboCalFlags[order(hoboCalFlags$readout_time), ]
   hoboCalFlags<-merge(hoboCalFlags,highOrLow,by="readout_time")
   
-  hoboCalFlags$conductivity_qfExpi<-NA
-  hoboCalFlags$conductivity_qfExpi[!is.na(hoboCalFlags$high_or_low) & hoboCalFlags$high_or_low=="high"]<-hoboCalFlags$conductivity_high_qfExpi[!is.na(hoboCalFlags$high_or_low) & hoboCalFlags$high_or_low=="high"]
-  hoboCalFlags$conductivity_qfExpi[!is.na(hoboCalFlags$high_or_low) & hoboCalFlags$high_or_low=="low"]<-hoboCalFlags$conductivity_low_qfExpi[!is.na(hoboCalFlags$high_or_low) & hoboCalFlags$high_or_low=="low"]
+  hoboCalFlags$conductivity_qfExpi <- ifelse(
+    hoboCalFlags$high_or_low == "high", 
+    hoboCalFlags$conductivity_high_qfExpi, 
+    hoboCalFlags$conductivity_low_qfExpi
+  )
   
-  hoboCalFlags$conductivity_qfSusp<-NA
-  hoboCalFlags$conductivity_qfSusp[!is.na(hoboCalFlags$high_or_low) & hoboCalFlags$high_or_low=="high"]<-hoboCalFlags$conductivity_high_qfSusp[!is.na(hoboCalFlags$high_or_low) & hoboCalFlags$high_or_low=="high"]
-  hoboCalFlags$conductivity_qfSusp[!is.na(hoboCalFlags$high_or_low) & hoboCalFlags$high_or_low=="low"]<-hoboCalFlags$conductivity_low_qfSusp[!is.na(hoboCalFlags$high_or_low) & hoboCalFlags$high_or_low=="low"]  
+  hoboCalFlags$conductivity_qfSusp <- ifelse(
+    hoboCalFlags$high_or_low == "high", 
+    hoboCalFlags$conductivity_high_qfSusp, 
+    hoboCalFlags$conductivity_low_qfSusp
+  )
   
   QFCalCol <- c("readout_time","temperature_qfExpi","conductivity_qfExpi","temperature_qfSusp","conductivity_qfSusp")
   flagsCalOut <- hoboCalFlags[,QFCalCol]

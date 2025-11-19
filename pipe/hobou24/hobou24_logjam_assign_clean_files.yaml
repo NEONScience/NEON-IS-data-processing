@@ -12,7 +12,7 @@ transform:
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileSchmData=$SCHMA_DATA
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-hobou24-files:sha-6117bf1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-hobou24-files:sha-7063780
   env:
     LOG_LEVEL: DEBUG
 input:
