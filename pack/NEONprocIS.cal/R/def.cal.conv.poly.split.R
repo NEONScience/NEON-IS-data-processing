@@ -82,6 +82,11 @@ def.cal.conv.poly.split <- function(data = data.frame(data=base::numeric(0)),
   # Basic starting info
   timeMeas <- data$readout_time
   
+  if(!("POSIXt" %in% base::class(timeMeas))){
+    log$error('Variable readout_time must be of class POSIXt')
+    stop()
+  }
+  
   # Run through each variable to be calibrated
   for(varIdx in varConv){
     

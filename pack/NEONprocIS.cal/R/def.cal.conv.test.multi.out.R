@@ -76,6 +76,11 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
   # Basic starting info
   timeMeas <- data$readout_time
   
+  if(!("POSIXt" %in% base::class(timeMeas))){
+    log$error('Variable readout_time must be of class POSIXt')
+    stop()
+  }
+  
   # Initialize the uncertainty data and uncertainty coefficients output lists
   ucrtData <- list()
   ucrtCoef <- list()

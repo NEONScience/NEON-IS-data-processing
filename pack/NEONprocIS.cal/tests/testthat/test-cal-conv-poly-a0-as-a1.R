@@ -48,53 +48,75 @@ test_that("Unit test of def.cal.conv.polya0.as.a1.R", {
    # The input json has Name, Value, and .attrs
    
    testDir = "testdata/"
-   # testFileCal = "calibration_CVALM.xml"
-   # testFileCalPath <- paste0(testDir, testFileCal)
-   # infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
+   testFileCal = c("calibrationA0.xml","calibrationA0_validBefore.xml")
+   testFileCalPath <- fs::path(testDir, testFileCal)
+   metaCal <- NEONprocIS.cal::def.cal.meta(fileCal=testFileCalPath)
+   TimeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
+   TimeEnd <- base::as.POSIXct('2020-01-01',tz='GMT')
+   calSlct <- list(resistance=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
    
    testData = "L0_data.csv"
-   testDataPath <- paste0(testDir, testData)
+   testDataPath <- fs::path(testDir, testData)
    
-   data0 <- read.csv(testDataPath, sep = ",", header = TRUE)
+   data <- read.csv(testDataPath, sep = ",", header = TRUE)
    
-   data <- data.frame(data0$resistance)
+   # Sad path, readout_time is not POSIXt
+   calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data, 
+                                                             varConv='resistance', 
+                                                             calSlct=calSlct),
+                     silent=TRUE)
+   testthat::expect_true ("try-error" %in% class(calibrated))
    
-   # Case #1 - Happy path, infoCal has CVALA0 only
    
-   infoCal <- list(cal=data.frame(Name=c('CVALA0'),Value=c(.9485),stringsAsFactors=FALSE))
+   # Happy path, infoCal has CVALA0 
+   data$readout_time <- base::as.POSIXct(data$readout_time,tz='GMT')
+   calibrated <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data, 
+                                                             varConv='resistance', 
+                                                             calSlct=calSlct)
 
-   vector_cval_a0_as_a1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
-                                                        infoCal = infoCal,
-                                                        varConv = base::names(data)[1],
-                                                        log = NULL)
-
-   expect_true (is.vector(vector_cval_a0_as_a1))
-   expect_true (all(!is.na(vector_cval_a0_as_a1)))
+   testthat::expect_true (is.data.frame(calibrated))
+   testthat::expect_equal (calibrated$resistance[2],21.96915,tolerance=1E-5)
    
-   # Case #2, infoCal does not have CVALA0 
+   # data is before the valid date range of the cal. Return NA
+   testthat::expect_true (is.na(calibrated$resistance[4]))
    
-   infoCal_noCVALA0 <- list(cal=data.frame(Name=c('CVALA1','CVALA2'),Value=c(10,1),stringsAsFactors=FALSE))
+   # cal valid start date is inclusive, while end date is exclusive
+   testthat::expect_equal (calibrated$resistance[5],10.98490,tolerance=1E-5)
+   testthat::expect_equal (calibrated$resistance[1],21.96918,tolerance=1E-5)
    
-   vector_cval_noCVALA0 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
-                                                                       infoCal = infoCal_noCVALA0,
-                                                                       varConv = base::names(data)[1],
-                                                                       log = NULL)
-   expect_true (all(vector_cval_noCVALA0 == 0)) 
- 
-   # Case #3, infoCal is not passed in, defaulted to NULL. Returns NA
+   # infoCal does not have CVALA0, returns error
+   testFileCal = "calibration.xml"
+   testFileCalPath <- fs::path(testDir, testFileCal)
+   metaCal <- NEONprocIS.cal::def.cal.meta(fileCal=testFileCalPath)
+   calSlct <- list(resistance=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
    
-   vector_cval_a0_as_a1 <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data, log = NULL)
+   calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data, 
+                                                             varConv='resistance', 
+                                                             calSlct=calSlct),
+                     silent=TRUE)
+   testthat::expect_true ("try-error" %in% class(calibrated))
    
-   expect_true (is.vector(vector_cval_a0_as_a1))
-   expect_true (all(is.na(vector_cval_a0_as_a1))) 
+   # No cals specified for "resistance". Returns NA
+   calSlct <- list(voltage=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
+   calibrated <- NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data, 
+                                                             varConv='resistance', 
+                                                             calSlct=calSlct)
+   testthat::expect_true (all(is.na(calibrated$resistance)))
    
    
-   # Case #4, data is not an array.  Error out due to "Input is not a data frame."
-   data <- list (data)
-   vector_cval_a0_as_a1 <- try(NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data,
-                                                            infoCal = infoCal,
-                                                            log = NULL), silent = TRUE)
+   # input is not numeric, returns error
+   calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data, 
+                                                                 varConv='site_id', 
+                                                                 calSlct=calSlct),
+                     silent=TRUE)
+   testthat::expect_true ("try-error" %in% class(calibrated))
    
-   testthat::expect_true((class(vector_cval_a0_as_a1)[1] == "try-error"))
- 
+   # readout_time not present, returns error
+   calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.a0.as.a1 (data = data[,setdiff(names(data),"readout_time")], 
+                                                                 varConv='resistance', 
+                                                                 calSlct=calSlct),
+                     silent=TRUE)
+   testthat::expect_true((class(calibrated)[1] == "try-error"))
+   
+   
    })

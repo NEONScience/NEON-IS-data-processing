@@ -17,7 +17,7 @@
 #' knows that. Defaults to the first column in \code{data}.
 #' 
 #' @param calSlct A named list of data frames, list element corresponding to the variables in
-#' FuncUcrt. The data frame in each list element holds information about the calibration files and 
+#' varUcrt. The data frame in each list element holds information about the calibration files and 
 #' time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
 #' See documentation for that function. Assign NULL to list elements (variables) for which calibration
 #' information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
@@ -89,6 +89,11 @@ def.ucrt.fdas.rstc.poly <- function(data = data.frame(data=base::numeric(0)),
   
   # Basic starting info
   timeMeas <- data$readout_time
+  
+  if(!("POSIXt" %in% base::class(timeMeas))){
+    log$error('Variable readout_time must be of class POSIXt')
+    stop()
+  }
   
   # Initialize output list of data frames
   ucrtList <- list()
