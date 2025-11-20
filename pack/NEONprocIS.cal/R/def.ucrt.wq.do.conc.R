@@ -54,6 +54,8 @@
 #     variable to be generate uncertainty info for, and the (unused) argument calSlct
 #   Cove Sturtevant (2025-06-23)
 #    Add unused Meta input to accommodate changes in upstream calibration & uncertainty module
+#   Cove Sturtevant (2025-09-17)
+#     Return a list with the uncertainty data frame, with list element named for the variable specified in varUcrt
 ##############################################################################################
 def.ucrt.wq.do.conc <- function(data = data.frame(data=base::numeric(0)),
                                 varUcrt = base::names(data)[1],
@@ -106,6 +108,9 @@ def.ucrt.wq.do.conc <- function(data = data.frame(data=base::numeric(0)),
   #Determine uncertainty factor
   outputDF$ucrtMeas <- outputDF$ucrtPercent * dataUcrt
   
-  return(outputDF)
+  ucrtList <- list()
+  ucrtList[[varUcrt]] <- outputDF
+  
+  return(ucrtList)
   
 }
