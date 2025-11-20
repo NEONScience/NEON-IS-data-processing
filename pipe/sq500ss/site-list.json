@@ -199,7 +199,7 @@
 	},
 	{
 	"site" : "TREE",
-	"kafka_start_date" : "2025-11-15"
+	"kafka_start_date" : "2025-12-15"
 	},
 	{
 	"site" : "UKFS",
@@ -307,7 +307,7 @@
 	},
 	{
 	"site" : "OKSR",
-	"kafka_start_date" : "2025-11-15"
+	"kafka_start_date" : "2025-12-15"
 	},
 	{
 	"site" : "POSE",
@@ -331,7 +331,7 @@
 	},
 	{
 	"site" : "SUGG",
-	"kafka_start_date" : "2025-11-15"
+	"kafka_start_date" : "2025-12-15"
 	},
 	{
 	"site" : "SYCA",
@@ -339,7 +339,7 @@
 	},
 	{
 	"site" : "TECR",
-	"kafka_start_date" : "2025-11-15"
+	"kafka_start_date" : "2025-12-15"
 	},
 	{
 	"site" : "TOMB",
