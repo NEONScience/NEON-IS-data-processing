@@ -77,6 +77,7 @@
 #     Refactor to loop through applicable calibration files within this function
 #     Also enable uncertainty comps of multiple variables with this function call
 #     Return a list of data frames named for the variables specified in varUcrt
+#     Return error if no U_CVALA1 found 
 ##############################################################################################
 def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
                                varUcrt = base::names(data)[1],
@@ -152,6 +153,9 @@ def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
       # Issue warning if more than one matching uncertainty coefficient was found
       if(base::nrow(ucrtCoef) > 1){
         log$warn("More than one matching uncertainty coefficient was found for U_CVALA1. Using the first.")
+      } else if (base::nrow(ucrtCoef) == 0){
+        log$error("No uncertainty coefficient was found for U_CVALA1.")
+        stop()
       }
       
       # The individual measurement uncertainty is just U_CVALA1 multiplied by each measurement

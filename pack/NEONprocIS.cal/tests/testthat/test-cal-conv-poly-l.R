@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Unit test of NEON calibration conversion (def.cal.conv.poly.m)
+#' @title Unit test of NEON calibration conversion (def.cal.conv.poly.l)
 
 #' @author
 #' Robert Markel \email{rmarkel@BattelleEcology.org}
@@ -60,7 +60,7 @@ context("\n                       calibration conversion\n")
 test_that("testing calibration conversion", {
   
   testDir = "calibrations/voltage/"
-  testFileCal = c("calibration33_M.xml","calibration33_M_validAfter.xml")
+  testFileCal = c("calibration33_L.xml","calibration33_L_validAfter.xml")
   testFileCalPath <- fs::path(testDir, testFileCal)
   
   
@@ -83,7 +83,7 @@ test_that("testing calibration conversion", {
   cat("\n       |------ data and cal are not empty and have valid values    |\n")
 
   calibrated <-
-    NEONprocIS.cal::def.cal.conv.poly.m(data = data, varConv='data', calSlct=calSlct)
+    NEONprocIS.cal::def.cal.conv.poly.l(data = data, varConv='data', calSlct=calSlct)
 
   # Check the data inside the valid date range are calibrated correctly
   testthat::expect_equal(c(0.0246, 0.0369, 0.0492, 0.0615), calibrated$data[2:5])
@@ -105,7 +105,7 @@ test_that("testing calibration conversion", {
   
   data$readout_time <- as.POSIXct(c('2018-06-13','2018-06-14','2018-06-15','2018-06-16','2018-06-17','2018-06-18'),tz='GMT')
   
-  calibrated <- NEONprocIS.cal::def.cal.conv.poly.m(data = data, varConv='data', calSlct=calSlct)
+  calibrated <- NEONprocIS.cal::def.cal.conv.poly.l(data = data, varConv='data', calSlct=calSlct)
   
   testthat::expect_true(all(is.na(calibrated$data)))
   
@@ -113,7 +113,7 @@ test_that("testing calibration conversion", {
   cat("\n       |======= Positive test::                      ============|\n")
   cat("\n       |------ No cals specified for 'data'. Returns NA |\n\n")
   calSlctNoVar <- list(voltage=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
-  calibrated <- NEONprocIS.cal::def.cal.conv.poly.m(data = data, 
+  calibrated <- NEONprocIS.cal::def.cal.conv.poly.l(data = data, 
                                                   varConv='data', 
                                                   calSlct=calSlctNoVar)
   testthat::expect_true (all(is.na(calibrated$data)))
@@ -133,7 +133,7 @@ test_that("testing calibration conversion", {
   calSlct <- list(data=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
   data$readout_time <- as.POSIXct(c('2020-06-12 17:48:35','2020-06-14 00:00:00','2020-06-15 00:00:00','2020-06-16 00:00:00','2020-06-17 00:00:00','2020-07-07 17:48:35'),tz='GMT')
   
-  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.m(data = data, varConv='data2', calSlct=calSlct), silent = TRUE)
+  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.l(data = data, varConv='data2', calSlct=calSlct), silent = TRUE)
   testthat::expect_true((class(calibrated)[1] == "try-error"))
   
   #
@@ -141,7 +141,7 @@ test_that("testing calibration conversion", {
   cat("\n       |------ cal is has no polynomial coefficients                             |\n\n")
   #
   
-  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.m(data = data, varConv='data', calSlct=calSlct), silent = TRUE)
+  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.l(data = data, varConv='data', calSlct=calSlct), silent = TRUE)
   
   testthat::expect_true((class(calibrated)[1] == "try-error"))
   
@@ -149,7 +149,7 @@ test_that("testing calibration conversion", {
   cat("\n       |======= Negative test::                      ============|\n")
   cat("\n       |------ data missing readout_time variable    |\n\n")
   
-  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.m(data = data[,-1], varConv='data', calSlct=calSlct), silent = TRUE)
+  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.l(data = data[,-1], varConv='data', calSlct=calSlct), silent = TRUE)
   
   testthat::expect_true((class(calibrated)[1] == "try-error"))
   
@@ -157,7 +157,7 @@ test_that("testing calibration conversion", {
   cat("\n       |======= Negative test::                      ============|\n")
   cat("\n       |------ readout_time not POSIXt    |\n\n")
   data$readout_time <- as.character(data$readout_time)
-  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.m (data = data, 
+  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly.l (data = data, 
                                                        varConv='data', 
                                                        calSlct=calSlct),
                     silent=TRUE)

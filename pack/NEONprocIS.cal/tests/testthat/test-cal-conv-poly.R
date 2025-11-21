@@ -110,6 +110,15 @@ test_that("testing calibration conversion", {
   testthat::expect_true(all(is.na(calibrated$data)))
   
   
+  cat("\n       |======= Positive test::                      ============|\n")
+  cat("\n       |------ No cals specified for 'data'. Returns NA |\n\n")
+  calSlctNoVar <- list(voltage=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
+  calibrated <- NEONprocIS.cal::def.cal.conv.poly(data = data, 
+                                                  varConv='data', 
+                                                  calSlct=calSlctNoVar)
+  testthat::expect_true (all(is.na(calibrated$data)))
+
+  
   #
   cat("\n       |======= Negative test::                      ============|\n")
   cat("\n       |------ Cannot calibrate character variable   |\n\n")
@@ -138,22 +147,22 @@ test_that("testing calibration conversion", {
   
   #
   cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ data missing readout_time variable    |\n\n")
+  
+  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly(data = data[,-1], varConv='data', calSlct=calSlct), silent = TRUE)
+  
+  testthat::expect_true((class(calibrated)[1] == "try-error"))
+  
+  #
+  cat("\n       |======= Negative test::                      ============|\n")
   cat("\n       |------ readout_time not POSIXt    |\n\n")
   data$readout_time <- as.character(data$readout_time)
   calibrated <- try(NEONprocIS.cal::def.cal.conv.poly (data = data, 
-                                                       varConv='resistance', 
+                                                       varConv='data', 
                                                        calSlct=calSlct),
                     silent=TRUE)
   testthat::expect_true ("try-error" %in% class(calibrated))
   
-  #
-  cat("\n       |======= Negative test::                      ============|\n")
-  cat("\n       |------ data missing readout_time variable    |\n\n")
-  
-  data <- data[,-1]
-  calibrated <- try(NEONprocIS.cal::def.cal.conv.poly(data = data, varConv='data', calSlct=calSlct), silent = TRUE)
-  
-  testthat::expect_true((class(calibrated)[1] == "try-error"))
   
   
 })

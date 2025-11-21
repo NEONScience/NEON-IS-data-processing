@@ -7,7 +7,6 @@ humidity transition}
 \usage{
 def.ucrt.meas.rh.dew.frst.pt(
   data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
   varUcrt = "dew_point",
   calSlct = NULL,
   Meta = list(),
@@ -15,14 +14,19 @@ def.ucrt.meas.rh.dew.frst.pt(
 )
 }
 \arguments{
-\item{data}{Temperature, relative humidity, and dew/frost point data from the relative humidity sensor}
-
-\item{infoCal}{Not used in this function \cr}
+\item{data}{Numeric data frame of raw measurements of Temperature, relative humidity, 
+and dew/frost point from the relative humidity sensor. Must include POSIXt variable readout_time.}
 
 \item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} for 
-which uncertainty data will be computed (dew_point in this function).}
+which uncertainty output will be computed (all other columns will be ignored). Defaults to "dew_point"}
 
-\item{calSlct}{Defaults to NULL. See the inputs to NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
+\item{calSlct}{A named list of data frames, list element corresponding to the variables in
+needed in this function (temperature, relative_humidity). The data frame in each list 
+element holds information about the calibration files and 
+time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
+See documentation for that function. Assign NULL to list elements (variables) for which calibration
+information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
+uncertainty).}
 
 \item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
 NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
@@ -32,20 +36,21 @@ output in addition to standard R error messaging. Defaults to NULL, in which the
 created and used within the function.}
 }
 \value{
-A data frame with the following variables:\cr
-\code{ucrtMeas_dew_point} - combined measurement uncertainty for an individual dew/frost point reading. Includes the
+A named list containing a data frame, the list element named for the variable for which uncertainty 
+estimates are computed (matching varUcrt). The uncertainty data frame contains the following variables:\cr
+\code{ucrtMeas} - combined measurement uncertainty for an individual dew/frost point reading. Includes the
 repeatability and reproducibility of the sensor and the lab DAS and uncertainty of the
 calibration procedures and coefficients including uncertainty in the standard (truth).
+\code{ucrt_dfpt_t_L1} - partial uncertainty (degrees C) of individual dew/frost point
+temperature measurements with respect to ambient temperature
+\code{ucrt_dfpt_rh_L1} - partial uncertainty (degrees C) of individual dew/frost point temperature 
+measurements with respect to ambient relative humidity for Level 1 Mean uncertainty calculations
 }
 \description{
-Definition function. Alternative calibration uncertainty function. Create file (dataframe) with
-uncertainty information based off of the L0 temperature, relative humidity, and dew/frost point data values from 
+Definition function. Alternative calibration uncertainty function. Compute  
+measurement uncertainty based off of the L0 temperature, relative humidity, and dew/frost point data values from 
 the relative humidity sensor according to NEON.DOC.000851 - NEON Algorithm Theoretical Basis   
 Document (ATBD): Humidity and Temperature Sensor.
-
-Accepts L0 data and NEON uncertainty information as produced
-by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measurement
-uncertainties for each data value.
 }
 \examples{
 data <- data.frame(dew_point=c(1,-1,5,4,4.5),temperature=c(2,3,6,8,5),relative_humidity=c(1,6,7,0,10),
