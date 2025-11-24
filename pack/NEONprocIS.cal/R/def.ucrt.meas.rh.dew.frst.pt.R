@@ -116,8 +116,8 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   # Basic starting info
   timeMeas <- data$readout_time
   
-  # Check data input is numeric
-  if (!NEONprocIS.base::def.validate.vector(data[[varUcrt]],TestEmpty = FALSE, TestNumc = TRUE, log=log)) {
+  if(!("POSIXt" %in% base::class(timeMeas))){
+    log$error('Variable readout_time must be of class POSIXt')
     stop()
   }
   
@@ -232,6 +232,12 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   
   # Roll through the temperature and RH calibration files, applying the computations for the applicable time period(s)
   calSlctTemp <- calSlct$temperature
+  if(is.null(calSlctTemp)){
+    log$warn(base::paste0('No applicable calibration files available for temperature. Returning NA for calibrated output.'))
+    ucrtList <- list()
+    ucrtList[[varUcrt]] <- ucrt
+    return(ucrtList)
+  }
   for(idxRowTemp in base::seq_len(base::nrow(calSlctTemp))){
     
     # What points in the output correspond to this row?
@@ -255,13 +261,22 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     
     
     # Check format of infoCalTemp
-    if (!NEONprocIS.cal::def.validate.info.cal(infoCalTemp,CoefUcrt='U_CVALA1',log=log)){
+    if (!NEONprocIS.cal::def.validate.info.cal(infoCalTemp,
+                                               CoefUcrt=c('U_CVALA1','U_CVALA3'),
+                                               log=log)){
       stop()
     }
     
     
     # Now roll through the relative humidity calibrations, applying the computations for the applicable time period(s)
     calSlctRh <- calSlct$relative_humidity
+    if(is.null(calSlctRh)){
+      log$warn(base::paste0('No applicable calibration files available for relative_humidity Returning NA for calibrated output.'))
+      ucrtList <- list()
+      ucrtList[[varUcrt]] <- ucrt
+      return(ucrtList)
+    }
+    
     for(idxRowRh in base::seq_len(base::nrow(calSlctRh))){
       
       # What points in the output correspond to this row?
@@ -287,7 +302,9 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       }
   
       # Check format of infoCalRh
-      if (!NEONprocIS.cal::def.validate.info.cal(infoCal = infoCalRh,CoefUcrt='U_CVALA1',log=log)){
+      if (!NEONprocIS.cal::def.validate.info.cal(infoCal = infoCalRh,
+                                                 CoefUcrt=c('U_CVALA1','U_CVALA3'),
+                                                 log=log)){
         stop()
       }
       
@@ -302,7 +319,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       # Issue warning if more than one matching uncertainty coefficient was found
       if(base::nrow(ucrtCoefTemp) > 1){
         log$warn("More than one matching uncertainty coefficient was found for temperature U_CVALA1. Using the first.")
-      }
+      } 
       if(base::nrow(ucrtCoefRh) > 1){
         log$warn("More than one matching uncertainty coefficient was found for relative humidity U_CVALA1. Using the first.")
       }
@@ -326,10 +343,10 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       # Issue warning if more than one matching uncertainty coefficient was found
       if(base::nrow(ucrtCoefTempUa3) > 1){
         log$warn("More than one matching uncertainty coefficient was found for temperature U_CVALA3. Using the first.")
-      }
+      } 
       if(base::nrow(ucrtCoefRhUa3) > 1){
         log$warn("More than one matching uncertainty coefficient was found for relative humidity U_CVALA3. Using the first.")
-      }
+      } 
       
       # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient temperature for Level 1 Mean uncertainty calculations
       ucrt$ucrt_dfpt_t_L1[setCal] <- abs(data$derivative_dfpt_t[setCal])*base::as.numeric(ucrtCoefTempUa3$Value[1])

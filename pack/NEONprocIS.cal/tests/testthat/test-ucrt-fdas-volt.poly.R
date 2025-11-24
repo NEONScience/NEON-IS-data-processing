@@ -78,6 +78,10 @@ test_that("Unit test of def.ucrt.fdas.volt.poly.R", {
   TimeEnd <- base::as.POSIXct('2019-07-10',tz='GMT')
   calSlct <- list(data=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
   
+  # Get FDAS uncertainty coefficients
+  Meta <- list()
+  Meta$ucrtCoefFdas <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'testdata/ucrt-coef-fdas-input.json')
+  
   # Create data to calibrate
   data <- c(1,2,3,4,5,6)
   data2 <- as.character(c(2,4,6,8,10,12))
@@ -92,7 +96,7 @@ test_that("Unit test of def.ucrt.fdas.volt.poly.R", {
   cat("\n       |------ data and cal are not empty and have valid values    |\n")
   
   uncertainty <-
-    NEONprocIS.cal::def.ucrt.fdas.volt.poly(data = data, varUcrt='data', calSlct=calSlct)
+    NEONprocIS.cal::def.ucrt.fdas.volt.poly(data = data, varUcrt='data', calSlct=calSlct, Meta=Meta)
   
   col_List = c('raw','dervCal','ucrtFdas')  
   
@@ -111,7 +115,7 @@ test_that("Unit test of def.ucrt.fdas.volt.poly.R", {
   testthat::expect_equal(c(0.0123, 0.1000), 
                          c(uncertainty$data$dervCal[1],uncertainty$data$dervCal[6]),
                          tolerance = 1E-6)
-  testthat::expect_equal(c(0.6150615, 60.0010000), 
+  testthat::expect_equal(c(0.6150615, 0.0002324), 
                          c(uncertainty$data$ucrtFdas[1],uncertainty$data$ucrtFdas[6]),
                          tolerance = 1E-6)
   
@@ -123,7 +127,7 @@ test_that("Unit test of def.ucrt.fdas.volt.poly.R", {
   
   data$readout_time <- as.POSIXct(c('2018-06-13','2018-06-14','2018-06-15','2018-06-16','2018-06-17','2018-06-18'),tz='GMT')
   
-  uncertainty <- NEONprocIS.cal::def.ucrt.fdas.volt.poly(data = data, varUcrt='data', calSlct=calSlct)
+  uncertainty <- NEONprocIS.cal::def.ucrt.fdas.volt.poly(data = data, varUcrt='data', calSlct=calSlct,Meta=Meta)
   
   testthat::expect_equal(data$data, uncertainty$data$raw)
   testthat::expect_true(all(is.na(uncertainty$data$dervCal)))
@@ -142,6 +146,14 @@ test_that("Unit test of def.ucrt.fdas.volt.poly.R", {
   
   
   #
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ Cannot compute uncertainty for variable not present   |\n\n")
+  #
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.fdas.volt.poly(data = data, varUcrt='data3', calSlct=calSlct), silent = TRUE)
+  testthat::expect_true((class(uncertainty)[1] == "try-error"))
+  
+
+    #
   cat("\n       |======= Negative test::                      ============|\n")
   cat("\n       |------ Cannot compute uncertainty for character variable   |\n\n")
   #
