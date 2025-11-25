@@ -11,7 +11,7 @@
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path_pipelines='/home/NEON/ncatolico/R/NEON-IS-data-processing/pipe'
 git_path_avro='/home/NEON/ncatolico/R/NEON-IS-avro-schemas'
-git_path_avro_l0='/home/NEON/ncatolico/R/neon-avro-schemas'
+#git_path_avro_l0='/home/NEON/ncatolico/R/neon-avro-schemas'
 pipe_list_prefix='pipe_list_'
 source_type='hobou24'
 product='subsurfMoorTempCond'
@@ -38,14 +38,14 @@ pachctl finish commit $source_type'_empty_files'@master
 pachctl create repo $source_type'_avro_schemas'
 pachctl start commit $source_type'_avro_schemas'@master
 pachctl put file -r $source_type'_avro_schemas'@master:/$source_type -f $git_path_avro/avro_schemas/$source_type
-pachctl put file $source_type'_avro_schemas'@master:/$source_type/$source_type.avsc -f $git_path_avro_l0/schemas/$source_type/$source_type.avsc
+#pachctl put file $source_type'_avro_schemas'@master:/$source_type/$source_type.avsc -f $git_path_avro_l0/schemas/$source_type/$source_type.avsc
 pachctl finish commit $source_type'_avro_schemas'@master
 
 # Create source-type-specific fdas uncertainty (ONLY IF NEEDED FOR YOUR SOURCE TYPE)
-pachctl create repo $source_type'_uncertainty_fdas'
-pachctl start commit $source_type'_uncertainty_fdas'@master
-pachctl put file -r $source_type'_uncertainty_fdas'@master:/ -f $data_path/uncertainty_fdas/
-pachctl finish commit $source_type'_uncertainty_fdas'@master
+# pachctl create repo $source_type'_uncertainty_fdas'
+# pachctl start commit $source_type'_uncertainty_fdas'@master
+# pachctl put file -r $source_type'_uncertainty_fdas'@master:/ -f $data_path/uncertainty_fdas/
+# pachctl finish commit $source_type'_uncertainty_fdas'@master
 
 # Create product-specific avro_schemas
 pachctl create repo $product'_avro_schemas'
