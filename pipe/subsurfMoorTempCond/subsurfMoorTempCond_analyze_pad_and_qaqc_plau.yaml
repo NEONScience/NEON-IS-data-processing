@@ -51,7 +51,7 @@ transform:
         DirIn=/tmp/pfs/padded_analyzerCopy \
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
-        "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+        "TermTest1=pressure:null|gap|range(rmv)|step|spike|persistence" \
         DirSubCopy=location
     fi
     EOF

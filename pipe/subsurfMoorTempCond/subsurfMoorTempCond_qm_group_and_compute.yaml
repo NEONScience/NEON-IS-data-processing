@@ -29,7 +29,7 @@ transform:
       Tmi=030 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureSpikeQF|baroPresQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|baroPresQF" \
       "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
     
@@ -51,10 +51,10 @@ transform:
       Tmi=030 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
-      "GrpQfAlph1=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureSpikeQF" \
+      "GrpQfAlph1=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF" \
       "GrpQfBeta1=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF" \
       "GrpQfBetaIgnr1=temperature:temperatureNullQF|temperatureGapQF" \
-      "GrpQfAlph2=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivitySpikeQF|missingTempQF" \
+      "GrpQfAlph2=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|missingTempQF" \
       "GrpQfBeta2=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF" \
       "GrpQfBetaIgnr2=conductivity:conductivityNullQF|conductivityGapQF" \
       "QfForc1=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
