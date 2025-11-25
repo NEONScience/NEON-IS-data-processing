@@ -177,20 +177,3 @@ class Pub_egress:
     def refresh(self):
         """Force re-read of the sites file (e.g., if it changed)."""
         self._lookup_mdp_path = None
-
-    def get_mdp_file_path_k(self, site) -> str:
-        if not self.out_mdp_sites:
-            raise RuntimeError("OUT_MDP_SITES is not set")
-
-        rows = []
-        with self.out_mdp_sites.open() as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                mdp_site, is_prod, is_staging, path = line.split()  # splits on any whitespace
-                rows.append({"site": mdp_site, "prod": is_prod.lower(), "staging": is_staging.lower(), "path": path})
-
-        lookup = {(r["site"], r["prod"], r["staging"]): r["path"] for r in rows}
-        egress_parts = urlsplit(self.egress_prefix)
-        return f"{egress_parts.scheme}://{egress_parts.netloc}/{lookup[(site, self.prod, self.staging)]}"
