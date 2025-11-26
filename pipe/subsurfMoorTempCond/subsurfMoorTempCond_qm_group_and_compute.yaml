@@ -32,7 +32,7 @@ transform:
       "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|baroPresQF" \
       "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
-      "QfForc1=baroPresQF:1:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF:-1"
+      "QfForc1=baroPresQF:1:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF:-1" \
     
     # We are done with the leveltroll. Clean up interim directories before doing hobo
     rm -r -f /tmp/pfs/filter_joined
