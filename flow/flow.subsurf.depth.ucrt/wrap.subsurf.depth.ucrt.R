@@ -130,6 +130,9 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
   #Could be multiple source IDs in a day. Account for all.
   trollSources<-unique(trollData$source_id[!is.na(trollData$source_id)])
   
+  #add troll height column
+  trollData$trollHeight<-NA
+  
   if(length(trollSources)>0){
     for(j in 1:length(trollSources)){
       trollSource_j<-trollSources[j]
