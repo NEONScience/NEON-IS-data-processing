@@ -238,11 +238,8 @@ wrap.troll.cond.conv <- function(DirIn,
     # The surface water pressure is determined by subtracting the air pressure 
     # of the atmosphere from the measured pressure.
     TrollData$pressure_raw <- TrollData$pressure
-    TrollData$pressure <- as.numeric(TrollData$pressure_raw) - as.numeric(TrollData$baroPressure)
+    TrollData$pressure[!is.na(TrollData$baroPressure)] <- as.numeric(TrollData$pressure_raw[!is.na(TrollData$baroPressure)]) - as.numeric(TrollData$baroPressure[!is.na(TrollData$baroPressure)])
   }
-  
-  #don't produce data where baro is flagged
-  TrollData$pressure[TrollData$baroPresQF==1]<-NA
   
   #Create dataframe for output data
   dataOut <- TrollData

@@ -85,7 +85,7 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_group_path/2022/06/15/subsurf-moor-temp-cond_PRPO103100')
+# Sys.setenv(DIR_IN='~/pfs/subsurfMoorTempCond_group_path/2022/06/16/subsurf-moor-temp-cond_CRAM103502')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums") #,"FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_QF")
 #' rm(list=setdiff(ls(),c('arg','log')))
