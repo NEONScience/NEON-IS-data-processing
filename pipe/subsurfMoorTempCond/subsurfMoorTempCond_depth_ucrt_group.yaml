@@ -62,11 +62,11 @@ input:
   - pfs:
       name: FILE_SCHEMA_STATS
       repo: subsurfMoorTempCond_avro_schemas
-      glob: /subsurfMoorTempCond_dp01_stats.avsc
+      glob: subsurfMoorTempCond/subsurfMoorTempCond_dp01_stats.avsc
   - pfs:
       name: FILE_SCHEMA_FLAGS
       repo: subsurfMoorTempCond_avro_schemas
-      glob: /subsurfMoorTempCond_thermistorHeightQF.avsc
+      glob: subsurfMoorTempCond/subsurfMoorTempCond_thermistorHeightQF.avsc
   - join:
     - pfs:
         name: QAQC_PATH

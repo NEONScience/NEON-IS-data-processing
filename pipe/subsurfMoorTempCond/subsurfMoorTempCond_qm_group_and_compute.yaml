@@ -113,11 +113,11 @@ input:
   - pfs:
       name: FILE_SCHEMA_QM_TROLL
       repo: subsurfMoorTempCond_avro_schemas
-      glob: /subsurfMoorTempCond_dp01_pressure_QF.avsc
+      glob: subsurfMoorTempCond/subsurfMoorTempCond_dp01_pressure_QF.avsc
   - pfs:
       name: FILE_SCHEMA_QM_HOBO
       repo: subsurfMoorTempCond_avro_schemas
-      glob: /subsurfMoorTempCond_dp01_hobo_QF.avsc
+      glob: subsurfMoorTempCond/subsurfMoorTempCond_dp01_hobo_QF.avsc
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH
