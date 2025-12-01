@@ -373,7 +373,6 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     thisHobo$thermistorHeightFromAnchor <- thisHobo$trollHeight + thisHobo$z_offset
     thisHobo$thermistorHeightFromAnchor[thisHobo$thermistorHeightQF==1] <- NA 
     
-    
     # --------- determine conductivity and temperature uncertainty ------------
     
     # Take stock of our files. 
@@ -457,6 +456,11 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     dataOut <- thisHobo
     dataCol <- c("startDateTime","endDateTime","temperature","conductivity","thermistorDepth","thermistorHeightFromAnchor")
     dataOut <- dataOut[,dataCol]
+    dataOut$temperature<-round(dataOut$temperature,5)
+    dataOut$conductivity<-round(dataOut$conductivity,5)
+    dataOut$thermistorDepth<-round(dataOut$thermistorDepth,5)
+    dataOut$thermistorHeightFromAnchor<-round(dataOut$thermistorHeightFromAnchor,5)
+    
     
     #Create dataframe for output instantaneous flags
     flagsOut <- thisHobo
@@ -469,6 +473,10 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     ucrtOut$startDateTime<-as.POSIXct(ucrtOut$readout_time)
     ucrtCol <- c("startDateTime","temperature_ucrtExpn","specCond_ucrtExpn","depth_ucrtExpn","thermistorHeight_ucrtExpn")
     ucrtOut <- ucrtOut[,ucrtCol]
+    ucrtOut$temperature_ucrtExpn<-round(ucrtOut$temperature_ucrtExpn,5)
+    ucrtOut$specCond_ucrtExpn<-round(ucrtOut$specCond_ucrtExpn,5)
+    ucrtOut$depth_ucrtExpn<-round(ucrtOut$depth_ucrtExpn,5)
+    ucrtOut$thermistorHeight_ucrtExpn<-round(ucrtOut$thermistorHeight_ucrtExpn,5)
     
     #merge data frames
     statsOut <- merge(dataOut,ucrtOut,by='startDateTime')
