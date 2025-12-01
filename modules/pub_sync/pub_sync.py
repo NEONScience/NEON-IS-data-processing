@@ -53,7 +53,7 @@ def sync_pubs(get_sync_pubs: Callable[[str], Iterator[DpPub]],
         data_path_max_index = max(data_path_indices)
         data_path_start = Path(*data_path.parts[0:data_path_min_index])  # Parent of the min index
         for path in data_path_start.rglob('*'):
-            if len(path.parts) - 1 == data_path_max_index:
+            if len(path.parts) - 1 == data_path_max_index and path.parts[data_path_product_index] in dp_ids:
                 log.debug(f'Found output publication package at {path}')
 
                 # Add to the dictionary list with the package
