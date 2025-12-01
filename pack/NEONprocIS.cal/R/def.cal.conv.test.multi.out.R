@@ -193,8 +193,7 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
     
     # ---------- Place calibrated & uncertainty data in the output --------
     
-    # Replace raw data with calibrated data.
-    #!!! Try writing a different var !!!
+    # Replace raw data with calibrated data and add alternate cal outputs
     dataConv[[varIdx]] <- dataConvIdx
     dataConv[[varIdxAlt]] <- dataConvIdxAlt
     
