@@ -1,11 +1,11 @@
-name: "Build-push_flow_sunav2_logfiles_fill"
+name: "Build-push_discharge_parse_os_inputs"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'flow/flow.sunav2.logfiles.fill/**'
+      - 'flow/flow.discharge.parse.os.inputs/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/flow.sunav2.logfiles.fill
-  IMAGE_NAME: neon-is-sunav2-logfiles-fill
+  MODULE_PATH: ./flow/flow.discharge.parse.os.inputs
+  IMAGE_NAME: neon-is-discharge-parse-os-inputs
 
 jobs:
   build-push:

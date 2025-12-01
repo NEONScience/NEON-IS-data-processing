@@ -1,11 +1,11 @@
-name: "Build-push_subsurf_depth_ucrt"
+name: "Build-push_insufficient-data"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'flow/flow.subsurf.depth.ucrt/**'
+      - 'flow/flow.insufficient.data/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/flow.subsurf.depth.ucrt
-  IMAGE_NAME: neon-is-subsurf-depth-ucrt
+  MODULE_PATH: ./flow/flow.insufficient.data
+  IMAGE_NAME: neon-is-insufficient-data
 
 jobs:
   build-push:
