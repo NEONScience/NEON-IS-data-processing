@@ -81,6 +81,7 @@ def main() -> None:
     data_path_site_index = env.int('DATA_PATH_SITE_INDEX')
     data_path_date_index = env.int('DATA_PATH_DATE_INDEX')
     data_path_package_index = env.int('DATA_PATH_PACKAGE_INDEX')
+    out_path_mdp = env.str('OUT_PATH_MDP')
     dp_ids = env.list('PRODUCTS')
     sites = env.list('SITES')
     change_by = env.str('CHANGE_BY')
@@ -104,6 +105,7 @@ def main() -> None:
                           data_path_site_index = data_path_site_index,
                           data_path_date_index = data_path_date_index,
                           data_path_package_index = data_path_package_index,
+                          out_path_mdp = out_path_mdp,
                           dp_ids = dp_ids,
                           sites = sites,
                           change_by = change_by)

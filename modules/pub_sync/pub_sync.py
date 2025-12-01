@@ -21,6 +21,7 @@ def sync_pubs(get_sync_pubs: Callable[[str], Iterator[DpPub]],
               data_path_site_index: int,
               data_path_date_index: int,
               data_path_package_index: int,
+              out_path_mdp: str,
               dp_ids: List[str],
               sites: List[str],
               change_by: str) -> None:
@@ -53,12 +54,24 @@ def sync_pubs(get_sync_pubs: Callable[[str], Iterator[DpPub]],
         data_path_max_index = max(data_path_indices)
         data_path_start = Path(*data_path.parts[0:data_path_min_index])  # Parent of the min index
         for path in data_path_start.rglob('*'):
-            if len(path.parts) - 1 == data_path_max_index and path.parts[data_path_product_index] in dp_ids:
+            if len(path.parts) - 1 == data_path_max_index and \
+                    path.parts[data_path_product_index] in dp_ids:
                 log.debug(f'Found output publication package at {path}')
 
                 # Add to the dictionary list with the package
                 pub_key = get_path_key(path, data_path_indices)
                 psmp_pachy[pub_key]=[path.parts[index] for index in data_path_indices]
+
+            # in case there are data for mdp sites under pfs/out/mdp/NEON.DOM.SITE.DP1.PRODUCT.001/
+            if str(path).startswith(out_path_mdp) and \
+                    len(path.parts) - 1 == data_path_max_index + 1 and \
+                    path.parts[data_path_product_index + 1] in dp_ids:
+                log.debug(f'Found output publication package at {path}')
+
+                # Add to the dictionary list with the package
+                mdp_data_path_indices = [x + 1 for x in data_path_indices]
+                pub_key = get_path_key(path, mdp_data_path_indices)
+                psmp_pachy[pub_key]=[path.parts[index] for index in mdp_data_path_indices]
 
     log.info(f'Found {len(psmp_pachy.keys())} product-site-month-packages output by current processing')
 
