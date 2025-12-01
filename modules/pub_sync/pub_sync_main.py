@@ -57,15 +57,13 @@ import environs
 import structlog
 from contextlib import closing
 import os
-import datetime
-from dateutil.relativedelta import relativedelta
 import common.log_config as log_config
-from common.get_path_key import get_path_key
 from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 from data_access.get_sync_pubs import get_sync_pubs
 from functools import partial
 from pub_sync import pub_sync
+from typing import Optional
 
 log = structlog.get_logger()
 
@@ -76,7 +74,6 @@ def main() -> None:
     log_level: str = os.environ['LOG_LEVEL']
     log_config.configure(log_level)
     db_config = read_from_mount(Path('/var/db_secret'))
-    connector = DbConnector(db_config)
 
     date_path_year_index = env.int('DATE_PATH_YEAR_INDEX')
     date_path_month_index = env.int('DATE_PATH_MONTH_INDEX')
@@ -90,7 +87,7 @@ def main() -> None:
 
     date_path: Path = Path(os.environ['DATE_PATH'])
     if 'DATA_PATH' in os.environ:
-        data_path: Path = Path(os.environ['DATA_PATH'])
+        data_path: Optional[Path] = Path(os.environ['DATA_PATH'])
     else:
         # It is possible that data path will not exist if there are no current publications for the date range
         data_path = None

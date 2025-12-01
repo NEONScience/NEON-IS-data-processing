@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
-import environs
 import structlog
-from contextlib import closing
-import os
 import datetime
-from pathlib import Path
-from typing import Callable, Iterator, List, Dict
-
 from dateutil.relativedelta import relativedelta
-from common.get_path_key import get_path_key
+from pathlib import Path
+from typing import Callable, Iterator, List
 
 from data_access.types.dp_pub import DpPub
+from common.get_path_key import get_path_key
 
 log = structlog.get_logger()
 
@@ -20,20 +15,19 @@ log = structlog.get_logger()
 def sync_pubs(get_sync_pubs: Callable[[str], Iterator[DpPub]],
               data_path: Path,
               date_path: Path,
-              date_path_year_index: str,
-              date_path_month_index: str,
-              data_path_product_index: str,
-              data_path_site_index: str,
-              data_path_date_index: str,
-              data_path_package_index: str,
+              date_path_year_index: int,
+              date_path_month_index: int,
+              data_path_product_index: int,
+              data_path_site_index: int,
+              data_path_date_index: int,
+              data_path_package_index: int,
               dp_ids: List[str],
               sites: List[str],
               change_by: str) -> None:
 
-
-# Get pub months to evaluate
+    # Get pub months to evaluate
     pub_dates = {}
-    date_path_indices = (date_path_year_index,date_path_month_index)
+    date_path_indices = [date_path_year_index,date_path_month_index]
     date_path_min_index = int(min(date_path_indices))
     date_path_max_index = int(max(date_path_indices))
     date_path_start = Path(*date_path.parts[0:date_path_min_index]) # Parent of the min index
@@ -51,10 +45,10 @@ def sync_pubs(get_sync_pubs: Callable[[str], Iterator[DpPub]],
 
     log.info(f'Publication months to be evaluated: {",".join(pub_dates.keys())}')
 
-# What product-site-month-packages are output by current processing?
+    # What product-site-month-packages are output by current processing?
     psmp_pachy = {}  # Dictionary list of product-site-month-packages.
     if data_path is not None:
-        data_path_indices = (data_path_product_index,data_path_site_index,data_path_date_index,data_path_package_index)
+        data_path_indices = [data_path_product_index,data_path_site_index,data_path_date_index,data_path_package_index]
         data_path_min_index = min(data_path_indices)
         data_path_max_index = max(data_path_indices)
         data_path_start = Path(*data_path.parts[0:data_path_min_index])  # Parent of the min index
@@ -62,15 +56,15 @@ def sync_pubs(get_sync_pubs: Callable[[str], Iterator[DpPub]],
             if len(path.parts) - 1 == data_path_max_index:
                 log.debug(f'Found output publication package at {path}')
 
-            # Add to the dictionary list with the package
-                pub_key = get_path_key(path,data_path_indices)
+                # Add to the dictionary list with the package
+                pub_key = get_path_key(path, data_path_indices)
                 psmp_pachy[pub_key]=[path.parts[index] for index in data_path_indices]
 
     log.info(f'Found {len(psmp_pachy.keys())} product-site-month-packages output by current processing')
 
-# Check existing pubs for relevant site-months against what current output. Generate a list of existing pub records
-# that should be inactive (i.e. not currently output). Delete/insert inactive pub records
-# as appropriate, to remove visibility
+    # Check existing pubs for relevant site-months against what current output.
+    # Generate a list of existing pub records that should be inactive (i.e. not currently output).
+    # Delete/insert inactive pub records as appropriate, to remove visibility
     get_sync_pubs(pub_dates = pub_dates,
                   dp_ids = dp_ids,
                   sites = sites,
