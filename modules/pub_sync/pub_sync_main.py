@@ -91,6 +91,7 @@ def main() -> None:
     else:
         # It is possible that data path will not exist if there are no current publications for the date range
         data_path = None
+    log.debug(f"starting pub sync for {data_path}")
 
     with closing(DbConnector(db_config)) as connector:
         get_sync_pubs_partial = partial(get_sync_pubs,connector=connector)
