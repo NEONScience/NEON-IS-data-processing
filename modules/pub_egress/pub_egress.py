@@ -15,7 +15,7 @@ log = get_logger()
 
 class Pub_egress:
 
-    def __init__(self, data_path: Path, starting_path_index: int, out_path: Path, out_path_mdp: Path,
+    def __init__(self, data_path: Path, out_path: Path, out_path_mdp: Path,
                  out_mdp_sites: Path, err_path: Path, egress_url: str, prod: str, staging: str) -> None:
         """
         Constructor.
@@ -25,7 +25,6 @@ class Pub_egress:
         :param err_path: The error directory, i.e., errored.
         """
         self.data_path = data_path
-        self.starting_path_index = starting_path_index
         self.out_path = out_path
         self.out_path_mdp = out_path_mdp
         self.out_mdp_sites = out_mdp_sites
@@ -50,8 +49,7 @@ class Pub_egress:
 
     def upload(self) -> None:
 
-        data_path_start = Path(*self.data_path.parts[0:self.starting_path_index+1]) # starting index
-        for path in data_path_start.rglob('*'):
+        for path in self.data_path.rglob('*'):
             # When we reach a manifest file, we have found a pub package to process
             if path.parts[-1] == 'manifest.csv':
                 package_path = path.parent

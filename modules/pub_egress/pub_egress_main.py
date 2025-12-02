@@ -10,7 +10,6 @@ from pub_egress.pub_egress import Pub_egress
 def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
-    starting_path_index: int = env.int('STARTING_PATH_INDEX')
     out_path: Path = env.path('OUT_PATH')
     out_path_mdp: Path = env.path('OUT_PATH_MDP')
     out_mdp_sites: Path = env.path('OUT_MDP_SITES')
@@ -24,7 +23,7 @@ def main() -> None:
     log.debug(f'data_dir: {data_path}')
     log.debug(f'out_dir: {out_path}')
 
-    egress = Pub_egress(data_path, starting_path_index, out_path, out_path_mdp, out_mdp_sites, err_path,
+    egress = Pub_egress(data_path, out_path, out_path_mdp, out_mdp_sites, err_path,
                         egress_url, prod, staging)
     egress.upload()
 
