@@ -2,7 +2,7 @@
 pipeline:
   name: ptb330a_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-ab64fab
   cmd:
   - sh
   - "-c"
@@ -36,9 +36,9 @@ transform:
       DirErr=/pfs/out/errored_datums \
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
-      "TermFuncConv=barometricPressure:def.cal.conv.poly" \
+      "ConvFuncTerm1=def.cal.conv.poly:barometricPressure" \
       "TermQf=barometricPressure" \
-      "TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst"
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:barometricPressure"
 
     EOF
   env:
