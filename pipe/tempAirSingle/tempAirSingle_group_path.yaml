@@ -39,7 +39,7 @@ transform:
     
     # Do windobserverii
     if [ ${LOCATION_FOCUS_PATH_WINDOBSERVER+x} ]; then 
-      export LOCATION_FOCUS_PATH=$LOCATION_FOCUS_PATH
+      export LOCATION_FOCUS_PATH=$LOCATION_FOCUS_PATH_WINDOBSERVER
       python3 -m group_path.group_path_main
     fi
     
