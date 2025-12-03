@@ -2,7 +2,7 @@
 pipeline:
   name: cmp22_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -36,9 +36,10 @@ transform:
       DirErr=/pfs/out/errored_datums \
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
-      TermFuncConv=voltage:def.cal.conv.poly \
+      ConvFuncTerm1=def.cal.conv.poly:voltage \
       TermQf=voltage \
-      TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly \
+      UcrtFuncTerm1=def.ucrt.meas.mult:voltage \
+      UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage \
       FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
 
     EOF

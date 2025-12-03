@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>12294</MxAssetID>
+    
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID>21000000000084</CalFixtureID>
+      <ActivityLocation>10000000100349</ActivityLocation>
+      <SWVersion>1.0.0</SWVersion>
+      <ProcedureVersion>1.0</ProcedureVersion>
+      <Station>1</Station>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>21.10</Min>
+        <Max>22.00</Max>
+        <Mean>21.49</Mean>
+        <StdDev>0.30</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>842.00</Min>
+        <Max>842.20</Max>
+        <Mean>842.09</Mean>
+        <StdDev>0.04</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>30.70</Min>
+        <Max>33.60</Max>
+        <Mean>32.17</Mean>
+        <StdDev>1.17</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient> 
+		<Name>CVALO1</Name>
+		<Value>0</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALC1</Name>
+		<Value>20180307125959</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALS1</Name>
+		<Value>20100101125959</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALG2</Name>
+		<Value>0.08166700090536</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALG1</Name>
+		<Value>0.40284112276931</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALD1</Name>
+		<Value>16</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALA3</Name>
+		<Value>0.028520</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALA2</Name>
+		<Value>0.404000</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALA1</Name>
+		<Value>0.195700</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALT0</Name>
+		<Value>16.661542</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALL0</Name>
+		<Value>22788.04000000</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALH0</Name>
+		<Value>31476.52000000</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="">
+    <Metadata>
+        <Entry>
+            <Name> </Name>
+            <Value> </Value>
+        </Entry> 
+    </Metadata>
+	<Row index="">
+    <Independent name=""> </Independent>
+    <Column index="">
+        <Dependent name=""> </Dependent>
+    </Column>
+	</Row>
+	</CalibrationTable>
+    <CalibrationStandards CertNumber=""> </CalibrationStandards>
+    <StreamID>2</StreamID>
+    <Uncertainty units="cm^3/cm^3"> 
+		<Name>U_CVALD3</Name>
+		<Value>100</Value>
+	</Uncertainty><Uncertainty units="cm^3/cm^3"> 
+		<Name>U_CVALD2</Name>
+		<Value>100</Value>
+	</Uncertainty><Uncertainty units="cm^3/cm^3"> 
+		<Name>U_CVALD1</Name>
+		<Value>100</Value>
+	</Uncertainty><Uncertainty units="cm^3/cm^3"> 
+		<Name>U_CVALA3</Name>
+		<Value>0.10677260</Value>
+	</Uncertainty><Uncertainty units="cm^3/cm^3"> 
+		<Name>U_CVALA2</Name>
+		<Value>0.00004510</Value>
+	</Uncertainty><Uncertainty units="cm^3/cm^3"> 
+		<Name>U_CVALA1</Name>
+		<Value>0.10681770</Value>
+	</Uncertainty>
+    <Trueness units="cm^3/cm^3">0.000000</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2020-02-18T21:56:56.7924</StartTime>
+      <EndTime>2020-02-18T22:15:44.6508</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>350979</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2021-10-13T18:19:29.41</StartTime>
+    <EndTime>2031-12-31T09:01:00.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment>21000000051475,21000000051474,21000000051473,30000000007364,30000000001125,30000000001343,21000000051535,195940,30000000001370,</Equipment>
+			<Operator>mvanlysel</Operator>
+			<WorkOrder>WO42021</WorkOrder>
+			<MaximoID>12294</MaximoID>
+			<AssetID>30000000005174</AssetID>
+			<Reference/>
+			<Fixture>L1W300</Fixture>
+			<NEONPN>CF00810030</NEONPN>
+			<SN header="">01B4133518000072</SN>
+			<FW header="">1.4.2</FW>
+			<SOH header=""/>
+			<UncertaintyCtl>L1W300_m</UncertaintyCtl>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header="TS,Raw Frequency">2020-02-18 22:00:19.0153,31477
+2020-02-18 22:00:29.0156,31477
+
+
+</CALDATA>
+		<ValidationDATA header=""/>
+		<QCStatic header="K,U_Constant,U_QA,R2_Check,U_Drift,Drift_Total,Revision,Unit">0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1,cm^3/cm^3</QCStatic>
+		<QCDynamic header="Sensor SN">SE19T-252</QCDynamic>
+		<Precision header=""/>
+		<AsLeftCFG header=""/>
+		<AsReceived>
+			<ReceivedCFG header=""/>
+			<ReceivedCoefficient> 
+				<Name> </Name>
+				<Value> </Value>
+			</ReceivedCoefficient>
+			<ReceivedDATA header="">New Setting
+SE19T-2516,18,1,2,1,40,C0,0,0,58,32,7B,60,40,35,54,9C,3D,A7,DE,65,C0,43,F,50
+---
+Old Setting
+SE19T-2516,18,1,2,1,40,C0,0,0,5A,78,7B,9B,3E,48,65,95,3E,CE,D9,17,3C,E9,A2,C6
+---
+
+As received PConfig
+Addr  Type  Depth      Air    Water  A         B         C         Total
+1	1	6.000000	23160	31643	0.195700	0.404000	0.028520	0
+2	1	16.000000	22946	31547	0.195700	0.404000	0.028520	0
+3	1	26.000000	23679	32087	0.195700	0.404000	0.028520	0
+41	2	6.000000	13392	20603	1.000000	1.000000	0.000000	0
+42	2	16.000000	13139	20489	1.000000	1.000000	0.000000	0
+43	2	26.000000	13345	21082	1.000000	1.000000	0.000000	0
+[Modbus Settings]
+Mode   Baudrate  Parity TaTime SDelay
+0      5         0      500    0     
+[Probe Settings]
+Addr  Serial
+1     01B4133518000072
+
+As left PConfig
+Addr  Type  Depth      Air    Water  A         B         C         Total
+1	1	6.000000	22578	31584	2.833289	0.081967	-3.047810	0
+2	1	16.000000	22788	31477	2.833289	0.081967	-3.047810	0
+3	1	26.000000	22761	31966	3.891861	0.061475	-4.170176	0
+41	2	6.000000	13511	20586	1.000000	1.000000	0.000000	0
+42	2	16.000000	13416	20422	1.000000	1.000000	0.000000	0
+43	2	26.000000	13591	21004	1.000000	1.000000	0.000000	0
+[Modbus Settings]
+Mode   Baudrate  Parity TaTime SDelay
+0      5         0      500    0     
+[Probe Settings]
+Addr  Serial
+1     01B4133518000072</ReceivedDATA>
+		</AsReceived>
+  </DATA>
+  </CalVal>

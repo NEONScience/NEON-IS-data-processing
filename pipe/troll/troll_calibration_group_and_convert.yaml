@@ -2,7 +2,7 @@
 pipeline:
   name: troll_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -35,9 +35,11 @@ transform:
         FileSchmData=$FILE_SCHEMA_DATA_AQUATROLL \
         FileSchmQf=$FILE_SCHEMA_FLAGS_AQUATROLL \
         DirSubCopy=flags \
-        "TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly|conductivity:def.cal.conv.poly.split" \
+        "ConvFuncTerm1=def.cal.conv.poly.b:pressure" \
+        "ConvFuncTerm2=def.cal.conv.poly:temperature" \
+        "ConvFuncTerm3=def.cal.conv.poly.split:conductivity" \
         "TermQf=pressure|temperature|conductivity" \
-        "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst|conductivity:def.ucrt.meas.cnst"
+        "UcrtFuncTerm1=def.ucrt.meas.cnst:pressure|temperature|conductivity"
     elif [ $source_type = "leveltroll500" ]; then 
       # Leveltroll
       Rscript ./flow.cal.conv.R \
@@ -47,9 +49,10 @@ transform:
         FileSchmData=$FILE_SCHEMA_DATA_LEVELTROLL \
         FileSchmQf=$FILE_SCHEMA_FLAGS_LEVELTROLL \
         DirSubCopy=flags \
-        "TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly" \
+        "ConvFuncTerm1=def.cal.conv.poly.b:pressure" \
+        "ConvFuncTerm2=def.cal.conv.poly:temperature" \
         "TermQf=pressure|temperature" \
-        "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst"
+        "UcrtFuncTerm1=def.ucrt.meas.cnst:pressure|temperature"
     fi
     EOF
   env:
