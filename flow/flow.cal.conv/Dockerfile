@@ -21,7 +21,7 @@ WORKDIR /home/app
 
 # Copy in application code
 COPY ${FLOW_DIR}/${APP_DIR}/flow.cal.conv.R .
-COPY ${FLOW_DIR}/${APP_DIR}/wrap.cal.conv.dp0p.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.cal.conv.R .
 
 # Run as app user
 RUN chown app:app -R /home/app
