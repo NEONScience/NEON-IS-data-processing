@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -13,72 +13,67 @@ transform:
     IFS=$'\n\t'
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf /tmp/kafka_merged
     rm -rf $OUT_PATH_JOINER
+    rm -rf /tmp/pfs/kafka_merged
+    rm -rf /tmp/pfs/kafka_mergedCopy
     rm -rf $OUT_PATH_ARRAY_PARSER
     
-    mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     mkdir -p $OUT_PATH_JOINER 
+    mkdir -p /tmp/pfs/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     mkdir -p $OUT_PATH_ARRAY_PARSER
     
-    # Detect if we have data coming from Kafka or trino
-    # Note that we run the filter-joiner in sequential if statements rather than an elif statement ...
-    # ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...
-    # ... trino data wins (filter joiner will not copy a file if it is already in the destination). This scenario ...
-    # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka ...
-    # ... retention period for data that have already been loaded from Trino. In normal operations this scenario ...
-    # ... should not arise because the only data coming into Pachyderm will be coming from Kafka. ...
-    # ... When a conflict does arise, the Trino data will take precedence, which is fine because the ...
-    # ... conflict arose because data for the same sensor and day were in both locations.
-    if [ ${DATA_PATH_TRINO+x} ]; then 
-      # Data from trino. 
-      # Set CONFIG for filter-joiner to the trino version and run filter joiner
-      export CONFIG=$CONFIG_TRINO
-      export OUT_PATH=$OUT_PATH_JOINER
-      python3 -m filter_joiner.filter_joiner_main
-    fi  
-    if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
-      # Data from kafka. 
-      # Run kafka combiner
-      Rscript ./flow.kfka.comb.R \
-          DirIn=$KAFKA_UNMERGED_DATA \
-          DirOut=/tmp/kafka_merged \
+    # Join files from the archive and from Kafka
+    export OUT_PATH=$OUT_PATH_JOINER
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # Combine data from Kafka and the archive (data already parsed)
+    Rscript ./flow.kfka.comb.R \
+          DirIn=$OUT_PATH_JOINER \
+          DirOut=/tmp/pfs/kafka_merged \
           DirErr=/pfs/out/errored_datums \
-          FileSchmL0=$FILE_SCHEMA_PARSED
-      # Set CONFIG for filter-joiner to the kafka version and run filter joiner
-      export CONFIG=$CONFIG_KAFKA
-      export OUT_PATH=$OUT_PATH_JOINER
-      python3 -m filter_joiner.filter_joiner_main
-    fi  
+          FileSchmL0=$FILE_SCHEMA_PARSED \
+          "DirSubCopy=calibration|location"
+    
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/kafka_merged /tmp/pfs/kafka_mergedCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/pfs/kafka_merged
     
     # Run array parser (parse calibrations only - data already parsed)
     export SCHEMA_PATH=$FILE_SCHEMA_PARSED
-    export DATA_PATH=$OUT_PATH_JOINER
+    export DATA_PATH=/tmp/pfs/kafka_mergedCopy
     export OUT_PATH=$OUT_PATH_ARRAY_PARSER
     python3 -m array_parser.array_parser_main
 
     # Run calibration conversion module
+    # NOTE: location files aren't being output. Likely need another copy task, or option in R module to copy vs. symlink
     Rscript ./flow.cal.conv.R \
       DirIn=$OUT_PATH_ARRAY_PARSER \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      "ConvFuncTerm1=def.cal.conv.test.multi.out:rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
       "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
-      DirSubCopy=calibration
+      "DirSubCopy=calibration|location"
+
     EOF
   env:
-    # Environment variables for filter-joiner.
-    # There are two configs here, CONFIG_KAFKA is when data comes from kafka, CONFIG_TRINO is when data comes from trino. 
-    # The engironment variable CONFIG is set to the appropriate one as detected in the bash script above
-    CONFIG_KAFKA: |
+    # Environment variables for filter-joiner
+    CONFIG: |
       ---
       # Configuration for filter-joiner module that will bring together the data and calibrations
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: DATA_PATH_KAFKA
+            name: KAFKA_UNMERGED_DATA
             # Filter for data directory
-            glob_pattern: /tmp/kafka_merged/enviroscan/*/*/*/*/**
+            glob_pattern: /pfs/KAFKA_UNMERGED_DATA/enviroscan/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: DATA_PATH_ARCHIVE
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_ARCHIVE/enviroscan/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
@@ -88,30 +83,19 @@ transform:
             glob_pattern: /pfs/CALIBRATION_PATH/enviroscan/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
-    CONFIG_TRINO: |
-      ---
-      # Configuration for filter-joiner module that will bring together the data and calibrations
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      input_paths:
+            outer_join: true
         - path:
-            name: DATA_PATH_TRINO
+            name: LOCATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_TRINO/enviroscan/*/*/*/*/**
+            glob_pattern: /pfs/LOCATION_PATH/enviroscan/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
-        - path:
-            name: CALIBRATION_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/enviroscan/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
-    OUT_PATH_JOINER: /tmp/pfs/filter_joined
-    
+    OUT_PATH_JOINER: /tmp/pfs/filter_joined 
+
     # Environment variables for array parser
     PARSE_CALIBRATION: 'True'
     TEST_MODE: 'True' # We already parsed the data. Pass it through via symlink
@@ -149,21 +133,28 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: enviroscan_calibration_assignment
-        glob: /enviroscan/(*)/(*)/(*)
+        glob: /enviroscan/(2025)/(10)/(20)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
-        name: DATA_PATH_TRINO
+        name: DATA_PATH_ARCHIVE
         repo: enviroscan_data_source_trino
-        glob: /enviroscan/(*)/(*)/(*)
+        glob: /enviroscan/(2025)/(10)/(20)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: enviroscan_data_source_kafka
-        glob: /enviroscan/(*)/(*)/(*)
+        glob: /enviroscan/(2025)/(10)/(20)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: LOCATION_PATH
+        repo: enviroscan_location_asset_assignment
+        glob: /enviroscan/(2025)/(10)/(20)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
