@@ -10,7 +10,7 @@ wrap.qf.cal(data, calSlct, mappNameVar = NULL, log = NULL)
 \item{data}{Data frame of L0 data. Must include POSIXct time variable readout_time.}
 
 \item{calSlct}{A named list of data frames, list element corresponding to the variable for which
-uncertainty coefficients are to be compiled. The data frame in each list element holds 
+calibration information is required. The data frame in each list element holds 
 information about the calibration files and time periods that apply to the variable, as returned 
 from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
 
@@ -21,8 +21,10 @@ NEONprocIS.base::def.var.mapp.in.out. See documentation for that function.}
 output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
 \value{
-A named list of qfExpi and qfSusp, each holding data frames with the same dimension as data, 
-with the exception that the variable readout_time is removed.\cr
+A named list, where the names of the list match the output flag types ("qfExpi" and "qfSusp"). Each 
+list element (flag type) holds a data frame with the same row dimension as data, 
+and column names matching the overlap in column names between the input data and calSlct. Note that 
+variable readout_time is removed.\cr
 \code{qfExpi} Integer. The expired/valid calibration flag. 0 = valid, non expired calibration available; 
 1 = no calibration or expired calibration available. \cr
 \code{qfSusp} Integer. The suspect calibration flag. 0 = calibration not suspect, 1 = calibration suspect, 
