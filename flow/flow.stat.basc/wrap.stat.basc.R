@@ -118,8 +118,6 @@
 #     Convert flow script to wrapper function
 #   Cove Sturtevant (2025-04-29)
 #     Force sum of all-NA data to be NA (instead of 0)
-#   Nora Catolico (2025-11-14)
-#     added use case of 1 data point for buoy campbell logger
 ##############################################################################################
 wrap.stat.basc <- function(DirIn,
                          DirOutBase,
@@ -420,14 +418,6 @@ wrap.stat.basc <- function(DirIn,
           rpt[idxWndwTime,nameColStatTerm[[idxStat]]] <- statIdx
           
         } # End loop through stats
-        
-        #when only 1 point is available (buoy campbell logger)
-        if(rpt[idxWndwTime,nameColStatTerm[['numPts']]]==1){
-          rpt[idxWndwTime,nameColStatTerm[['variance']]]<-0
-          ucrtIdx=base::subset(ucrtData,subset=setTimeUcrt==idxWndwTime)
-          ucrtExpn<-ucrtIdx[1,paste0(termComp,"_ucrtExpn")]
-          rpt[idxWndwTime,nameColStatTerm[['expUncert']]]<-ucrtExpn
-        }
         
       } # End loop through time windows
       
