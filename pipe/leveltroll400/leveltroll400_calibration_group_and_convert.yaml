@@ -2,7 +2,7 @@
 pipeline:
   name: leveltroll400_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-ab64fab
   cmd:
   - sh
   - "-c"
@@ -13,32 +13,61 @@ transform:
     IFS=$'\n\t'
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -r -f /tmp/pfs/filter_joined
-    rm -rf $OUT_PATH
-    mkdir -p /tmp/pfs/filter_joined
-    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
-    #
-    # Run filter-joiner for data (using environment variables below as input parameters)
+    rm -rf $OUT_PATH_LIMIT_LOG
+    rm -rf $OUT_PATH_JOIN_CAL
+    mkdir -p $OUT_PATH_LIMIT_LOG
+    mkdir -p $OUT_PATH_JOIN_CAL # R modules must have pfs in the repo structure
+    
+    # Run filter-joiner for limiting log files (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_LIMIT_LOG
+    export OUT_PATH=$OUT_PATH_LIMIT_LOG
     python3 -m filter_joiner.filter_joiner_main
 
+    # Run filter-joiner for joining cal and data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_JOIN_CAL
+    export OUT_PATH=$OUT_PATH_JOIN_CAL
+    python3 -m filter_joiner.filter_joiner_main
+    rm -rf $OUT_PATH_LIMIT_LOG # Clean up
+
     # Run calibration conversion module
-    # Leveltroll
     Rscript ./flow.cal.conv.R \
-      DirIn=/tmp/pfs/filter_joined \
+      DirIn=$OUT_PATH_JOIN_CAL \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       DirSubCopy=flags \
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
-      "TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly" \
+      "ConvFuncTerm1=def.cal.conv.poly.b:pressure" \
+      "ConvFuncTerm2=def.cal.conv.poly:temperature" \
       "TermQf=pressure|temperature" \
-      "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst"
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:pressure|temperature"
     EOF
   env:
-    # Environment variable to determine source type
-    SOURCE_TYPE_INDEX: "4"
     # Environment variables for filter-joiner.
-    CONFIG: |
+    CONFIG_LIMIT_LOG: |
+      ---
+      # Configuration for filter-joiner module that will limit log files to the dates in
+      # the date control pipeline
+      # Make sure the DATE_CONTROL path is second. We actually don't want these files and 
+      # they won't be copied if log files for the site are present
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH/*/*/*/**
+            # Join on y/m/d and sourceID
+            join_indices: [3,4,5,6]
+            outer_join: False
+        - path:
+            name: DATE_CONTROL
+            # Filter for data directory
+            glob_pattern: /pfs/DATE_CONTROL/*/*/*/**
+            # Join on y/m/d and sourceID 
+            join_indices: [3,4,5,6]
+            outer_join: False
+    CONFIG_JOIN_CAL: |
       ---
       # Configuration for filter-joiner module that will bring together the data and calibrations
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
@@ -47,7 +76,7 @@ transform:
         - path:
             name: DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH/*/*/*/*/*/**
+            glob_pattern: /tmp/log_limited/*/*/*/*/*/**
             # Join on named location (already joined below by source type and day)
             join_indices: [7]
             outer_join: true
@@ -57,10 +86,11 @@ transform:
             glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
-    OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    OUT_PATH_LIMIT_LOG: /tmp/log_limited # Note that R modules use "pfs" in the path structure to determine datums
+    OUT_PATH_JOIN_CAL: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
-    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    LINK_TYPE: COPY # options are COPY or SYMLINK. 
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
 input:
@@ -88,6 +118,13 @@ input:
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATE_CONTROL
+        repo: leveltroll400_cron_daily_and_date_control
+        glob: /leveltroll400/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
 parallelism_spec:
   constant: 5
 autoscaling: true
