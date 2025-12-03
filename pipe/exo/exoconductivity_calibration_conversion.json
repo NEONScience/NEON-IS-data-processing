@@ -15,7 +15,7 @@
       "UcrtFuncTerm2=def.ucrt.meas.mult:specific_conductance",
       "TermQf=specific_conductance"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v1.3.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v3.0.0",
     "env": {
       "LOG_LEVEL": "INFO"
     }
