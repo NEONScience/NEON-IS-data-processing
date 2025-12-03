@@ -1,7 +1,7 @@
 pipeline:
   name: sunav2_trino_data_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.10.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.1
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -83,10 +83,10 @@ parallelism_spec:
   constant: 3
 autoscaling: true
 resource_requests:
-  memory: 500M
+  memory: 1.5G
   cpu: 0.5
 resource_limits:
-  memory: 1G
+  memory: 3G
   cpu: 1.5
 sidecar_resource_requests:
   memory: 2G

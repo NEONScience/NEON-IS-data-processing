@@ -23,7 +23,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: nitrate_group_loader
-      glob: /nitrate/*
+      glob: /nitrate-surfacewater/*
   - pfs:
       name: FILE_YEAR
       repo: sunav2_cron_daily_and_date_control

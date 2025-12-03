@@ -4,7 +4,7 @@ transform:
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX: nitrate_
+    GROUP_PREFIX: nitrate-surfacewater_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified

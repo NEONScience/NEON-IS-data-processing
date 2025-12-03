@@ -27,7 +27,7 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/tmp/pfs/interimUcrt \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCopy=location|quality_metrics"
+      "DirSubCopy=group|location|quality_metrics"
     
     # Run third module - insufficient data
     Rscript ./flow.insufficient.data.R \

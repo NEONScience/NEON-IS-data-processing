@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.3.0
   cmd:
   - sh
   - "-c"
@@ -131,10 +131,10 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 400M
+  memory: 800M
   cpu: 1.2
 resource_limits:
-  memory: 800M
+  memory: 1600M
   cpu: 2
 sidecar_resource_requests:
   memory: 3G
