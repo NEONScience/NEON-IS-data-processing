@@ -33,7 +33,6 @@
 # ------ Choose options --------
 
 # Module or local package directory
-#dirWork <- '~/R/NEON-IS-data-processing-homeDir/pack/NEONprocIS.base'
 #dirWork <- '~/R/NEON-IS-data-processing-homeDir/flow/flow.kfka.comb'
 dirWork <- '~/GitHub/NEON-IS-data-processing/flow/flow.precip.pluvio.flags/'
 #dirWork <- '~/R/NEON-IS-data-processing/flow/flow.troll.uncertainty'

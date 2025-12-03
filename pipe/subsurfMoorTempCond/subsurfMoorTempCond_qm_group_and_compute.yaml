@@ -1,0 +1,157 @@
+---
+pipeline:
+  name: subsurfMoorTempCond_qm_group_and_compute
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    
+    # Run first module filter-joiner for leveltroll data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_TROLL
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # ---- Run second module - quality metrics (instantaneous) for leveltroll---- 
+    Rscript ./flow.qaqc.qm.dp0p.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_TROLL \
+      Tmi=030 \
+      VarTimeBgn=readout_time \
+      VarTimeEnd=readout_time \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|baroPresQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "QfForc1=baroPresQF:1:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF:-1" \
+    
+    # We are done with the leveltroll. Clean up interim directories before doing hobo
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    
+    
+    # ---- Run third module - filter-joiner for hobo data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_HOBO
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # ---- Run fourth module - quality metrics (instantaneous) for hobo---- 
+    Rscript ./flow.qaqc.qm.dp0p.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_HOBO \
+      Tmi=030 \
+      VarTimeBgn=readout_time \
+      VarTimeEnd=readout_time \
+      "GrpQfAlph1=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF" \
+      "GrpQfBeta1=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF" \
+      "GrpQfBetaIgnr1=temperature:temperatureNullQF|temperatureGapQF" \
+      "GrpQfAlph2=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|missingTempQF" \
+      "GrpQfBeta2=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF" \
+      "GrpQfBetaIgnr2=conductivity:conductivityNullQF|conductivityGapQF" \
+      "QfForc1=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    CONFIG_HOBO: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/hobou24/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: REGULARIZED_FLAGS_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/hobou24/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: DEPTH_FLAGS_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/DEPTH_FLAGS_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+    CONFIG_TROLL: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/pressure/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: REGULARIZED_FLAGS_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/pressure/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
+    PARALLELIZATION_INTERNAL: '1' # Option for quality metrics module
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_QM_TROLL
+      repo: subsurfMoorTempCond_avro_schemas
+      glob: subsurfMoorTempCond/subsurfMoorTempCond_dp01_pressure_QF.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM_HOBO
+      repo: subsurfMoorTempCond_avro_schemas
+      glob: subsurfMoorTempCond/subsurfMoorTempCond_dp01_hobo_QF.avsc
+  - join:
+    - pfs:
+        name: QAQC_PLAUSIBILITY_PATH
+        repo: subsurfMoorTempCond_analyze_pad_and_qaqc_plau
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: REGULARIZED_FLAGS_PATH
+        repo: subsurfMoorTempCond_baro_conv
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: DEPTH_FLAGS_PATH
+        repo: subsurfMoorTempCond_depth_ucrt_group
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 1.2
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

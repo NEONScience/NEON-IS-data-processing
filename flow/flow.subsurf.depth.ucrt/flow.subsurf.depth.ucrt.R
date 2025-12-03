@@ -1,0 +1,157 @@
+##############################################################################################
+#' @title Workflow for subsurface moored thermistor depth and uncertainty
+#' flow.hobo.uncertainty.R
+#' 
+#' @author
+#' Nora Catolico \email{ncatolico@battelleecology.org}
+#' 
+#' @description Workflow. Calculate sensor depth and uncertainty for the Subsurface moored temperature chain
+#' 
+#' The arguments are: 
+#' 
+#' 1. "DirIn=value", where value is the  path to input data directory (see below)
+#' The input path is structured as follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number of 
+#' parent and child directories of any name, so long as they are not 'pfs', the same name as subdirectories 
+#' expected at the terminal directory (see below), or recognizable as the 'yyyy/mm/dd' structure 
+#' which indicates the 4-digit year, 2-digit month, and 2-digit day of the data contained in the folder.
+#' 
+#' Nested within this path are the folders:
+#'         /data
+#'         /location
+#'         /uncertainty_coef
+#'         /uncertainty_data
+#'         
+#'        
+#' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
+#' of DirIn.
+#' 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
+#' 
+#' 4. "FileSchmStats=value" (optional), where values is the full path to the avro schema for the output stats 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. 
+#' 
+#' 5. "FileSchmFlags=value" (optional), where values is the full path to the avro schema for the output flags 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. 
+#' 
+#' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
+#' which uses system environment variables if available.
+#' @return water table elevation calculated from calibrated pressure, density of water, gravity, and sensor elevation.
+#' Data and uncertainty values will be output in Parquet format in DirOut, where the terminal directory 
+#' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
+#'  
+#' 
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+#' @keywords Currently none
+#' 
+#' @examples
+#' Stepping through the code in Rstudio 
+# Sys.setenv(DIR_IN='~/pfs/testing/2022/06/22/subsurf-moor-temp-cond_PRPO103501') #combined test data
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmStats=~/pfs/subsurfMoorTempCond_avro_schemas/subsurfMoorTempCond_dp01_stats.avsc")
+#' rm(list=setdiff(ls(),c('arg','log')))
+#' 
+#' @seealso None currently
+#' changelog and author contributions / copyrights
+#'   Nora Catolico (2025-10-03)
+#'     original creation
+##############################################################################################
+options(digits.secs = 3)
+library(foreach)
+library(doParallel)
+
+# Source the wrapper function. Assume it is in the working directory
+source("./wrap.subsurf.depth.ucrt.R")
+
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly = TRUE)
+
+# Start logging
+log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
+
+# Parse the input arguments into parameters
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmStats","FileSchmFlags"),log = log)
+
+# Echo arguments
+log$debug(base::paste0('Input directory: ', Para$DirIn))
+log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
+log$debug(base::paste0('Schema for output stats: ', Para$FileSchmStats))
+log$debug(base::paste0('Schema for output flags: ', Para$FileSchmFlags))
+
+# Read in the schemas so we only have to do it once and not every
+# time in the avro writer.
+if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
+  SchmStatsOut <- NULL
+} else {
+  SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
+}
+if(base::is.null(Para$FileSchmFlags) || Para$FileSchmFlags == 'NA'){
+  SchmFlagsOut <- NULL
+} else {
+  SchmFlagsOut <- base::paste0(base::readLines(Para$FileSchmFlags),collapse='')
+}
+
+#what are the expected subdirectories of each input path
+nameDirSub <- c('hobou24','pressure')
+log$debug(base::paste0(
+  'expected subdirectories: ',
+  base::paste0(nameDirSub, collapse = ',')
+))
+
+# Find all the input paths (datums). We will process each one.
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn=Para$DirIn,nameDirSub=nameDirSub,log=log)
+
+
+# Process each datum path
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
+  log$info(base::paste0('Processing path to group datum: ', idxDirIn))
+  
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.subsurf.depth.ucrt(
+        DirIn=idxDirIn,
+        DirOutBase=Para$DirOut,
+        SchmStatsOut=SchmStatsOut,
+        SchmFlagsOut=SchmFlagsOut,
+        log=log
+      ),
+      error = function(err) {
+        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
+        
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
+      }
+    ),
+    # This simply to avoid returning the error
+    error=function(err) {}
+  )
+  
+  return()
+}
