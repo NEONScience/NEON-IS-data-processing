@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-qaqc-plau-rad -f ./modules_combined/qaqc_plau_and_radiation_custom/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.8
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.9
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="padded_timeseries_analyzer"

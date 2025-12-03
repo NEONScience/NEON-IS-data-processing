@@ -38,7 +38,7 @@ this choice order (1 chosen first):
    1. higher ID & date of interest within valid date range
    2. lower ID & date of interest within valid date range
    3. expired cal with nearest valid end date to beginning date of interest
-   4. lower ID if expiration dates equal for multipe cals in #3
+   4. lower ID if expiration dates equal for multiple cals in #3
 Note that calibrations with a valid date range beginning after the date range of interest and
 calibrations that are expired more than their max allowable days since expiration are treated
 as if they don't exist. These time periods in the output will be filled with NA values for the 
@@ -51,7 +51,7 @@ calibration metadata with the expired flag = TRUE.
 # TimeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
 # TimeEnd <- base::as.POSIXct('2019-01-02',tz='GMT')
 # TimeExpiMax <- base::as.difftime(30,units='days') # allow cals to be used up to 30 days after expiration
-# NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=timeBgn,TimeEnd=timeEnd)
+# NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
