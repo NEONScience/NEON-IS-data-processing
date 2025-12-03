@@ -4,64 +4,60 @@
 \alias{wrap.ucrt.dp0p}
 \title{Wrapper for computing individual measurement uncertainty for NEON L0' data}
 \usage{
-wrap.ucrt.dp0p(
-  data,
-  FuncUcrt,
-  ucrtCoefFdas = NULL,
-  calSlct,
-  mappNameVar = NULL,
-  log = NULL
-)
+wrap.ucrt.dp0p(data, FuncUcrt, calSlct, Meta = list(), log = NULL)
 }
 \arguments{
 \item{data}{Data frame of L0 data. Must include POSIXct time variable readout_time.}
 
-\item{FuncUcrt}{A data frame of the variables for which individual measurement uncertainty is
-to be calculated. Columns include:\cr
-\code{var} Character. The variable in data for which to compute uncertainty \cr
-\code{FuncUcrtMeas} A character string indicating the individual measurement (calibration) uncertainty 
-function within the NEONprocIS.cal package that should be used. Note that this does not include 
-FDAS uncertainty. For most NEON data products, this will be "def.ucrt.meas.cnst". Note that any 
-alternative function must accept the same arguments as def.ucrt.meas.cnst, even if they are unused, and 
-return the same 
-See that function for details. \cr
-\code{FuncUcrtFdas} A character string indicating the FDAS uncertainty function within the NEONprocIS.cal 
-package that should be used, if FDAS uncertainty applies. This field may be NA, which indicates that
-FDAS uncertainty does not apply and will not be calculated (e.g. digital L0 output).}
+\item{FuncUcrt}{A data frame of the functions and variables for which individual measurement 
+and/or FDAS uncertainty is to be calculated. Columns include:\cr
+\code{FuncUcrt} A character string indicating the individual measurement (calibration) or FDAS 
+uncertainty function within the NEONprocIS.cal package. For most NEON data products, 
+this will be "def.ucrt.meas.cnst" or "def.ucrt.meas.mult" for measurement/calibration 
+uncertainty, and "def.ucrt.fdas.rstc.poly" or "def.ucrt.fdas.volt.poly" for FDAS 
+(data acquisition system) uncertainty. Note that any alternative function must accept 
+the same arguments as these functions, even if they are unused, and return the same 
+output format. See one of those functions for details. \cr
+\code{var} Character. The variable(s) in input data frame 'data' that will be used in the 
+uncertainty function specified in FuncUcrt. In most cases, this will be a single L0 
+variable for which to compute uncertainty, but it can be any character string so long 
+as the specified (custom) uncertainty function knows what to do with it. Note that the 
+uncertainty function is responsible for naming the output list containing 
+uncertainty data frames for each variable, and that any overlap in the names across 
+the output list will cause the uncertainty data frames to be combined (intentionally -
+see return information). Thus, ensure that the column names of data frames for the 
+same variable (list name) are unique. In the standard measurement and FDAS uncertainty functions, 
+the output list names will match the name of the L0 variable specified in \code{var}.\cr}
 
-\item{ucrtCoefFdas}{A data frame of FDAS uncertainty coefficients, as read by 
-NEONprocIS.cal::def.read.ucrt.coef.fdas. Columns include:\cr
-\code{Name} Character. Name of the coefficient.\cr
-\code{Value} Character. Value of the coefficient.\cr
-\code{.attrs} Character. Relevant attribute (i.e. units)\cr
-Defaults to NULL, in which case no variables in FuncUcrt may indicate that FDAS uncertainty 
-applies.}
-
-\item{calSlct}{A named list of data frames, list element corresponding to the variables in
-FuncUcrt. The data frame in each list element holds information about the calibration files and 
+\item{calSlct}{A named list of data frames, list elements typically corresponding to the variables in
+FuncUcrt$var. The data frame in each list element holds information about the calibration files and 
 time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
 See documentation for that function. Assign NULL to list elements (variables) for which calibration
-information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
-uncertainty).}
+information is not applicable.}
 
-\item{mappNameVar}{A data frame with in/out variable name mapping as produced by 
-NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is NULL),
-output variable names will be appended as prefixes to the column names in each output data frame.}
+\item{Meta}{(optional). A named list (default is an empty list) containing additional metadata to pass to 
+calibration and uncertainty functions. This can contain whatever information might be needed in the
+calibration and/or uncertainty functions in addition to calibration and uncertainty information. 
+Note that the standard fdas uncertainty functions require fdas uncertainty coefficients to be 
+provided in Meta$ucrtCoefFdas.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
 \value{
-A named list, each element corresponding to those in FuncUcrt$var and holding a data
-frame of uncertainty data. Note that each row in each data frame corresponds to the times in 
-data$readout_time, but the variable readout_time is not included in the output. One column
-in each data frame is labeled ucrtComb, corresponding to the combined measurement uncertainty
-of the individual measurements and FDAS (if applicable). If FDAS uncertainty does not apply, 
-ucrtComb is simply a copy of ucrtMeas. \cr
+A named list, each list element containing a data frame of uncertainty data for a single
+variable matching the name of the list element. 
+Note that each row in each uncertainty data frame corresponds to the times in 
+data$readout_time, but the variable readout_time is and should not be included in the output. 
+The data frames for list elements with the same name will be combined, all columns
+beginning with either ucrtMeas or ucrtFdas across the data frames for that variable
+will be combined in quadrature and placed into a column labeled ucrtComb.
+Each output uncertainty data frame will also includes a column named ucrtExpn,
+which is the expanded (95%) uncertainty of ucrtComb (currently just multiplied by 2).
 }
 \description{
-Wrapper function. Compute individual measurement uncertainty for calibrated data at native
-frequency (NEON L0' data).
+Wrapper function. Compute individual measurement and/or FDAS uncertainty for 
+calibrated data at native frequency (NEON L0' data).
 }
 \examples{
 Currently none
@@ -74,7 +70,13 @@ Currently none
 
 \link[NEONprocIS.cal]{def.read.cal.xml}
 
-\link[NEONprocIS.base]{def.var.mapp.in.out}
+\link[NEONprocIS.cal]{def.ucrt.meas.cnst}
+
+\link[NEONprocIS.cal]{def.ucrt.meas.mult}
+
+\link[NEONprocIS.cal]{def.ucrt.fdas.rstc.poly}
+
+\link[NEONprocIS.cal]{def.ucrt.fdas.volt.poly}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}

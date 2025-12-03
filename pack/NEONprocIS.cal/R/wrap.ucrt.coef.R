@@ -78,19 +78,23 @@ wrap.ucrt.coef <- function(calSlct,
     ucrtCoefIdx <- base::vector(mode = "list", length = base::nrow(calSlctIdx))
     for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
       
-      # If no calibration file is available for this period, move on. (No coefficients to compile)
-      if(base::is.na(calSlctIdx$file[idxRow])){
-        next
-      } 
+      infoCal <- NULL # Reset
       
-      # We have a calibration file to open
-      fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
-      infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+      # Open cal file if there is one to open
+      if(!base::is.na(calSlctIdx$file[idxRow])){
+        fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
+        infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+      } 
       
       # Add in FDAS uncertainty
       if(!base::is.null(ucrtCoefFdas)){
         # Add the applicable FDAS uncertainty coefs to those from the cal file
         infoCal$ucrt <- base::rbind(infoCal$ucrt,ucrtCoefFdas,stringsAsFactors=FALSE)
+      }
+      
+      # If no coefficients are available to compile, move on
+      if(base::is.null(infoCal)){
+        next
       }
       
       # Add in cal metadata to the coefs, excluding the directory path
@@ -101,6 +105,13 @@ wrap.ucrt.coef <- function(calSlct,
         infoCal$ucrt$var <- idxVar
       }
       ucrtCoefIdx[[idxRow]] <- base::merge(x=calSlctIdx[idxRow,!(names(calSlctIdx) %in% 'path')],y=infoCal$ucrt,by='id')
+      
+      # If we only have FDAS coefficients, don't mark them as expired
+      if(!base::is.null(ucrtCoefFdas) && 
+         base::length(ucrtCoefFdas) > 0  && 
+         (base::nrow(ucrtCoefIdx[[idxRow]]) == base::nrow(ucrtCoefFdas))){
+        ucrtCoefIdx[[idxRow]]$expi <- FALSE
+      }
       
     } # End loop around selected calibrations 
     
