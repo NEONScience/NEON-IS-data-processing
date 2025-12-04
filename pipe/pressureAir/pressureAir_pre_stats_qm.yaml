@@ -19,7 +19,7 @@ transform:
 input:
   pfs:
     name: IN_PATH
-    repo: pressureAir_group_path_ptb330a
+    repo: pressureAir_group_path
     glob: /*/*/*
 parallelism_spec:
   constant: 5
