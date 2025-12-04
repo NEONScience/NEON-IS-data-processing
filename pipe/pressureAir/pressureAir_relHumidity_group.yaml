@@ -69,7 +69,7 @@ input:
       outer_join: true
   - pfs:
       name: GROUP_PATH
-      repo: pressureAir_group_path_ptb330a
+      repo: pressureAir_group_path
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
