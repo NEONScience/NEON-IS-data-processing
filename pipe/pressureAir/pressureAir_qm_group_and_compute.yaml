@@ -11,18 +11,22 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
     mkdir -p /tmp/pfs/filter_joined
+    
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
+    
     # Run second module - quality metrics
+    # NOTE: This is only producing 30-min needed for subsurface moored temp chain. Revise when doing baro pressure for real.
     Rscript ./flow.qaqc.qm.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQm=$FILE_SCHEMA_QM \
-      "WndwAgr=001|030" \
+      "WndwAgr=030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       "GrpQfAlph1=staPres:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF" \
@@ -69,7 +73,7 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
-        repo: pressureAir_group_path_ptb330a
+        repo: pressureAir_group_path
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
