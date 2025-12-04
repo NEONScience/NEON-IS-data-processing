@@ -13,8 +13,8 @@ runs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-              covr
               arrow@19.0.1.1
+              covr@3.6.5
               devtools@2.4.6
               dplyr@1.1.3
               fs@1.6.6
