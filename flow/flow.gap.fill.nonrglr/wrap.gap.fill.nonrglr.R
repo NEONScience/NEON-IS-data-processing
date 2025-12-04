@@ -151,7 +151,7 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       base::dir.create(subDirOut,recursive=TRUE)
       
       # write out data
-      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = data_filled,
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = df_filled,
                                                    NameFile = base::paste0(subDirOut,fileName)),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){
         log$error(base::paste0('Cannot write file to ',base::paste0(subDirOut,fileName),'. ',attr(rptOut, "condition")))
