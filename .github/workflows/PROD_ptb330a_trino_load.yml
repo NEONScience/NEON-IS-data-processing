@@ -2,7 +2,7 @@ name: PROD-ptb330a-trino-load
 on:
   push:
     branches:
-      - 'none'
+      - 'prod'
     paths:
       - 'pipe/ptb330a/*.yaml'
       - 'pipe/ptb330a/pipe_list_ptb330a_trino_load.txt'
