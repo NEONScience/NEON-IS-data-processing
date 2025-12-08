@@ -84,14 +84,13 @@
 #' @examples
 #' Stepping through the code in R studio
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg<-c(      "DirIn=~/pfs/sunav2_fill_date_gaps/sunav2/2025/06/22/CFGLOC110819",
+# arg<-c(      "DirIn=~/pfs/sunav2_fill_date_gaps/sunav2/2025/06/22",
 #              "DirOut=~/pfs/out ",
 #              "DirErr=~/pfs/out/errored_datums ",
 #              "DirFill=data|flags",
-#              "FileSchm=data:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_logfilled.avsc|flags:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_calibration_flags.avsc|flags:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_log_flags.avsc",
 #              "WndwFill=015",
+#              "FileSchm=data:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_logfilled.avsc|flags:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_calibration_flags.avsc|flags:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_log_flags.avsc",
 #              "DirSubCopy=location|uncertainty_coef")
-
 #' @seealso \code{\link[eddy4R.base]{def.rglr}}
 
 # changelog and author contributions / copyrights
@@ -145,7 +144,8 @@ log$debug(base::paste0(
   'Output schema(s) for regularized data: ',
   base::paste0(Para$FileSchm, collapse = ',')
 ))
-SchmFill <-
+if(length(Para$FileSchm)>0){
+  SchmFill <-
   NEONprocIS.base::def.vect.pars.pair(
     vect = Para$FileSchm,
     KeyExp = Para$DirFill,
@@ -153,16 +153,19 @@ SchmFill <-
     NameCol = c('DirFill', 'FileSchmFill'),
     log = log
   )
-
-# Read in the schema(s)
-SchmFill$SchmFill <- NA
-for (idxSchmFill in 1:base::length(SchmFill$FileSchmFill)) {
-  if (SchmFill$FileSchmFill[idxSchmFill] != 'NA') {
-    SchmFill$SchmFill[idxSchmFill] <-
-      base::paste0(base::readLines(SchmFill$FileSchmFill[idxSchmFill]),
-                   collapse = '')
+  # Read in the schema(s)
+  SchmFill$SchmFill <- NA
+  for (idxSchmFill in 1:base::length(SchmFill$FileSchmFill)) {
+    if (SchmFill$FileSchmFill[idxSchmFill] != 'NA') {
+      SchmFill$SchmFill[idxSchmFill] <-
+        base::paste0(base::readLines(SchmFill$FileSchmFill[idxSchmFill]),
+                     collapse = '')
+    }
   }
+}else{
+  SchmFill <- NA
 }
+
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))

@@ -163,24 +163,28 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       base::dir.create(subDirOut,recursive=TRUE)
       
       # select output schema
-      FileSchmFill<-SchmFill$FileSchmFill[grepl(subDir,SchmFill$DirFill)]
-      if(length(FileSchmFill>1)){
-        #specific to suna for now. can be updated if needed down the road
-        if(grepl("log",fileName,ignore.case = TRUE)){
-          FileSchmFill<-FileSchmFill[grepl("log",FileSchmFill,ignore.case = TRUE)]
+      if(!is.na(SchmFill)){
+        FileSchmFill<-SchmFill$FileSchmFill[grepl(subDir,SchmFill$DirFill)]
+        if(length(FileSchmFill)>1){
+          #specific to suna for now. can be updated if needed down the road
+          if(grepl("log",fileName,ignore.case = TRUE)){
+            FileSchmFill<-FileSchmFill[grepl("log",FileSchmFill,ignore.case = TRUE)]
+          }
+          if(grepl("cal",fileName,ignore.case = TRUE)){
+            FileSchmFill<-FileSchmFill[grepl("cal",FileSchmFill,ignore.case = TRUE)]
+          }
         }
-        if(grepl("cal",fileName,ignore.case = TRUE)){
-          FileSchmFill<-FileSchmFill[grepl("cal",FileSchmFill,ignore.case = TRUE)]
+        if (base::is.na(FileSchmFill)|FileSchmFill=="NA"|length(FileSchmFill)>1) {
+          # use the output data to generate a schema
+          idxSchmFill <- base::attr(df_filled, 'schema')
+        } else {
+          idxSchmFill <- SchmFill$SchmFill[SchmFill$FileSchmFill==FileSchmFill]
         }
-      }
-      
-      
-      if (base::is.na(FileSchmFill)|FileSchmFill=="NA"|length(FileSchmFill)>1) {
+      }else{
         # use the output data to generate a schema
         idxSchmFill <- base::attr(df_filled, 'schema')
-      } else {
-        idxSchmFill <- SchmFill$SchmFill[SchmFill$FileSchmFill==FileSchmFill]
       }
+      
       
       # write out data
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = df_filled,
