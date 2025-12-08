@@ -1,4 +1,4 @@
-name: CERT-ptb330a-trino-load
+name: PROD-ptb330a-trino-load
 on:
   push:
     branches:
@@ -48,8 +48,8 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
+      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
       PATHS: 'pipe/ptb330a=pipe_list_ptb330a_trino_load.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
