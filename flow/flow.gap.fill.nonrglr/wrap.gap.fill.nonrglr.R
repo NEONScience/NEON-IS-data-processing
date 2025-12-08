@@ -2,7 +2,7 @@
 #' @title Gap filling module for non-regularized data in NEON IS data processing.
 
 #' @author
-#' Cove Sturtevant \email{csturtevant@battelleecology.org}
+#' Nora Catolico \email{ncatolico@battelleecology.org}
 
 #' @description Wrapper function. Bin data to generate a regular time sequence of observations.
 #' General code workflow:
@@ -31,6 +31,17 @@
 #' separated by pipes (|). All terminal directories must be present and at the same directory level.
 #' For example, "DirFill=data|flags" indicates to regularize the data files within each the data
 #' and flags directories.
+#' 
+#' @param FileSchm Character value (optional), where value is the full path to schema for data output by
+#' this workflow. The value may be NA, in which case the output schema will be the same as the input
+#' data. The value may be a single file, in which case it will apply to all output, or
+#' multiple values in which case the argument is formatted as dir:value|dir:value...
+#' where dir is one of the directories specified in DirFill and value is the path to the schema file
+#' for the output of that directory. Multiple dir:value pairs are separated by pipes (|).
+#' For example, "FileSchm=data:/path/to/schemaData.avsc|flags:NA" indicates that the
+#' output from the data directory will be written with the schema /path/to/schemaData.avsc and the
+#' output from the flags directory will be the same as the input files found in that
+#' directory.
 #' 
 #' @param WndwFill Character value. The window in minutes in which data are expected. It is formatted as a 3 character sequence,
 #'  representing the number of minutes over which any number of measurements are expected. 
@@ -66,6 +77,7 @@ wrap.gap.fill.nonrglr <- function(DirIn,
                       DirOutBase,
                       DirFill,
                       WndwFill,
+                      SchmFill,
                       DirSubCopy=NULL,
                       log=NULL
 ){
@@ -150,9 +162,29 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       subDirOut <- paste0(dirOut,'/',subDir,'/')
       base::dir.create(subDirOut,recursive=TRUE)
       
+      # select output schema
+      FileSchmFill<-SchmFill$FileSchmFill[grepl(subDir,SchmFill$DirFill)]
+      if(length(FileSchmFill>1)){
+        #specific to suna for now. can be updated if needed down the road
+        if(grepl("log",fileName,ignore.case = TRUE)){
+          FileSchmFill<-FileSchmFill[grepl("log",FileSchmFill,ignore.case = TRUE)]
+        }
+        if(grepl("cal",fileName,ignore.case = TRUE)){
+          FileSchmFill<-FileSchmFill[grepl("cal",FileSchmFill,ignore.case = TRUE)]
+        }
+      }
+      
+      
+      if (base::is.na(FileSchmFill)|FileSchmFill=="NA"|length(FileSchmFill)>1) {
+        # use the output data to generate a schema
+        idxSchmFill <- base::attr(df_filled, 'schema')
+      } else {
+        idxSchmFill <- SchmFill$SchmFill[SchmFill$FileSchmFill==FileSchmFill]
+      }
+      
       # write out data
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = df_filled,
-                                                   NameFile = base::paste0(subDirOut,fileName)),silent=TRUE)
+                                                   NameFile = base::paste0(subDirOut,fileName),Schm = idxSchmFill),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){
         log$error(base::paste0('Cannot write file to ',base::paste0(subDirOut,fileName),'. ',attr(rptOut, "condition")))
         stop()

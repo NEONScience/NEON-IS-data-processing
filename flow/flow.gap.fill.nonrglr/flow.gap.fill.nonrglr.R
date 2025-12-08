@@ -50,12 +50,23 @@
 #' For example, "DirFill=data|flags" indicates to regularize the data files within each the data
 #' and flags directories.
 #' 
-#' 5. "WndwFill=value", where value is the window in minutes in which data are expected. It is formatted as a 3 character sequence,
+#' #' 5. "FileSchm=value" (optional), where value is the full path to schema for data output by
+#' this workflow. The value may be NA, in which case the output schema will be the same as the input
+#' data. The value may be a single file, in which case it will apply to all output, or
+#' multiple values in which case the argument is formatted as dir:value|dir:value...
+#' where dir is one of the directories specified in DirFill and value is the path to the schema file
+#' for the output of that directory. Multiple dir:value pairs are separated by pipes (|).
+#' For example, "FileSchm=data:/path/to/schemaData.avsc|flags:NA" indicates that the
+#' output from the data directory will be written with the schema /path/to/schemaData.avsc and the
+#' output from the flags directory will be the same as the input files found in that
+#' directory.
+#' 
+#' 6. "WndwFill=value", where value is the window in minutes in which data are expected. It is formatted as a 3 character sequence,
 #'  representing the number of minutes over which any number of measurements are expected. 
 #' For example, "WndwFill=015" refers to a 15-minute interval, while "WndwAgr=030" refers to a 
 #' 30-minute  interval. 
 #'
-#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 7. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the regularization folder in the input path that are to be copied with a
 #' symbolic link to the output path.
 #'
@@ -77,6 +88,7 @@
 #              "DirOut=~/pfs/out ",
 #              "DirErr=~/pfs/out/errored_datums ",
 #              "DirFill=data|flags",
+#              "FileSchm=data:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_logfilled.avsc|flags:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_calibration_flags.avsc|flags:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_log_flags.avsc",
 #              "WndwFill=015",
 #              "DirSubCopy=location|uncertainty_coef")
 
@@ -122,10 +134,35 @@ Para <-
       "WndwFill"
     ),
     NameParaOptn = c(
-      "DirSubCopy"
+      "DirSubCopy",
+      "FileSchm"
     ),
     log = log
   )
+
+# Retrieve output schema(s)
+log$debug(base::paste0(
+  'Output schema(s) for regularized data: ',
+  base::paste0(Para$FileSchm, collapse = ',')
+))
+SchmFill <-
+  NEONprocIS.base::def.vect.pars.pair(
+    vect = Para$FileSchm,
+    KeyExp = Para$DirFill,
+    ValuDflt = 'NA',
+    NameCol = c('DirFill', 'FileSchmFill'),
+    log = log
+  )
+
+# Read in the schema(s)
+SchmFill$SchmFill <- NA
+for (idxSchmFill in 1:base::length(SchmFill$FileSchmFill)) {
+  if (SchmFill$FileSchmFill[idxSchmFill] != 'NA') {
+    SchmFill$SchmFill[idxSchmFill] <-
+      base::paste0(base::readLines(SchmFill$FileSchmFill[idxSchmFill]),
+                   collapse = '')
+  }
+}
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -180,6 +217,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                 DirOutBase=Para$DirOut,
                 WndwFill=WndwFill,
                 DirFill=Para$DirFill,
+                SchmFill=SchmFill,
                 DirSubCopy=DirSubCopy,
                 log=log
       ),
