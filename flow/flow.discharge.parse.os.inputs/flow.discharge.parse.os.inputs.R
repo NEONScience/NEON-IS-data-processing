@@ -39,6 +39,7 @@
 #          "DirOut=~/pfs/out",
 #          "DirErr=~/pfs/out/errored_datums")
 # rm(list=setdiff(ls(),c('arg','log')))
+# setwd('/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.parse.os.inputs')
 
 #' @seealso None currently
 
@@ -56,7 +57,7 @@ library(stringr)
 
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.discharge.os.inputs.R")
+source("./wrap.discharge.parse.os.inputs.R")
 source("./def.dir.in.partial.R")
 
 # Pull in command line arguments (parameters)
@@ -83,6 +84,8 @@ Para <- NEONprocIS.base::def.arg.pars(arg = arg,
                                                        "DirOut",
                                                        "DirErr"),
                                       log = log)
+list2env(Para,envir = .GlobalEnv)
+
 
 # Echo arguments
 log$debug(base::paste0('SWE/CSD Input directory: ', Para$DirIn))
@@ -199,7 +202,7 @@ foreach::foreach(site = sites) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.discharge.os.inputs(
+      wrap.discharge.parse.os.inputs(
         DirIn=DirIn,
         csd_constantBiasShift_pub=csd_constantBiasShift_pub,
         csd_dataGapToFillMethodMapping_pub=csd_dataGapToFillMethodMapping_pub,

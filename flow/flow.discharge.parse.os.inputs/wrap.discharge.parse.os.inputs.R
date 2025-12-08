@@ -49,10 +49,22 @@
 # DirIn <- "/home/NEON/nickerson/pfs/testing/2024/02/25/l4discharge_HOPB132100/data"
 # DirOutBase <- "/home/NEON/nickerson/pfs/out"
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# wrap.discharge.os.inputs(ListTables=ListTables,
-#                          DirIn=DirInBase,
-#                          DirOutBase=DirOutBase,
-#                          log=log)
+# wrap.discharge.parse.os.inputs(
+#   DirIn=DirIn,
+#   csd_constantBiasShift_pub=csd_constantBiasShift_pub,
+#   csd_dataGapToFillMethodMapping_pub=csd_dataGapToFillMethodMapping_pub,
+#   csd_gapFillingRegression_pub=csd_gapFillingRegression_pub,
+#   csd_gaugeWaterColumnRegression_pub=csd_gaugeWaterColumnRegression_pub,
+#   sdrc_controlInfo_pub=sdrc_controlInfo_pub,
+#   sdrc_curveIdentification_pub=sdrc_curveIdentification_pub,
+#   sdrc_priorParameters_pub=sdrc_priorParameters_pub,
+#   sdrc_gaugeDischargeMeas_pub=sdrc_gaugeDischargeMeas_pub,
+#   sdrc_sampledParameters_pub=sdrc_sampledParameters_pub,
+#   sdrc_gaugePressureRelationship_pub=sdrc_gaugePressureRelationship_pub,
+#   sdrc_stageDischargeCurveInfo_pub=sdrc_stageDischargeCurveInfo_pub,
+#   DirOutBase=DirOutBase,
+#   log=log
+# )
 
 #' @seealso None currently
 
@@ -62,20 +74,20 @@
 #   Nora Catolico(2025-11-18)
 #     reorganized input directories and added error logging
 ##############################################################################################
-wrap.discharge.os.inputs <- function(DirIn,
-                                     csd_constantBiasShift_pub,
-                                     csd_dataGapToFillMethodMapping_pub,
-                                     csd_gapFillingRegression_pub,
-                                     csd_gaugeWaterColumnRegression_pub,
-                                     sdrc_controlInfo_pub,
-                                     sdrc_curveIdentification_pub,
-                                     sdrc_priorParameters_pub,
-                                     sdrc_gaugeDischargeMeas_pub,
-                                     sdrc_sampledParameters_pub,
-                                     sdrc_gaugePressureRelationship_pub,
-                                     sdrc_stageDischargeCurveInfo_pub,
-                                     DirOutBase,
-                                     log=NULL
+wrap.discharge.parse.os.inputs <- function(DirIn,
+                                           csd_constantBiasShift_pub,
+                                           csd_dataGapToFillMethodMapping_pub,
+                                           csd_gapFillingRegression_pub,
+                                           csd_gaugeWaterColumnRegression_pub,
+                                           sdrc_controlInfo_pub,
+                                           sdrc_curveIdentification_pub,
+                                           sdrc_priorParameters_pub,
+                                           sdrc_gaugeDischargeMeas_pub,
+                                           sdrc_sampledParameters_pub,
+                                           sdrc_gaugePressureRelationship_pub,
+                                           sdrc_stageDischargeCurveInfo_pub,
+                                           DirOutBase,
+                                           log=NULL
 ){
   # Start logging if not already
   if(base::is.null(log)){
@@ -113,7 +125,6 @@ wrap.discharge.os.inputs <- function(DirIn,
     cmdCopy <- base::paste0('ln -s ',base::paste0(DirInData,'/',idxFileCopy),' ',base::paste0(DirOutData,'/',idxFileCopy))
     rptCopy <- base::system(cmdCopy)
   }
-  
   
   # Which curveID(s) is/are active for this site*date?
   currCurveData <- sdrc_curveIdentification_pub[
@@ -272,6 +283,71 @@ wrap.discharge.os.inputs <- function(DirIn,
     }
   }else{
     log$info(paste0("No currRegData for ",site," on ",date))
+  }
+  
+  # Are there any correction-related tables that need to be published on this site*day?
+  # Are there any gaps that end on this day?
+  currGapData <- csd_dataGapToFillMethodMapping_pub[
+   csd_dataGapToFillMethodMapping_pub$siteID==site
+   &as.Date(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
+  ,]
+  if(nrow(currGapData)>0){
+    # Write dataGapToFillMethodMapping
+    write_currGapData<-try(write.csv(currGapData,
+                                     paste(DirOutData,
+                                           "NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.csv",
+                                           sep = "/"),
+                                     row.names = F))
+    if(any(grepl('try-error',class(write_currGapData)))){
+      log$error(base::paste0('Writing the currGapData output data failed: ',attr(write_currGapData,"condition")))
+      stop()
+    } else {
+      log$info("currGapData data written out.")
+    }
+  }else{
+    log$info("No records to write out for csd_dataGapToFillMethodMapping_pub.")
+  }
+  # Are there any constant bias shifts that end on this day?
+  currShiftData <- csd_constantBiasShift_pub[
+    csd_constantBiasShift_pub$siteID==site
+    &as.Date(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
+    ,]
+  if(nrow(currShiftData)>0){
+    # Write constantBiasShift
+    write_currShiftData<-try(write.csv(currShiftData,
+                                     paste(DirOutData,
+                                           "NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.csv",
+                                           sep = "/"),
+                                     row.names = F))
+    if(any(grepl('try-error',class(write_currShiftData)))){
+      log$error(base::paste0('Writing the currShiftData output data failed: ',attr(write_currShiftData,"condition")))
+      stop()
+    } else {
+      log$info("currShiftData data written out.")
+    }
+  }else{
+    log$info("No records to write out for csd_constantBiasShift_pub")
+  }
+  # Are there any gap filling regressions that end on this day?
+  currGapRegData <- csd_gapFillingRegression_pub[
+    csd_gapFillingRegression_pub$siteID==site
+    &as.Date(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
+    ,]
+  if(nrow(currGapRegData)>0){
+    # Write gapFillingRegression
+    write_currGapRegData<-try(write.csv(currGapRegData,
+                                     paste(DirOutData,
+                                           "NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.csv",
+                                           sep = "/"),
+                                     row.names = F))
+    if(any(grepl('try-error',class(write_currGapRegData)))){
+      log$error(base::paste0('Writing the currGapRegData output data failed: ',attr(write_currGapRegData,"condition")))
+      stop()
+    } else {
+      log$info("currGapRegData data written out.")
+    }
+  }else{
+    log$info("No records to write out for csd_gapFillingRegression_pub")
   }
   
   return()
