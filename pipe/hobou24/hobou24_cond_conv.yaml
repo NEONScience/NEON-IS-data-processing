@@ -48,7 +48,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_FLAGS_CAL
       repo: hobou24_avro_schemas
-      glob: /hobou24/hobou24_flags_calibration.avsc
+      glob: /hobou24/hobou24_flags_calibration_corrected.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true
