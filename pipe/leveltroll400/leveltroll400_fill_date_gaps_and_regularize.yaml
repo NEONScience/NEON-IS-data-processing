@@ -36,7 +36,7 @@ transform:
     # Environment variables for date gap filler
     LOG_LEVEL: INFO
     OUT_PATH: /tmp/pfs/date_filled
-    OUTPUT_DIRECTORIES: data,location,flags
+    OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
     DATA_MONTH_INDEX: '5'
