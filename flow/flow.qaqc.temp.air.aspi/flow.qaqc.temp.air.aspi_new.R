@@ -154,29 +154,16 @@ arg <- base::commandArgs(trailingOnly=TRUE)
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut","SensTermTemp","SensTermHeat",
-                                                             "SensTermTbne","SensTermWind1"),
-                                      NameParaOptn=c("AvelTbneMin","VeloWindMin","FileSchmQf",
+                                                             "SensTermTbne","SensTermWind1", "DirErr"),
+                                      NameParaOptn=c("AvelTbneMin","VeloWindMin","FileSchmData","FileSchmQf",
                                                      "DirSubCopySens","DirSubCopyTemp",
                                                      base::paste0("SensTermWind",2:100),
                                                      "RmvFlow","RmvHeat"),
-                                      ValuParaOptn=base::list(RmvFlow=FALSE,
+                                      ValuParaOptn=base::list(AvelTbneMin=300,VeloWindMin=12,RmvFlow=FALSE,
                                                               RmvHeat=TRUE),
-                                      TypePara = base::list(RmvFlow='logical',RmvHeat='logical'),
+                                      TypePara = base::list(AvelTbneMin='numeric',VeloWindMin='numeric',
+                                                            RmvFlow='logical',RmvHeat='logical'),
                                       log=log)
-
-############
-#PARA logic for 
-# NameParaOptn=c("AvelTbneMin","VeloWindMin","FileSchmQf",
-#                "DirSubCopySens","DirSubCopyTemp",
-#                base::paste0("SensTermWind",2:100),
-#                "RmvFlow","RmvHeat"),
-# ValuParaOptn=base::list(AvelTbneMin=300,VeloWindMin=12,RmvFlow=FALSE,
-#                         RmvHeat=TRUE),
-# TypePara = base::list(AvelTbneMin='numeric',VeloWindMin='numeric',
-#                       RmvFlow='logical',RmvHeat='logical'),
-
-######### TODO 
-## AvelTbneMin logic needs to be threshold based!
 
 
 # Retrieve datum path. 
@@ -218,7 +205,7 @@ SensTermWind <- base::lapply(spltSensWind,FUN=function(argSplt){
              term=argSplt[2:base::length(argSplt)])
 })
 sensWind <- base::unlist(base::lapply(SensTermWind,FUN=function(idx){idx$sens})) # Pull out the terms to test
-names(SensTermWind) <- sensWind
+
 for (idxWind in base::seq_len(base::length(SensTermWind))){
   log$debug(base::paste0('Priority ', idxWind, ' sensor, term(s) for wind speed: ',base::paste0(SensTermWind[[idxWind]],collapse=', ')))
 }
@@ -241,7 +228,7 @@ log$debug(base::paste0('Output schema for data: ',base::paste0(FileSchmDataOut,c
 
 # Read in the schema 
 if(base::is.null(FileSchmDataOut) || FileSchmDataOut == 'NA'){
-  SchmDataOut <- NA
+  SchmDataOut <- NULL
 } else {
   SchmDataOut <- base::paste0(base::readLines(FileSchmDataOut),collapse='')
 }
@@ -257,7 +244,7 @@ if(base::is.null(FileSchmQfOut) || FileSchmQfOut == 'NA'){
   SchmQfOut <- base::paste0(base::readLines(FileSchmQfOut),collapse='')
 }
 
-# Retrieve optional sensor subdirectories to copy over
+# Retrieve optional sensor subdirectories to copy overs
 DirSubCopySens <- base::unique(base::setdiff(Para$DirSubCopySens,SensTermTemp$sens))
 log$debug(base::paste0('Additional sensor subdirectories to copy: ',base::paste0(DirSubCopySens,collapse=',')))
 
@@ -275,37 +262,26 @@ DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSubSens,log
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
   
-  log$info(base::paste0('Processing datum path: ', idxDirIn))
-
-  #############TODO fix these inputs!!  
-  # Run the wrapper function for each datum, with error routing
-  tryCatch(
-    withCallingHandlers(
-      wrap.qaqc.temp.air.aspi(DirIn=idxDirIn,
-                              DirOut=Para$DirOut,
-                              ParaRglr=ParaRglr,
-                              DirSubCopy=DirSubCopy,
-                              log=log
-      ),
-      error = function(err) {
-        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
-        
-        # Re-route the failed datum
-        NEONprocIS.base::def.err.datm(
-          err=err,
-          call.stack=call.stack,
-          DirDatm=idxDirIn,
-          DirErrBase=Para$DirErr,
-          RmvDatmOut=TRUE,
-          DirOutBase=Para$DirOut,
-          log=log
-        )
-      }
-    ),
-    # This simply to avoid returning the error
-    error=function(err) {}
-  )
+  log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
+  # Run the wrapper function for each datum
+  wrap.qaqc.temp.air.aspi(DirIn=idxDirIn,
+                          DirOut=DirOut,
+                          SensTermTemp=SensTermTemp,
+                          SensTermTbne=SensTermTbne,
+                          AvelTbneMin=Para$AvelTbneMin,
+                          SensTermWind=SensTermWind,
+                          sensWind=sensWind,
+                          VeloWindMin=Para$VeloWindMin,
+                          SensTermHeat=SensTermHeat,
+                          DirSubCopyTemp=DirSubCopyTemp,
+                          DirSubCopySens=DirSubCopySens,
+                          log=log,
+                          RmvFlow=Para$RmvFlow,
+                          RmvHeat=Para$RmvHeat,
+                          SchmDataOut=SchmDataOut,
+                          SchmQfOut=SchmQfOut
+  )
   
   return()
   

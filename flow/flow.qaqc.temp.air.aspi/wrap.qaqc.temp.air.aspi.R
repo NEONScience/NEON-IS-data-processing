@@ -1,15 +1,12 @@
 
-#AvelTbneMin and 
-#VeloWindMin need threshold logic and/or hardcoding. 
-
-
-#check for more optional terms. 
 wrap.qaqc.temp.air.aspi <- function(DirIn, 
                                     DirOut,
                                     SensTermTemp,
                                     SensTermTbne,
-                                    SensTermWind, #Maybe add this logic to function instead
-                                    sensWind,#Maybe add this logic to function instead
+                                    AvelTbneMin,
+                                    SensTermWind,
+                                    sensWind,
+                                    VeloWindMin,
                                     SensTermHeat,
                                     DirSubCopyTemp,
                                     DirSubCopySens,
@@ -17,10 +14,9 @@ wrap.qaqc.temp.air.aspi <- function(DirIn,
                                     RmvFlow,
                                     RmvHeat,
                                     SchmDataOut,
-                                    FileSchmQfOut,
-                                    VeloWindMin=12
-                                    ){ 
-     
+                                    SchmQfOut
+){ 
+  
   # Start logging if not already
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
@@ -147,12 +143,10 @@ wrap.qaqc.temp.air.aspi <- function(DirIn,
   
   # Create 30-second flow rate flags
   qfFlowSec30 <- flagFailSec30
-  # TODO needs threshold logic 
   qfFlowSec30[dataFlow$avelTbne >= AvelTbneMin] <- 0 # Pass flow test if turbine speed at/above minimum 
   qfFlowSec30[dataFlow$veloWind >= VeloWindMin] <- 0 # Pass flow test if wind speed at/above minimum 
   qfFlowSec30[base::is.na(dataFlow$veloWind) & base::is.na(dataFlow$avelTbne)] <- -1 # Test indeterminate if no wind speed or turbine data 
   qfFlowSec30[base::is.na(dataFlow$veloWind) & dataFlow$avelTbne < AvelTbneMin] <- -1 # Test indeterminate if turbine speed below min but no wind speed 
-  
   qfFlowSec30[base::is.na(dataFlow$avelTbne) & dataFlow$veloWind < VeloWindMin] <- -1 # Test indeterminate if wind speed below min but no turbine 
   
   
