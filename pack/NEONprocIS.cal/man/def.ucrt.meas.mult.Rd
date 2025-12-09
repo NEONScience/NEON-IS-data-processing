@@ -6,28 +6,27 @@
 \usage{
 def.ucrt.meas.mult(
   data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
   varUcrt = base::names(data)[1],
   calSlct = NULL,
+  Meta = list(),
   log = NULL
 )
 }
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}
 
-\item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
-(as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
-a data frame of uncertainty coefficents. Columns of this data frame are:\cr
-\code{Name} String. The name of the coefficient. \cr
-\code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
-
-\item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} for 
-which uncertainty data will be computed (all other columns will be ignored). Note that for other
-uncertainty functions this variable may not need to be in the input data frame, so long as the function
-knows that. Defaults to the first
+\item{varUcrt}{A character array of the target variables (columns) in the data frame \code{data} for 
+which uncertainty output will be computed (all other columns will be ignored). Defaults to the first
 column in \code{data}.}
 
-\item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
+\item{calSlct}{A named list of data frames, list element corresponding to the variables in
+varUcrt. The data frame in each list element holds information about the calibration files and 
+time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
+See documentation for that function. Assign NULL to list elements (variables) for which calibration
+information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
+uncertainty).}
+
+\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
 NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -35,21 +34,29 @@ output in addition to standard R error messaging. Defaults to NULL, in which the
 created and used within the function.}
 }
 \value{
-A data frame with the following variables:\cr
+A named list of data frames, each list named for the variable for which uncertainty 
+estimates are computed (matching varUcrt). Each uncertainty data frame contains the following variables:\cr
 \code{ucrtMeas} - combined measurement uncertainty for an individual reading. Includes the
 repeatability and reproducibility of the sensor and the lab DAS and uncertainty of the
 calibration procedures and coefficients including uncertainty in the standard (truth).
 }
 \description{
 Definition function. Accepts L0 data and NEON uncertainty information as produced
-by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measurement
-uncertainties for each data value. The uncertainty computed is the L0 value multipled by 
+by NEONprocIS.cal::def.read.cal.xml and returns returns individual measurement uncertainties 
+for each data variable specified. The uncertainty computed is the L0 value multipled by 
 NEON calibration uncertainty coefficient U_CVALA1.
 }
 \examples{
+# Not run
 data <- data.frame(data=c(1,6,7,0,10))
-infoCal <- list(ucrt = data.frame(Name=c('U_CVALA1','U_CVALA3'),Value=c(0.1,5),stringsAsFactors=FALSE))
-def.ucrt.meas.mult(data=data,infoCal=infoCal)
+calSlct <- NEONprocIS.cal::wrap.cal.slct(
+  DirCal = "/path/to/datum/calibration/folder",
+  NameVarExpc = "data",
+  TimeBgn = as.POSIXct('2020-01-01',tz='GMT'),
+  TimeEnd = as.POSIXct('2020-01-02',tz='GMT'),
+  NumDayExpiMax = NA
+)
+def.ucrt.meas.mult(data=data,calSlct=calSlct)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -57,6 +64,8 @@ NEON.DOC.000785 TIS Level 1 Data products Uncertainty Budget Estimation Plan
 NEON.DOC.000746 Calibration Fixture and Sensor Uncertainty Analysis: CVAL 2014 Uncertainty Manual
 }
 \seealso{
+\link[NEONprocIS.cal]{wrap.cal.slct}
+
 \link[NEONprocIS.cal]{def.read.cal.xml}
 
 \link[NEONprocIS.cal]{def.ucrt.fdas.rstc.poly}

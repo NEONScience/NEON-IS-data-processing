@@ -9,80 +9,12 @@
     ]
   },
   "Packages": {
-    "R6": {
-      "Package": "R6",
-      "Version": "2.6.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d4335fe7207f1c01ab8c41762f5840d4",
-      "Requirements": []
-    },
-    "arrow": {
-      "Package": "arrow",
-      "Version": "19.0.1.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "96d6db49e9dd0dec85a6a0844dd0f5fe",
-      "Requirements": [
-        "R6",
-        "assertthat",
-        "bit64",
-        "cpp11",
-        "glue",
-        "purrr",
-        "rlang",
-        "tidyselect",
-        "vctrs"
-      ]
-    },
-    "assertthat": {
-      "Package": "assertthat",
-      "Version": "0.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "50c838a310445e954bc13f26f26a6ecf",
-      "Requirements": []
-    },
-    "bit": {
-      "Package": "bit",
-      "Version": "4.6.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "ebe86ffd194564abdc895d87742d5a29",
-      "Requirements": []
-    },
-    "bit64": {
-      "Package": "bit64",
-      "Version": "4.6.0-1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "4f572fbc586294afff277db583b9060f",
-      "Requirements": [
-        "bit"
-      ]
-    },
-    "cli": {
-      "Package": "cli",
-      "Version": "3.6.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "89e6d8219950eac806ae0c489052048a",
-      "Requirements": []
-    },
     "codetools": {
       "Package": "codetools",
       "Version": "0.2-18",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "019388fc48e48b3da0d3a76ff94608a8",
-      "Requirements": []
-    },
-    "cpp11": {
-      "Package": "cpp11",
-      "Version": "0.5.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "2720e3fd3dad08f34b19b56b3d6f073d",
       "Requirements": []
     },
     "doParallel": {
@@ -107,12 +39,12 @@
         "iterators"
       ]
     },
-    "glue": {
-      "Package": "glue",
-      "Version": "1.8.0",
+    "fs": {
+      "Package": "fs",
+      "Version": "1.6.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5899f1eaa825580172bb56c08266f37c",
+      "Hash": "7eb1e342eee7e0a7449c49cdaa526d39",
       "Requirements": []
     },
     "iterators": {
@@ -122,40 +54,6 @@
       "Repository": "CRAN",
       "Hash": "8954069286b4b2b0d023d1b288dce978",
       "Requirements": []
-    },
-    "lifecycle": {
-      "Package": "lifecycle",
-      "Version": "1.0.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b8552d117e1b808b09a832f589b79035",
-      "Requirements": [
-        "cli",
-        "glue",
-        "rlang"
-      ]
-    },
-    "magrittr": {
-      "Package": "magrittr",
-      "Version": "2.0.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "7ce2733a9826b3aeb1775d56fd305472",
-      "Requirements": []
-    },
-    "purrr": {
-      "Package": "purrr",
-      "Version": "1.0.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "cc8b5d43f90551fa6df0a6be5d640a4f",
-      "Requirements": [
-        "cli",
-        "lifecycle",
-        "magrittr",
-        "rlang",
-        "vctrs"
-      ]
     },
     "renv": {
       "Package": "renv",
@@ -171,50 +69,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "7a04e9eff95857dbf557b4e5f0b3d1a8",
-      "Requirements": []
-    },
-    "rlang": {
-      "Package": "rlang",
-      "Version": "1.1.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "50a6dbdc522936ca35afc5e2082ea91b",
-      "Requirements": []
-    },
-    "tidyselect": {
-      "Package": "tidyselect",
-      "Version": "1.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "829f27b9c4919c16b593794a6344d6c0",
-      "Requirements": [
-        "cli",
-        "glue",
-        "lifecycle",
-        "rlang",
-        "vctrs",
-        "withr"
-      ]
-    },
-    "vctrs": {
-      "Package": "vctrs",
-      "Version": "0.6.5",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "c03fa420630029418f7e6da3667aac4a",
-      "Requirements": [
-        "cli",
-        "glue",
-        "lifecycle",
-        "rlang"
-      ]
-    },
-    "withr": {
-      "Package": "withr",
-      "Version": "3.0.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "cc2d62c76458d425210d1eb1478b30b4",
       "Requirements": []
     }
   }

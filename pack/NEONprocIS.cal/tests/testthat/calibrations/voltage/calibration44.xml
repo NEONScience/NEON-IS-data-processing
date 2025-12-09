@@ -66,9 +66,6 @@
 	</Uncertainty><Uncertainty units="uS/cm"> 
 		<Name>U_CVALA2</Name>
 		<Value>0.000141</Value>
-	</Uncertainty><Uncertainty units="uS/cm"> 
-		<Name>U_CVALA1</Name>
-		<Value>0.00585</Value>
 	</Uncertainty>
     <Trueness units="uS/cm">0.000000</Trueness>
     <ActivityTimeRange>
