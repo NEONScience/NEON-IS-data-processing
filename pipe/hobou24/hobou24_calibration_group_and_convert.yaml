@@ -36,7 +36,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       DirSubCopy=flags \
       FileSchmData=$FILE_SCHEMA_DATA \
-      FileSchmData=$FILE_SCHEMA_FLAGS \
+      FileSchmQf=$FILE_SCHEMA_FLAGS \
       "ConvFuncTerm1=def.cal.conv.poly.l:conductivity_low" \
       "ConvFuncTerm2=def.cal.conv.poly.h:conductivity_high" \
       "ConvFuncTerm3=def.cal.conv.poly:temperature" \
