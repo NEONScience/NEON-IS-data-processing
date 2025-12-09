@@ -17,8 +17,15 @@ COPY ${MODULE_DIR}/${APP_DIR_2}/renv.lock /renv.lock.2
 RUN R -e 'renv::restore(lockfile="/renv.lock.1")'
 RUN R -e 'renv::restore(lockfile="/renv.lock.2")'
 
+# Create app user
+RUN groupadd appuser && \
+    useradd appuser -g appuser
+
 # Copy in subsurface file workflow
 COPY ${FLOW_DIR}/${APP_DIR_1}/flow.hobou24.files.R .
 COPY ${FLOW_DIR}/${APP_DIR_1}/wrap.subs.hobou24.files.R .
 COPY ${FLOW_DIR}/${APP_DIR_2}/flow.leveltroll400.files.R .
 COPY ${FLOW_DIR}/${APP_DIR_2}/wrap.subs.leveltroll400.files.R .
+
+# Run as app user
+USER appuser
