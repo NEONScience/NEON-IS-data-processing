@@ -108,6 +108,12 @@ def.loc.trnc.actv <-
                                      timeEndIdx <- idxList$end_date
                                    }
                                    
+                                   if(timeBgnIdx == TimeBgn){
+                                     return(list(start_date=timeBgnIdx,end_date=timeEndIdx,flag="start"))
+                                   }
+                                   if(timeEndIdx == TimeEnd){
+                                     return(list(start_date=timeBgnIdx,end_date=timeEndIdx,flag="end"))
+                                   }
                                    return(list(start_date=timeBgnIdx,end_date=timeEndIdx))
                                  } else {
                                    return(NULL)
