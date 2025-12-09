@@ -2,8 +2,6 @@
 pipeline:
   name: subsurfMoorTempCond_group_path
 transform:
-  # image_pull_secrets:
-  # - battelleecology-quay-read-all-pull-secret
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.1
   cmd:
   - /bin/bash
@@ -45,14 +43,8 @@ input:
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: leveltroll400_fill_date_gaps_and_regularize
-        glob: /leveltroll400/(*/*/*)
-        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: hobou24_fill_date_gaps_and_regularize
-        glob: /hobou24/(*/*/*)
+        repo: lt400_hu24_fill_date_gaps_and_regularize
+        glob: /*/(*/*/*)
         joinOn: $1
     - pfs:
        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
@@ -61,7 +53,7 @@ input:
        glob: /(*/*/*)
        joinOn: $1
 parallelism_spec:
-  constant: 5
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 600M
