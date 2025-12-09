@@ -14,8 +14,6 @@ transform:
       FileYear=$FILE_YEAR
       TypeFile=group
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.1
-  # image_pull_secrets:
-  # - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
 input:
@@ -26,10 +24,10 @@ input:
       glob: /subsurf-moor-temp-cond/*
   - pfs:
       name: FILE_YEAR
-      repo: leveltroll400_cron_daily_and_date_control
+      repo: lt400_hu24_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 5
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 250M
