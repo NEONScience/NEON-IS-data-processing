@@ -1,9 +1,9 @@
-name: "Build-push_lt400-hu24-files"
+name: "Build-push_lt400_hu24_files"
 
 on:
   push:
     branches:
-      - 'subsurface_tchain'
+      - 'master'
     paths:
       - 'modules_combined/lt400_hu24_files/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
