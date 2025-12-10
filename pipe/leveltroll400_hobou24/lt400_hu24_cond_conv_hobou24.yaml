@@ -30,7 +30,7 @@ transform:
         FileSchmQf=$FILE_SCHEMA_FLAGS_TEMP \
         FileSchmCalQf=$FILE_SCHEMA_FLAGS_CAL
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 input:
   cross:
   - pfs:
