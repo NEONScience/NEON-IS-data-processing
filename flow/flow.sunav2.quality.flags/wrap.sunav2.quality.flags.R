@@ -29,8 +29,8 @@
 #' 
 #' @examples
 #' # Not run
-# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620" 
-# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620" 
+# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/23/nitrate-surfacewater_SUGG103100/sunav2/CFGLOC110819" 
+# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/23/nitrate-surfacewater_SUGG103100/sunav2/CFGLOC110819" 
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_all_flags.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
@@ -49,7 +49,10 @@
 #' have same number of measurements.
 #' 
 #'  Bobby Hensley (2025-10-30)
-#'  Updated to revert over-flagged measuremnts at end of burst. 
+#'  Updated to revert over-flagged measurements at end of burst. 
+#'  
+#'  Bobby Hensley (2025-12-10)
+#'  Updated lamp stabilization to pass added null "filler" for completely missing bursts.
 #' 
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
@@ -180,14 +183,16 @@ wrap.sunav2.quality.flags <- function(DirIn,
   lampStabilizePoints=9 #' Hard-coded until thresholds are updated.
   sensorFlags$burstNumber<-0 #' Assumes each burst starts with a dark measurement.
   for(i in 2:nrow(sunaData)){
-    if(is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
-      sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=0}
-    #' If header is missing, assumes a dark measurement starting a new burst.
     if(!is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
       if(sunaData[i,which(colnames(sunaData)=='light_dark_frame')]==1){
         sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=sensorFlags[i-1,which(colnames(sensorFlags)=='burstNumber')]+1}
       else{sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=0}}
-    }
+  }
+  #' If light dark header is missing, assumes value was added null "filler" for a missing burst that needs to be passed.
+  for(i in 1:nrow(sunaData)){
+    if(is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
+      sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=9999}
+  }
   sensorFlags$nitrateLampStabilizeQF<-0
   for(i in 1:nrow(sensorFlags)){
     if(sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]<=lampStabilizePoints){
@@ -229,7 +234,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
     log$debug(base::paste0('Data and flags have same number of measurements'))
   }
   
-  #replace with NA's so that falgged data is excluded from averaging
+  #replace with NA's so that flagged data is excluded from averaging
   dataOut<-merge(sunaData,allFlags,by='readout_time')
   dataOut$nitrate[dataOut$nitrateHumidityQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLampTempQF==1]<-NA
