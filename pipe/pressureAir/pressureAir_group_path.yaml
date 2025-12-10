@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pressureAir_group_path_ptb330a
+  name: pressureAir_group_path
 transform:
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
@@ -9,12 +9,13 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - export GROUP=$GROUP_1
-  - python3 -m group_path.group_path_main
+  - '# Produce only buoy groups for now, as needed for subsurface moored temp chain'
+  - '#export GROUP=$GROUP_1'
+  - '#python3 -m group_path.group_path_main'
   - export GROUP=$GROUP_2
   - python3 -m group_path.group_path_main
   env:
-    GROUP_1: pressure-air_
+    #GROUP_1: pressure-air_
     GROUP_2: pressure-air-buoy_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
@@ -43,7 +44,8 @@ input:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
       repo: pressureAir_group_assignment
-      glob: /pressure*/(*/*/*)
+      # glob: /pressure*/(*/*/*)
+      glob: /pressure-air-buoy/(*/*/*)
       joinOn: $1
   - union: 
     - pfs:
@@ -68,7 +70,7 @@ resource_limits:
   memory: 1G
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 1
 datum_set_spec:
   number: 1
