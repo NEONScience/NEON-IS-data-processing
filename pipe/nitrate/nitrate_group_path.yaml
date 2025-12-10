@@ -11,7 +11,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m group_path.group_path_main
   env:
-    GROUP: nitrate_
+    GROUP: nitrate-surfacewater_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
@@ -39,13 +39,13 @@ input:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
       repo: nitrate_group_assignment
-      glob: /nitrate/(*/*/*)
+      glob: /nitrate-surfacewater/(*/*/*)
       joinOn: $1
   - union: 
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: sunav2_location_group_and_restructure
+        repo: sunav2_fill_date_gaps
         glob: /sunav2/(*/*/*)
         joinOn: $1
 #    - pfs:

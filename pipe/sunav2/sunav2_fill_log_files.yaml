@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-b95b90a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-4fa99b1
   cmd:
   - sh
   - "-c"
@@ -173,10 +173,10 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 400M
+  memory: 1G
   cpu: 1.5
 resource_limits:
-  memory: 800M
+  memory: 2G
   cpu: 2
 sidecar_resource_requests:
   memory: 2G

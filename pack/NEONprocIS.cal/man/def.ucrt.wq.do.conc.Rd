@@ -7,27 +7,23 @@ quality data product}
 \usage{
 def.ucrt.wq.do.conc(
   data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
   varUcrt = base::names(data)[1],
   calSlct = NULL,
+  Meta = list(),
   log = NULL
 )
 }
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}
 
-\item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
-(as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
-a data frame of uncertainty coefficents. Columns of this data frame are:\cr
-\code{Name} String. The name of the coefficient. \cr
-\code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
-
 \item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} 
-that represents Dissolved oxygen (DO) concentration data. Note that for other
-uncertainty functions this variable may not need to be in the input data frame, so long as the function
-knows that. Defaults to the first column in \code{data}.}
+that represents Dissolved oxygen (DO) concentration data. 
+Defaults to the first column in \code{data}.}
 
 \item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
+
+\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
 NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -35,11 +31,12 @@ output in addition to standard R error messaging. Defaults to NULL, in which the
 created and used within the function.}
 }
 \value{
+A named list, name matching the variable specified in varUcrt, containig 
 A data frame with the following variables:\cr
 \code{ucrtMeas} - combined measurement uncertainty for an individual L0 reading.
 }
 \description{
-Alternative calibration uncertainty function. Create file (dataframe) with
+Alternative calibration uncertainty function. Compute 
 uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values
 according to NEON.DOC.004931 - NEON Algorithm Theoretical Basis Document (ATBD): Water Quality.
 
@@ -48,13 +45,13 @@ which uses system environment variables if available.
 }
 \examples{
 #Written to potentially plug in to def.cal.conv.R
-ucrt <- def.ucrt.wq.do.conc(data = data, cal = NULL)
+ucrt <- def.ucrt.wq.do.conc(data = data)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
 \seealso{
-None currently
+\link[NEONprocIS.cal]{wrap.ucrt.dp0p}
 }
 \author{
 Kaelin Cawley \email{kcawley@battelleecology.org}

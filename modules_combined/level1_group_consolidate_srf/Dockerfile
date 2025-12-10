@@ -7,7 +7,7 @@
 #
 ###
 # Start with the pub package R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:v1.0.4
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:v1.0.5
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

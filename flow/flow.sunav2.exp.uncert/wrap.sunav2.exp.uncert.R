@@ -8,9 +8,13 @@
 #'
 #' @param DirIn Character value. The base file path to the averaged stats and uncertainty coefficients.
 #' 
-#' @param DirOut Character value. The base file path for the output data. 
+#' @param DirOutBase Character value. The base file path for the output data. 
 #' 
 #' @param SchmStats (optional), A json-formatted character string containing the schema for the output averaged stats parquet.
+#' 
+#' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
+#' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
+#' output path (i.e. not combined but carried through as-is).
 #' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
@@ -37,8 +41,9 @@
 #' 
 ##############################################################################################
 wrap.sunav2.exp.uncert <- function(DirIn,
-                                      DirOut,
+                                      DirOutBase,
                                       SchmStats=NULL,
+                                      DirSubCopy=NULL,
                                       log=NULL
 ){
   
@@ -50,8 +55,17 @@ wrap.sunav2.exp.uncert <- function(DirIn,
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirInStats <- paste0(DirIn,"/stats")
   DirInCoeff <- paste0(DirIn,"/uncertainty_coef")
+  DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutStats <- base::paste0(DirOut,"/stats")
   base::dir.create(DirOutStats,recursive=TRUE)
+  
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirSubCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,'/',DirSubCopy),
+                                       DirDest=DirOut,
+                                       LnkSubObj=TRUE,
+                                       log=log)
+  }
   
   #' Read in parquet file of averaged stats.
   statsFileName<-base::list.files(DirInStats,full.names=FALSE)
@@ -136,10 +150,10 @@ wrap.sunav2.exp.uncert <- function(DirIn,
                                                     NameFile = base::paste0(DirOutStats,'/',statsFileName),
                                                     Schm = NULL),silent=TRUE)
   if(class(rptOutStats)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName,".parquet"),'. ',attr(rptOutStats, "condition")))
+    log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName),'. ',attr(rptOutStats, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Updated stats written successfully in ', base::paste0(DirOutStats,'/',statsFileName,".parquet")))
+    log$info(base::paste0('Updated stats written successfully in ', base::paste0(DirOutStats,'/',statsFileName)))
   }
   
   

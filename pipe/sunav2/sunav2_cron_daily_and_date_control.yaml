@@ -23,7 +23,7 @@ input:
   - cron:
       name: tick
       spec: "@never"
-      spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      #spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
       overwrite: true
   - pfs:
       name: SITE_FILE

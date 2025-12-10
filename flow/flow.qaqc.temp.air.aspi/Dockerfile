@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Sensor-specific QA/QC module for aspirated air temperature
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.8
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.9
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.qaqc.temp.air.aspi"
