@@ -25,7 +25,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: subsurfMoorTempCond_group_path
-      glob: /*/*/*/*/
+      glob: /*/*/*
 parallelism_spec:
   constant: 6
 autoscaling: true
