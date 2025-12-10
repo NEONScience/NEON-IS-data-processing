@@ -72,6 +72,8 @@
 # changelog and author contributions / copyrights
 #   Nora Catolico (2025-12-4)
 #     original creation
+#   Nora Catolico (2025-12-10)
+#     added indicator column for gap filled timestamps (needed for SUNA)
 ##############################################################################################
 wrap.gap.fill.nonrglr <- function(DirIn,
                       DirOutBase,
@@ -134,6 +136,7 @@ wrap.gap.fill.nonrglr <- function(DirIn,
         base::stop()
       }
       df$readout_time <- base::as.POSIXlt(df$readout_time)
+      df$addedRow<-0
       
       # Windows that already have at least one observation
       present <- unique(floor_15m(df$readout_time))
@@ -143,6 +146,9 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       
       # Build blank rows for missing windows
       blanks <- data.frame(readout_time = missing)
+      if(length(blanks$readout_time)>0){
+        blanks$addedRow<-1
+      }
       
       # Combine and sort
       df_filled <- bind_rows(df, blanks)

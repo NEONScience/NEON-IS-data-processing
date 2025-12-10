@@ -84,7 +84,7 @@
 #' @examples
 #' Stepping through the code in R studio
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg<-c(      "DirIn=~/pfs/sunav2_fill_date_gaps/sunav2/2025/06/22",
+# arg<-c(      "DirIn=~/pfs/sunav2_fill_date_gaps/sunav2/2025/06/23/CFGLOC110819",
 #              "DirOut=~/pfs/out ",
 #              "DirErr=~/pfs/out/errored_datums ",
 #              "DirFill=data|flags",

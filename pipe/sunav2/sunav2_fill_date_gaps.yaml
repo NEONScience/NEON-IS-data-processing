@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_date_gaps
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:sha-98108c3
   cmd:
   - sh
   - "-c"
@@ -12,14 +12,30 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/interim
+    rm -rf $OUT_PATH
+    mkdir -p /tmp/pfs/interim
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    
     # Run first module - date-gap-filler (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
+        
+    #run gap filler for nonregularized data
+    Rscript ./flow.gap.fill.nonrglr.R \
+      DirIn=/tmp/pfs/interim \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirFill=data|flags" \
+      WndwFill="015" \
+      "DirSubCopy=location|uncertainty_coef" \
+      "FileSchm=data:$FILE_SCHEMA_DATA|flags:$FILE_SCHEMA_CAL_FLAGS|flags:$FILE_SCHEMA_LOG_FLAGS"
     
     EOF
   env:
     # Environment variables for date gap filler
     LOG_LEVEL: INFO
-    OUT_PATH: /pfs/out
+    OUT_PATH: /tmp/pfs/interim
     OUTPUT_DIRECTORIES: data,location,uncertainty_coef,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
@@ -43,6 +59,18 @@ input:
       repo: sunav2_empty_files
       glob: /sunav2
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_logfilled.avsc
+  - pfs:
+      name: FILE_SCHEMA_CAL_FLAGS
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_calibration_flags.avsc
+  - pfs:
+      name: FILE_SCHEMA_LOG_FLAGS
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_log_flags.avsc
   - group:
     - pfs:
         name: DATA_PATH
@@ -65,6 +93,7 @@ input:
           joinOn: $1
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
+  
 parallelism_spec:
   constant: 5
 autoscaling: true
