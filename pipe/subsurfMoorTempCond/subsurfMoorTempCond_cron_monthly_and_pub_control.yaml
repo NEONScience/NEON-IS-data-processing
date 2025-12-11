@@ -18,7 +18,7 @@ input:
   # Choose a monthly cron date to be something sufficiently after the 1st to allow kafka lag and timeseries pad
   cron:
     name: tick
-    spec: @never 
+    spec: "@never" 
     #spec: "0 7 10 * *" # Run at 00:00 MST (07:00 GMT) on the 10th of the month 
     overwrite: true
 autoscaling: true
