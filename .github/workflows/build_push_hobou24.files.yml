@@ -3,7 +3,7 @@ name: "Build-push_flow.hobou24.files"
 on:
   push:
     branches:
-      - 'subsurface_tchain'
+      - 'master'
     paths:
       - 'flow/flow.hobou24.files/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface

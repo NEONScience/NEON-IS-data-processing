@@ -1,0 +1,45 @@
+---
+pipeline:
+  name: lt400_hu24_calibration_assignment
+transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
+  - Rscript
+      ./flow.cal.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.0.3
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: lt400_hu24_calibration_loader
+      glob: /*/*
+  - pfs:
+      name: FILE_YEAR
+      repo: lt400_hu24_cron_daily_and_date_control
+      glob: /data_year*.txt
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 200M
+  cpu: 0.8
+resource_limits:
+  memory: 600M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 5G
+  cpu: 1
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
+
