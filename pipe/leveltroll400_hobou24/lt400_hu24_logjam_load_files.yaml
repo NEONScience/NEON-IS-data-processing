@@ -1,0 +1,63 @@
+---
+pipeline:
+  name: lt400_hu24_logjam_load_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Get source type /pfs/IN_PATH/*/*/*/logjam_prod/SOURCE_TYPE
+    source_type=$(echo $IN_PATH | cut -f $SOURCE_TYPE_INDEX -d "/")
+    echo $source_type
+    
+    # Run calibration conversion module
+    if [ $source_type = "leveltroll400" ]; then 
+      export OUT_PATH=$OUT_PATH_LEVELTROLL400
+    fi
+    if [ $source_type = "hobou24" ]; then 
+      export OUT_PATH=$OUT_PATH_HOBOU24
+    fi
+    
+    # Load the files
+    python3 -m logjam_loader.load_all_logjam_files
+    
+    EOF
+  env:
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
+    OUT_PATH_LEVELTROLL400: /pfs/out/leveltroll400
+    OUT_PATH_HOBOU24: /pfs/out/hobou24
+    LOG_LEVEL: INFO
+    STARTING_PATH_INDEX: "7"
+    SOURCE_TYPE_INDEX: "8"
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    name: IN_PATH
+    repo: lt400_hu24_logjam_list_files
+    glob: /*/*/*/logjam_prod/(leveltroll400|hobou24)/
+    empty_files: true
+parallelism_spec:
+  constant: 10
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

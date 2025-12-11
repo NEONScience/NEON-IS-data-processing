@@ -1,0 +1,68 @@
+---
+pipeline:
+  name: lt400_hu24_cond_conv_hobou24
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-hobo-cond-conv:v1.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+            
+    # Add validation
+    if [ ! -d "$DIR_IN" ]; then
+      echo "ERROR: Input directory $DIR_IN does not exist"
+      exit 1
+    fi
+    
+    echo "InputDir is $DIR_IN"
+    echo "Processing started at $(date)"
+
+    # Run conversion module
+      Rscript ./flow.hobo.cond.conv.R \
+        DirIn=$DIR_IN \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmData=$FILE_SCHEMA_DATA \
+        FileSchmQf=$FILE_SCHEMA_FLAGS_TEMP \
+        FileSchmCalQf=$FILE_SCHEMA_FLAGS_CAL
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: lt400_hu24_calibration_group_and_convert
+      glob: /hobou24/*/*/*
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /hobou24/hobou24_cond_corrected.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS_TEMP
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /hobou24/hobou24_flags_missing_temp.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS_CAL
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /hobou24/hobou24_flags_calibration_corrected.avsc
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.2G
+  cpu: 1.3
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
