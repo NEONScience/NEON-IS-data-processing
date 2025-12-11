@@ -2,7 +2,7 @@ name: CERT-tchain-tsd-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/tchain/*.yaml'
       - 'pipe/tchain/pipe_list_tchain.txt'
