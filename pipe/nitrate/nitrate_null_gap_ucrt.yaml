@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_null_gap_ucrt
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-62da0a9
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-4ec5d70
   cmd:
   - sh
   - "-c"
@@ -36,6 +36,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       minPoints=10 \
+      SchmQMs=$FILE_SCHEMA_INSUF \
       "DirSubCopy=location"
     
     EOF
@@ -89,6 +90,10 @@ input:
       name: FILE_SCHEMA_UCRT
       repo: nitrate_avro_schemas
       glob: /nitrate/nitrate_ucrt.avsc
+  - pfs:
+      name: FILE_SCHEMA_INSUF
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_insufficient_data.avsc
   - join:
     - pfs:
         name: QUALITY_METRICS_PATH
