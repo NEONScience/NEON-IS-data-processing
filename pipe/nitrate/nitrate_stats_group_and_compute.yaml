@@ -22,6 +22,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       WndwAgr=015 \
+      FileSchmStat=$FILE_SCHEMA_STATS \
       "TermStat1=nitrate:mean|minimum|maximum|variance|numPts|stdEr"
     EOF
   env:
@@ -52,10 +53,10 @@ transform:
     PARALLELIZATION_INTERNAL: '5' # Option for stats module
 input:
   cross:
-  # - pfs:
-  #     name: FILE_SCHEMA_STATS
-  #     repo: nitrate_avro_schemas
-  #     glob: /nitrate/nitrate_dp01_stats.avsc
+  - pfs:
+      name: FILE_SCHEMA_STATS
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_stats.avsc
   - join:
     - pfs:
         name: QAQC_PATH

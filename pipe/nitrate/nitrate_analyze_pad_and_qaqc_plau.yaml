@@ -44,10 +44,11 @@ transform:
     # Environment variables for qaqc plausibility
     PARALLELIZATION_INTERNAL: '1'
 input:
-  pfs:
-    name: DATA_PATH
-    repo: nitrate_thresh_select_ts_pad
-    glob: /*/*/*
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: nitrate_thresh_select_ts_pad
+      glob: /*/*/*
 parallelism_spec:
   constant: 5
 autoscaling: true

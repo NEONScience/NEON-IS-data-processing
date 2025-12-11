@@ -71,7 +71,7 @@ transform:
         fgroup="${BASH_REMATCH[4]}"
         fname="${BASH_REMATCH[5]}"
         # Now get the timing index from the file name
-        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
+        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
         avg_int="${BASH_REMATCH[2]}"
         #Form the output path and link
         outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
@@ -118,7 +118,7 @@ transform:
     OUT_PATH_1: /tmp/interimA # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: INFO # Shared among all modules
+    LOG_LEVEL: DEBUG # Shared among all modules
 
 # Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 
 # Can't do this in first filter-joiner bc there are only data in the srf assignment
@@ -177,7 +177,7 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: nitrate_qm_group_and_compute
+      repo: nitrate_null_gap_ucrt
       glob: /(*/*/*)
       joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
