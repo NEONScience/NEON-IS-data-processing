@@ -1,0 +1,72 @@
+---
+pipeline:
+  name: lt400_hu24_logjam_assign_clean_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-lt400-hu24-files:v1.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Get source type /pfs/DIR_IN/SOURCE_TYPE
+    source_type=$(echo $DIR_IN | cut -f $SOURCE_TYPE_INDEX -d "/")
+    echo $source_type
+    
+    # Run calibration conversion module
+    if [ $source_type = "leveltroll400" ]; then 
+      Rscript ./flow.leveltroll400.files.R \
+        DirIn=$DIR_IN \
+        DirOut=$OUT_PATH \
+        DirErr=$ERR_PATH \
+        FileSchmData=$SCHMA_DATA_LEVELTROLL400 
+    fi
+    if [ $source_type = "hobou24" ]; then 
+      Rscript ./flow.hobou24.files.R \
+        DirIn=$DIR_IN \
+        DirOut=$OUT_PATH \
+        DirErr=$ERR_PATH \
+        FileSchmData=$SCHMA_DATA_HOBOU24 
+    fi
+
+    
+    EOF
+  env:
+    LOG_LEVEL: INFO
+    SOURCE_TYPE_INDEX: "4"
+    OUT_PATH: /pfs/out
+    ERR_PATH: /pfs/out/errored_datums
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: lt400_hu24_logjam_load_files
+      glob: /*/*
+  - pfs:
+      name: SCHMA_DATA_LEVELTROLL400
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /leveltroll400/leveltroll400_log_data.avsc
+  - pfs:
+      name: SCHMA_DATA_HOBOU24
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /hobou24/hobou24_log_data.avsc
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

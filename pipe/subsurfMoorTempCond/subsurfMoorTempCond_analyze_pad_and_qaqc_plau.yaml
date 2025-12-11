@@ -1,0 +1,116 @@
+---
+pipeline:
+  name: subsurfMoorTempCond_analyze_pad_and_qaqc_plau
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v2.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH_ANALYZER
+    rm -rf /tmp/pfs
+    mkdir -p /tmp/pfs
+    mkdir -p $OUT_PATH_ANALYZER
+    
+    # Run first module - padded_timeseries_analyzer
+    export OUT_PATH=$OUT_PATH_ANALYZER
+    python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+
+    # Apply the filter-joiner to separate the hobou24 data
+    export CONFIG=$CONFIG_FILTER_HOBO
+    export OUT_PATH="/tmp/hobou24"
+    python3 -m filter_joiner.filter_joiner_main
+
+    # Apply the filter-joiner to separate the pressure data
+    export CONFIG=$CONFIG_FILTER_PRESSURE
+    export OUT_PATH="/tmp/pressure"
+    python3 -m filter_joiner.filter_joiner_main
+
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/hobou24 /tmp/pfs/hobou24 || : # Allow to fail without exit code (happens if step above produced no output) 
+    cp -rL /tmp/pressure /tmp/pfs/pressure || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/pressure
+    rm -r -f /tmp/hobou24
+    
+    # Run qaqc plausibility for the hobou24
+    Rscript ./flow.qaqc.plau.R \
+      DirIn=/tmp/pfs/hobou24 \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "TermTest1=temperature:null|gap|range(rmv)|step|spike|persistence" \
+      "TermTest2=conductivity:null|gap|range(rmv)|step|spike|persistence" \
+      DirSubCopy=location
+    
+    # Run qaqc plausibility for pressure
+    Rscript ./flow.qaqc.plau.R \
+      DirIn=/tmp/pfs/pressure \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "TermTest1=pressure:null|gap|range(rmv)|step|spike|persistence" \
+      DirSubCopy=location
+
+    EOF
+  env:
+    # Environment variables for padded timeseries analyzer
+    OUT_PATH_ANALYZER: /tmp/padded_analyzer
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: '3'
+    ERR_PATH: /pfs/out/errored_datums
+    # Environment variables for qaqc plausibility
+    PARALLELIZATION_INTERNAL: '4'
+    # Environment variables for filter-joiners
+    CONFIG_FILTER_HOBO: |
+      ---
+      # Configuration for filter-joiner module that will separate out the hobou24 data
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: PADDED_ANALYZER_PATH
+            # Filter for data directory
+            glob_pattern: /tmp/padded_analyzer/*/*/*/*/hobou24/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [7]
+    CONFIG_FILTER_PRESSURE: |
+      ---
+      # Configuration for filter-joiner module that will separate out the hobou24 data
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: PADDED_ANALYZER_PATH
+            # Filter for data directory
+            glob_pattern: /tmp/padded_analyzer/*/*/*/*/pressure/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [7]
+    LINK_TYPE: SYMLINK
+input:
+  pfs:
+    name: DATA_PATH
+    repo: subsurfMoorTempCond_threshold_select_ts_pad
+    glob: /*/*/*
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2.5G
+  cpu: 4.4
+resource_limits:
+  memory: 4G
+  cpu: 5.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
