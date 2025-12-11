@@ -1,4 +1,4 @@
-name: DEV-leveltroll400-hobou24-site-list
+name: DEV-lt400-hu24-site-list
 on:
   push:
     branches:
