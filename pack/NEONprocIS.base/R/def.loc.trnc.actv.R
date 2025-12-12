@@ -108,6 +108,12 @@ def.loc.trnc.actv <-
                                      timeEndIdx <- idxList$end_date
                                    }
                                    
+                                   if(!base::is.null(idxList$start_date) && TimeBgnFmt == idxList$start_date){
+                                     return(list(start_date=timeBgnIdx,end_date=timeEndIdx,active_periods_flag="start"))
+                                   }
+                                   if(!base::is.null(idxList$end_date) && TimeEndFmt == idxList$end_date){
+                                     return(list(start_date=timeBgnIdx,end_date=timeEndIdx,active_periods_flag="end"))
+                                   }
                                    return(list(start_date=timeBgnIdx,end_date=timeEndIdx))
                                  } else {
                                    return(NULL)
