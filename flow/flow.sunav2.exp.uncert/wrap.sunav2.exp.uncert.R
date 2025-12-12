@@ -150,6 +150,8 @@ wrap.sunav2.exp.uncert <- function(DirIn,
     statsData$surfWaterNitrateExpUncert<-NA
   }
   
+  statsData$surfWaterNitrateMean[is.nan(statsData$surfWaterNitrateMean)]<-NA
+  
   
   #' Write out updated stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = statsData,
