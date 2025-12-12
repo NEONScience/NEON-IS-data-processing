@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+import datetime
 import json
 import os
 import sys
-from datetime import date as dte, datetime
 from pathlib import Path
-from typing import Dict, Union, Optional, Any
+from typing import Dict, Union, Optional, Any, List
 
 from structlog import get_logger
 
@@ -63,7 +63,7 @@ class VariablePad:
                             date_and_location_max_window_size[date_location_key] = \
                                 pad_calculator.get_max_window_size(str(threshold_file), data_rate)
                         window_size = date_and_location_max_window_size[date_location_key]
-                        data_date = dte(int(year), int(month), int(day))
+                        data_date = datetime.date(int(year), int(month), int(day))
                         # calculate pad size
                         pad_size = pad_calculator.calculate_pad_size(window_size)
                         padded_dates = pad_calculator.get_padded_dates(data_date, pad_size)
@@ -131,7 +131,7 @@ class VariablePad:
         return None
 
     @staticmethod
-    def recheck_padded_dates(padded_dates: list[datetime], active_periods: Optional[Dict[str, Any]]) -> list[datetime]:
+    def recheck_padded_dates(padded_dates: List[datetime.datetime], active_periods: Optional[Dict[str, Any]]) -> List[datetime.datetime]:
         if not active_periods:
             return padded_dates
 
@@ -139,11 +139,11 @@ class VariablePad:
 
         if flag == "start":
             date_str = active_periods.get("start_date")
-            pivot = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
+            pivot = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
             return [dt for dt in padded_dates if dt >= pivot]
         elif flag == "end":
             date_str = active_periods.get("end_date")
-            pivot = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
+            pivot = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
             return [dt for dt in padded_dates if dt <= pivot]
         else:
             return padded_dates
