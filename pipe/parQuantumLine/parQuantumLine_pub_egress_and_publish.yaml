@@ -15,7 +15,9 @@ transform:
     curl -o $OUT_MDP_SITES https://raw.githubusercontent.com/NEONScience/NEON-IS-data-processing-inputs/refs/heads/main/mdp_sites_list.txt
 
     # Run first module - pub_egress (using environment variables below as input parameters)
-    python3 -m pub_egress.pub_egress_main
+    if [[ $(echo $DATA_PATH) ]]; then
+      python3 -m pub_egress.pub_egress_main
+    fi
 
     # If there is output, egress it
     if ls $OUT_PATH/NEON.DOM.SITE* 1> /dev/null 2>&1; then
