@@ -23,7 +23,7 @@ COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/r
  
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        python3.9 && \
+        python3.8 && \
     apt install -y python3-pip && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
