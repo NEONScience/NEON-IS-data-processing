@@ -79,6 +79,7 @@ class ArrayParserTest(TestCase):
         self.day_index = 6
         self.source_id_index = 7
         self.data_type_index = 8
+        self.source_type_out = 'tchain'
 
     def test_calibration_parser(self) -> None:
         target_path = Path(self.in_path, self.calibration_metadata_path, '30000000016555_WO12477_87280.xml')
@@ -88,9 +89,9 @@ class ArrayParserTest(TestCase):
     def test_schema_parser(self) -> None:
         schema_data: SchemaData = schema_parser.parse_schema_file(self.schema_path)
         assert schema_data.source_type == 'tchain'
-        term_name = schema_data.mapping.get('0')
+        term_name = schema_data.calibration_mapping.get('0')
         assert term_name == 'depth0WaterTemp'
-        term_name = schema_data.mapping.get('10')
+        term_name = schema_data.calibration_mapping.get('10')
         assert term_name == 'depth10WaterTemp'
 
     def test_parser(self) -> None:
@@ -99,6 +100,7 @@ class ArrayParserTest(TestCase):
                         out_path=self.out_path,
                         parse_calibration=True,
                         source_type_index=self.source_type_index,
+                        source_type_out=self.source_type_out,
                         year_index=self.year_index,
                         month_index=self.month_index,
                         day_index=self.day_index,

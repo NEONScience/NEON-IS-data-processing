@@ -2,7 +2,7 @@
 pipeline:
   name: mcseries_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.0
   cmd:
   - sh
   - "-c"
@@ -87,33 +87,16 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 1.5G
+  memory: 2.5G
   cpu: 1
 resource_limits:
-  memory: 3G
+  memory: 4G
   cpu: 3
 sidecar_resource_requests:
-  memory: 1G
-  cpu: 0.5
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
+  memory: 3G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

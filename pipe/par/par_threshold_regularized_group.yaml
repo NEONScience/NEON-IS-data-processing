@@ -25,7 +25,7 @@ transform:
             # Join on location ID
             join_indices: [6]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
 input:
   join:

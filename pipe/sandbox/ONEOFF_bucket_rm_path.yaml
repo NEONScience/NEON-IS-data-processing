@@ -1,0 +1,65 @@
+---
+pipeline:
+  name: ONEOFF_bucket_rm_path
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    
+    # set -x # Echo commands to output for troubleshooting
+    
+    echo "Objects and directories in $BUCKET_NAME/${REMOVE_PATH}:"
+    rclone lsf :gcs://${BUCKET_NAME}/${REMOVE_PATH}
+    
+    # echo "Deleting files/folders in $BUCKET_NAME/${REMOVE_PATH}"
+    # rclone delete :gcs://${BUCKET_NAME}/${REMOVE_PATH} --max-depth 10 --rmdirs -v
+
+    echo "Deleting path $BUCKET_NAME/${REMOVE_PATH}"
+    rclone purge :gcs://${BUCKET_NAME}/${REMOVE_PATH}
+
+    # set +x
+    
+    EOF
+    
+  env:
+
+    # Environment variables for the L1 archiver
+    REMOVE_PATH: 'v2/metone370380' # no beginning "/"
+
+  secrets:
+  # - name: l1-bucket
+  #   env_var: BUCKET_NAME
+  #   key: L1_BUCKET
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET    
+input:
+  cron:
+    name: tick
+    spec: "@never"
+    #spec: "0 7 5 * *" # Run at 00:00 MST (07:00 GMT) on the 5th of the month 
+    overwrite: true
+parallelism_spec:
+  constant: 1
+autoscaling: false
+resource_requests:
+  memory: 300M
+  cpu: 1.2
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 300M
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

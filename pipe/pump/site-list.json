@@ -37,7 +37,8 @@
 	},
 	{
 	"site" : "DELA",
-	"kafka_start_date" : "2023-06-16"
+	"kafka_start_date" : "2023-06-16",
+	"end_date" : "2025-10-11"
 	},
 	{
 	"site" : "DSNY",
@@ -57,10 +58,6 @@
 	},
 	{
 	"site" : "HEAL",
-	"kafka_start_date" : "2023-06-01"
-	},
-	{
-	"site" : "HQTW",
 	"kafka_start_date" : "2023-06-01"
 	},
 	{
@@ -89,23 +86,32 @@
 	},
 	{
 	"site" : "MD00",
-	"start_date" : "2022-04-08",
-	"end_date" : "2022-05-11"
+	"start_date" : "2017-07-18",
+	"end_date" : "2017-08-23"
 	},
 	{
 	"site" : "MD01",
-	"start_date" : "2022-04-08",
-	"end_date" : "2022-05-11"
+	"start_date" : "2021-07-23",
+	"end_date" : "2021-11-17"
 	},
 	{
 	"site" : "MD02",
-	"start_date" : "2022-04-08",
-	"end_date" : "2022-05-11"
+	"start_date" : "2021-08-23",
+	"end_date" : "2021-11-30"
 	},
 	{
 	"site" : "MD03",
 	"start_date" : "2022-04-08",
 	"end_date" : "2022-05-11"
+	},
+	{
+	"site" : "MD04",
+	"start_date" : "2025-03-26"
+	},
+	{
+	"site" : "MDP2",
+	"start_date" : "2025-03-26",
+	"kafka_start_date" : "2025-03-26"
 	},
 	{
 	"site" : "MLBS",

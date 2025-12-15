@@ -2,7 +2,7 @@
 pipeline:
   name: csat3_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.3.0
   cmd:
   - sh
   - "-c"
@@ -57,7 +57,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/li191r/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/csat3/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
@@ -80,6 +80,7 @@ transform:
         --copy-links \
         --gcs-bucket-policy-only \
         --gcs-no-check-bucket \
+        --metadata-set "content-type=application/vnd.apache.parquet" \
         copy \
         "${linkdir}" \
         ":gcs://${BUCKET_NAME}"
@@ -145,18 +146,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

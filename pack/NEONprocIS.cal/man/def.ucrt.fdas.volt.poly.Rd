@@ -6,39 +6,44 @@
 \usage{
 def.ucrt.fdas.volt.poly(
   data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
   varUcrt = base::names(data)[1],
   calSlct = NULL,
+  Meta = list(),
   log = NULL
 )
 }
 \arguments{
 \item{data}{Data frame of raw measurements. Note that the column/variable indicated in varUcrt must be numeric.}
 
-\item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
-(as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$cal and info$ucrt,
-which are data frames of calibration coefficients and uncertainty coeffcients, respectively.
-Columns of these data frames are:\cr
-\code{Name} String. The name of the coefficient. \cr
-\code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
-
 \item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} for 
 which FDAS uncertainty data will be computed (all other columns will be ignored). Note that for other
 uncertainty functions this variable may not need to be in the input data frame, so long as the function
 knows that. Defaults to the first column in \code{data}.}
 
-\item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
-NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
+\item{calSlct}{A named list of data frames, list element corresponding to the variables in
+varUcrt. The data frame in each list element holds information about the calibration files and 
+time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
+See documentation for that function. Assign NULL to list elements (variables) for which calibration
+information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
+uncertainty).}
+
+\item{Meta}{Named list of metadata for use in this function. Meta is required to contain
+list element ucrtCoefFdas, which is a data frame of FDAS uncertainty coefficients, as read by 
+NEONprocIS.cal::def.read.ucrt.coef.fdas. Columns include:\cr
+\code{Name} Character. Name of the coefficient.\cr
+\code{Value} Character. Value of the coefficient.\cr
+\code{.attrs} Character. Relevant attribute (i.e. units)\cr}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 created and used within the function.}
 }
 \value{
-A data frame with the following variables:\cr
+A named list of data frames, each list element corresponding to a variable specified in 
+\code{varUcrt}. Each data frame contains the following data columns:\cr
 \code{ucrt$raw} - raw reading value (i.e. same as input data)\cr
-\code{ucrt$dervCal} - 1st derivative of calibration function evaluated at raw reading value (e.g. partial derivative
-of a radiation measurement with respect to the voltage reading)\cr
+\code{ucrt$dervCal} - 1st derivative of calibration function evaluated at raw reading value (e.g.
+partial derivative of a temperature measurement with respect to the resistance reading)\cr
 \code{ucrt$ucrtFdas} - standard uncertainty of individual measurement introduced by the Field DAS \cr
 }
 \description{

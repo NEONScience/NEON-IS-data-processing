@@ -11,8 +11,8 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2025-02-01" # Inclusive
-    END_DATE: "2025-02-24"
+    START_DATE: "2022-05-30" # Inclusive
+    END_DATE: "2022-07-01"
     SOURCE_TYPE: "ptb330a"
   stdin:
   - "#!/bin/bash"
@@ -22,39 +22,23 @@ input:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      #spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      spec: "@never"
       overwrite: true
   - pfs:
       name: SITE_FILE
       repo: ptb330a_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 100M
-  cpu: 1
-resource_limits:
   memory: 300M
+  cpu: 1.2
+resource_limits:
+  memory: 500M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 500M
-  cpu: 0.2
-sidecar_resource_limits:
-  memory: 1G
-  cpu: 1
+  memory: 600M
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

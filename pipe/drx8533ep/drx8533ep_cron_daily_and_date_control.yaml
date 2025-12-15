@@ -2,7 +2,7 @@
 pipeline:
   name: drx8533ep_cron_daily_and_date_control
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   cmd: ["/bin/bash"]
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
@@ -11,18 +11,19 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2025-02-01" # Inclusive
-    END_DATE: "2025-02-24" # Inclusive
+    START_DATE: "2025-08-04" # Inclusive
+    #END_DATE: "2023-11-23" # Inclusive
     SOURCE_TYPE: "drx8533ep"
   stdin:
   - "#!/bin/bash"
-  - ./cron_daily_and_date_control/populate_site_dates.sh
+  - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
 input:
   cross:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      spec: "@never"
+      #spec: "0 0 * * *" # Run at 00:00 GMT
       overwrite: true
   - pfs:
       name: SITE_FILE
@@ -40,18 +41,4 @@ sidecar_resource_requests:
 autoscaling: true
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

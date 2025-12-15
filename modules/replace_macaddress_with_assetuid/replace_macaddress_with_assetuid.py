@@ -14,11 +14,12 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, relative_path
             mac = path.parent.name
             with open(path, 'r') as f:
                 asset = f.read().split()[0]
-            mac_asset_map[mac] = asset
+            mac_asset_map[mac.upper()] = asset
 
     for path in data_path.rglob('*'):
         if path.is_file():
             mac_address = path.parent.parent.name
+            mac_address = mac_address.upper()
             asset_uid = mac_asset_map.get(mac_address)
             log.debug(f'Mac_Address name is: {mac_address}; asset_uid is: {asset_uid}')
 

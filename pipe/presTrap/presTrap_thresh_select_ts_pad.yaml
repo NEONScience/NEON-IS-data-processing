@@ -2,7 +2,7 @@
 pipeline:
   name: presTrap_thresh_select_ts_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.1
   cmd:
   - sh
   - "-c"
@@ -52,30 +52,16 @@ parallelism_spec:
   constant: 4
 autoscaling: true
 resource_requests:
-  memory: 200M
-  cpu: 1.2
+  memory: 600M
+  cpu: 1
 resource_limits:
   memory: 1G
   cpu: 2
 sidecar_resource_requests:
   memory: 1G
-  cpu: 0.3
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

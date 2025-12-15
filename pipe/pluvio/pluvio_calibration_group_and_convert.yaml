@@ -1,0 +1,95 @@
+---
+pipeline:
+  name: pluvio_calibration_group_and_convert
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    
+    # Run filter joiner
+    python3 -m filter_joiner.filter_joiner_main
+   
+    # Run calibration conversion module
+    Rscript ./flow.cal.conv.R  \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQf=$FILE_SCHEMA_FLAGS \
+      TermQf=accu_nrt
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH/pluvio/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/pluvio/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: pluvio_avro_schemas
+      glob: /pluvio/flags_calibration_pluvio.avsc
+  # Outer join all days so that varying sensors between kafka and archive loaders will all get joined with calibrations. Filter-joiner will narrow down.
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: pluvio_calibration_assignment
+        glob: /pluvio/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH
+        repo: pluvio_time_shift
+        glob: /pluvio/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

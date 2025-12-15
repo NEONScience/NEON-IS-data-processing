@@ -37,7 +37,8 @@
 	},
 	{
 	"site" : "DELA",
-	"kafka_start_date" : "2023-06-16"
+	"kafka_start_date" : "2023-06-16",
+	"end_date" : "2025-10-11"
 	},
 	{
 	"site" : "DSNY",
@@ -58,6 +59,10 @@
 	{
 	"site" : "HEAL",
 	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "HQTW",
+	"kafka_start_date" : "2023-03-03"
 	},
 	{
 	"site" : "JERC",
@@ -102,6 +107,15 @@
 	"site" : "MD03",
 	"start_date" : "2022-04-08",
 	"end_date" : "2022-05-11"
+	},
+	{
+	"site" : "MD04",
+	"start_date" : "2025-03-26"
+	},
+	{
+	"site" : "MDP2",
+	"start_date" : "2025-03-26",
+	"kafka_start_date" : "2025-03-26"
 	},
 	{
 	"site" : "MLBS",

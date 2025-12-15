@@ -1,0 +1,29 @@
+name: "Run IS base package unit tests"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - pack/NEONprocIS.base/**
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+env:
+  # IS package name
+  MODULE_BASE_NAME: NEONprocIS.base
+  MODULE_BASE_PATH: ./pack/NEONprocIS.base
+  MODULE_NAME: NEONprocIS.base
+  MODULE_PATH: ./pack/NEONprocIS.base
+
+jobs:
+  run-unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Avro
+        run: sudo apt install libavro23
+
+      - name: Run IS ${{ env.MODULE_NAME }} unit tests
+        uses: ./.github/actions/run-IS-unit-tests

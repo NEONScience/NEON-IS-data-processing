@@ -2,7 +2,7 @@
 pipeline:
   name: mti300ahrs_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.0
   cmd:
   - sh
   - "-c"
@@ -11,20 +11,25 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH
+
     # Run first module - date-gap-filler (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
+
     # Run second module - regularize
+    # NOTE: 2025-01-02~2025-02-25 CFGLOC108729(TALL) has 80Hz data, 
+    # SCI team agreed to use Trlg and IdxWndwMin for regularization for high frequency data
     Rscript ./flow.rglr.R \
       DirIn=/tmp/pfs/date_filled \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       DirRglr=data \
       MethRglr=CybiEc \
-      WndwRglr=Cntr \
-      IdxWndw=Clst \
+      WndwRglr=Trlg \
+      IdxWndw=IdxWndwMin \
       RptTimeWndw=FALSE \
       DropNotNumc=FALSE \
       "DirSubCopy=location"
@@ -69,7 +74,7 @@ input:
       - pfs:
           name: LOCATION_PATH
           repo: mti300ahrs_location_active_dates_assignment
-          # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /mti300ahrs/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
+          # For full-scale daily processing, glob should be /mti300ahrs/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /mti300ahrs/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
           #glob: /mti300ahrs/((*/*/*)/(CFGLOC104242|CFGLOC103630|CFGLOC104713|CFGLOC105211|CFGLOC106586|CFGLOC110682|CFGLOC110995|CFGLOC113253|CFGLOC113734))
           glob: /mti300ahrs/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
@@ -88,30 +93,16 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 2.0
+  memory: 8G
+  cpu: 3
 resource_limits:
-  memory: 5G
+  memory: 10G
   cpu: 4
 sidecar_resource_requests:
-  memory: 4G
-  cpu: 0.5
+  memory: 6G
+  cpu: 3
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

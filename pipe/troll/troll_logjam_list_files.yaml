@@ -2,7 +2,7 @@
 pipeline:
   name: troll_logjam_list_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
   cmd: ["/bin/bash"]
   env:
     LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
@@ -37,18 +37,4 @@ sidecar_resource_requests:
   cpu: 0.4
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

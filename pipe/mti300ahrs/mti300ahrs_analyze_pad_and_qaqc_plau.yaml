@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v1.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v2.0.0
   cmd:
   - sh
   - "-c"
@@ -65,30 +65,16 @@ parallelism_spec:
   constant: 40
 autoscaling: true
 resource_requests:
-  memory: 9G
+  memory: 10G
   cpu: 1.5
 resource_limits:
   memory: 13G
   cpu: 2.5
 sidecar_resource_requests:
   memory: 5G
-  cpu: 0.3
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
+    cloud.google.com/compute-class: pach-pipeline-class

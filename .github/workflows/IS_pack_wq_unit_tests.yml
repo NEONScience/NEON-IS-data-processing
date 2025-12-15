@@ -1,0 +1,26 @@
+name: "Run IS wq package unit tests"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - pack/NEONprocIS.wq/**
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+env:
+  # IS package name
+  MODULE_BASE_NAME: NEONprocIS.base
+  MODULE_BASE_PATH: ./pack/NEONprocIS.base
+  MODULE_NAME: NEONprocIS.wq
+  MODULE_PATH: ./pack/NEONprocIS.wq
+
+jobs:
+  run-unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Run IS ${{ env.MODULE_NAME }} unit tests
+        uses: ./.github/actions/run-IS-unit-tests

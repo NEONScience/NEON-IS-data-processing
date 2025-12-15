@@ -12,7 +12,7 @@ transform:
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.1.2
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
@@ -35,30 +35,4 @@ resource_requests:
 autoscaling: true
 scheduling_spec:
   node_selector:
-    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
-    nodepool.neonscience.org/pipeline: "yes"
-    cloud.google.com/gke-spot: "true"
-pod_spec: |-
-  { "tolerations": [
-    {
-      "key": "nodepool.neonscience.org/pipeline",
-      "operator": "Exists"
-    },
-    {
-      "effect": "NoSchedule",
-      "key": "cloud.google.com/gke-spot",
-      "operator": "Exists"
-    }  
-  ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"3G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "2"
-    }
-  ]
-
+    cloud.google.com/compute-class: pach-pipeline-class

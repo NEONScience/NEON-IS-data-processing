@@ -28,8 +28,18 @@ location information will be filtered for the exact time of TimeBgn}
 in which all properties of the original file are retained. Include here the names of properties embedded
 at the top level of each location install entry (e.g. "HOR","VER","Data Rate") as well as within the 
 "properties" list of each location install entry (e.g. "context","locations","install_date","remove_date",
-"name","site"). Currently there is no option to filter for particular geolocation properties (within the
-properties:locations:features list)}
+"name","site"), as well as within the location_properties entry within "locations" 
+(properties:locations:features:properties:location_features list). 
+By default, adding "locations" will include geolocation coordinates and offsets to reference locations but 
+will not include the "location_properties" list. To include "location_properties", add both "locations" 
+and "location_properties" to the Prop argument. 
+Note that "location_properties" is not allowed without "locations". If it is included alone, a warning 
+will be issued and locations will not be included in the output.
+By default, specifying "location_properties" will include all location properties, which often changes 
+in the database as new properties are added. To filter for a particular set of location_properties (if 
+they exist), use the syntax "location_properties:<property>", where <property> is the specific item in 
+the location_properties list to include. Do not include spaces before or after the ":". 
+Example: Prop="location_properties:UTM Zone"}
 }
 \value{
 A list of filtered location information. If NameFileOut is specified, the filtered location
@@ -46,8 +56,8 @@ NameFileIn <- 'locations.json'
 NameFileOut <- 'filtered_locations.json'
 loc <- def.loc.filt(NameFileIn,NameFileOut,TimeBgn,TimeEnd)
 
-Filtering for some basics only, and excluding geolocation history
-Prop <- c("HOR","VER","install_date","remove_date","name","site","Data Rate")
+Filtering for some basics, geolocation history (locations)m and some location properties
+Prop <- c("HOR","VER","install_date","remove_date","name","site","Data Rate","locations","location_properties:UTM Zone","location_properties:TimeTube")
 loc <- def.loc.filt(NameFileIn,NameFileOut,TimeBgn,TimeEnd,Prop)
 }
 \references{

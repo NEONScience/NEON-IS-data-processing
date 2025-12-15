@@ -1,0 +1,92 @@
+name: "Run IS package unit tests"
+description: "Run R unit tests on IS package"
+
+runs:
+   using: "composite"
+   steps:  
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 4.1.3
+
+      - name: Install R packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+              arrow@19.0.1.1
+              covr@3.6.5
+              devtools@2.4.6
+              dplyr@1.1.3
+              fs@1.6.6
+              jsonlite@1.8.7
+              rapportools@1.1
+              testthat@3.2.3
+          extra-packages: |
+              any::xml2
+          needs: coverage
+          cache: always
+
+      - name: Add libR.so to LD_LIBRARY_PATH
+        shell: bash
+        run: |
+          LIBR_DIR=$(dirname $(find /opt -name "libR.so" | head -n 1))
+          echo "LD_LIBRARY_PATH=$LIBR_DIR:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+      - name: Run ${{ env.MODULE_NAME }} unit test coverage using covr package
+        shell: Rscript {0}
+        run: |
+          # Install NEONprocIS.base
+          devtools::install("${{ env.MODULE_BASE_PATH }}")
+          library("${{ env.MODULE_BASE_NAME }}")
+          # Install NEONprocIS.cal if the module is NEONprocIS.wq
+          if ("${{ env.MODULE_NAME }}" == "NEONprocIS.wq") {
+          devtools::install("./pack/NEONprocIS.cal")
+          library("NEONprocIS.cal")
+          }
+          #
+          library(testthat)
+          library(covr)
+          library(dplyr)
+          library(arrow)
+          library(jsonlite)
+          library(base)
+          library(utils)
+          library(rlang)
+          library(stringr)
+          if ("${{ env.MODULE_NAME }}" != "${{ env.MODULE_BASE_NAME }}") {
+            devtools::install("${{ env.MODULE_PATH }}")
+            library("${{ env.MODULE_NAME }}")
+          }
+          devtools::test(pkg="${{ env.MODULE_PATH }}")
+          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
+          # Generates an interactive HTML report
+          covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
+          # Generates a Cobertura XML file 
+          covr::to_cobertura(cov, filename = "test-summary.xml")
+
+      # Generate Markdown Summary
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: test-summary.xml # Or the path to your Cobertura report
+          badge: true
+          hide_complexity: false
+          format: markdown
+          output: both
+
+      # Display in Job Summary
+      - name: Add coverage summary to job summary
+        shell: bash
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+  
+      # Uploads the HTML report as a workflow artifact
+      # Find the r-coverage-report artifact on the workflow run details page. 
+      # Download the artifact and open the coverage.html file in your browser 
+      # to explore the detailed test coverage report, including line-by-line coverage information.
+      - name: Upload coverage.html artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-coverage-report
+          path: |
+            ${{ env.MODULE_NAME }}-coverage.html
+            lib/

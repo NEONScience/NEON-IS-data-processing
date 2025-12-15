@@ -12,6 +12,15 @@ on:
       - 'pipe/surfacewaterPhysical/pipe_list_surfacewaterPhysical.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
+# Workflow-level concurrency
+concurrency: 
+  group: ${{
+      contains(github.workflow, 'update-dag') ||
+      contains(github.workflow, 'site-list') && 'operations-queue'
+    || github.workflow
+    }}
+  cancel-in-progress: false  # Queue them up, don't cancel
+
 jobs:
   # -------------------------------------------------------------
   # Using GitHub's API is not supported for push events
@@ -45,7 +54,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
-      PATHS: 'pipe/troll,pipe/groundwaterPhysical,pipe/surfacewaterPhysical' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
+      PATHS: 'pipe/troll=pipe_list_troll.txt,pipe/groundwaterPhysical=pipe_list_groundwaterPhysical.txt,pipe/surfacewaterPhysical=pipe_list_surfacewaterPhysical.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
