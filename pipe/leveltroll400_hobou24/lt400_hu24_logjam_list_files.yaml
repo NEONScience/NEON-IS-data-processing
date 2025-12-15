@@ -1,0 +1,31 @@
+---
+pipeline:
+  name: lt400_hu24_logjam_list_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
+  cmd: ["/bin/bash"]
+  env:
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+  stdin:
+  - "#!/bin/bash"
+  - python3 -m logjam_loader.logjam_loader
+input:
+  pfs:
+    repo: lt400_hu24_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.4
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 800M
+  cpu: 0.2
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

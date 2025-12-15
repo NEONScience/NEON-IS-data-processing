@@ -7,6 +7,7 @@ on:
     paths:
       - 'modules_combined/analyze_pad_and_qaqc_plau/**'
       - 'modules/padded_timeseries_analyzer/**'
+      - 'modules/filter_joiner/**'
       - 'modules/common/**'
       - 'flow/flow.qaqc.plau/**'
 
