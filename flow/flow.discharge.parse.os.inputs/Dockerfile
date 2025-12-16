@@ -22,6 +22,7 @@ WORKDIR /home/app
 # Copy in troll flag workflow
 COPY ${FLOW_DIR}/${APP_DIR}/flow.discharge.parse.os.inputs.R .
 COPY ${FLOW_DIR}/${APP_DIR}/wrap.discharge.parse.os.inputs.R .
+COPY ${FLOW_DIR}/${APP_DIR}/def.dir.in.partial.R .
 
 # Run as app user
 RUN chown app:app -R /home/app
