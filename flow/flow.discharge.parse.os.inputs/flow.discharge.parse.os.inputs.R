@@ -195,15 +195,14 @@ if (base::any(base::class(sdrc_stageDischargeCurveInfo_pub) == 'try-error')) {
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
-foreach::foreach(site = sites) %dopar% {
-  site=sites[1]
-  log$info(base::paste0('Processing path to file: ', idxDirIn))
+foreach::foreach(idxDirIn = DirIn) %dopar% {
+  log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
       wrap.discharge.parse.os.inputs(
-        DirIn=DirIn,
+        DirIn=idxDirIn,
         csd_constantBiasShift_pub=csd_constantBiasShift_pub,
         csd_dataGapToFillMethodMapping_pub=csd_dataGapToFillMethodMapping_pub,
         csd_gapFillingRegression_pub=csd_gapFillingRegression_pub,
