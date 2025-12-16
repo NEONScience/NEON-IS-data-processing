@@ -37,7 +37,7 @@
 #' @examples
 #' # Not run
 # DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733"
-# minPoints=10
+# minPoints=5
 # DirOut<-"~/pfs/nitrate_null_gap_ucrt_updated/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733" 
 # SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse='')
 # SchmQMs<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse='')
@@ -114,6 +114,7 @@ wrap.insufficient.data <- function(DirIn,
   #' If the number of points is greater than or equal to the minimum required, 
   #' revert the insufficient data quality flag (default is to apply it).
   qmData$insufficientDataQF=1
+  minPoints<-as.numeric(minPoints)
   for(i in 1:nrow(statsData)){
     if(statsData[i,which(colnames(statsData)==ptsColName)]>=minPoints){
       qmData[i,which(colnames(qmData)=='insufficientDataQF')]=0}}
