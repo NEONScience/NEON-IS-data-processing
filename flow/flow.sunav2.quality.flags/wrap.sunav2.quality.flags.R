@@ -29,8 +29,8 @@
 #' 
 #' @examples
 #' # Not run
-# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/23/nitrate-surfacewater_SUGG103100/sunav2/CFGLOC110819" 
-# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/23/nitrate-surfacewater_SUGG103100/sunav2/CFGLOC110819" 
+# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/01/nitrate-surfacewater_SYCA102100/sunav2/CFGLOC111015" 
+# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/01/nitrate-surfacewater_SYCA102100/sunav2/CFGLOC111015" 
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_all_flags.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
@@ -54,6 +54,8 @@
 #'  Bobby Hensley (2025-12-10)
 #'  Updated lamp stabilization to pass added null "filler" for completely missing bursts.
 #' 
+#' Bobby Hensley (2025-12-16)
+#' Updated so that dark measurements caused by lamp temperature cutoff are still counted as part of same burst.
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
                                       DirOutBase,
@@ -182,9 +184,10 @@ wrap.sunav2.quality.flags <- function(DirIn,
   # lampStabilizePoints<-lampStabilizeThreshold$number_value
   lampStabilizePoints=9 #' Hard-coded until thresholds are updated.
   sensorFlags$burstNumber<-0 #' Assumes each burst starts with a dark measurement.
+  #' If measurement is a light frame, or if the lamp temp caused a dark measurement, it is counted as the next measuremnt in a burst.
   for(i in 2:nrow(sunaData)){
     if(!is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
-      if(sunaData[i,which(colnames(sunaData)=='light_dark_frame')]==1){
+      if(sunaData[i,which(colnames(sunaData)=='light_dark_frame')]==1|sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampTempQF')]==1){
         sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=sensorFlags[i-1,which(colnames(sensorFlags)=='burstNumber')]+1}
       else{sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=0}}
   }
@@ -214,7 +217,9 @@ wrap.sunav2.quality.flags <- function(DirIn,
     if((allFlags[i,which(colnames(allFlags)=='burstNumber')]==0)&(allFlags[i-2,which(colnames(allFlags)=='nitratePersistenceQF')]==0)){
       allFlags[i-1,which(colnames(allFlags)=='nitratePersistenceQF')]=0}
   } 
-  allFlags<-allFlags[,-which(colnames(allFlags)=='burstNumber')] #' Drops this column since it's no longer needed.
+  
+  #' Drops burst number column since it's no longer needed.
+  allFlags<-allFlags[,-which(colnames(allFlags)=='burstNumber')] 
   
   #' Removes all measurements where lamp has not stabilized from data and flag files.
   lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
@@ -236,6 +241,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   
   #replace with NA's so that flagged data is excluded from averaging
   dataOut<-merge(sunaData,allFlags,by='readout_time')
+  dataOut$nitrate[dataOut$light_dark_frame==0]<-NA
   dataOut$nitrate[dataOut$nitrateHumidityQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLampTempQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLightDarkRatioQF==1]<-NA
