@@ -128,4 +128,22 @@ test_that("active period end date is timeBgn, get the active periods flag as end
           }
           
 )
+test_that("active period is single day, get the active periods flag as both",
+          {
+            nameFileIn = 'def.loc.trnc.actv/CFGLOC113812_1.json'
+            nameFileOut = 'def.loc.trnc.actv/output.txt'
+            timeBgn <- base::as.POSIXct('2024-03-27T00:00:00Z', tz = 'GMT')
+            timeEnd <- base::as.POSIXct('2024-03-28T00:00:00Z', tz = 'GMT')
+            PropKeep <- c("HOR","VER","name","description","site","Data Rate","active_periods")
+            
+            loc <- NEONprocIS.base::def.loc.trnc.actv(NameFileIn = nameFileIn, NameFileOut = nameFileOut, TimeBgn = timeBgn, TimeEnd = timeEnd,Prop=PropKeep)
+            testthat::expect_true(is.list(loc))
+            testthat::expect_true('active_periods_flag' %in% names(loc$features[[1]]$properties$active_periods[[1]]))
+            testthat::expect_true('both' == loc$features[[1]]$properties$active_periods[[1]]$active_periods_flag)
+            
+            if (file.exists(nameFileOut)) { file.remove(nameFileOut)}
+            
+          }
+          
+)
 
