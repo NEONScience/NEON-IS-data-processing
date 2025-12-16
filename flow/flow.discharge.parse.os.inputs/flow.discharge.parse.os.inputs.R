@@ -84,8 +84,7 @@ Para <- NEONprocIS.base::def.arg.pars(arg = arg,
                                                        "DirOut",
                                                        "DirErr"),
                                       log = log)
-list2env(Para,envir = .GlobalEnv)
-
+#list2env(Para,envir = .GlobalEnv)
 
 # Echo arguments
 log$debug(base::paste0('SWE/CSD Input directory: ', Para$DirIn))
@@ -95,100 +94,100 @@ log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 #what are the expected subdirectories of each input path
 DirIn <-
-  def.dir.in.partial(DirBgn = DirIn,
+  def.dir.in.partial(DirBgn = Para$DirIn,
                      nameDirSubPartial = 'l4discharge',
                      log = log)
 
 # Take stock of our OS tables. 
-OStables <- base::list.files(DirInOS,full.names=FALSE)
+OStables <- base::list.files(Para$DirInOS,full.names=FALSE)
 
 # --------- Load the OS data ----------
 # Load in data file in parquet format into data frame 'data'. Grab the first file only, since there should only be one.
 csd_constantBiasShift_pub  <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.csv')))
 if (base::any(base::class(csd_constantBiasShift_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.csv is unreadable.'))
   base::stop()
 }
 
 csd_dataGapToFillMethodMapping_pub  <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.csv')))
 if (base::any(base::class(csd_dataGapToFillMethodMapping_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.csv is unreadable.'))
   base::stop()
 }
 
 csd_gapFillingRegression_pub  <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.csv')))
 if (base::any(base::class(csd_gapFillingRegression_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.csv is unreadable.'))
   base::stop()
 }
 
 csd_gaugeWaterColumnRegression_pub  <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv')))
 if (base::any(base::class(csd_gaugeWaterColumnRegression_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv is unreadable.'))
   base::stop()
 }
 
 sdrc_controlInfo_pub  <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv')))
 if (base::any(base::class(sdrc_controlInfo_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv is unreadable.'))
   base::stop()
 }
 
 sdrc_curveIdentification_pub  <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv')))
 if (base::any(base::class(sdrc_curveIdentification_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv is unreadable.'))
   base::stop()
 }
 
 sdrc_priorParameters_pub  <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv')))
 if (base::any(base::class(sdrc_priorParameters_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv is unreadable.'))
   base::stop()
 }
 
 sdrc_gaugeDischargeMeas_pub  <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv')))
 if (base::any(base::class(sdrc_gaugeDischargeMeas_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_gaugeDischargeMeas_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_gaugeDischargeMeas_pub.csv is unreadable.'))
   base::stop()
 }
 
 sdrc_sampledParameters_pub <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv')))
 if (base::any(base::class(sdrc_sampledParameters_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_sampledParameters_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_sampledParameters_pub.csv is unreadable.'))
   base::stop()
 }
 
 sdrc_gaugePressureRelationship_pub <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv')))
 if (base::any(base::class(sdrc_gaugePressureRelationship_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_gaugePressureRelationship_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_gaugePressureRelationship_pub.csv is unreadable.'))
   base::stop()
 }
 
 sdrc_stageDischargeCurveInfo_pub <-
-  base::try(read.csv(paste0(DirInOS, '/NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.csv')))
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.csv')))
 if (base::any(base::class(sdrc_stageDischargeCurveInfo_pub) == 'try-error')) {
   # Generate error and stop execution
-  log$error(base::paste0('File ', DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_stageDischargeCurveInfo_pub.csv is unreadable.'))
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_stageDischargeCurveInfo_pub.csv is unreadable.'))
   base::stop()
 }
 
