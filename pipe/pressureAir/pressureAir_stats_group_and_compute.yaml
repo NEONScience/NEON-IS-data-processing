@@ -11,18 +11,22 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
     mkdir -p /tmp/pfs/filter_joined
+    
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
-    # Run second module - basic stats
+    
+    # Run second module - basic stats. 
+    # NOTE: This is only producing 30-min needed for subsurface moored temp chain. Revise when doing baro pressure for real.
     Rscript ./flow.stat.basc.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmStat=$FILE_SCHEMA_STATS \
-      "WndwAgr=001|030" \
+      "WndwAgr=030" \
       "TermStat1=barometricPressure:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
     EOF
   env:
@@ -66,7 +70,7 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: UNCERTAINTY_PATH
-        repo: pressureAir_group_path_ptb330a
+        repo: pressureAir_group_path
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY

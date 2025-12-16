@@ -4,20 +4,22 @@
 # docker build --no-cache -t neon-is-ts-pad-anls-qaqc-plau -f ./modules_combined/padded_timeseries_analyzer_and_qaqc_plausibility/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.8
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.9
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 
 ARG MODULE_DIR="modules"
-ARG APP_DIR="padded_timeseries_analyzer"
+ARG APP_DIR_1="padded_timeseries_analyzer"
+ARG APP_DIR_2="filter_joiner"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR_1}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_1}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
 
  
 RUN apt update && \
@@ -25,13 +27,15 @@ RUN apt update && \
         python3.8 && \
     apt install -y python3-pip && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_1}/requirements.txt && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
    apt-get autoremove -y && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* 
 
 # Copy in python code
-COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${APP_DIR_1} ${CONTAINER_APP_DIR}/${APP_DIR_1}
+COPY ${MODULE_DIR}/${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 # Build in the threshold selection module

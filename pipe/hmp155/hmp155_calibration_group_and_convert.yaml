@@ -2,7 +2,7 @@
 pipeline:
   name: hmp155_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -37,7 +37,8 @@ transform:
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
       "TermQf=temperature|relative_humidity|dew_point" \
-      "TermFuncUcrt=temperature:def.ucrt.meas.cnst|relative_humidity:def.ucrt.meas.cnst|dew_point:def.ucrt.meas.rh.dew.frst.pt"
+      "UcrtFuncTerm1=def.ucrt.meas.cnst|temperature|relative_humidity" \
+      "UcrtFuncTerm2=def.ucrt.meas.rh.dew.frst.pt:dew_point"
 
     EOF
   env:

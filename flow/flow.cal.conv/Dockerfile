@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Calibration Conversion
 
 # Start with the calibration package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v2.1.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.0.1
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.cal.conv"
@@ -21,7 +21,7 @@ WORKDIR /home/app
 
 # Copy in application code
 COPY ${FLOW_DIR}/${APP_DIR}/flow.cal.conv.R .
-COPY ${FLOW_DIR}/${APP_DIR}/wrap.cal.conv.dp0p.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.cal.conv.R .
 
 # Run as app user
 RUN chown app:app -R /home/app

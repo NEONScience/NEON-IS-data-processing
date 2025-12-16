@@ -1,0 +1,180 @@
+---
+pipeline:
+  name: lt400_hu24_calibration_group_and_convert
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH_LIMIT_LOG
+    rm -rf $OUT_PATH_JOIN_CAL
+    mkdir -p $OUT_PATH_LIMIT_LOG
+    mkdir -p $OUT_PATH_JOIN_CAL # R modules must have pfs in the repo structure
+
+    # Run filter-joiner for limiting log files (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_LIMIT_LOG
+    export OUT_PATH=$OUT_PATH_LIMIT_LOG
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # What source type are we processing?
+    if [[ -d "${OUT_PATH_LIMIT_LOG}/leveltroll400" || -d "${OUT_PATH_LIMIT_LOG}/hobou24" ]]; then
+      # Get source type /SOURCE_TYPE/YYYY/MM/DD 
+      source_type=$(echo $DATE_CONTROL | cut -f $SOURCE_TYPE_INDEX -d "/")
+      echo $source_type
+    else
+        echo "Datum not in DATE_CONTROL repo. Skipping..."
+        exit 0
+    fi
+    
+    # Run filter-joiner for joining cal and data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_JOIN_CAL
+    export OUT_PATH=$OUT_PATH_JOIN_CAL
+    python3 -m filter_joiner.filter_joiner_main
+    rm -rf $OUT_PATH_LIMIT_LOG # Clean up
+
+    # Run calibration conversion module
+    if [ $source_type = "leveltroll400" ]; then 
+      Rscript ./flow.cal.conv.R \
+        DirIn=$OUT_PATH_JOIN_CAL \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_LT400 \
+        FileSchmQf=$FILE_SCHEMA_FLAGS_LT400 \
+        "ConvFuncTerm1=def.cal.conv.poly.b:pressure" \
+        "ConvFuncTerm2=def.cal.conv.poly:temperature" \
+        "TermQf=pressure|temperature" \
+        "UcrtFuncTerm1=def.ucrt.meas.cnst:pressure|temperature"
+    elif [ $source_type = "hobou24" ]; then 
+      Rscript ./flow.cal.conv.R \
+        DirIn=$OUT_PATH_JOIN_CAL \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_HU24 \
+        FileSchmQf=$FILE_SCHEMA_FLAGS_HU24 \
+        "ConvFuncTerm1=def.cal.conv.poly.l:conductivity_low" \
+        "ConvFuncTerm2=def.cal.conv.poly.h:conductivity_high" \
+        "ConvFuncTerm3=def.cal.conv.poly:temperature" \
+        "TermQf=conductivity_low|conductivity_high|temperature" \
+        "UcrtFuncTerm1=def.ucrt.meas.cnst:conductivity_low|conductivity_high|temperature"
+    fi
+    
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG_LIMIT_LOG: |
+      ---
+      # Configuration for filter-joiner module that will limit log files to the dates in
+      # the date control pipeline
+      # Make sure the DATE_CONTROL path is second. We actually don't want these files and 
+      # they won't be copied if log files for the site are present
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH/*/*/*/**
+            # Join on y/m/d and sourceID
+            join_indices: [3,4,5,6]
+            outer_join: False
+        - path:
+            name: DATE_CONTROL
+            # Filter for data directory
+            glob_pattern: /pfs/DATE_CONTROL/*/*/*/**
+            # Join on y/m/d and sourceID 
+            join_indices: [3,4,5,6]
+            outer_join: False
+    CONFIG_JOIN_CAL: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /tmp/log_limited/*/*/*/*/*/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH_LIMIT_LOG: /tmp/log_limited # Note that R modules use "pfs" in the path structure to determine datums
+    OUT_PATH_JOIN_CAL: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. 
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+    # Environment variables for bash code
+    SOURCE_TYPE_INDEX: '4'
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_DATA_LT400
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /leveltroll400/leveltroll400_log_data.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS_LT400
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /leveltroll400/leveltroll400_flags_calibration.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA_HU24
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /hobou24/hobou24_log_data.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS_HU24
+      repo: leveltroll400_hobou24_avro_schemas
+      glob: /hobou24/hobou24_flags_calibration.avsc
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: lt400_hu24_calibration_assignment
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH
+        repo: lt400_hu24_logjam_assign_clean_files
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATE_CONTROL
+        repo: lt400_hu24_cron_daily_and_date_control
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.2G
+  cpu: 1.3
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

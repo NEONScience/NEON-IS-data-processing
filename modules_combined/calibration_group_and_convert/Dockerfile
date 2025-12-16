@@ -3,7 +3,7 @@
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
 # Start with the calibration package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v2.1.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.0.1
 
 
 # maintainer handle
@@ -68,7 +68,7 @@ RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
 # Copy in R code
 COPY ./flow/flow.cal.conv/flow.cal.conv.R .
-COPY ./flow/flow.cal.conv/wrap.cal.conv.dp0p.R .
+COPY ./flow/flow.cal.conv/wrap.cal.conv.R .
 
 # Run as app user
 USER appuser

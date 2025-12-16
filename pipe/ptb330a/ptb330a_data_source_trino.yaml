@@ -46,7 +46,7 @@ transform:
       export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
       mkdir -p $GEN_OUTPUT_DIR
-      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip
+      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --alignperiod second
     done
     
     # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day
@@ -124,7 +124,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: ptb330a_cron_daily_and_date_control
+    repo: ptb330a_cron_daily_and_date_control_trino
     glob: "/ptb330a/*/*/*"
 output_branch: master
 parallelism_spec:
@@ -137,11 +137,8 @@ resource_limits:
   memory: 600M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 500M
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 3G
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

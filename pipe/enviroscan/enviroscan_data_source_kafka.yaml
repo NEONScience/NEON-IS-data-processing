@@ -16,11 +16,11 @@ transform:
     TEST_MODE: 'False'
     SOURCE_TYPE_INDEX: '3'
     SOURCE_TYPE_OUT: "enviroscan"
-    YEAR_INDEX: '4'
-    MONTH_INDEX: '5'
-    DAY_INDEX: '6'
-    SOURCE_ID_INDEX: '7'
-    DATA_TYPE_INDEX: '8'
+    YEAR_INDEX: '5'
+    MONTH_INDEX: '6'
+    DAY_INDEX: '7'
+    SOURCE_ID_INDEX: '8'
+    DATA_TYPE_INDEX: '9'
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -152,8 +152,11 @@ transform:
         # export LOG_LEVEL=INFO
         export SCHEMA_PATH=$FILE_SCHEMA_PARSED
         export DATA_PATH=${siteoutpath}/${SOURCE_TYPE}_raw
+        export OUT_PATH_ORIG=${OUT_PATH}
+        export OUT_PATH=${siteoutpath} # set temporarily for use in the data parser
         echo "Running array parser"
         python3 -m array_parser.array_parser_main
+        export OUT_PATH=${OUT_PATH_ORIG} # Return to what is set in the env vars
 
         # save parsed data to gcs 
         cd app
@@ -188,8 +191,18 @@ transform:
         ./update-trigger-table.py -s "${site}" -S "${SOURCE_TYPE}" -D "${siteoutpath}/${SOURCE_TYPE}"
         
         # set +x # Uncomment for debugging
+        
         rm -rf "${linkdir}"
         # Move the per site files to the structure expected by pachyderm
+        cd "${siteoutpath}/${SOURCE_TYPE}_raw/"
+        dest="${OUT_PATH}/${SOURCE_TYPE}_raw/"
+        find . -type f | while read f; do
+            d=$(dirname "$f")
+            file=$(basename "$f")
+            mkdir -p "$dest/$d"
+            mv -f "$f" "$dest/$d/"
+        done
+        cd -
         cd "${siteoutpath}/${SOURCE_TYPE}/"
         dest="${OUT_PATH}/${SOURCE_TYPE}/"
         find . -type f | while read f; do
@@ -220,13 +233,13 @@ parallelism_spec:
   constant: 3
 autoscaling: true
 resource_requests:
-  memory: 300M
+  memory: 500M
   cpu: 1.6
 resource_limits:
   memory: 1.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 2G
+  memory: 3G
   cpu: 0.5
 datum_set_spec:
   number: 1

@@ -12,7 +12,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2025-10-16" # Inclusive
-    # END_DATE: "2025-02-17" # Inclusive
+    END_DATE: "2025-12-02" # Inclusive
     SOURCE_TYPE: "enviroscan"
   stdin:
   - "#!/bin/bash"
@@ -22,8 +22,8 @@ input:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
-      #spec: "@never"
+      # spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      spec: "@never"
       overwrite: true
   - pfs:
       name: SITE_FILE

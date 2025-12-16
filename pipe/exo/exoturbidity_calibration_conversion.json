@@ -11,10 +11,10 @@
       "DirErr=/pfs/out/errored_datums",
       "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
-      "TermFuncUcrt=turbidity:def.ucrt.meas.mult",
+      "UcrtFuncTerm1=def.ucrt.meas.mult:turbidity",
       "TermQf=turbidity"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v1.3.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v3.0.0",
     "env": {
       "LOG_LEVEL": "INFO"
     }

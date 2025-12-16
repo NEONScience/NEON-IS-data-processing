@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-thsh-slct-prcp-stat -f ./modules_combined/threshold_select_precip_stat/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.8
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.9
 
 # Build in the threshold selection module
 ARG MODULE_DIR="flow"

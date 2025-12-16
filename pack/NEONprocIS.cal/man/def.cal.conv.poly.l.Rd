@@ -6,45 +6,50 @@
 \usage{
 def.cal.conv.poly.l(
   data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
   varConv = base::names(data)[1],
   calSlct = NULL,
+  Meta = list(),
   log = NULL
 )
 }
 \arguments{
-\item{data}{Numeric data frame of raw measurements.}
+\item{data}{Data frame of raw, uncalibrated measurements. This data frame must have a column
+called "readout_time" with POSIXct timestamps}
 
-\item{infoCal}{A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
-One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
-This data frame must include columns:\cr
-\code{Name} String. The name of the coefficient. Must fit regular expression CVALL[0-9]\cr
-\code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
-Defaults to NULL, in which case converted data will be retured as NA.}
-
-\item{varConv}{A character string of the target variable (column) in the data frame \code{data} for 
-which the calibration will be applied (all other columns will be ignored). Note that for other
-uncertainty functions this variable may not need to be in the input data frame. Defaults to the first
+\item{varConv}{A character string of the target variables (columns) in the data frame \code{data} for 
+which calibrated output will be computed (all other columns will be ignored). Defaults to the first
 column in \code{data}.}
 
-\item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
-NEONprocIS.cal::wrap.cal.conv for what this input is.}
+\item{calSlct}{A named list of data frames, each list element corresponding to a 
+variable (column) to calibrate. The data frame in each list element holds 
+information about the calibration files and time periods that apply to the variable, 
+as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
+
+\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
+NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 created and used within the function.}
 }
 \value{
-A  Numeric vector of calibrated data\cr
+The input data frame, with the columns specified in input \code{varConv} updated with 
+calibrations applied.
 }
 \description{
 Definition function. Apply NEON calibration polynomial function contained in coefficients 
 CVALL0, CVALL1, CVALL2, etc. to convert raw data to calibrated data.
 }
 \examples{
-data=data.frame(data=c(1,2,3))
-infoCal <- data.frame(Name=c('CVALL1','CVALL0'),Value=c(10,1),stringsAsFactors=FALSE)
-def.cal.conv.poly.b(data=data,infoCal=infoCal)
+Not Run
+data=data.frame(readout_time=as.POSIXct('2025-01-01','2025-01-02','2025-01-03'),var1=c(1,2,3),var2=c(4,5,6))
+calSlct <- NEONprocIS.cal::wrap.cal.slct(
+               DirCal = '/path/to/calibration/files',
+               NameVarExpc = c('var1','var2'),
+               TimeBgn = as.POSIXct('2025-01-01'),
+               TimeEnd = as.POSIXct('2025-01-04'),
+               )
+dataCal <- def.cal.conv.poly(data=data,varConv=c('var1','var2'),calSlct=calSlct)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -55,7 +60,9 @@ NEON.DOC.000785 TIS Calibrated Measurements and Level 1 Data Products Uncertaint
 
 \link[NEONprocIS.cal]{def.cal.conv.poly}
 
-\link[NEONprocIS.cal]{wrap.cal.conv}
+\link[NEONprocIS.cal]{def.cal.conv.poly.m}
+
+\link[NEONprocIS.cal]{wrap.cal.conv.dp0p}
 }
 \author{
 Nora Catolico \email{ncatolico@battelleecology.org}

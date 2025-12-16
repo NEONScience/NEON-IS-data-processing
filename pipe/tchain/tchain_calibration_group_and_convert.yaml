@@ -2,7 +2,7 @@
 pipeline:
   name: tchain_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -50,9 +50,9 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "FileSchmData=$FILE_SCHEMA_PARSED" \
       "FileSchmQf=$FILE_SCHEMA_FLAGS" \
-      "TermFuncConv=depth0WaterTemp:def.cal.conv.poly|depth1WaterTemp:def.cal.conv.poly|depth2WaterTemp:def.cal.conv.poly|depth3WaterTemp:def.cal.conv.poly|depth4WaterTemp:def.cal.conv.poly|depth5WaterTemp:def.cal.conv.poly|depth6WaterTemp:def.cal.conv.poly|depth7WaterTemp:def.cal.conv.poly|depth8WaterTemp:def.cal.conv.poly|depth9WaterTemp:def.cal.conv.poly|depth10WaterTemp:def.cal.conv.poly" \
+      "ConvFuncTerm1=def.cal.conv.poly:depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp" \
       "TermQf=depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp" \
-      "TermFuncUcrt=depth0WaterTemp:def.ucrt.meas.cnst|depth1WaterTemp:def.ucrt.meas.cnst|depth2WaterTemp:def.ucrt.meas.cnst|depth3WaterTemp:def.ucrt.meas.cnst|depth4WaterTemp:def.ucrt.meas.cnst|depth5WaterTemp:def.ucrt.meas.cnst|depth6WaterTemp:def.ucrt.meas.cnst|depth7WaterTemp:def.ucrt.meas.cnst|depth8WaterTemp:def.ucrt.meas.cnst|depth9WaterTemp:def.ucrt.meas.cnst|depth10WaterTemp:def.ucrt.meas.cnst"
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp"
 
     EOF
   env:

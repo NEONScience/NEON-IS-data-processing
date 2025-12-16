@@ -4,7 +4,7 @@ transform:
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX_1: pressure-air_
+    #GROUP_PREFIX_1: pressure-air_
     GROUP_PREFIX_2: pressure-air-buoy_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
@@ -18,8 +18,9 @@ transform:
     mount_path: /var/db_secret
   stdin:
     - '#!/bin/bash'
-    - export GROUP_PREFIX=$GROUP_PREFIX_1
-    - python3 -m group_loader.group_loader_main
+    - '# Produce only buoy groups for now, as needed for subsurface moored temp chain'
+    - '#export GROUP_PREFIX=$GROUP_PREFIX_1'
+    - '#python3 -m group_loader.group_loader_main'
     - export GROUP_PREFIX=$GROUP_PREFIX_2
     - python3 -m group_loader.group_loader_main
 input:
