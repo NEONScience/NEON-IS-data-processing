@@ -135,11 +135,13 @@ class VariablePad:
         if not active_periods:
             return padded_dates
 
-        flag = active_periods.get("active_periods_flag".lower())
+        date_str = active_periods.get("start_date")
+        pivot = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
 
-        if flag == "start":
-            date_str = active_periods.get("start_date")
-            pivot = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
+        flag = active_periods.get("active_periods_flag".lower())
+        if flag == "both":
+            return [dt for dt in padded_dates if dt == pivot]
+        elif flag == "start":
             return [dt for dt in padded_dates if dt >= pivot]
         elif flag == "end":
             date_str = active_periods.get("end_date")
@@ -147,4 +149,3 @@ class VariablePad:
             return [dt for dt in padded_dates if dt <= pivot]
         else:
             return padded_dates
-
