@@ -20,12 +20,17 @@ transform:
       "WndwAgr=015" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
+      FileSchmQm=$FILE_SCHEMA_QM \
       "GrpQfAlph1=nitrate:nitrateRangeQF|nitrateStepQF|nitrateSpikeQF|nitratePersistenceQF|nitrateHumidityQF|nitrateLampTempQF|nitrateLightDarkRatioQF|nitrateLampStabilizeQF" \
       "GrpQfBeta1=nitrate:nitrateRangeQF|nitrateStepQF|nitrateSpikeQF"
   env:
     LOG_LEVEL: DEBUG
 input:
   cross:
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_quality_metrics.avsc
   - pfs:
       name: QAQC_PLAUSIBILITY_PATH
       repo: nitrate_flags_specific

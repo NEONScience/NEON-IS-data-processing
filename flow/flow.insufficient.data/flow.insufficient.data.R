@@ -44,10 +44,10 @@
 #'                               SchmQMs<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse=''),
 #'                               log=log)
 #' Stepping through the code in R studio                               
-# Sys.setenv(DIR_IN='~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",
-#           "minPoints=10","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","DirSubCopy=location")
+# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt_updated/nitrate-surfacewater_SUGG103100",
+#           "minPoints=5","DirOut=~/pfs/nitrate_null_gap_ucrt_updated2","DirErr=~/pfs/out/errored_datums","DirSubCopy=location",
+#          "SchmQMs=~/pfs/nitrate_avro_schemas/nitrate/nitrate_insufficient_data.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -57,6 +57,8 @@
 #' Initial creation.
 #' Nora Catolico (2025-11-04)
 #' add in copied directories
+#' Nora Catolico (2025-12-11)
+#' fix schema outputs
 
 ##############################################################################################
 options(digits.secs = 3)

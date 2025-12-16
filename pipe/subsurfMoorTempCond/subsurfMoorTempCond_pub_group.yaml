@@ -1,0 +1,53 @@
+---
+pipeline:
+  name: subsurfMoorTempCond_pub_group
+transform:
+#  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.2.0
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - '# Run first module - pub_grouper (using environment variables below as input parameters)'
+  - python3 -m pub_grouper.pub_grouper_main
+  env:
+    # Environment variables for 1st module: pub_grouper.
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+    ERR_PATH_GROUPER: "pfs/out/errored_datums"
+    YEAR_INDEX: '3' 
+    GROUP_INDEX: '6'
+    DATA_TYPE_INDEX: '7' # Also shared with pub_transform
+    GROUP_METADATA_DIR: group 
+    PUBLOC_KEY: site
+    LINK_TYPE: SYMLINK
+    
+input: 
+  join:
+  - pfs: 
+      name: DATA_PATH
+      repo: subsurfMoorTempCond_level1_group_consolidate_srf
+      # Glob should be monthly and joined with pub_control to hold pub until month is likely complete
+      glob: /(*/*)
+      joinOn: $1
+  - pfs: 
+      repo: subsurfMoorTempCond_cron_monthly_and_pub_control
+      glob: /(*/*)
+      joinOn: $1
+      empty_files: true
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 1.8G
+  cpu: 1
+resource_limits:
+  memory: 2.5G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

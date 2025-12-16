@@ -81,7 +81,7 @@ wrap.sunav2.exp.uncert <- function(DirIn,
   #' Read in json file of uncertainty coefficients.
   coeffileName<-base::list.files(DirInCoeff,full.names=FALSE)
   if(length(coeffileName)==0){
-    log$error(base::paste0('Quality metrics not found in ', DirInCoeff)) 
+    log$error(base::paste0('Uncertainty coefficient not found in ', DirInCoeff)) 
     stop()
   } else {
     uncertCoeff<-base::try(NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = base::paste0(DirInCoeff, '/', coeffileName)),
@@ -89,66 +89,74 @@ wrap.sunav2.exp.uncert <- function(DirIn,
     log$debug(base::paste0('Successfully read in file: ',coeffileName))
   }
   
-  #' Converts uncertainty coefficient dates to POSIXct and values to numeric
-  uncertCoeff$start_date <- as.POSIXct(uncertCoeff$start_date, format = "%Y-%m-%dT%H:%M:%S", tz='utc')
-  uncertCoeff$end_date <- as.POSIXct(uncertCoeff$end_date, format = "%Y-%m-%dT%H:%M:%S", tz='utc')
-  uncertCoeff$Value<-as.numeric(uncertCoeff$Value)
-  
-  #' Determines which uncertainty coefficients to be applied to each time interval.
-  #' (In case there are more than one on a particular day)
-  uncertCoeff<-uncertCoeff[order(uncertCoeff$start_date), ]
-  uncertCoeffA1<-uncertCoeff[(uncertCoeff$Name=="U_CVALA1"),]
-  statsData$uncertCoeffA1<-NA
-  for (i in 1:nrow(statsData)){
-    for (j in 1:nrow(uncertCoeffA1)){
-      if(statsData[i,which(colnames(statsData)=="startDateTime")]>=uncertCoeffA1[j,which(colnames(uncertCoeffA1)=="start_date")]){
-        statsData[i,which(colnames(statsData)=="uncertCoeffA1")]=uncertCoeffA1[j,which(colnames(uncertCoeffA1)=="Value")]}}}
-  uncertCoeffA3<-uncertCoeff[(uncertCoeff$Name=="U_CVALA3"),]
-  statsData$uncertCoeffA3<-NA
-  for (i in 1:nrow(statsData)){
-    for (j in 1:nrow(uncertCoeffA3)){
-      if(statsData[i,which(colnames(statsData)=="startDateTime")]>=uncertCoeffA3[j,which(colnames(uncertCoeffA3)=="start_date")]){
-        statsData[i,which(colnames(statsData)=="uncertCoeffA3")]=uncertCoeffA3[j,which(colnames(uncertCoeffA3)=="Value")]}}}
-  
-  #' Identify the column name with the mean, variance and number of points
-  meanName<-grep("Mean",names(statsData),value=TRUE)
-  varianceName<-grep("Variance",names(statsData),value=TRUE)
-  pointsName<-grep("NumPts",names(statsData),value=TRUE)
-  
-  #' Calculates calibration uncertainty. See ATBD for more details.
-  #' Concentrations <= 20 mg/L have fixed calibration uncertainty equal to coeffA1. 
-  #' Concentrations greater than 20 mg/L uncertainty equals concentration times coeffA1.
-  #' Note stats data concentrations are in uM so threshold needs to be converted from mg/L by dividing by 0.014 (14 g/mol / 1000 ug/mg)  
-  statsData$calUncert<-NA
-  for (i in 1:nrow(statsData)){
-    if(is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="calUncert")]=NA}
-    if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){
-      if(statsData[i,which(colnames(statsData)==meanName)]<=(20/0.014)){statsData[i,which(colnames(statsData)=="calUncert")]=statsData[i,which(colnames(statsData)=="uncertCoeffA1")]}
-      if(statsData[i,which(colnames(statsData)==meanName)]>(20/0.014)){statsData[i,which(colnames(statsData)=="calUncert")]=statsData[i,which(colnames(statsData)=="uncertCoeffA3")]}
+  if(length(uncertCoeff)>0){
+    #' Converts uncertainty coefficient dates to POSIXct and values to numeric
+    uncertCoeff$start_date <- as.POSIXct(uncertCoeff$start_date, format = "%Y-%m-%dT%H:%M:%S", tz='utc')
+    uncertCoeff$end_date <- as.POSIXct(uncertCoeff$end_date, format = "%Y-%m-%dT%H:%M:%S", tz='utc')
+    uncertCoeff$Value<-as.numeric(uncertCoeff$Value)
+    
+    #' Determines which uncertainty coefficients to be applied to each time interval.
+    #' (In case there are more than one on a particular day)
+    uncertCoeff<-uncertCoeff[order(uncertCoeff$start_date), ]
+    uncertCoeffA1<-uncertCoeff[(uncertCoeff$Name=="U_CVALA1"),]
+    statsData$uncertCoeffA1<-NA
+    for (i in 1:nrow(statsData)){
+      for (j in 1:nrow(uncertCoeffA1)){
+        if(statsData[i,which(colnames(statsData)=="startDateTime")]>=uncertCoeffA1[j,which(colnames(uncertCoeffA1)=="start_date")]){
+          statsData[i,which(colnames(statsData)=="uncertCoeffA1")]=uncertCoeffA1[j,which(colnames(uncertCoeffA1)=="Value")]}}}
+    uncertCoeffA3<-uncertCoeff[(uncertCoeff$Name=="U_CVALA3"),]
+    statsData$uncertCoeffA3<-NA
+    for (i in 1:nrow(statsData)){
+      for (j in 1:nrow(uncertCoeffA3)){
+        if(statsData[i,which(colnames(statsData)=="startDateTime")]>=uncertCoeffA3[j,which(colnames(uncertCoeffA3)=="start_date")]){
+          statsData[i,which(colnames(statsData)=="uncertCoeffA3")]=uncertCoeffA3[j,which(colnames(uncertCoeffA3)=="Value")]}}}
+    
+    #' Identify the column name with the mean, variance and number of points
+    meanName<-grep("Mean",names(statsData),value=TRUE)
+    varianceName<-grep("Variance",names(statsData),value=TRUE)
+    pointsName<-grep("NumPts",names(statsData),value=TRUE)
+    
+    #' Calculates calibration uncertainty. See ATBD for more details.
+    #' Concentrations <= 20 mg/L have fixed calibration uncertainty equal to coeffA1. 
+    #' Concentrations greater than 20 mg/L uncertainty equals concentration times coeffA1.
+    #' Note stats data concentrations are in uM so threshold needs to be converted from mg/L by dividing by 0.014 (14 g/mol / 1000 ug/mg)  
+    statsData$calUncert<-NA
+    for (i in 1:nrow(statsData)){
+      if(is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="calUncert")]=NA}
+      if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){
+        if(statsData[i,which(colnames(statsData)==meanName)]<=(20/0.014)){statsData[i,which(colnames(statsData)=="calUncert")]=statsData[i,which(colnames(statsData)=="uncertCoeffA1")]}
+        if(statsData[i,which(colnames(statsData)==meanName)]>(20/0.014)){statsData[i,which(colnames(statsData)=="calUncert")]=statsData[i,which(colnames(statsData)=="uncertCoeffA3")]}
+      }
     }
-  }
- 
-  #' Calculates the repeatability (natural variation). See ATBD for more details. 
-  statsData$natVar<-NA 
-  for (i in 1:nrow(statsData)){
-    if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="natVar")]=
-      sqrt(statsData[i,which(colnames(statsData)==varianceName)]/statsData[i,which(colnames(statsData)==pointsName)])}
+    
+    #' Calculates the repeatability (natural variation). See ATBD for more details. 
+    statsData$natVar<-NA 
+    for (i in 1:nrow(statsData)){
+      if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="natVar")]=
+        sqrt(statsData[i,which(colnames(statsData)==varianceName)]/statsData[i,which(colnames(statsData)==pointsName)])}
+    }
+    
+    #' Calculates the expanded uncertainty, which is estimated as 2x the combined uncertainty. See ATBD for more details.
+    statsData$surfWaterNitrateExpUncert<-NA  
+    for (i in 1:nrow(statsData)){
+      if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="surfWaterNitrateExpUncert")]=
+        2*sqrt(statsData[i,which(colnames(statsData)=="natVar")]+statsData[i,which(colnames(statsData)=="calUncert")])}
+    }
+    
+    #' Removes unnecessary columns.
+    statsData<-subset(statsData,select=-c(uncertCoeffA3,uncertCoeffA1,calUncert,natVar))
+  }else{
+    #add required columns to stats data
+    statsData$surfWaterNitrateExpUncert<-NA
   }
   
-  #' Calculates the expanded uncertainty, which is estimated as 2x the combined uncertainty. See ATBD for more details.
-  statsData$surfWaterNitrateExpUncert<-NA  
-  for (i in 1:nrow(statsData)){
-    if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="surfWaterNitrateExpUncert")]=
-      2*sqrt(statsData[i,which(colnames(statsData)=="natVar")]+statsData[i,which(colnames(statsData)=="calUncert")])}
-  }
+  statsData$surfWaterNitrateMean[is.nan(statsData$surfWaterNitrateMean)]<-NA
   
-  #' Removes unnecessary columns.
-  statsData<-subset(statsData,select=-c(uncertCoeffA3,uncertCoeffA1,calUncert,natVar))
   
   #' Write out updated stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = statsData,
                                                     NameFile = base::paste0(DirOutStats,'/',statsFileName),
-                                                    Schm = NULL),silent=TRUE)
+                                                    Schm = SchmStats),silent=TRUE)
   if(class(rptOutStats)[1] == 'try-error'){
     log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName),'. ',attr(rptOutStats, "condition")))
     stop()

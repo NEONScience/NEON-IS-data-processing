@@ -15,3 +15,4 @@ sunav2_location_asset_assignment.yaml
 sunav2_location_loader.yaml
 sunav2_location_active_dates_assignment.yaml
 sunav2_location_group_and_restructure.yaml
+sunav2_fill_date_gaps.yaml

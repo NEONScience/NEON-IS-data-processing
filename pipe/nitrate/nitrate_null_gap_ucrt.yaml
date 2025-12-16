@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_null_gap_ucrt
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-98108c3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-32315a4
   cmd:
   - sh
   - "-c"
@@ -27,6 +27,7 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/tmp/pfs/interimUcrt \
       DirErr=/pfs/out/errored_datums \
+      SchmStats=$FILE_SCHEMA_UCRT \
       "DirSubCopy=group|location|quality_metrics"
     
     # Run third module - insufficient data
@@ -34,7 +35,8 @@ transform:
       DirIn=/tmp/pfs/interimUcrt \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      minPoints=10 \
+      minPoints=5 \
+      SchmQMs=$FILE_SCHEMA_INSUF \
       "DirSubCopy=location"
     
     EOF
@@ -83,28 +85,37 @@ transform:
     LOG_LEVEL: INFO # Shared among all modules
     
 input:
-  join:
+  cross:
   - pfs:
-      name: QUALITY_METRICS_PATH
-      repo: nitrate_qm_group_and_compute
-      glob: /(*/*/*)
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      name: FILE_SCHEMA_UCRT
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_ucrt.avsc
   - pfs:
-      name: STATISTICS_PATH
-      repo: nitrate_stats_group_and_compute
-      glob: /(*/*/*)
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: GROUP_PATH
-      repo: nitrate_group_path
-      glob: /(*/*/*)
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      name: FILE_SCHEMA_INSUF
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_insufficient_data.avsc
+  - join:
+    - pfs:
+        name: QUALITY_METRICS_PATH
+        repo: nitrate_qm_group_and_compute
+        glob: /(*/*/*)
+        joinOn: $1
+        outer_join: true # Need outer join to pull in with or without SRFs
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: STATISTICS_PATH
+        repo: nitrate_stats_group_and_compute
+        glob: /(*/*/*)
+        joinOn: $1
+        outer_join: true # Need outer join to pull in with or without SRFs
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: GROUP_PATH
+        repo: nitrate_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        outer_join: true # Need outer join to pull in with or without SRFs
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
 autoscaling: true

@@ -16,7 +16,7 @@
 #' @param SchmStats (optional), A json-formatted character string containing the schema for the output averaged stats parquet.
 #' Should be the same as the input. 
 #' 
-#' @param SchmQMsOut (optional), A json-formatted character string containing the schema for the output quality metrics parquet 
+#' @param SchmQMs (optional), A json-formatted character string containing the schema for the output quality metrics parquet 
 #' with insufficient data quality flag added. 
 #' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
@@ -37,10 +37,10 @@
 #' @examples
 #' # Not run
 # DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733"
-# minPoints=10
+# minPoints=5
 # DirOut<-"~/pfs/nitrate_null_gap_ucrt_updated/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733" 
 # SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse='')
-# SchmQMsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse='')
+# SchmQMs<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'
 #'                                                                                                                                                                                          
@@ -53,7 +53,7 @@ wrap.insufficient.data <- function(DirIn,
                                       minPoints,
                                       DirOutBase,
                                       SchmStats=NULL,
-                                      SchmQMsOut=NULL,
+                                      SchmQMs=NULL,
                                       DirSubCopy=NULL,
                                       log=NULL
 ){
@@ -114,6 +114,7 @@ wrap.insufficient.data <- function(DirIn,
   #' If the number of points is greater than or equal to the minimum required, 
   #' revert the insufficient data quality flag (default is to apply it).
   qmData$insufficientDataQF=1
+  minPoints<-as.numeric(minPoints)
   for(i in 1:nrow(statsData)){
     if(statsData[i,which(colnames(statsData)==ptsColName)]>=minPoints){
       qmData[i,which(colnames(qmData)=='insufficientDataQF')]=0}}
@@ -127,23 +128,23 @@ wrap.insufficient.data <- function(DirIn,
   #' Write out stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = statsData,
                                                     NameFile = base::paste0(DirOutStats,'/',statsFileName),
-                                                    Schm = NULL),silent=TRUE)
+                                                    Schm = SchmStats),silent=TRUE)
   if(class(rptOutStats)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName,".parquet"),'. ',attr(rptOutStats, "condition")))
+    log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName),'. ',attr(rptOutStats, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Updated stats written successfully in ', base::paste0(DirOutStats,'/',statsFileName,".parquet")))
+    log$info(base::paste0('Updated stats written successfully in ', base::paste0(DirOutStats,'/',statsFileName)))
   }
   
   #' Write out QMs file.  
   rptOutQMs <- try(NEONprocIS.base::def.wrte.parq(data = qmData,
                                                     NameFile = base::paste0(DirOutQMs,'/',qmFileName),
-                                                    Schm = SchmQMsOut),silent=TRUE)
+                                                    Schm = SchmQMs),silent=TRUE)
   if(class(rptOutQMs)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write updated QMs to ',base::paste0(DirOutQMs,'/',qmFileName,".parquet"),'. ',attr(rptOutQMs, "condition")))
+    log$error(base::paste0('Cannot write updated QMs to ',base::paste0(DirOutQMs,'/',qmFileName),'. ',attr(rptOutQMs, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Updated QMs written successfully in ', base::paste0(DirOutQMs,'/',qmFileName,".parquet")))
+    log$info(base::paste0('Updated QMs written successfully in ', base::paste0(DirOutQMs,'/',qmFileName)))
   }
   
 }
