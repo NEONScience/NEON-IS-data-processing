@@ -29,8 +29,8 @@
 #' 
 #' @examples
 #' # Not run
-# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/01/nitrate-surfacewater_SYCA102100/sunav2/CFGLOC111015" 
-# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/01/nitrate-surfacewater_SYCA102100/sunav2/CFGLOC111015" 
+# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/02/nitrate-surfacewater_SYCA102100/sunav2/CFGLOC111015" 
+# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/02/nitrate-surfacewater_SYCA102100/sunav2/CFGLOC111015" 
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_all_flags.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
@@ -56,6 +56,7 @@
 #' 
 #' Bobby Hensley (2025-12-16)
 #' Updated so that dark measurements caused by lamp temperature cutoff are still counted as part of same burst.
+#' Update so that any low transmittance error codes (-1) are set to NA.
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
                                       DirOutBase,
@@ -239,9 +240,10 @@ wrap.sunav2.quality.flags <- function(DirIn,
     log$debug(base::paste0('Data and flags have same number of measurements'))
   }
   
-  #replace with NA's so that flagged data is excluded from averaging
+  #' Replace with NA's so that flagged data is excluded from averaging
   dataOut<-merge(sunaData,allFlags,by='readout_time')
-  dataOut$nitrate[dataOut$light_dark_frame==0]<-NA
+  dataOut$nitrate[dataOut$nitrate==-1&dataOut$nitrogen_in_nitrate==-1]<-NA  #' Low transmittance error codes
+  dataOut$nitrate[dataOut$light_dark_frame==0]<-NA                          #' Measurements where lamp may have failed to turn on
   dataOut$nitrate[dataOut$nitrateHumidityQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLampTempQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLightDarkRatioQF==1]<-NA
