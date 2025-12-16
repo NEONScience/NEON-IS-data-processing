@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_null_gap_ucrt
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-32315a4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-736e55e
   cmd:
   - sh
   - "-c"

@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_flags_specific
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-flags-specific:sha-6fa7b75
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-flags-specific:sha-7eaa562
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
