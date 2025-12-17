@@ -2,7 +2,7 @@
 pipeline:
   name: parWaterSurface_pub_egress_and_publish
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v4.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v5.0.0
   cmd:
   - sh
   - "-c"
@@ -11,6 +11,9 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
+    curl -o $OUT_MDP_SITES https://raw.githubusercontent.com/NEONScience/NEON-IS-data-processing-inputs/refs/heads/main/mdp_sites_list.txt
+
     # Run first module - pub_egress (using environment variables below as input parameters)
     if [[ $(echo $DATA_PATH) ]]; then
       python3 -m pub_egress.pub_egress_main
@@ -18,10 +21,12 @@ transform:
     # If there is output, egress it
     if ls $OUT_PATH/NEON.DOM.SITE* 1> /dev/null 2>&1; then
       for DIR in $OUT_PATH/NEON.DOM.SITE*; do
+        echo "Starting non-MDP sites=================="
         echo "Syncing $DIR to bucket $BUCKET_NAME"
         # Parse the product
         [[ "$DIR" =~ ^$OUT_PATH/(.*)$ ]]
         PRODUCT="${BASH_REMATCH[1]}"
+        echo "PRODUCT is $PRODUCT"
         rclone \
           --no-check-dest \
           --copy-links \
@@ -31,15 +36,65 @@ transform:
           "${OUT_PATH}/${PRODUCT}" \
           ":gcs://${BUCKET_NAME}/${PRODUCT}"
       done
-      echo "Done"
+      echo "============ Done for non-MDP sites"
     else
       echo "No pub output to egress"
     fi
-    # Set some environment variables for the second module
-    export DATA_PATH=$OUT_PATH
+
+    # 
+    # Do the same for MDP sites if mdp sites exists in the output
+    # Check to see if the output need to be sent to the staging or not
+    # For example, BUCKET_NAME_MDP: neon-aa-dev-md03-staging/Publication for staging SITE=MD03
+    # Read mdp_site_list from githubusercontent
+    #
+    if ls $OUT_PATH_MDP/NEON.DOM.SITE* 1> /dev/null 2>&1; then
+      for DIR in $OUT_PATH_MDP/NEON.DOM.SITE*; do
+        echo "="
+        echo "Starting MDP sites=================="
+        # Parse the product
+        [[ "$DIR" =~ ^$OUT_PATH_MDP/(.*)$ ]]
+        PRODUCT="${BASH_REMATCH[1]}"
+        echo "PRODUCT is $PRODUCT"
+        for DIR_SUB in $DIR/MD*; do
+          echo "DIR is $DIR"
+          echo "DIR_SUB is $DIR_SUB"
+          # Parse the site
+          [[ "$DIR_SUB" =~ ^$DIR/(.*)$ ]]
+          SITE="${BASH_REMATCH[1]}"
+          # to change to lowercase in case
+          # export site="${SITE,,}"
+          #
+          while read -r mdpsite prod staging bucket_name
+           do
+              if [[ $SITE == $mdpsite ]] && [[ $prod == $PROD ]] && [[ $staging == $STAGING ]]; then
+                 BUCKET_NAME_MDP=$bucket_name
+                 echo "$mdpsite products to $bucket_name bucket"
+              else echo "**** No products available for $mdpsite to $bucket_name bucket"
+              fi
+           done < $OUT_MDP_SITES
+        echo "Syncing $SITE products directory $DIR to mdp bucket $BUCKET_NAME_MDP"
+        done
+        rclone \
+          --no-check-dest \
+          --copy-links \
+          --gcs-bucket-policy-only \
+          --gcs-no-check-bucket \
+          copy \
+          "${OUT_PATH_MDP}/${PRODUCT}" \
+          ":gcs://${BUCKET_NAME_MDP}/${PRODUCT}"
+      done
+      echo "============ Done for MDP sites"
+      cp -f "$OUT_MDP_SITES" $OUT_PATH_MDP/mdp_sites.txt
+    else
+      echo "No MDP pub output to egress"
+    fi
+
     # Run second module - pub_upload (using environment variables below as input parameters)
+    echo "run pub uploader ..."
+    export DATA_PATH=$OUT_PATH
     python3 -m pub_uploader.pub_uploader_main
     # Run third module - pub_sync (using environment variables below as input parameters)
+    echo "run pub sync sites ..."
     python3 -m pub_sync.pub_sync_main
     EOF
   env:
@@ -47,14 +102,18 @@ transform:
     
     # Environment variables for 1st module: pub_egress. The pub bucket and egress url are specified via secrets below.
     OUT_PATH: "/pfs/out"
+    OUT_PATH_MDP: "/pfs/out/mdp"
+    OUT_MDP_SITES: "/tmp/mdp_sites.txt"
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
+    PROD: "true"       # false for non-prod, true for prod      
+    STAGING: "true"     # The default is true.   
 
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
     # Uses STARTING_PATH_INDEX above
-    VERSION: 'pipeline_test'
+    VERSION: 'pachyderm_v1'
     CHANGE_BY: pachyderm
 
     # Environment variables for 3rd module: pub_sync.

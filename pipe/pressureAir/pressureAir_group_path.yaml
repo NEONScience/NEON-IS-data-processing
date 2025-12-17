@@ -9,13 +9,12 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - '# Produce only buoy groups for now, as needed for subsurface moored temp chain'
-  - '#export GROUP=$GROUP_1'
-  - '#python3 -m group_path.group_path_main'
+  - export GROUP=$GROUP_1
+  - python3 -m group_path.group_path_main
   - export GROUP=$GROUP_2
   - python3 -m group_path.group_path_main
   env:
-    #GROUP_1: pressure-air_
+    GROUP_1: pressure-air_
     GROUP_2: pressure-air-buoy_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
@@ -44,15 +43,15 @@ input:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
       repo: pressureAir_group_assignment
-      # glob: /pressure*/(*/*/*)
-      glob: /pressure-air-buoy/(*/*/*)
+      glob: /pressure*/(*/*/*)
+      #glob: /pressure-air-buoy/(*/*/*)
       joinOn: $1
   - union: 
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
         repo: ptb330a_fill_date_gaps_and_regularize
-        glob: /*/(*/*/*)
+        glob: /*/((2023|2024|2025)/*/*)
         joinOn: $1
 #    - pfs:
 #        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH

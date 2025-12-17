@@ -2,7 +2,7 @@
 pipeline:
   name: subsurfMoorTempCond_pub_egress_and_publish
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v4.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v5.0.0
   cmd:
   - sh
   - "-c"
@@ -107,6 +107,8 @@ transform:
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
+    PROD: "true"       # false for non-prod, true for prod      
+    STAGING: "true"     # The default is true.   
 
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
@@ -125,8 +127,6 @@ transform:
     DATA_PATH_PACKAGE_INDEX: "6"
     PRODUCTS: NEON.DOM.SITE.DP1.20055.001 # CAN BE MULTIPLE, COMMA-SEPARATED
     SITES: "all"  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
-    PROD: "false"       # false for non-prod, true for prod      
-    STAGING: "true"     # The default is true.   
     
   secrets:
   - name: pdr-secret

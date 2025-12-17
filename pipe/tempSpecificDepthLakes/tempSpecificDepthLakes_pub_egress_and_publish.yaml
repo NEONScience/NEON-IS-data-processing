@@ -2,7 +2,7 @@
 pipeline:
   name: tempSpecificDepthLakes_pub_egress_and_publish
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v4.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v5.0.0
   cmd:
   - sh
   - "-c"
@@ -12,9 +12,7 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf /tmp/out
-    mkdir -p /tmp/out/mdp # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    curl -o $OUT_MDP_SITES https://raw.githubusercontent.com/NEONScience/NEON-IS-data-processing-inputs/refs/heads/main/mdp_sites_list.txt
 
     # Run first module - pub_egress (using environment variables below as input parameters)
     if [[ $(echo $DATA_PATH) ]]; then
@@ -42,14 +40,13 @@ transform:
     else
       echo "No pub output to egress"
     fi
+
     # 
     # Do the same for MDP sites if mdp sites exists in the output
     # Check to see if the output need to be sent to the staging or not
     # For example, BUCKET_NAME_MDP: neon-aa-dev-md03-staging/Publication for staging SITE=MD03
     # Read mdp_site_list from githubusercontent
     #
-    curl -o $OUT_MDP_SITES https://raw.githubusercontent.com/NEONScience/NEON-IS-data-processing-inputs/refs/heads/main/mdp_sites_list.txt
-
     if ls $OUT_PATH_MDP/NEON.DOM.SITE* 1> /dev/null 2>&1; then
       for DIR in $OUT_PATH_MDP/NEON.DOM.SITE*; do
         echo "="
@@ -87,14 +84,17 @@ transform:
           ":gcs://${BUCKET_NAME_MDP}/${PRODUCT}"
       done
       echo "============ Done for MDP sites"
+      cp -f "$OUT_MDP_SITES" $OUT_PATH_MDP/mdp_sites.txt
     else
-      echo "No pub output to egress"
+      echo "No MDP pub output to egress"
     fi
-    # Set some environment variables for the second module
-    export DATA_PATH=$OUT_PATH
+
     # Run second module - pub_upload (using environment variables below as input parameters)
+    echo "run pub uploader ..."
+    export DATA_PATH=$OUT_PATH
     python3 -m pub_uploader.pub_uploader_main
     # Run third module - pub_sync (using environment variables below as input parameters)
+    echo "run pub sync sites ..."
     python3 -m pub_sync.pub_sync_main
     EOF
   env:
@@ -102,11 +102,13 @@ transform:
     
     # Environment variables for 1st module: pub_egress. The pub bucket and egress url are specified via secrets below.
     OUT_PATH: "/pfs/out"
-    OUT_PATH_MDP: "/tmp/out/mdp/"
-    OUT_MDP_SITES: "/tmp/out/mdp_sites.txt"
+    OUT_PATH_MDP: "/pfs/out/mdp"
+    OUT_MDP_SITES: "/tmp/mdp_sites.txt"
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
+    PROD: "true"       # false for non-prod, true for prod      
+    STAGING: "true"     # The default is true.   
 
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
@@ -125,8 +127,6 @@ transform:
     DATA_PATH_PACKAGE_INDEX: "6"
     PRODUCTS: NEON.DOM.SITE.DP1.20264.001 # CAN BE MULTIPLE, COMMA-SEPARATED
     SITES: "all"  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
-    PROD: "false"       # false for non-prod, true for prod      
-    STAGING: "true"     # The default is true.   
     
   secrets:
   - name: pdr-secret
