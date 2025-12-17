@@ -14,7 +14,7 @@ transform:
       FileYear=$FILE_YEAR
       TypeFile=namedLocation
       "Prop=HOR|VER|name|description|site|Data Rate|active_periods"
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:sha-7f95b99
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:sha-cd1a0dd
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
