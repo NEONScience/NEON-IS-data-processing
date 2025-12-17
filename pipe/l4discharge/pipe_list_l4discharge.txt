@@ -22,13 +22,11 @@ l4discharge_csd_shift_table_loader.yaml
 l4discharge_csd_mapping_table_loader.yaml
 l4discharge_csd_fill_reg_table_loader.yaml
 l4discharge_os_table_group.yaml
-
 l4discharge_group_loader.yaml
 l4discharge_group_assignment.yaml
 l4discharge_group_path.yaml
-
 l4discharge_csd_list_files.yaml
 l4discharge_csd_load_files.yaml
 l4discharge_csd_swe_group.yaml
-
 l4discharge_group_and_parse.yaml
+l4discharge_predict.yaml

@@ -52,6 +52,8 @@
 # changelog and author contributions / copyrights
 #   Zachary Nickerson (2025-09-18)
 #     original creation
+#   Nora Catolico (2025-12-17) 
+#     added error logging, updates to better interact with pachyderm
 ##############################################################################################
 wrap.discharge.predict <- function(DirIn,
                                    DirBaM,
@@ -60,16 +62,55 @@ wrap.discharge.predict <- function(DirIn,
                                    log=NULL
 ){
 
-  library(NEONprocIS.base)
-  library(dplyr)
-  library(lubridate)
+  # Gather info about the input directory (including date), and create base output directory
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  DirInData <- fs::path(DirIn,'data')
+  
+  # create output 
+  DirOutData <- base::paste0(DirOutBase,InfoDirIn$dirRepo,'/data')
+  base::dir.create(DirOutData,recursive=TRUE)
   
   # Determine the type of file available ####
-  correctedFile <- list.files(DirIn,pattern = "CSD_15_min")
-  uncorrectedFile <- list.files(DirIn,pattern = "EOS_1_min")
+  DirInOSData <- paste0(DirIn,"/data")
+  correctedFile <- list.files(DirInOSData,pattern = "CSD_15_min")
+  
+  DirInSWE <- def.dir.in.partial(DirBgn = DirIn,
+                       nameDirSubPartial = 'surfacewater-physical',
+                       log = log)
+  DirInSWEdata <- paste0(DirInSWE,"/data")
+  uncorrectedFile <- list.files(DirInSWEdata,pattern = "EOS_1_min")
+  
+  # Read in CSD file if available
+  if(length(correctedFile)>0){
+    CSD_15_min  <-
+      base::try(read.csv(paste(DirInOSData,correctedFile,sep = "/")))
+    if (base::any(base::class(CSD_15_min) == 'try-error')) {
+      # Generate error and stop execution
+      log$error(base::paste0(DirInOSData,"/",correctedFile," is unreadable"))
+      base::stop()
+    }
+  }else{
+    CSD_15_min <- NULL
+  }
+  
+  # Read in the WCH data if available - stashed locally from pachctl query ####
+  if(length(uncorrectedFile)>0){
+    EOS_1_min <- 
+      base::try(NEONprocIS.base::def.read.parq(paste(DirInSWEdata,uncorrectedFile,sep = "/")))
+    if (base::any(base::class(EOS_1_min) == 'try-error')) {
+      # Generate error and stop execution
+      log$error(base::paste0(DirInSWEdata,"/",uncorrectedFile," is unreadable"))
+      base::stop()
+    }
+  }else{
+    EOS_1_min <- NULL
+  }
+  
   
   # Workflow for predicting uncorrected discharge ####
-  if(length(uncorrectedFile)==1&length(correctedFile)==0){
+  if(length(EOS_1_min)>0 & length(CSD_15_min)==0){
+    log$info(base::paste0("No CSD file exists. SWE file will be processed. FileName: ",uncorrectedFile))
+    
     # Set constants
     secInDay <- 60*60*24
     secIn15min <- 60*15
@@ -126,11 +167,6 @@ wrap.discharge.predict <- function(DirIn,
     dataPath <- gsub(configRegex,"",
                      readLines(paste0(dirConfig,DataName))[1])
     
-    # Read in the WCH data - stashed locally from pachctl query ####
-    EOS_1_min <- NEONprocIS.base::def.read.parq(
-      paste(DirIn,uncorrectedFile,sep = "/")
-    )
-    
     # Average to 15 minute WCH data ####
     EOS_1_min_sum <- EOS_1_min%>%
       dplyr::mutate(roundDate=lubridate::round_date(endDateTime,"15 mins"))%>%
@@ -151,7 +187,7 @@ wrap.discharge.predict <- function(DirIn,
     
     # Read in the gaugeWaterColumnRegression data - stashed local from pachctl query
     gaugeWaterColumnRegression <- read.csv(
-      paste(DirIn,
+      paste(DirInOSData,
             "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv",
             sep="/"),
       header = TRUE,
@@ -203,7 +239,7 @@ wrap.discharge.predict <- function(DirIn,
     
       # Read in the curveIdentification data - stashed locally from pachctl query
       gaugePressureRelationship <- read.csv(
-        paste(DirIn,
+        paste(DirInOSData,
               "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv",
               sep="/"),
         header = TRUE,
@@ -252,7 +288,7 @@ wrap.discharge.predict <- function(DirIn,
     
     # Read in the curveIdentification data - stashed locally from pachctl query
     curveIdentification <- read.csv(
-      paste(DirIn,
+      paste(DirInOSData,
             "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv",
             sep="/"),
       header = TRUE,
@@ -303,7 +339,7 @@ wrap.discharge.predict <- function(DirIn,
       # Read in the controlInfo data - stashed locally from pachctl query
       surveyDate <- as.Date(currCurve$controlSurveyEndDateTime)
       controlInfo <- read.csv(
-        paste(DirIn,
+        paste(DirInOSData,
               "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
               sep="/"),
         header = TRUE,
@@ -315,7 +351,7 @@ wrap.discharge.predict <- function(DirIn,
       ]
       # Read in the priorParameters data - stashed locally from pachctl query
       priorParameters <- read.csv(
-        paste(DirIn,
+        paste(DirInOSData,
               "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
               sep="/"),
         header = TRUE,
@@ -408,7 +444,7 @@ wrap.discharge.predict <- function(DirIn,
       
       # Read in the priorParameters data - stashed locally from pachctl query
       gaugeDischargeMeas <- read.csv(
-        paste(DirIn,
+        paste(DirInOSData,
               "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv",
               sep="/"),
         header = TRUE,
@@ -418,7 +454,7 @@ wrap.discharge.predict <- function(DirIn,
         gaugeDischargeMeas$curveID==currCurve$curveID,
       ]
       
-      # Reconfigure the guagings data table
+      # Reconfigure the gaugings data table
       gaugeDischargeMeas <- gaugeDischargeMeas[
         ,c("gaugeHeight","gaugeHeightUnc","streamDischarge","streamDischargeUnc")
       ]
@@ -447,7 +483,7 @@ wrap.discharge.predict <- function(DirIn,
       
       # Read in the priorParameters data - stashed locally from pachctl query
       sampledParameters <- read.csv(
-        paste(DirIn,
+        paste(DirInOSData,
               "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv",
               sep="/"),
         header = TRUE,
@@ -684,27 +720,27 @@ wrap.discharge.predict <- function(DirIn,
     CSD_15_min$dischargeFinalQF <- ifelse(is.na(CSD_15_min$dischargeContinuous),1,0)
     CSD_15_min$regressionID[is.na(CSD_15_min$waterColumnHeightContinuous)] <- NA
     
-    outFile <- gsub("surfacewater-physical","l4discharge",uncorrectedFile)
-    outFile <- gsub("EOS_1_min_001","CSD_15_min_015",outFile)
+    outFileName <- gsub("surfacewater-physical","l4discharge",uncorrectedFile)
+    outFileName <- gsub("EOS_1_min_001","CSD_15_min_015",outFile)
 
   }else{
     # Workflow for predicting corrected discharge ####
-    if(length(uncorrectedFile)==1&length(correctedFile)==1){
-      CSD_15_min <- NEONprocIS.base::def.read.parq(
-        paste(DirIn,
-              correctedFile,
-              sep = "/")
-      )
-      outFile <- correctedFile
+    if(length(EOS_1_min)>0 & length(CSD_15_min)>0){
+      log$info(base::paste0("CSD file is available and will passed through unmodified. FileName: ",correctedFile))
+      outFileName <-gsub("csv","parquet",correctedFile)
+      
+    }else{
+      log$error(base::paste0("No SWE or CSD data available for this date."))
+      base::stop()
     }
   }
   
   write_CSD_15_min <- try(NEONprocIS.base::def.wrte.parq(
     data = CSD_15_min,
-    NameFile = paste(DirOutBase,
-                     outFile,
+    NameFile = paste(DirOutData,
+                     outFileName,
                      sep = "/"),
-    Schm = SchmDataOut ### LEFT OFF HERE ###
+    Schm = SchmDataOut
     ),
     silent=TRUE
     )

@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_group_and_parse
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/flow.discharge.parse.os.inputs:sha-
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-fa907b3
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -12,7 +12,7 @@ transform:
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
 input:
   cross:
   - pfs:
@@ -23,7 +23,7 @@ input:
   - pfs:
       name: DIR_IN_OS
       repo: l4discharge_os_table_group
-      glob: /*
+      glob: /
 parallelism_spec:
   constant: 6
 autoscaling: true

@@ -39,15 +39,15 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='~/pfs/testing')
+# Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2024/03/20/l4discharge_HOPB132100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN",
-#          #"DirBaM=~/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
+#          "DirBaM=~/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
 #          "DirOut=~/pfs/out",
-#          "DirErr=~/pfs/out/errored_datums",
-#          "FileSchmData=~/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc")
+#          "DirErr=~/pfs/out/errored_datums")
+#"FileSchmData=~/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
 # rm(list=setdiff(ls(),c('arg','log')))
-# setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict")
+#setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict")
 
 #' @seealso None currently
 
@@ -57,10 +57,13 @@
 ##############################################################################################
 options(digits.secs = 3)
 library(lubridate)
+library(dplyr)
+library(lubridate)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.discharge.predict.R")
-#source("./BaM_beta")
+source("./def.dir.in.partial.R")
+source("./BaM_beta")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -87,10 +90,12 @@ if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
   SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
 }
 
+
 # Find all the input paths (datums). We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
-                                     nameDirSub = NULL,
-                                     log = log)
+DirIn <-
+  def.dir.in.partial(DirBgn = Para$DirIn,
+                     nameDirSubPartial = 'l4discharge',
+                     log = log)
 log$debug(base::paste0('Directories identified:', DirIn))
 
 # Process each datum path
@@ -103,7 +108,7 @@ for(idxDirIn in DirIn){
       wrap.discharge.predict(
         DirIn=idxDirIn,
         DirBaM=Para$DirBaM,
-        DirOut=Para$DirOut,
+        DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
         log=log
       ),
