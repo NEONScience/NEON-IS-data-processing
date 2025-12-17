@@ -56,7 +56,7 @@
 #' 
 #' Bobby Hensley (2025-12-16)
 #' Updated so that dark measurements caused by lamp temperature cutoff are still counted as part of same burst.
-#' Update so that any low transmittance error codes (-1) are set to NA.
+#' Update so that any low transmittance error codes (-1) are always flagged.
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
                                       DirOutBase,
