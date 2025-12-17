@@ -179,6 +179,12 @@ wrap.sunav2.quality.flags <- function(DirIn,
         sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=1}
       else{sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=0}}  
   }
+  #' Extra test so that low transmittance error codes (-1) always trigger spectral ratio test regardless of threshold
+  for(i in 1:nrow(sunaData)){
+    if(!is.na(sunaData[i,which(colnames(sunaData)=='nitrate')])&!is.na(sunaData[i,which(colnames(sunaData)=='nitrogen_in_nitrate')])){
+      if(sunaData[i,which(colnames(sunaData)=='nitrate')]==-1){
+        if(sunaData[i,which(colnames(sunaData)=='nitrogen_in_nitrate')]==-1){
+          sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=1}}}}
   
   #' Identifies light measurement number within burst and performs lamp stabilization test.
   # lampStabilizeThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Lamp Stabilization Points"),]
@@ -242,8 +248,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   
   #' Replace with NA's so that flagged data is excluded from averaging
   dataOut<-merge(sunaData,allFlags,by='readout_time')
-  dataOut$nitrate[dataOut$nitrate==-1&dataOut$nitrogen_in_nitrate==-1]<-NA  #' Low transmittance error codes
-  dataOut$nitrate[dataOut$light_dark_frame==0]<-NA                          #' Measurements where lamp may have failed to turn on
+  dataOut$nitrate[dataOut$light_dark_frame==0]<-NA    #' Set any dark measurements to NA (just in case)
   dataOut$nitrate[dataOut$nitrateHumidityQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLampTempQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLightDarkRatioQF==1]<-NA
