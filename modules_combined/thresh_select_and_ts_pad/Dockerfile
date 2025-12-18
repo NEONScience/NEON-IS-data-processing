@@ -31,7 +31,6 @@ RUN apt update && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* 
 
-
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
