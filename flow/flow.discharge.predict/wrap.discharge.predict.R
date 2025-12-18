@@ -83,7 +83,7 @@ wrap.discharge.predict <- function(DirIn,
   # Read in CSD file if available
   if(length(correctedFile)>0){
     CSD_15_min  <-
-      base::try(read.csv(paste(DirInOSData,correctedFile,sep = "/")))
+      base::try(NEONprocIS.base::def.read.parq(paste(DirInOSData,correctedFile,sep = "/")))
     if (base::any(base::class(CSD_15_min) == 'try-error')) {
       # Generate error and stop execution
       log$error(base::paste0(DirInOSData,"/",correctedFile," is unreadable"))
@@ -727,7 +727,7 @@ wrap.discharge.predict <- function(DirIn,
     # Workflow for predicting corrected discharge ####
     if(length(EOS_1_min)>0 & length(CSD_15_min)>0){
       log$info(base::paste0("CSD file is available and will passed through unmodified. FileName: ",correctedFile))
-      outFileName <-gsub("csv","parquet",correctedFile)
+      outFileName <-correctedFile
       
     }else{
       log$error(base::paste0("No SWE or CSD data available for this date."))

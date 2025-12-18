@@ -54,6 +54,8 @@
 # changelog and author contributions / copyrights
 #   Zachary Nickerson (2025-10-15) 
 #     original creation
+#   Nora Catolico (2025-12-17) 
+#     added error logging, updates to better interact with pachyderm
 ##############################################################################################
 options(digits.secs = 3)
 library(lubridate)
