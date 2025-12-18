@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Troll Elevation Conversion and Uncertainty Calculations
 
 # Start with the NEON IS stats package image 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-stat-r:v1.0.3
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-stat-r:v1.0.4
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.troll.uncertainty"
