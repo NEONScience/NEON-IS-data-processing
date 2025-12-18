@@ -69,6 +69,7 @@ def load() -> None:
                     
                     # Download from GCS
                     blob = ingest_bucket.blob(gcs_path)
+                    print(f"blob is: {blob}")
                     
                     if not blob.exists():
                         print(f"WARNING: Blob does not exist in GCS: {gcs_path}")
