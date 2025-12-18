@@ -5,7 +5,11 @@
 #' Bobby Hensley \email{hensley@battelleecology.org}
 #' 
 #' @description Wrapper function. Determines the number of available measurements within an
-#' averaging period, and whether an insufficient data quality flag should be applied. 
+#' averaging period, and whether an insufficient data quality flag should be applied.
+#' This insufficient data quality flag is then used to determine whether the final quality
+#' flag should be applied.  It assumes that measurements that have failed individual
+#' plausibility and sensor-specific tests have been removed and the number of remaining 
+#' measurements available for averaging is the only factor determining the final data quality.    
 #'
 #' @param DirIn Character value. The base file path to the averaged stats and quality metrics.
 #' 
@@ -48,6 +52,8 @@
 #' Bobby Hensley (2025-10-31)
 #' Initial creation.
 #' 
+#' Bobby Hensley (2025-12-18)
+#' Updated so that finalQF is solely determined by insufficientDataQF.
 ##############################################################################################
 wrap.insufficient.data <- function(DirIn,
                                       minPoints,
@@ -119,10 +125,12 @@ wrap.insufficient.data <- function(DirIn,
     if(statsData[i,which(colnames(statsData)==ptsColName)]>=minPoints){
       qmData[i,which(colnames(qmData)=='insufficientDataQF')]=0}}
   
-  #' If the insufficient data quality flag has been applied, update the final quality flag.
+  #' If there is insufficient data, set the final quality flag to 1.
+  #' If there is sufficient data, set the final quality flag to 0.
   for(i in 1:nrow(qmData)){
     if(qmData[i,which(colnames(qmData)=='insufficientDataQF')]==1){
-      qmData[i,which(colnames(qmData)==finalQfColName)]=1}}
+      qmData[i,which(colnames(qmData)==finalQfColName)]=1}
+    else{qmData[i,which(colnames(qmData)==finalQfColName)]=0}}
   qmData <- qmData[c(setdiff(names(qmData), finalQfColName), finalQfColName)] #' Move finalQF back to the end
   
   #' Write out stats file.  
