@@ -55,8 +55,8 @@ def load() -> None:
                     folder = path_split[-2]
                     print("folder is: ", folder)
 
-                    filename = path_split[-1] + ".csv"
-                    if filename == '.csv.csv':
+                    filename = path_split[-1] + ".parquet"
+                    if filename == '.parquet.parquet':
                         print("Not a recognized file.")
                     else:
                         print("FileName is: ", filename)
