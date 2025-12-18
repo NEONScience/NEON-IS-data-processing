@@ -68,9 +68,8 @@ def load() -> None:
                             output_path = Path(output_directory,year,month,day,group,folder,filename)
                             output_path.parent.mkdir(parents=True, exist_ok=True)
                             print('Output Path is:', output_path)
-                            with open(output_path, "wb") as output_file:
-                                output_file.write(blob.download_as_string())
-                            
+                            blob.download_to_filename(output_path)
+                            print(f"Successfully downloaded to {output_path}")
                         except Exception:
                             exc_type, exc_obj, exc_tb = sys.exc_info()
                             print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
