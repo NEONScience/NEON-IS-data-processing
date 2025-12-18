@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Instantaneous quality metrics and final quality flag module
 
 # Start with the base image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.9
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.10
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.qaqc.qm.dp0p"
