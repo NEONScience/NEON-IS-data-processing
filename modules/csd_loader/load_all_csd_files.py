@@ -34,49 +34,64 @@ def load() -> None:
             data_path_start = Path(*in_path.parts[0:starting_path_index + 1])  # starting index
             print("Starting New Datum in the load_all_csd_files pipeline ", data_path_start)
             for path in data_path_start.rglob('*'):
-                if path.is_file():
+                if not path.is_file():
+                    continue
+                    
+                try:
                     pathname, extension = os.path.splitext(path)
                     print("pathname is: ", pathname)
                     path_split = pathname.split('/')
                     print("path_split is: ", path_split)
                     
+                    # Extract path components
                     year = path_split[-6]
-                    print("year is: ", year)
-                    
                     month = path_split[-5]
-                    print("month is: ", month)
-                    
                     day = path_split[-4]
-                    print("day is: ", day)
-                    
                     group = path_split[-3]
-                    print("group is: ", group)
-                    
                     folder = path_split[-2]
-                    print("folder is: ", folder)
-
-                    filename = path_split[-1] + ".parquet"
-                    if filename == '.parquet.parquet':
-                        print("Not a recognized file.")
-                    else:
-                        print("FileName is: ", filename)
-                        gcs_path = os.path.join(year,month,day,group,folder,filename)
-                        print("gcs_path is: ", gcs_path)
+                    base_filename = path_split[-1]
                     
-                        blob = ingest_bucket.blob(gcs_path)
-                        try:
-                            output_path = Path(output_directory,year,month,day,group,folder,filename)
-                            output_path.parent.mkdir(parents=True, exist_ok=True)
-                            print('Output Path is:', output_path)
-                            blob.download_to_filename(output_path)
-                            print(f"Successfully downloaded to {output_path}")
-                        except Exception:
-                            exc_type, exc_obj, exc_tb = sys.exc_info()
-                            print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
+                    print(f"Date: {year}/{month}/{day}, Group: {group}, Folder: {folder}")
+                    
+                    # Construct filename - always use .parquet extension
+                    filename = f"{base_filename}.parquet"
+                    
+                    # Skip if the base filename is empty
+                    if not base_filename or base_filename == '.':
+                        print(f"Skipping invalid filename: {path}")
+                        continue
+                    
+                    print(f"Target filename: {filename}")
+                    
+                    # Construct GCS path
+                    gcs_path = os.path.join(year, month, day, group, folder, filename)
+                    print(f"GCS path: {gcs_path}")
+                    
+                    # Download from GCS
+                    blob = ingest_bucket.blob(gcs_path)
+                    
+                    if not blob.exists():
+                        print(f"WARNING: Blob does not exist in GCS: {gcs_path}")
+                        continue
+                    
+                    # Create output path and directory
+                    output_path = Path(output_directory, year, month, day, group, folder, filename)
+                    output_path.parent.mkdir(parents=True, exist_ok=True)
+                    print(f'Output path: {output_path}')
+                    
+                except IndexError as e:
+                    print(f"ERROR: Path structure incorrect for {path}: {e}")
+                    continue
+                except Exception as e:
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    print(f"ERROR at line {exc_tb.tb_lineno}: {exc_type.__name__}: {str(e)}")
+                    print(f"Failed to process file: {path}")
+                    continue
 
-        except Exception:
+        except Exception as e:
             exception_type, exception_obj, exception_tb = sys.exc_info()
-            print("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
+            print(f"FATAL ERROR at line {exception_tb.tb_lineno}: {exception_type.__name__}: {str(e)}")
+            raise
 
 
 if __name__ == '__main__':
