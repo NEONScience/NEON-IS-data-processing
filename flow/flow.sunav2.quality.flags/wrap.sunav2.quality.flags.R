@@ -29,8 +29,8 @@
 #' 
 #' @examples
 #' # Not run
-# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/02/nitrate-surfacewater_SYCA102100/sunav2/CFGLOC111015" 
-# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/02/nitrate-surfacewater_SYCA102100/sunav2/CFGLOC111015" 
+# DirIn<-"~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/01/nitrate-surfacewater_CRAM103100/sunav2/CFGLOC110733" 
+# DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/01/nitrate-surfacewater_CRAM103100/sunav2/CFGLOC110733" 
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_all_flags.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
@@ -56,7 +56,10 @@
 #' 
 #' Bobby Hensley (2025-12-16)
 #' Updated so that dark measurements caused by lamp temperature cutoff are still counted as part of same burst.
-#' Update so that any low transmittance error codes (-1) are always flagged.
+#' Updated so that any low transmittance error codes ("-1") are always flagged and set to NA.
+#' 
+#' Bobby Hensley (2025-12-18)
+#' Updated so lamp stabilization test sets failed values to NA rather than removing entire line.
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
                                       DirOutBase,
@@ -228,15 +231,13 @@ wrap.sunav2.quality.flags <- function(DirIn,
   #' Drops burst number column since it's no longer needed.
   allFlags<-allFlags[,-which(colnames(allFlags)=='burstNumber')] 
   
-  #' Removes all measurements where lamp has not stabilized from data and flag files.
-  lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
-  sunaData<-base::merge(sunaData,lampStabilizeFlagsOnly) #' Adds lamp stabilize QF to data file
-  sunaData<-sunaData[(sunaData$nitrateLampStabilizeQF==0),]
-  allFlags<-allFlags[(allFlags$nitrateLampStabilizeQF==0),]
-
-  #' Rearranges data file to match schema again.
-  sunaData<-sunaData[,-which(colnames(sunaData)=='nitrateLampStabilizeQF')]
-  sunaData<-sunaData[,c(2,3,1,4:37)]  
+  #' Removes measurements where lamp has not stabilized from data and flag files.
+  #lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
+  #sunaData<-base::merge(sunaData,lampStabilizeFlagsOnly) #' Adds lamp stabilize QF to data file
+  #sunaData<-sunaData[(sunaData$nitrateLampStabilizeQF==0),]
+  #allFlags<-allFlags[(allFlags$nitrateLampStabilizeQF==0),]
+  #sunaData<-sunaData[,-which(colnames(sunaData)=='nitrateLampStabilizeQF')]
+  #sunaData<-sunaData[,c(2,3,1,4:37)]  
   
   #' Checks that data file and flag file have same number of measurements
   if(nrow(sunaData) != nrow(allFlags)){
