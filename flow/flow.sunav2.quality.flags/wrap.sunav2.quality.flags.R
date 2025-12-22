@@ -178,8 +178,8 @@ wrap.sunav2.quality.flags <- function(DirIn,
     if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])&!is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
       if(sunaData[i,which(colnames(sunaData)=='spec_average')]/sunaData[i,which(colnames(sunaData)=='dark_signal_average')]<minLightDarkRatio){
         sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=1}
-      if(sunaData[i,which(colnames(sunaData)=='dark_signal_average')]==0){
-        sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=1}
+      if(sunaData[i,which(colnames(sunaData)=='light_dark_frame')]==0){
+        sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=-1}
       else{sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=0}}  
   }
   #' Extra test so that low transmittance error codes (-1) always trigger spectral ratio test regardless of threshold
