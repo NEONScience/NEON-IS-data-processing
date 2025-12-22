@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "exodissolvedoxygen_location_active_dates_assignment"
+    "name": "sunav2_location_active_dates_assignment"
   },
   "transform": {
     "cmd": [
@@ -23,14 +23,14 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "location_loader",
-          "glob": "/exodissolvedoxygen/*"
+          "glob": "/sunav2/*"
         }
       },
       {
         "pfs": {
           "name": "FILE_YEAR",
-          "repo": "data_source_exodissolvedoxygen_list_years",
-          "glob": "/data_years.txt"
+          "repo": "data_source_sunav2_list_years",
+          "glob": "/data_year*.txt"
         }
       }
     ]

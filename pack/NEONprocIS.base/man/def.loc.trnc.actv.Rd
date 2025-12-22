@@ -33,7 +33,9 @@ some properties may limit the downstream modules that are able to be run (such a
 'Data Rate' is not retained)}
 }
 \value{
-A list of location information with truncated active dates. If NameFileOut is specified, 
+A list of location information with truncated active dates. If the TimeBgn or TimeEnd
+is the start or end (or both) of the active period, a property is added to the active period
+entry that indicates its status as such. If NameFileOut is specified, 
 the truncated location information will also be writted to file in the same json format of NameFileIn
 }
 \description{

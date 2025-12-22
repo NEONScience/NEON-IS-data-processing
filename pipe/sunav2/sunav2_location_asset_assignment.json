@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "exodissolvedoxygen_location_active_dates_assignment"
+    "name": "sunav2_location_asset_assignment"
   },
   "transform": {
     "cmd": [
@@ -10,7 +10,7 @@
       "DirOut=/pfs/out",
       "DirErr=/pfs/out/errored_datums",
       "FileYear=$FILE_YEAR",
-      "TypeFile=namedLocation"
+      "TypeFile=asset"
     ],
     "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.0",
     "env": {
@@ -22,15 +22,15 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "location_loader",
-          "glob": "/exodissolvedoxygen/*"
+          "repo": "location_asset",
+          "glob": "/sunav2/*"
         }
       },
       {
         "pfs": {
           "name": "FILE_YEAR",
-          "repo": "data_source_exodissolvedoxygen_list_years",
-          "glob": "/data_years.txt"
+          "repo": "data_source_sunav2_list_years",
+          "glob": "/data_year*.txt"
         }
       }
     ]
@@ -38,8 +38,8 @@
   "enable_stats": false,
   "standby": true,
   "resource_requests": {
-    "memory": "200M",
-    "cpu": 1
+    "memory": "210M",
+    "cpu": 0.3
   },
   "parallelism_spec": {
     "constant": "8"

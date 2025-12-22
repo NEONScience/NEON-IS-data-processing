@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Subsurface tchain file Processing
 
 # Start with the neon-is-base-r image.
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.6.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.leveltroll400.uncertainty"

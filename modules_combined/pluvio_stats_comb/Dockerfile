@@ -3,7 +3,7 @@
 # docker build -t neon-is-pluvio-stats -f ./modules_combined/pluvio_stats_comb/Dockerfile .
 
 # Start with the base image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.9
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.10
 
 # Add in the python-based filter-joiner module
 ARG MODULE_DIR="modules"
