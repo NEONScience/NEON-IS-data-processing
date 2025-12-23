@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-thsh-slct-ts-pad -f ./modules_combined/threshold_select_and_timeseries_padder/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.9
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.10
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -30,7 +30,6 @@ RUN apt update && \
    apt-get autoremove -y && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* 
-
 
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
