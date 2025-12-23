@@ -1,2 +1,0 @@
-ptb330a_cron_daily_and_date_control_trino.yaml
-ptb330a_data_source_trino.yaml
