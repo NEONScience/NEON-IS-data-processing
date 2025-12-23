@@ -158,9 +158,9 @@ input:
     name: import_trigger
     repo: li7200_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/li7200/*/*/*"
+    glob: "/li7200/*/*/*/*"
 parallelism_spec:
-  constant: 3
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 5G
@@ -169,10 +169,10 @@ resource_limits:
   memory: 8G
   cpu: 3
 sidecar_resource_requests:
-  memory: 4G
-  cpu: 2.5
+  memory: 3G
+  cpu: 1
 datum_set_spec:
-  number: 1
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
