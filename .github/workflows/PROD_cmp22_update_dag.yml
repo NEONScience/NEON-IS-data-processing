@@ -6,7 +6,7 @@ on:
     paths:
       - 'pipe/cmp22/*.yaml'
       - 'pipe/cmp22/pipe_list_cmp22.txt'
-      - 'pipe/radShortPrimary/.*yaml'
+      - 'pipe/radShortPrimary/*.yaml'
       - 'pipe/radShortPrimary/pipe_list_radShortPrimary.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
