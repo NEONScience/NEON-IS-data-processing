@@ -12,7 +12,7 @@ transform:
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
     OUT_PATH_KAFKA: /pfs/out/kafka
     OUT_PATH_TRINO: /pfs/out/trino
-    START_DATE: "2025-08-25" # Inclusive
+    START_DATE: "2025-12-29" # Inclusive
     #END_DATE: "2025-08-02" # Inclusive
     SOURCE_TYPE: "prtncon"
   cmd:
