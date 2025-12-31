@@ -45,7 +45,7 @@ class PubEgressTest(TestCase):
     def test_egress(self):
         os.environ["CUSTOM_ENDPOINT"] = "endpoint"
         os.environ["AMAZON_BUCKET"] = "bucket"
-        egress = Pub_egress(self.input_dir, self.starting_path_index, self.out_dir, self.out_dir_mdp, self.err_dir, 'egressurl')
+        egress = Pub_egress(self.input_dir, self.starting_path_index, self.out_dir, self.out_dir_mdp, None, self.err_dir, 'egressurl', 'false', 'true')
         egress.upload()
         self.check_output()
 

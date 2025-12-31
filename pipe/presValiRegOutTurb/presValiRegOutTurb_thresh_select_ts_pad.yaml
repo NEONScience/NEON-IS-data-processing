@@ -2,7 +2,7 @@
 pipeline:
   name: presValiRegOutTurb_thresh_select_ts_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.2.0
   cmd:
   - sh
   - "-c"
