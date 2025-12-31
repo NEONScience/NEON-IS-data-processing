@@ -14,7 +14,7 @@ transform:
       FileYear=$FILE_YEAR
       TypeFile=asset
       "Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|ThermistorDepth501|ThermistorDepth502|ThermistorDepth503|ThermistorDepth504|ThermistorDepth505|ThermistorDepth506|ThermistorDepth507|ThermistorDepth508|ThermistorDepth509|ThermistorDepth510|ThermistorDepth511"
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.0
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:

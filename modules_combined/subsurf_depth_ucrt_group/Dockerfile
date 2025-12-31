@@ -3,7 +3,7 @@
 # docker build -t neon-is-subsurf-depth-ucrt-group -f ./modules_combined/subsurf_depth_ucrt_group/Dockerfile .
 
 # Start with the base R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.6.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org

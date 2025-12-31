@@ -13,15 +13,19 @@ def main() -> None:
     starting_path_index: int = env.int('STARTING_PATH_INDEX')
     out_path: Path = env.path('OUT_PATH')
     out_path_mdp: Path = env.path('OUT_PATH_MDP')
+    out_mdp_sites: Path = env.path('OUT_MDP_SITES')
     err_path: Path = env.path('ERR_PATH')
-    log_level: str = env.log_level('LOG_LEVEL')
+    log_level: int = env.log_level('LOG_LEVEL')
     egress_url: str = env.str('EGRESS_URL')
+    prod: str = env.str('PROD', default="false").lower()
+    staging: str = env.str('STAGING', default="true").lower()
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'data_dir: {data_path}')
     log.debug(f'out_dir: {out_path}')
 
-    egress = Pub_egress(data_path, starting_path_index, out_path, out_path_mdp, err_path, egress_url)
+    egress = Pub_egress(data_path, starting_path_index, out_path, out_path_mdp, out_mdp_sites, err_path,
+                        egress_url, prod, staging)
     egress.upload()
 
 
