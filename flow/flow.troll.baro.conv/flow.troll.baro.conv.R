@@ -95,8 +95,6 @@
 # changelog and author contributions / copyrights
 #   Nora Catolico (2025-09-18)
 #     original creation
-#   Nora Catolico (2025-12-31)
-#     update for when baro perssure is NA
 
 ##############################################################################################
 options(digits.secs = 3)

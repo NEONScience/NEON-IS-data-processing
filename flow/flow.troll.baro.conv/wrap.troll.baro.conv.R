@@ -89,11 +89,11 @@
 ##############################################################################################
 wrap.troll.cond.conv <- function(DirIn,
                                  DirOutBase,
-                                 SchmDataOut=NULL,
-                                 SchmQfOut=NULL,
-                                 SchmUcrtOut=NULL,
-                                 DirSubCopy=NULL,
-                                 log=NULL
+                               SchmDataOut=NULL,
+                               SchmQfOut=NULL,
+                               SchmUcrtOut=NULL,
+                               DirSubCopy=NULL,
+                               log=NULL
 ){
   
   # Start logging if not already
@@ -239,7 +239,6 @@ wrap.troll.cond.conv <- function(DirIn,
     # of the atmosphere from the measured pressure.
     TrollData$pressure_raw <- TrollData$pressure
     TrollData$pressure[!is.na(TrollData$baroPressure)] <- as.numeric(TrollData$pressure_raw[!is.na(TrollData$baroPressure)]) - as.numeric(TrollData$baroPressure[!is.na(TrollData$baroPressure)])
-    TrollData$pressure[is.na(TrollData$baroPressure)] <- NA
   }
   
   #Create dataframe for output data
@@ -263,7 +262,7 @@ wrap.troll.cond.conv <- function(DirIn,
   NameFileOutData <- base::paste0(DirOutData,"/leveltroll400_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet")
   rptDataOut <-
     base::try(NEONprocIS.base::def.wrte.parq(data = dataOut,NameFile = NameFileOutData,Schm = SchmDataOut),
-              silent = TRUE)
+    silent = TRUE)
   if (base::any(base::class(rptDataOut) == 'try-error')) {
     log$error(base::paste0('Cannot write Calibrated data to ',NameFileOutData,'. ',attr(rptDataOut, "condition")))
     stop()
@@ -292,4 +291,4 @@ wrap.troll.cond.conv <- function(DirIn,
   }
   
 } # End loop around datum paths
-
+  
