@@ -2,7 +2,7 @@
 pipeline:
   name: subsurfMoorTempCond_baro_conv
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-baro-conv:sha-6e49490
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-baro-conv:v1.0.1
   cmd:
   - sh
   - "-c"
