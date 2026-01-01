@@ -2,7 +2,7 @@ name: DEV-processed-datums-reader
 on:
   push:
     branches:
-      - 'none'
+      - 'master'
     paths:
       - 'pipe/processed_datums_reader/*.yaml'
       - 'pipe/processed_datums_reader/pipe_list_processed_datums_reader.txt'
