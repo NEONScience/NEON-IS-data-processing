@@ -254,6 +254,23 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
   
   
   
+  # ----------- get troll flags -----------
+  
+  # Take stock of our data files. 
+  fileFlags <- base::list.files(DirInTrollFlags,full.names=FALSE)
+  
+  # Load in flags file in parquet format into data frame.
+  fileFlagsPlau <- fileFlags[grepl("Plausibility",fileFlags)]
+  trollFlags  <-
+    base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInTrollFlags, '/', fileFlagsPlau),
+                                             log = log),
+              silent = FALSE)
+  if (base::any(base::class(data) == 'try-error')) {
+    # Generate error and stop execution
+    log$error(base::paste0('File ', DirInTrollFlags, '/', fileFlagsPlau, ' is unreadable.'))
+    base::stop()
+  }
+  
   
   # ----------- now loop through hobos -----------
   DirInHobo <- fs::path(DirIn,'hobou24')
@@ -369,7 +386,10 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     # merge in troll data
     thisHobo <- merge(hoboData,waterColumn,by='readout_time')
+    thisHobo <- merge(thisHobo,trollFlags,by='readout_time')
     thisHobo$thermistorDepth <- thisHobo$waterColumn - thisHobo$z_offset
+    thisHobo$pressureRangeQF[!is.na(thisHobo$thermistorDepth) & thisHobo$thermistorDepth<0]<-1
+    thisHobo$pressureRangeQF[thisHobo$thermistorDepth<0]<-1
     thisHobo$thermistorHeightFromAnchor <- thisHobo$trollHeight + thisHobo$z_offset
     thisHobo$thermistorHeightFromAnchor[thisHobo$thermistorHeightQF==1] <- NA 
     
@@ -439,7 +459,11 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     base::dir.create(DirOutHobo,recursive=TRUE)
     DirOutStats <- base::paste0(DirOutHobo,'/stats')
     base::dir.create(DirOutStats,recursive=TRUE)
-    DirOutFlags <- base::paste0(DirOutHobo,'/flags')
+    
+    trollOutSplt <- base::strsplit(DirInTrollCFGLOC,'[/]')[[1]] # Separate underscore-delimited components of the file name
+    trollCFGLOC<-tail(x=trollOutSplt,n=1)
+    DirOutTroll <- base::paste0(DirOut,'/pressure/',trollCFGLOC)
+    DirOutFlags <- base::paste0(DirOutTroll,'/flags')
     base::dir.create(DirOutFlags,recursive=TRUE)
     
     # Copy with a symbolic link the desired subfolders 
@@ -464,7 +488,8 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     #Create dataframe for output instantaneous flags
     flagsOut <- thisHobo
-    flagsCol <- c("readout_time","thermistorHeightQF","thermistorHeightFinalQF")
+    flagsCol <- c("readout_time","thermistorHeightQF","thermistorHeightFinalQF","pressureNullQF","pressureGapQF", "pressureRangeQF","pressureStepQF",
+                  "pressureSpikeQF","pressurePersistenceQF")
     flagsOut <- flagsOut[,flagsCol]
     
     #Create dataframe for output instantaneous uncertainty data
@@ -480,6 +505,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     
     #merge data frames
     statsOut <- merge(dataOut,ucrtOut,by='startDateTime')
+    statsOut$thermistorDepth[is.na(statsOut$thermistorDepth)|statsOut$thermistorDepth<0]<-NA
     statsOut$depth_ucrtExpn[is.na(statsOut$thermistorDepth)]<-NA
     statsOut$thermistorHeight_ucrtExpn[is.na(statsOut$thermistorHeightFromAnchor)]<-NA
     
@@ -496,7 +522,7 @@ wrap.subsurf.depth.ucrt <- function(DirIn,
     }
     
     #Write out instantaneous flags
-    NameFile <- base::paste0(DirOutFlags,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_thermistorHeightQF.parquet")
+    NameFile <- base::paste0(DirOutFlags,"/",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_pressureQF.parquet")
     rptFlagsOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut, 
                                                      NameFile = NameFile, 
                                                      Schm = SchmFlagsOut),silent=TRUE)
