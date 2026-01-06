@@ -56,8 +56,10 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2025-10-08)
 #     original creation
+#   Edward Ayres (2026-01-06)
+#     Added ability to apply manufacturer default calibration and soil-specific calibration to the EnviroSCAN data
 ##############################################################################################
-def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0)),
+def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0)),
                                         varConv = setdiff(base::names(data),c('source_id','site_id','readout_time')),
                                         calSlct=NULL,
                                         Meta=list(),
@@ -129,46 +131,73 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
       
       if(grepl(pattern="VSWC",varIdx)){
         # Soil water content
-        # Start working here
+
+        # First step is to back-calculate the sensor scaled frequency using the calibration coefficients loaded in the sensor
+        dataSf <- (((data[, varIdx])^as.numeric(infoCal$cal$Value[grep("CVALA2", infoCal$cal$Name)])) * as.numeric(infoCal$cal$Value[grep("CVALA1", infoCal$cal$Name)])) + as.numeric(infoCal$cal$Value[grep("CVALA3", infoCal$cal$Name)]) # Apply the equation to calculate sensor scaled frequency as described in Sentek 2011, CALIBRATION MANUAL For Sentek Soil Moisture Sensors, Version 2.0, Figure 9. Sentek Pty Ltd, Stepney, South Australia.
+
+        
+        # Identify the sensor depth if the installation reference is exactly at the soil surface ("CVALD1") and divide by -100 to convert to meters and indicate it's below the soil surface.
+        depth <- as.numeric(infoCal$cal$Value[grep("CVALD1", infoCal$cal$Name)]) / -100 + Meta[["Locations"]][[1]][["geolocations"]][[1]][["z_offset"]]
+        
+        # Only apply soil-specific calibrations at sites that have them (i.e., not the permafrost sites)
+        if(!Meta[["Locations"]][[1]][["site"]] %in% c("BARR", "TOOL", "BONA", "HEAL")){
+          
+          # Read in NEON soil-specific bounded60 Sentek EnviroSCAN soil moisture calibrations
+          # neonBounded60Cal <- read.csv("~/GLUG Hydrophenology/Data/Reprocessed SWC Sensor Data/Bounded60_SoilMoistureDepths_FromAs-built_DontOpenInExcel.csv", header=T, stringsAsFactors=F)
+          # Meta$pathCalSoilSpec <- "~/scratch/soilSpecCalDepths.csv" # Delete this once added to Meta
+          neonBounded60Cal <- read.csv(Meta$pathCalSoilSpec, header=T, stringsAsFactors=F)
+          
+          # Identify the soil-specific calibration row that corresponds to the depth and site of the sensor
+          soilSpecCalRow <- intersect(intersect(which((neonBounded60Cal$Top.depth.where.calibration.applicable / -100) > depth), 
+                                                which((neonBounded60Cal$Bottom.depth.where.calibration.applicable / -100) <= depth)), 
+                                      grep(Meta[["Locations"]][[1]][["site"]], neonBounded60Cal$Site))
+          
+          
+          # Calculate soil water content in cm3 cm-3 by applying the soil-specific calibration
+          dataConvIdxAlt[setCal] <- ((dataSf - neonBounded60Cal$CVALA3[soilSpecCalRow]) / neonBounded60Cal$CVALA1[soilSpecCalRow])^(1/neonBounded60Cal$CVALA2[soilSpecCalRow]) / 100
+          
+          
+          # --------- Assign uncertainty (soil-specific) ----------
+          # Produce uncertainty estimate for alternate calibrated output variable
+          dataUcrtIdxAlt$ucrtMeas[setCal] <- neonBounded60Cal$U_CVALA3[soilSpecCalRow] # Assign the uncertainty of the soil-specific cal
+        }
         
         
-        # Construct a polynomial calibration function using the CVALA coefficients (probably not the correct one for this product)
-        funcCal <- NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
+        # Calculate soil water content in cm3 cm-3 by applying the manufacturer's default calibration
+        dataConvIdx[setCal] <- ((dataSf - 0.02852) / 0.1957)^(1/0.404) / 100
         
-        # Convert data using the calibration function
-        dataConvIdx[setCal] <- stats::predict(object = funcCal, newdata = dataVarIdx[setCal])
         
-        # Produce alternate computation in a 2nd output variable
-        zOfst <- Meta$Locations[[1]]$geolocations[[1]]$z_offset # Get the z offset from the location info in Meta$Locations
-        dataConvIdxAlt[setCal] <- zOfst + as.numeric(tail(strsplit(varIdx,character(0))[[1]],1)) # Dummy calc. that varies by measurement index
+        # Plot the data (only for testing the code)
+        # plot(data$readout_time, data[, varIdx]/100, pch=".", ylim=c(0,2), ylab="SWC m3 m-3", main=varIdx)
+        # points(data$readout_time, dataSf, pch=".", col="red")
+        # points(data$readout_time, dataConvIdxAlt[setCal], pch=".", col="blue")
+        # points(data$readout_time, dataConvIdx[setCal], pch=".", col="green")
+        # legend("topleft", legend=c("Raw data", "Scaled Freq", "Soil-specific", "Manufacturer"), col=c("black", "red", "blue", "green"), lty=1, bty="n", cex=0.8)
+
         
+        # --------- Assign uncertainty (manufacturer) ----------
+        
+        # Uncertainty of manufacturer's default calibration
+        dataUcrtIdx$ucrtMeas[setCal] <- 0.1068177 # Uncertainty of the manufacturer default calibration
+        
+
       } else if (grepl(pattern="VSIC",varIdx)){
         
         # Soil ion content
-        # Construct a polynomial calibration function using the CVALT coefficients (probably not the correct one for this product)
-        funcCal <- NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALT', log = log)
+        # No further processing of the ion content measurement is performed
+        dataConvIdx[setCal] <- data[, varIdx]
         
-        # Convert data using the calibration function
-        dataConvIdx[setCal] <- stats::predict(object = funcCal, newdata = dataVarIdx[setCal])
+        # Plot the data (only for testing the code)
+        # plot(data$readout_time, data[, varIdx], pch=".", ylim=c(0.1,100000), log="y", ylab="Ion content (unitless)", main=varIdx)
+
         
-        # Produce alternate computation in a 2nd output variable
-        zOfst <- Meta$Locations[[1]]$geolocations[[1]]$z_offset # Get the z offset from the location info in Meta$Locations
-        dataConvIdxAlt[setCal] <- dataConvIdx[setCal] + zOfst  # Dummy calc. that adds the z offset to the calibrated output above
+        # --------- Assign uncertainty ----------
+        
+        # The manufacturer does not provide an accuracy for the ion content measurement. See NEON.DOC.000007.
+        dataUcrtIdx$ucrtMeas[setCal] <- 0
+
       }
       
-      
-      # --------- Compute uncertainty ----------
-      
-      # This section doesn't differentiate between VSWC and VSIC, but you could do something similar to above if needed
-      
-      # Use the U_CVALA1 coefficient
-      coefUcrt <- as.numeric(infoCal$ucrt$Value[infoCal$ucrt$Name == 'U_CVALA1'])
-      dataUcrtIdx$ucrtMeas[setCal] <- coefUcrt*dataVarIdx[setCal]
-      
-      
-      # Produce uncertainty estimate for alternate calibrated output variable
-      coefUcrtAlt <- as.numeric(infoCal$ucrt$Value[infoCal$ucrt$Name == 'U_CVALD3']) + 0.1
-      dataUcrtIdxAlt$ucrtMeas[setCal] <- coefUcrtAlt # Alternate comp 
       
       
       
@@ -178,14 +207,25 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
       infoCal$ucrt$var <- varIdx
       ucrtCoefIdx[[idxRow]] <- base::merge(x=calSlctIdx[idxRow,!(names(calSlctIdx) %in% 'path')],y=infoCal$ucrt,by='id')
       
-      # Uncertainty coefs for alternate output variable output
-      ucrtCoefIdxAlt[[idxRow]] <- ucrtCoefIdx[[idxRow]][1,] # Use the regular var as template
-      ucrtCoefIdxAlt[[idxRow]]$id <- NA # remove the value
-      ucrtCoefIdxAlt[[idxRow]]$file <- NA # remove the value. Could also keep if the alternate coefs are w.r.t. each cal file
-      ucrtCoefIdxAlt[[idxRow]]$var <- varIdxAlt 
-      ucrtCoefIdxAlt[[idxRow]]$Name <- 'offset' # Name it whatever you want 
-      ucrtCoefIdxAlt[[idxRow]]$Value <- as.character(coefUcrtAlt)
-
+      # Only make alternate cal info for VSWC data, not VSIC
+      if (grepl(pattern="VSWC",varIdx)){
+        
+        # Only make alternate cal info at sites that have soil-specific calibrations (i.e., not the permafrost sites)
+        if(!Meta[["Locations"]][[1]][["site"]] %in% c("BARR", "TOOL", "BONA", "HEAL")){
+          
+          # Uncertainty coefs for alternate output variable output
+          ucrtCoefIdxAlt[[idxRow]] <- ucrtCoefIdx[[idxRow]][1:3,] # Use the regular var as template
+          ucrtCoefIdxAlt[[idxRow]]$id <- NA # remove the value
+          ucrtCoefIdxAlt[[idxRow]]$file <- NA # remove the value. Could also keep if the alternate coefs are w.r.t. each cal file
+          ucrtCoefIdxAlt[[idxRow]]$var <- varIdxAlt 
+          ucrtCoefIdxAlt[[idxRow]]$Name[1] <- 'U_CVALA3_soilSpec' # Name it whatever you want 
+          ucrtCoefIdxAlt[[idxRow]]$Value[1] <- neonBounded60Cal$U_CVALA3[soilSpecCalRow]
+          ucrtCoefIdxAlt[[idxRow]]$Name[2] <- 'U_CVALA2_soilSpec' # Name it whatever you want 
+          ucrtCoefIdxAlt[[idxRow]]$Value[2] <- neonBounded60Cal$U_CVALA2[soilSpecCalRow]
+          ucrtCoefIdxAlt[[idxRow]]$Name[3] <- 'U_CVALA1_soilSpec' # Name it whatever you want 
+          ucrtCoefIdxAlt[[idxRow]]$Value[3] <- neonBounded60Cal$U_CVALA1[soilSpecCalRow]
+        }
+      }
 
     } # End loop around calibration files
     
@@ -194,16 +234,18 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
     
     # Replace raw data with calibrated data.
     dataConv[[varIdx]] <- dataConvIdx
-    dataConv[[varIdxAlt]] <- dataConvIdxAlt
-    
-    # Re-arrange the data frame to insert the new variable immediately 
-    #   after the first calibrated variable (not required, just an example)
-    nameVar <- names(dataConv)
-    numVar <- length(nameVar)
-    idxVarConv <- which(nameVar == varIdx)
-    if(idxVarConv < numVar-1){
-      dataConv <- dataConv[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
-    } 
+    if(grepl(pattern="VSWC",varIdx)){
+      dataConv[[varIdxAlt]] <- dataConvIdxAlt
+      
+      # Re-arrange the data frame to insert the new variable immediately 
+      #   after the first calibrated variable (not required, just an example)
+      nameVar <- names(dataConv)
+      numVar <- length(nameVar)
+      idxVarConv <- which(nameVar == varIdx)
+      if(idxVarConv < numVar-1){
+        dataConv <- dataConv[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
+      } 
+    }
     
     # Compute combined uncertainty (add in quadrature any vars starting with ucrtMeas and ucrtFdas)
     nameVarUcrt <- base::names(dataUcrtIdx)
@@ -230,12 +272,14 @@ def.cal.conv.test.multi.out <- function(data = data.frame(data=base::numeric(0))
     
     # Place uncertainty data in list output (list elements named for the variable - should match the corresponding column name in data)
     ucrtData[[varIdx]] <- dataUcrtIdx
-    ucrtData[[varIdxAlt]] <- dataUcrtIdxAlt
     
     # Combine uncertainty coefs for all selected calibrations for this variable
     ucrtCoef[[varIdx]] <- base::Reduce(f=base::rbind,x=ucrtCoefIdx)
-    ucrtCoef[[varIdxAlt]] <- base::Reduce(f=base::rbind,x=ucrtCoefIdxAlt)
     
+    if(grepl(pattern="VSWC",varIdx)){
+      ucrtData[[varIdxAlt]] <- dataUcrtIdxAlt
+      ucrtCoef[[varIdxAlt]] <- base::Reduce(f=base::rbind,x=ucrtCoefIdxAlt)
+    }
     
   } # End loop around variables
   
