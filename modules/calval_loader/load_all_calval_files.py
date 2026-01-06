@@ -19,7 +19,8 @@ def load() -> None:
     in_path: Path = env.path('IN_PATH')
     # print("IN_PATH value is:", in_path)
     output_directory: Path = env.path('OUT_PATH')
-    sensor_type = env.list('SOURCE_TYPE')
+    sensor_type = env.str('SOURCE_TYPE')
+    schema_name = env.str('SCHEMA_NAME',sensor_type)
     db_config = read_from_mount(Path('/var/db_secret'))
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
@@ -44,14 +45,14 @@ def load() -> None:
                         root = ET.fromstring(blob.download_as_string())
                         asset_id = root.find('SensorID').find('MxAssetID').text
                         avro_schema_name = get_avro_schema_name(connector.get_connection(), asset_id)
-                        if ((avro_schema_name != None) and (avro_schema_name in sensor_type)):
+                        if ((avro_schema_name != None) and (schema_name in avro_schema_name)):
                             stream_id = root.find('StreamCalVal').find('StreamID').text
-                            stream_name = get_calibration_stream_name(connector.get_connection(), avro_schema_name,
+                            stream_name = get_calibration_stream_name(connector.get_connection(), schema_name,
                                                                       stream_id)
-                            print('schema name , asset_id, stream_id, stream_name, filename are :', avro_schema_name, "  ", asset_id,
+                            print('schema name , asset_id, stream_id, stream_name, filename are :', schema_name, "  ", asset_id,
                                   "  ", stream_id, " ", stream_name, " ", filename)
                             try:
-                                output_path = Path(output_directory, avro_schema_name, asset_id, stream_name, filename)
+                                output_path = Path(output_directory, sensor_type, asset_id, stream_name, filename)
                                 output_path.parent.mkdir(parents=True, exist_ok=True)
                                 # print('Output Path is:', output_path)
                                 with open(output_path, "wb") as output_file:

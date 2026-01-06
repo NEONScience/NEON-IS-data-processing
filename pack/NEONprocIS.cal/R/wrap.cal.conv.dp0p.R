@@ -33,7 +33,10 @@
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
-#' @return A data frame of the converted (calibrated) L0' data.
+#' @return A data frame of the converted (calibrated) L0' data after running through the 
+#' calibration functions listed in FuncConv. Note that the input data frame \code{data} 
+#' is passed into each function in sequence, where the input to each subsequent function
+#' is the data frame output by the previous function. 
 
 #' @references Currently none
 

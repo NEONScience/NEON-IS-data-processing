@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -50,14 +50,9 @@ transform:
       DirIn=$OUT_PATH_ARRAY_PARSER \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "TermFuncConv1=def.cal.conv.test.multi.out:rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
+      "ConvFuncTerm1=def.cal.conv.test.multi.out:rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
       "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
-      "DirSubCopy=calibration"
-      
-    # Copy over the location info to the output
-    export OUT_PATH=$OUT_PATH_JOINER_LOC
-    export CONFIG=$CONFIG_LOC
-    python3 -m filter_joiner.filter_joiner_main
+      "DirSubCopy=calibration|location"
 
     EOF
   env:
@@ -89,12 +84,6 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
-    CONFIG_LOC: |
-      ---
-      # Configuration for filter-joiner module that will copy location info directly to output
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      input_paths:
         - path:
             name: LOCATION_PATH
             # Filter for data directory
@@ -106,9 +95,7 @@ transform:
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     OUT_PATH_JOINER: /tmp/pfs/filter_joined 
-    OUT_PATH_JOINER_LOC: /pfs/out
-    LINK_TYPE_LOC: SYMLINK # Can use symlink bc direct from /pfs/IN_REPO to /pfs/out
-    
+
     # Environment variables for array parser
     PARSE_CALIBRATION: 'True'
     TEST_MODE: 'True' # We already parsed the data. Pass it through via symlink
@@ -146,28 +133,28 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: enviroscan_calibration_assignment
-        glob: /enviroscan/(2025)/(09)/(05)
+        glob: /enviroscan/(2025)/(10)/(20)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
-        name: DATA_PATH_TRINO
+        name: DATA_PATH_ARCHIVE
         repo: enviroscan_data_source_trino
-        glob: /enviroscan/(2025)/(09)/(05)
+        glob: /enviroscan/(2025)/(10)/(20)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: enviroscan_data_source_kafka
-        glob: /enviroscan/(2025)/(09)/(05)
+        glob: /enviroscan/(2025)/(10)/(20)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: LOCATION_PATH
         repo: enviroscan_location_asset_assignment
-        glob: /enviroscan/(2025)/(09)/(05)
+        glob: /enviroscan/(2025)/(10)/(20)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.

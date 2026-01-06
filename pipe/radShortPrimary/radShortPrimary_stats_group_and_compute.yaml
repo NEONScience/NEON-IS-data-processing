@@ -17,12 +17,12 @@ transform:
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
     # Run second module - basic stats
-    #      FileSchmStat=$FILE_SCHEMA_STATS \
 
     Rscript ./flow.stat.basc.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmStat=$FILE_SCHEMA_STATS \
       "WndwAgr=001|030" \
       "TermStat1=shortwaveRadiation:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)"
     EOF
@@ -54,14 +54,14 @@ transform:
     PARALLELIZATION_INTERNAL: '5' # Option for stats module
 input:
   cross:
-  # - pfs:
-  #     name: FILE_SCHEMA_STATS
-  #     repo: radShortPrimary_avro_schemas
-  #     glob: /radShortPrimary/radShortPrimary_dp01_stats.avsc
+  - pfs:
+      name: FILE_SCHEMA_STATS
+      repo: radShortPrimary_avro_schemas
+      glob: /radShortPrimary/radShortPrimary_dp01_stats.avsc
   - join:
     - pfs:
         name: QAQC_PATH
-        repo: radShortPrimary_analyze_pad_and_qaqc_plau
+        repo: radShortPrimary_qaqc_plau_and_radiation_custom
         glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY

@@ -1,0 +1,45 @@
+---
+pipeline:
+  name: subsurfMoorTempCond_baro_conv
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-baro-conv:v1.0.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Run conversion module
+      Rscript ./flow.troll.baro.conv.R \
+        DirIn=$DIR_IN \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        "DirSubCopy=hobou24|group"
+  env:
+    LOG_LEVEL: INFO
+    SOURCE_TYPE_INDEX: "4"
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: subsurfMoorTempCond_group_path
+      glob: /*/*/*
+parallelism_spec:
+  constant: 6
+autoscaling: true
+resource_requests:
+  memory: 600M
+  cpu: 1.2
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

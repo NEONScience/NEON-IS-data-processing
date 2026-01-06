@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-pluvio-flgs-f ./modules_combined/pluvio_flags_comb/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.7
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.10
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="padded_timeseries_analyzer"

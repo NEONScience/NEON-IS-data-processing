@@ -2,7 +2,7 @@
 pipeline:
   name: metone370380_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -36,9 +36,10 @@ transform:
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
       DirErr=/pfs/out/errored_datums \
-      TermFuncConv=bucket_tips:def.cal.conv.poly.a0.as.a1 \
+      ConvFuncTerm1=def.cal.conv.poly.a0.as.a1:bucket_tips \
       TermQf=bucket_tips \
-      TermFuncUcrt=bucket_tips:def.ucrt.meas.mult
+      UcrtFuncTerm1=def.ucrt.meas.mult:bucket_tips
+      
     EOF
   env:
     # Environment variables for filter-joiner

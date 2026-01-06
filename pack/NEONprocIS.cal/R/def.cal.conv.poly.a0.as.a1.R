@@ -84,6 +84,11 @@ def.cal.conv.poly.a0.as.a1 <- function(data = data.frame(data=base::numeric(0)),
   # Basic starting info
   timeMeas <- data$readout_time
   
+  if(!("POSIXt" %in% base::class(timeMeas))){
+    log$error('Variable readout_time must be of class POSIXt')
+    stop()
+  }
+  
   # Run through each variable to be calibrated
   for(varIdx in varConv){
     
@@ -125,6 +130,12 @@ def.cal.conv.poly.a0.as.a1 <- function(data = data.frame(data=base::numeric(0)),
         next
       }
   
+      # Error out if there is no A0 calibration coefficient
+      if(length(infoCal$cal$Value[infoCal$cal$Name == 'CVALA0']) == 0){
+        log$error('No CVALA0 polynomial calibration coefficient found')
+        stop()
+      }
+      
       #add 0 level to coefficient list to place A0 at A1 position
       coefPoly <- c(0, infoCal$cal$Value[infoCal$cal$Name == 'CVALA0'])
   

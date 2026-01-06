@@ -37,7 +37,8 @@
 	},
 	{
 	"site" : "DELA",
-	"kafka_start_date" : "2023-06-16"
+	"kafka_start_date" : "2023-06-16",
+	"end_date" : "2025-10-11"
 	},
 	{
 	"site" : "DSNY",
@@ -271,6 +272,10 @@
 	{
 	"site" : "KING",
 	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "HQTW",
+	"kafka_start_date" : "2023-03-03"
 	},
 	{
 	"site" : "LECO",

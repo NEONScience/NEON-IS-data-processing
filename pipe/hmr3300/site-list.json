@@ -16,6 +16,10 @@
 	"kafka_start_date" : "2024-08-11"
 	},
 	{
+	"site" : "HQTW",
+	"kafka_start_date" : "2023-03-03"
+	},
+	{
 	"site" : "LIRO",
 	"kafka_start_date" : "2024-08-10"
 	},

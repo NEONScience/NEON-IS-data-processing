@@ -1,110 +1,169 @@
 ##############################################################################################
-#' @title Unit test of def.ucrt.meas.cnst.R
+#' @title Unit test of NEON uncertainty quantification (def.ucrt.meas.cnst)
+
+#' @author
+#' Robert Markel \email{rmarkel@BattelleEcology.org}
+#' Mija Choi \email{choim@batelleEcology.org}
+#' Cove Sturtevant \email{csturtevant@batelleEcology.org}
 
 #' @description
-#' Run unit tests for def.ucrt.meas.cnst.R.
-#' The tests include positive and negative scenarios.
+#' Run unit tests for uncertainty quantification function. The unit tests include positive and negative scenarios.
 #' The positive test is for a case when all the params to the function are valid
-#' The negative tests are when a param(s) is empty or does not have valid values
+#' The negative tests are when a param(s) is empty or does not have invalid values
 
-#' Refer to def.ucrt.meas.cnst.R for the details of the function.
-#' @param data Numeric vector of raw measurements
-#' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
-#' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
-#' a data frame of uncertainty coefficents. Columns of this data frame are:\cr
-#' \code{Name} String. The name of the coefficient. \cr
-#' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
-#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
-#' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
-#' created and used within the function.
+#' @param data Data frame of raw, ununcertainty measurements. This data frame must have a column
+#' called "readout_time" with POSIXct timestamps
+#' @param varUcrt A character array of the target variables (columns) in the data frame \code{data} for 
+#' which uncertainty output will be computed (all other columns will be ignored). Defaults to the first
+#' column in \code{data}.
+#' @param calSlct A named list of data frames, each list element corresponding to a 
+#' variable (column) to calibrate. The data frame in each list element holds 
+#' information about the calibration files and time periods that apply to the variable, 
+#' as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
+#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
+#' NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.
 
-#' @return A data frame with the following variables:\cr
-#' \code{ucrtMeas} - combined measurement uncertainty for an individual reading. Includes the
-#' repeatability and reproducibility of the sensor and the lab DAS and ii) uncertainty of the
-#' calibration procedures and coefficients including uncertainty in the standard (truth).
+#' @return TRUE when a test passes. Log errors when fails and moves on to the next test. \cr
 
-#' @references Currently none
+#' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+#' NEON.DOC.000785 TIS uncertainty Measurements and Level 1 Data Products Uncertainty Budget Plan
 
 #' @keywords Currently none
-
-#' @examples Currently none
-
-#' @seealso Currently none
 
 #' @examples
 #' To run with testthat:
 #' devtools::test(pkg="<path>/NEON-IS-data-processing/pack/NEONprocIS.cal")
 #' an example, devtools::test(pkg="C:/projects/NEON-IS-data-processing/pack/NEONprocIS.cal")
 
+#' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
+#'
+#' @export
+
 # changelog and author contributions / copyrights
-#   Mija Choi (2020-06-18)
-#     Original Creation
-#   Mija Choi (2020-08-03)
-#     Modified to reorganize the test input xml and json files
-#   Mija Choi (2020-09-24)
-#     adjusted inputs to conform to the change made in def.ucrt.meas.cnst.R
+#   Robert Markel (2019-12-10)
+#     original creation
+#   Mija Choi (2020-01-07)
+#     Added negative testing
+#   Cove Sturtevant (2020-02-17)
+#     Updated tests for function edits
+#   Mija Choi (2020-09-23)
+#     adjusted inputs to conform to the change made in def.cal.conv.poly.R
 #     This includes inputting the entire data frame not a vector, the 
-#     variable to be calibrated, and the (unused) argument calSlct
+#     variable to be uncertainty, and the (unused) argument calSlct
+#   Cove Sturtevant (2025-11-17)
+#     Revise unit test for changed inputs
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of def.ucrt.meas.cnst.R\n")
+context("\n                       uncertainty quantification\n")
 
-# Unit test of def.ucrt.meas.cnst.R
-test_that("Unit test of def.ucrt.meas.cnst.R", {
- 
-  # The input is a json with elements of Name, Value, and .attrs
-  # fileCal has the correct value for "resistance" calibration
+# Test calibration conversion
+test_that("testing uncertainty quantification (def.ucrt.meas.cnst", {
+  
+  testDir = "calibrations/voltage/"
+  testFileCal = c("calibration33.xml","calibration33_validAfter.xml")
+  testFileCalPath <- fs::path(testDir, testFileCal)
+  
+  
+  metaCal <- NEONprocIS.cal::def.cal.meta(fileCal=testFileCalPath)
+  TimeBgn <- base::as.POSIXct('2019-06-12',tz='GMT')
+  TimeEnd <- base::as.POSIXct('2019-07-10',tz='GMT')
+  calSlct <- list(data=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
 
-  testDir = "testdata/"
-  testFileCal = "calibration.xml"
-  testFileCalPath <- paste0(testDir, testFileCal)
-  
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=testFileCalPath,Vrbs=TRUE)
-  data = c(0.9)
-  data = data.frame(data=data)
- 
-  # Happy Path 1 - All params passed
-  umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal)
+  # Create data to calibrate
+  data <- c(1,2,3,4,5,6)
+  data2 <- as.character(c(2,4,6,8,10,12))
+  readout_time <- as.POSIXct(c('2019-06-12 17:48:35','2019-06-14 00:00:00','2019-06-15 00:00:00','2019-06-16 00:00:00','2019-06-17 00:00:00','2019-07-07 17:48:35'),tz='GMT')
+  data = data.frame(readout_time=readout_time,data=data,data2=data2)
 
-  expect_true ((is.data.frame(umeas_cnstDf_returned)) &&
-                 !(is.null(umeas_cnstDf_returned)))
-  # The output is a data frame having Name, Value, and .attrs
-  # Happy path 2 - no parameters passed
+  ##########
+  ##########  Happy paths:::: data and ucrt not empty and have valid values
+  ##########
   
-  umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst ()
+  cat("\n       |====== Positive test::                         ==========|\n")
+  cat("\n       |------ data and cal are not empty and have valid values    |\n")
+
+  uncertainty <-
+    NEONprocIS.cal::def.ucrt.meas.cnst(data = data, varUcrt='data', calSlct=calSlct)
+
+  # Check the data inside the valid date range are uncertainty correctly
+  testthat::expect_equal(c(0.00585, 0.00585, 0.00585, 0.00585), uncertainty$data$ucrtMeas[2:5])
   
-  expect_true ((is.data.frame(umeas_cnstDf_returned)) &&
-                 (nrow(umeas_cnstDf_returned) == 0))
   
-  # Happy path 3 - More than one matching uncertainty coefficient was found for U_CVALA1. 
-  #            - Will use the first if more than one matching uncertainty coefficient was found
-  # calibration44.xml below has 2 entries for U_CVALA1
- 
-  testFileCal = "calibration44.xml"
-  testFileCalPath <- paste0(testDir, testFileCal)
+  cat("\n       |====== Positive test::                         ==========|\n")
+  cat("\n       |------ valid calibration date range inclusive of start date, exclusive of end date    |\n")
   
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = testFileCalPath, Vrbs = TRUE)
-  data = c(0.7)
-  data = data.frame(data=data)
+
+  # Check the first and last dates, which fall on the boundaries of the valid cal periods
+  # First date should get the first cal, last date should get the second cal
+  testthat::expect_equal(c(0.00585, 0.006), c(uncertainty$data$ucrtMeas[1],uncertainty$data$ucrtMeas[6]))
   
-  umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal)
   
-  # Check to see if only the first was returned from calibration44.xml
-  # Return combined measurement uncertainty for an individual reading, not multiplied by data
+
   
-  expect_true (umeas_cnstDf_returned$ucrtMeas == (infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',][1,]$Value))
+  cat("\n       |======= Positive test::                      ============|\n")
+  cat("\n       |------ data is before the valid date range of the cal. Return NA values. |\n\n")
+  
+  data$readout_time <- as.POSIXct(c('2018-06-13','2018-06-14','2018-06-15','2018-06-16','2018-06-17','2018-06-18'),tz='GMT')
+  
+  uncertainty <- NEONprocIS.cal::def.ucrt.meas.cnst(data = data, varUcrt='data', calSlct=calSlct)
+  
+  testthat::expect_true(all(is.na(uncertainty$data$ucrtMeas)))
+  
+  
+  cat("\n       |======= Positive test::                      ============|\n")
+  cat("\n       |------ No cals specified for 'data'. Returns NA |\n\n")
+  calSlctNoVar <- list(voltage=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
+  uncertainty <- NEONprocIS.cal::def.ucrt.meas.cnst(data = data, 
+                                                  varUcrt='data', 
+                                                  calSlct=calSlctNoVar)
+  testthat::expect_true (all(is.na(uncertainty$data$ucrtMeas)))
+
+  
   #
-  # Sad path - Check format of infoCal 
-  # the calibration222.xml does not have 'U_CVALA1' in tha names of Uncertainty
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ Cannot compute uncertainty for character variable   |\n\n")
+  #
+
+  testFileCal = "calibration44.xml"
+  testFileCalPath <- fs::path(testDir, testFileCal)
+
+  metaCal <- NEONprocIS.cal::def.cal.meta(fileCal=testFileCalPath)
+  TimeBgn <- base::as.POSIXct('2020-06-12',tz='GMT')
+  TimeEnd <- base::as.POSIXct('2020-07-10',tz='GMT')
+  calSlct <- list(data=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
+  data$readout_time <- as.POSIXct(c('2020-06-12 17:48:35','2020-06-14 00:00:00','2020-06-15 00:00:00','2020-06-16 00:00:00','2020-06-17 00:00:00','2020-07-07 17:48:35'),tz='GMT')
   
-  testFileCal = "calibration222.xml"
-  testFileCalPath <- paste0(testDir, testFileCal)
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.cnst(data = data, varUcrt='data2', calSlct=calSlct), silent = TRUE)
+  testthat::expect_true((class(uncertainty)[1] == "try-error"))
   
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=testFileCalPath,Vrbs=TRUE)
-  data = c(0.9)
-  data = data.frame(data=data)
+  #
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ cal is has no applicable uncertainty coefficients.              |\n\n")
+  #
   
-  umeas_cnstDf_returned <- try (NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal), silent = TRUE)
-  expect_true (base::class(umeas_cnstDf_returned) == 'try-error')
-  })
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.cnst(data = data, varUcrt='data', calSlct=calSlct), silent = TRUE)
+  
+  testthat::expect_true((class(uncertainty)[1] == "try-error"))
+  
+  #
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ data missing readout_time variable    |\n\n")
+  
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.cnst(data = data[,-1], varUcrt='data', calSlct=calSlct), silent = TRUE)
+  
+  testthat::expect_true((class(uncertainty)[1] == "try-error"))
+  
+  #
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ readout_time not POSIXt    |\n\n")
+  data$readout_time <- as.character(data$readout_time)
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.cnst (data = data, 
+                                                       varUcrt='data', 
+                                                       calSlct=calSlct),
+                    silent=TRUE)
+  testthat::expect_true ("try-error" %in% class(uncertainty))
+  
+  
+  
+})

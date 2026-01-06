@@ -103,9 +103,6 @@ wrap.ucrt.dp0p <- function(data,
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Basic starting info
-  timeMeas <- data$readout_time
-  
   numFunc <- base::nrow(FuncUcrt)
   if(base::is.null(numFunc) || numFunc == 0){
     return(list())

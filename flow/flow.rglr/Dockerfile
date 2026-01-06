@@ -2,8 +2,8 @@
 
 # Start with the neon-is-base-r image. 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base
-#FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
+#FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.rglr"
@@ -25,7 +25,7 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 #RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
 #
 # Now make the final build, which will leave behind our access token
-#FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
+#FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
 #
 # copy the eddy4R.base package from the previous image
 #COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/

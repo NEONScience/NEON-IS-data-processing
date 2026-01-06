@@ -13,7 +13,8 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=namedLocation
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.1
+      "Prop=HOR|VER|name|description|site|Data Rate|active_periods"
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.0
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
@@ -33,16 +34,13 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 210M
-  cpu: 1
+  cpu: 1.2
 resource_limits:
   memory: 1G
-  cpu: 1.5
+  cpu: 1.6
 sidecar_resource_requests:
   memory: 1G
-  cpu: 0.5
-sidecar_resource_limits:
-  memory: 3Gi
-  cpu: 1.2
+  cpu: 0.2
 datum_set_spec:
   number: 5
 scheduling_spec:

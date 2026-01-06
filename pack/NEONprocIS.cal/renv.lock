@@ -107,10 +107,10 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.33",
+      "Version": "0.6.37",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b18a9cf3c003977b0cc49d5e76ebe48d",
+      "Hash": "33698c4b3127fc9f506654607fb73676",
       "Requirements": []
     },
     "ellipsis": {
@@ -141,10 +141,10 @@
     },
     "generics": {
       "Package": "generics",
-      "Version": "0.1.3",
+      "Version": "0.1.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "15e9634c0fcd294799e9b2e929ed1b86",
+      "Hash": "4b29bf698d0c7bdb9f1e4976e7ade41d",
       "Requirements": []
     },
     "glue": {

@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Water Quality package
 
 # Start with the calibration package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v2.1.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.0.2
 
 # maintainer handle
 MAINTAINER "Kaelin Cawley" kcawley@battelleecology.org

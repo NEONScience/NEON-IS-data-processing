@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Missing Temp Flag and Conductivity Conversion
 
 # Start with the neon-is-base-r image.
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.troll.cond.conv"

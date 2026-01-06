@@ -4,7 +4,7 @@ from typing import Optional
 import logging
 
 
-def get_avro_schema_name(connection, asset_uid : int) -> Optional[str]:
+def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
 
     sql = '''
          select 
@@ -25,6 +25,7 @@ def get_avro_schema_name(connection, asset_uid : int) -> Optional[str]:
         if row is None:
             logging.error(f'Avro schema name not found for asset id ID {asset_uid} .')
             return None
-        avro_schema_name = row[0]
+        avro_schema_name = row
+        #avro_schema_name = row[0]
         #print(f'avro_schema_name: {avro_schema_name}')
     return avro_schema_name

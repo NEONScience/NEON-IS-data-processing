@@ -2,17 +2,29 @@
 pipeline:
   name: aepg600m_calibration_loader
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v3.0.0
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m calval_loader.load_all_calval_files
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    export SOURCE_TYPE=$SOURCE_TYPE_1
+    python3 -m calval_loader.load_all_calval_files
+    
+    export SOURCE_TYPE=$SOURCE_TYPE_2
+    python3 -m calval_loader.load_all_calval_files
+    
+    EOF
   env:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: "aepg600m,aepg600m_heated"
+    SOURCE_TYPE_1: aepg600m
+    SOURCE_TYPE_2: aepg600m_heated
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret

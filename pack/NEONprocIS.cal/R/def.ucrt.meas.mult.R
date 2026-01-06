@@ -6,8 +6,8 @@
 
 #' @description
 #' Definition function. Accepts L0 data and NEON uncertainty information as produced
-#' by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measurement
-#' uncertainties for each data value. The uncertainty computed is the L0 value multipled by 
+#' by NEONprocIS.cal::def.read.cal.xml and returns returns individual measurement uncertainties 
+#' for each data variable specified. The uncertainty computed is the L0 value multipled by 
 #' NEON calibration uncertainty coefficient U_CVALA1. 
 
 #' @param data Numeric data frame of raw measurements.
@@ -17,7 +17,7 @@
 #' column in \code{data}.
 #' 
 #' @param calSlct A named list of data frames, list element corresponding to the variables in
-#' FuncUcrt. The data frame in each list element holds information about the calibration files and 
+#' varUcrt. The data frame in each list element holds information about the calibration files and 
 #' time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
 #' See documentation for that function. Assign NULL to list elements (variables) for which calibration
 #' information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
@@ -77,6 +77,7 @@
 #     Refactor to loop through applicable calibration files within this function
 #     Also enable uncertainty comps of multiple variables with this function call
 #     Return a list of data frames named for the variables specified in varUcrt
+#     Return error if no U_CVALA1 found 
 ##############################################################################################
 def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
                                varUcrt = base::names(data)[1],
@@ -152,6 +153,9 @@ def.ucrt.meas.mult <- function(data = data.frame(data=base::numeric(0)),
       # Issue warning if more than one matching uncertainty coefficient was found
       if(base::nrow(ucrtCoef) > 1){
         log$warn("More than one matching uncertainty coefficient was found for U_CVALA1. Using the first.")
+      } else if (base::nrow(ucrtCoef) == 0){
+        log$error("No uncertainty coefficient was found for U_CVALA1.")
+        stop()
       }
       
       # The individual measurement uncertainty is just U_CVALA1 multiplied by each measurement

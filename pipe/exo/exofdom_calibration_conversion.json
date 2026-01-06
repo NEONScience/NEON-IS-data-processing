@@ -11,11 +11,11 @@
       "DirErr=/pfs/out/errored_datums",
       "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
-      "TermFuncUcrt=fdom_qsu:def.ucrt.meas.cnst",
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:fdom_qsu",
       "TermQf=fdom_qsu",
       "DirSubCopy=calibration"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v1.3.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v3.0.0",
     "env": {
       "LOG_LEVEL": "INFO"
     }

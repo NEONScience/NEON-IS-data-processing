@@ -304,20 +304,20 @@ wrap.cal.conv <- function(DirIn,
   dirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)
   dirOutData <- base::paste0(dirOut, '/data')
   dirOutUcrtCoef <- base::paste0(dirOut, '/uncertainty_coef')
+  dirOutQf <- base::paste0(dirOut, '/flags')
+  dirOutUcrtData <- base::paste0(dirOut, '/uncertainty_data')
   NEONprocIS.base::def.dir.crea(
     DirBgn = '',
     DirSub = c(dirOutData, dirOutUcrtCoef),
     log = log
   )
   if (!base::is.null(TermQf)) {
-    dirOutQf <- base::paste0(dirOut, '/flags')
     NEONprocIS.base::def.dir.crea(DirBgn = '',
                                   DirSub = dirOutQf,
                                   log = log)
   }
   
-  if (!base::is.null(FuncUcrt) || !base::is.null(FuncConv)) {
-    dirOutUcrtData <- base::paste0(dirOut, '/uncertainty_data')
+  if (!base::is.null(FuncUcrt)) {
     NEONprocIS.base::def.dir.crea(DirBgn = '',
                                   DirSub = dirOutUcrtData,
                                   log = log)
@@ -431,12 +431,27 @@ wrap.cal.conv <- function(DirIn,
     ucrtData <- dataConv$ucrtData
     if (!base::is.null(ucrtData)){
       log$info('Found uncertainty data, using this instead of computing with any uncertainty functions in FuncUcrt.')
+      
+      # Create directory if not already done above
+      if(base::is.null(FuncUcrt)){
+        NEONprocIS.base::def.dir.crea(DirBgn = '',
+                                      DirSub = dirOutUcrtData,
+                                      log = log)
+      }
     }
     
     # Look for calibration flags
     qfCal <- dataConv$qfCal
     if (!base::is.null(qfCal)){
-      log$info('Found calibration flags, using these instead of computing with standard code (note that input TermQf will be ignored).')
+      log$info('Found calibration flags, using these instead of computing with standard code (the unput TermQf will be ignored).')
+
+      # Create directory if not already done above
+      if (base::is.null(TermQf)) {
+        NEONprocIS.base::def.dir.crea(DirBgn = '',
+                                      DirSub = dirOutQf,
+                                      log = log)
+      }
+      
     }
     
     # Look for uncertainty coefficients (data frame)
@@ -569,7 +584,6 @@ wrap.cal.conv <- function(DirIn,
   # ------- Apply the uncertainty function to the selected terms ---------
   if(base::is.null(ucrtData)){
     log$debug('Computing any uncertainty data.')
-    Meta$ucrtCoefFdas <- ucrtCoefFdas # Do this earlier in flow.cal.conv
     ucrtData <-
       NEONprocIS.cal::wrap.ucrt.dp0p(
         data = data,
@@ -740,4 +754,5 @@ wrap.cal.conv <- function(DirIn,
     }
   }
   
+  return()
 }
