@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-qaqc-plau-rad -f ./modules_combined/qaqc_plau_and_radiation_custom/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.8
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.10
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="padded_timeseries_analyzer"
@@ -53,10 +53,6 @@ ARG APP_DIR2="flow.rad.flags.cstm"
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ./${MODULE_DIR}/${APP_DIR2}/renv.lock ./renv.lock2
 RUN R -e 'renv::restore(lockfile="./renv.lock2")'
-
-# Create app user
-RUN groupadd appuser && \
-    useradd appuser -g appuser
 
 # Copy in application code
 COPY ./${MODULE_DIR}/${APP_DIR2}/wrap.rad.flags.cstm.R .

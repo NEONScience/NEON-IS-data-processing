@@ -125,6 +125,13 @@ test_that("Unit test of wrap.ucrt.coef.R", {
                       names(wucList_returned$resistance) == elementsList
                    ))
                 )
+   expect_true(all(names(wucList_returned)==c('resistance','voltage'))) 
+   expect_true("POSIXt" %in% class(wucList_returned$resistance$timeBgn))
+   expect_true("POSIXt" %in% class(wucList_returned$resistance$timeEnd))
+   expect_true("calibration22.xml" %in% wucList_returned$resistance$file)
+   expect_true("U_CVALF3" %in% wucList_returned$resistance$Name)
+   expect_true(class(wucList_returned$resistance$Value) == "character")
+   expect_true("0.0000229" %in% wucList_returned$resistance$Value)
    
    # Test 2 - pass non NULL for all parameters except log
    

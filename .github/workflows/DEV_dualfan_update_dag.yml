@@ -2,7 +2,7 @@ name: DEV-dualfan-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'master'
     paths:
       - 'pipe/dualfan/*.yaml'
       - 'pipe/dualfan/pipe_list_dualfan_development.txt'

@@ -3,80 +3,27 @@ name: "Run IS base package unit tests"
 on:
   push:
     branches:
-     - 'master'
+      - master
     paths:
-      - 'pack/NEONprocIS.base/**'
-      
+      - pack/NEONprocIS.base/**
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
-  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
-  # Use github and google registries
-  GHCR_REGISTRY: ghcr.io
-  # GHCR_NS, i.e, NEONSciene, in lowercase
-  # GHCR_NS: ${{ github.repository_owner }}
-  GHCR_NS: ${{ vars.SHARED_WIF_REPO }}
-  GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
-  GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
-  GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
-  GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  REPO_NAME: neon-is-data-processing
   # IS package name
   MODULE_BASE_NAME: NEONprocIS.base
   MODULE_BASE_PATH: ./pack/NEONprocIS.base
   MODULE_NAME: NEONprocIS.base
   MODULE_PATH: ./pack/NEONprocIS.base
-  IMAGE_NAME: neon-is-pack-base-r
 
 jobs:
   run-unit-test:
     runs-on: ubuntu-latest
-    permissions:
-        contents: 'write'
-        security-events: write
-        packages: write
-        id-token: 'write'
-        pull-requests: 'write'
-
     steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v4.1.4"
-        with:
-          ref: 'master'
-          fetch-depth: '0'
+      - name: Checkout
+        uses: actions/checkout@v5
 
-        # Note: must clone other repos AFTER checking out the repo where the action is run from. 
-        # Otherwise, previously cloned repos are removed.
-      - name: "Clone avro"
-        uses: actions/checkout@v4
-        with:
-          # Repository name with owner. For example, actions/checkout
-          # Default: ${{ github.repository }}
-          repository: 'BattelleEcology/avro'
-          
-          # The branch, tag or SHA to checkout. When checking out the repository that
-          # triggered a workflow, this defaults to the reference or SHA for that event.
-          # Otherwise, uses the default branch.
-          ref: 'release-1.10.0'
-          #fetch-depth: '0' 
-          
-          # SSH key used to fetch the repository. The SSH key is configured with the local
-          # git config, which enables your scripts to run authenticated git commands. The
-          # post-job step removes the SSH key.
-          #
-          # We recommend using a service account with the least permissions necessary.
-          #
-          # [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
-          # Note: when generating the key, use the following: ssh-keygen -t ed25519 -C "git@github.com"
-          ssh-key: ${{ secrets.BE_GITHUB_KEY }}
-          
-          # Relative path under $GITHUB_WORKSPACE to place the repository
-          path: './avro'
-
-      - name: Get short SHA
-        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Install Avro
+        run: sudo apt install libavro23
 
       - name: Run IS ${{ env.MODULE_NAME }} unit tests
         uses: ./.github/actions/run-IS-unit-tests

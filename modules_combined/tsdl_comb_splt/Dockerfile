@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-tsdl-comb-splt -f ./modules_combined/tsdl_comb_splt/Dockerfile .
 
 # Start with the base image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
 
 # Add in the python-based filter-joiner module
 ARG MODULE_DIR="modules"

@@ -33,7 +33,10 @@ calibration and/or uncertainty functions in addition to calibration and uncertai
 output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
 \value{
-A data frame of the converted (calibrated) L0' data.
+A data frame of the converted (calibrated) L0' data after running through the 
+calibration functions listed in FuncConv. Note that the input data frame \code{data} 
+is passed into each function in sequence, where the input to each subsequent function
+is the data frame output by the previous function.
 }
 \description{
 Wrapper function. Apply calibration conversion function to NEON L0 data, thus generating NEON

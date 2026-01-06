@@ -2,7 +2,7 @@
 pipeline:
   name: ptb330a_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -36,9 +36,9 @@ transform:
       DirErr=/pfs/out/errored_datums \
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
-      "TermFuncConv=barometricPressure:def.cal.conv.poly" \
+      "ConvFuncTerm1=def.cal.conv.poly:barometricPressure" \
       "TermQf=barometricPressure" \
-      "TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst"
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:barometricPressure"
 
     EOF
   env:
@@ -101,7 +101,7 @@ input:
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
-        repo: ptb330a_data_source_trino
+        repo: ptb330a_data_source_gcs
         glob: /ptb330a/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
@@ -117,14 +117,14 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 400M
-  cpu: 1.1
+  memory: 500M
+  cpu: 1.5
 resource_limits:
   memory: 1G
   cpu: 2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.5
+  memory: 1.5G
+  cpu: 0.2
 datum_set_spec:
   number: 1
 scheduling_spec:

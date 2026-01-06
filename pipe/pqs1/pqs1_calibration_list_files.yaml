@@ -2,7 +2,7 @@
 pipeline:
   name: pqs1_calibration_list_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v3.0.0
   cmd: ["/bin/bash"]
   env:
     CVAL_INGEST_BUCKET: neon-cval

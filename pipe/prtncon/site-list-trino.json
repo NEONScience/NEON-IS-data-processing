@@ -37,7 +37,8 @@
 	},
 	{
 	"site" : "DELA",
-	"kafka_start_date" : "2023-06-16"
+	"kafka_start_date" : "2023-06-16",
+	"end_date" : "2025-10-11"
 	},
 	{
 	"site" : "GRSM",
@@ -58,6 +59,10 @@
 	{
 	"site" : "HEAL",
 	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "HQTW",
+	"kafka_start_date" : "2023-03-03"
 	},
 	{
 	"site" : "JERC",

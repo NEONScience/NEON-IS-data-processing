@@ -7,7 +7,6 @@ quality data product}
 \usage{
 def.ucrt.wq.temp.conc(
   data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
   varUcrt = base::names(data)[1],
   calSlct = NULL,
   Meta = list(),
@@ -16,12 +15,6 @@ def.ucrt.wq.temp.conc(
 }
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}
-
-\item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
-(as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
-a data frame of uncertainty coefficents. Columns of this data frame are:\cr
-\code{Name} String. The name of the coefficient. \cr
-\code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
 
 \item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} 
 that represents temperature data from the conductivity sensor. Note that for other
@@ -39,11 +32,12 @@ output in addition to standard R error messaging. Defaults to NULL, in which the
 created and used within the function.}
 }
 \value{
+A named list, name matching the variable specified in varUcrt, containig 
 A data frame with the following variables:\cr
 \code{ucrtMeas} - combined measurement uncertainty for an individual L0 reading.
 }
 \description{
-Alternative calibration uncertainty function. Create file (dataframe) with
+Alternative calibration uncertainty function. Compute measurement
 uncertainty information based off of the L0 temperature data values from the conductivity sensor
 according to NEON.DOC.004931 - NEON Algorithm Theoretical Basis Document (ATBD): Water Quality.
 
@@ -52,7 +46,7 @@ which uses system environment variables if available.
 }
 \examples{
 #Written to potentially plug in to def.cal.conv.R
-ucrt <- def.ucrt.wq.temp.conc(data = data, cal = NULL)
+ucrt <- def.ucrt.wq.temp.conc(data = data)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

@@ -2,7 +2,7 @@ name: DEV-hmr3300-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/hmr3300/*.yaml'
       - 'pipe/hmr3300/pipe_list_hmr3300.txt'

@@ -1,0 +1,40 @@
+---
+pipeline:
+  name: subsurfMoorTempCond_threshold
+transform:
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-threshold-loader:v1.0.0
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m threshold_loader.threshold_loader_main
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: pressure|temperature|conductivity
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: subsurface-lake
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    repo: lt400_hu24_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 32M
+  cpu: 0.05
+resource_limits:
+  memory: 200M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 120M
+  cpu: 0.1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

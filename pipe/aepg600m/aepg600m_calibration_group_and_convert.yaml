@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -60,7 +60,9 @@ transform:
       DirErr=/pfs/out/errored_datums \
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=/pfs/FILE_SCHEMAS/aepg600m/flags_calibration_aepg600m.avsc \
-      "TermFuncConv=strain_gauge1_frequency_raw:def.cal.conv.poly.aepg600m|strain_gauge2_frequency_raw:def.cal.conv.poly.aepg600m|strain_gauge3_frequency_raw:def.cal.conv.poly.aepg600m" \
+      ConvFuncTerm1=def.cal.conv.poly.aepg600m:strain_gauge1_frequency_raw \
+      ConvFuncTerm2=def.cal.conv.poly.aepg600m:strain_gauge2_frequency_raw \
+      ConvFuncTerm3=def.cal.conv.poly.aepg600m:strain_gauge3_frequency_raw \
       "TermQf=strain_gauge1_frequency_raw|strain_gauge2_frequency_raw|strain_gauge3_frequency_raw" 
 
     EOF

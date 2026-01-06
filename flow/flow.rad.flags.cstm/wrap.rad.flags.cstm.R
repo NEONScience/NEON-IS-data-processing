@@ -28,9 +28,12 @@
 #'
 #' @param SchmQf (Optional). A json-formatted character string containing the schema for the custom flags being applied.
 #' 
-#'  @param Shadow (defaults F). Logical whether to source custom function def.rad.shadow.flags 
-#'  
-#' @param Cmp22Heater (defaults F). Logical whether to source custom function def.cmp.heater.flags 
+#' @param FlagsRad (Optional). A list of flags to run. If not provided it will bypass script without producing any flags 
+#' 
+#' @param termTest (Optional). terms to run for shading flag. If NULL and Shadow is in FlagsRad will result in errored datum.
+#' 
+#' @param shadowSource (Optional). Which type of shadow is expected. Options include LR Cimel Misc to distinguish between 
+#'different types of shading sources from different directions. If not supplied, but shadow check is run script will fail. 
 #' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data/flags/threshold folders in the input path that are to be copied with a 
@@ -60,7 +63,7 @@
 #' DirIn='/scratch/pfs/cmp_analyze_pad_and_qaqc_plau/2025/03/31/'
 #' DirOutBase='/scratch/pfs/out_tb'
 
-#' wrap.rad.flags.cstm(DirIn,DirOutBase,DirSubCopy,shadow,cmp_heat)
+#' wrap.rad.flags.cstm(DirIn,DirOutBase,DirSubCopy,FlagsRad,termTest)
 
 #' @seealso Currently none
 
@@ -70,18 +73,20 @@
 
 ##############################################################################################
 wrap.rad.flags.cstm <- function(DirIn,
-                                    DirOutBase,
-                                    SchmQf=NULL,
-                                    DirSubCopy=NULL,
-                                    FlagsRad=NULL,
-                                    log=NULL
+                                DirOutBase,
+                                SchmQf=NULL,
+                                termTest=NULL,
+                                DirSubCopy=NULL,
+                                FlagsRad=NULL,
+                                shadowSource=NULL,
+                                log=NULL
 ){
 
   library(dplyr)
   
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
-  } 
+  }
   
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
@@ -93,8 +98,7 @@ wrap.rad.flags.cstm <- function(DirIn,
                                 DirSub = c('flags', 'data'),
                                 log = log)
 
-  
-  
+
   # Copy with a symbolic link the desired subfolders 
   DirSubCopy <- base::unique(DirSubCopy)
   if(base::length(DirSubCopy) > 0){
@@ -120,38 +124,32 @@ wrap.rad.flags.cstm <- function(DirIn,
                                             RmvDupl=TRUE,
                                             Df=TRUE, 
                                             log=log)
-  #run heater flag script
-  if("Cmp22Heater" %in% FlagsRad){
-    data <- def.cmp22.heater.flags(data, log)
-  }
   
-  #run radiation shading script
-  if("Shadow" %in% FlagsRad){
-    data <- def.rad.shadow.flags(DirIn, data, log)
+  #initialize flagsDf to have same readout_time as data of interest
+  flagDf <- data.frame(readout_time = data$readout_time)
+
+  if("Cmp22Heater" %in% FlagsRad){
+    source("./def.cmp22.heater.flags.R")
+    flagDf <- def.cmp22.heater.flags(data, flagDf, log)
   }
 
-  #if schema - get col names from schema, else keep all?
-  if(base::is.null(FileSchmQf) || FileSchmQf == 'NA'){
-    qfCust <- data
-  } else {
-    # Parse JSON and extract field names
-    schema_json <- jsonlite::fromJSON(FileSchmQf)
-    field_names <-schema_json$fields$name
-    qfCust <- data[,field_names]
+  #run radiation shading script
+  if("Shadow" %in% FlagsRad){
+    source("./def.rad.shadow.flags.R")
+    flagDf <- def.rad.shadow.flags(DirIn, flagDf, termTest,shadowSource, log)
   }
- 
+
   # Create output filenames
   nameFileIdxSplt <- strsplit(fileData, '.', fixed = TRUE)[[1]]
   base_name <- paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt) - 1)], collapse = '.')
   extension <- utils::tail(nameFileIdxSplt, 1)
   
   nameFileQfOutFlag <- paste0(base_name, "_customFlags.", extension)
-
   pathFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
       
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
-          data = qfCust,
+          data = flagDf,
           NameFile = pathFileQfOutFlag,
           log=log
         ),

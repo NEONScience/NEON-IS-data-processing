@@ -11,10 +11,11 @@
       "DirErr=/pfs/out/errored_datums",
       "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
-      "TermFuncUcrt=temperature:def.ucrt.wq.temp.conc|specific_conductance:def.ucrt.meas.mult",
+      "UcrtFuncTerm1=def.ucrt.wq.temp.conc:temperature",
+      "UcrtFuncTerm2=def.ucrt.meas.mult:specific_conductance",
       "TermQf=specific_conductance"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v1.3.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v3.0.0",
     "env": {
       "LOG_LEVEL": "INFO"
     }

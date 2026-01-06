@@ -20,7 +20,7 @@ which uncertainty output will be computed (all other columns will be ignored). D
 column in \code{data}.}
 
 \item{calSlct}{A named list of data frames, list element corresponding to the variables in
-FuncUcrt. The data frame in each list element holds information about the calibration files and 
+varUcrt. The data frame in each list element holds information about the calibration files and 
 time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
 See documentation for that function. Assign NULL to list elements (variables) for which calibration
 information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
@@ -42,8 +42,8 @@ calibration procedures and coefficients including uncertainty in the standard (t
 }
 \description{
 Definition function. Accepts L0 data and NEON uncertainty information as produced
-by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measurement
-uncertainties for each data value. The uncertainty computed is the L0 value multipled by 
+by NEONprocIS.cal::def.read.cal.xml and returns returns individual measurement uncertainties 
+for each data variable specified. The uncertainty computed is the L0 value multipled by 
 NEON calibration uncertainty coefficient U_CVALA1.
 }
 \examples{

@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Threshold selection by date, source-id, term and context
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.8
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.10
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.thsh.slct"
