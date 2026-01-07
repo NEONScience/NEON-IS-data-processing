@@ -80,12 +80,6 @@ transform:
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/hobou24/*/flags/**
             # Join on named location (already joined below by day)
             join_indices: [6]
-        - path:
-            name: DEPTH_FLAGS_PATH
-            # Filter for flags directory
-            glob_pattern: /pfs/DEPTH_FLAGS_PATH/*/*/*/*/*/*/flags/**
-            # Join on named location (already joined below by day)
-            join_indices: [6]
     CONFIG_TROLL: |
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
@@ -93,9 +87,9 @@ transform:
       # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: QAQC_PLAUSIBILITY_PATH
+            name: DEPTH_FLAGS_PATH
             # Filter for flags directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/pressure/*/flags/**
+            glob_pattern: /pfs/DEPTH_FLAGS_PATH/*/*/*/*/*/*/flags/**
             # Join on named location (already joined below by day)
             join_indices: [6]
         - path:
