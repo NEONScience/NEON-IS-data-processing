@@ -476,6 +476,13 @@ if (!base::is.null(Para$Meta) &&
     'Additional metadata for use in calibration and uncertainty functions: ',
     paste0(paste0(names(Meta),'=',unlist(Meta)), collapse = ', ')
   ))
+  ####TESTING ONLY DELETE AFTER 
+  test_read_in <- read.csv(Meta$pathCalSoilSpec)
+  log$debug(base::paste0(
+    'testing read of calibration CSV: ',
+    paste0(paste0(head(test_read_in), collapse = ', ')
+  )))
+  
 } else {
   Meta <- base::list()
   log$debug('Additional metadata for use in calibration and uncertainty functions: None')

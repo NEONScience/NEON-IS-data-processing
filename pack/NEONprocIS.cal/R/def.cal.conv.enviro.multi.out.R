@@ -146,7 +146,9 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
           # neonBounded60Cal <- read.csv("~/GLUG Hydrophenology/Data/Reprocessed SWC Sensor Data/Bounded60_SoilMoistureDepths_FromAs-built_DontOpenInExcel.csv", header=T, stringsAsFactors=F)
           # Meta$pathCalSoilSpec <- "~/scratch/soilSpecCalDepths.csv" # Delete this once added to Meta
           neonBounded60Cal <- read.csv(Meta$pathCalSoilSpec, header=T, stringsAsFactors=F)
-          log$debug(base::paste0('csv calibration read in head of file: ', head(neonBound60Cal)))
+          
+          ##TESTING function delete after
+          log$info(base::paste0('csv calibration read in head of file: ', head(neonBounded60Cal)))
           
           
           # Identify the soil-specific calibration row that corresponds to the depth and site of the sensor
