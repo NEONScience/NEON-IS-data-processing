@@ -1,32 +1,20 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
-import environs
 import structlog
 from contextlib import closing
-import os
-import datetime
-from pathlib import Path
 from typing import List, Dict
 
-from dateutil.relativedelta import relativedelta
-import common.log_config as log_config
-from common.get_path_key import get_path_key
-from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 from data_access.get_dp_pub_records import get_dp_pub_records
 from data_access.remove_pub import remove_pub
-from data_access.types.dp_pub import DpPub
 
 log = structlog.get_logger()
 
-def get_sync_pubs(connector: DbConnector, pub_dates: List[Dict], dp_ids: List[str], sites: List[str], psmp_pachy: List[Dict], change_by: str ) -> None:
+def get_sync_pubs(connector: DbConnector, pub_dates: Dict, dp_ids: List[str], sites: List[str], psmp_pachy: Dict, change_by: str ) -> None:
 
 # Check existing pubs for relevant site-months against what current output. Generate a list of existing pub records
 # that should be inactive (i.e. not currently output). Delete/insert inactive pub records
 # as appropriate, to remove visibility
-
-#    with closing(DbConnector(db_config)) as connector:
 
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
@@ -42,7 +30,7 @@ def get_sync_pubs(connector: DbConnector, pub_dates: List[Dict], dp_ids: List[st
                         site = None
                     pubs = get_dp_pub_records(connector,dp_id,data_begin,data_cutoff,site)
 
-                # Check existing product-site-month pubs against pachy pubs for product
+                    # Check existing product-site-month pubs against pachy pubs for product
                     for pub in pubs:
 
                         # Form the key for matching existing portal pubs to pachy pubs

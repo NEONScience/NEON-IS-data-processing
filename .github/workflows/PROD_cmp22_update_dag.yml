@@ -1,4 +1,4 @@
-name: PROD-cmp22-update-dag
+name: PROD-cmp22-radShortPrimary-update-dag
 on:
   push:
     branches:
@@ -6,6 +6,8 @@ on:
     paths:
       - 'pipe/cmp22/*.yaml'
       - 'pipe/cmp22/pipe_list_cmp22.txt'
+      - 'pipe/radShortPrimary/*.yaml'
+      - 'pipe/radShortPrimary/pipe_list_radShortPrimary.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
@@ -50,7 +52,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
-      PATHS: 'pipe/cmp22=pipe_list_cmp22.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      PATHS: 'pipe/cmp22=pipe_list_cmp22.txt,pipe/radShortPrimary=pipe_list_radShortPrimary.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
