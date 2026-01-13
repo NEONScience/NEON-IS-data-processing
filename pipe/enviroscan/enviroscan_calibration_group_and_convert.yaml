@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-7f93d34
   cmd:
   - sh
   - "-c"
@@ -50,9 +50,10 @@ transform:
       DirIn=$OUT_PATH_ARRAY_PARSER \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "ConvFuncTerm1=def.cal.conv.test.multi.out:rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
+      "ConvFuncTerm1=def.cal.conv.enviro.multi.out:rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
       "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
-      "DirSubCopy=calibration|location"
+      "DirSubCopy=calibration|location" \
+      "Meta=pathCalSoilSpec:$FILE_META_CALIBRATION"
 
     EOF
   env:
@@ -120,6 +121,10 @@ input:
       name: FILE_SCHEMA_PARSED
       repo: enviroscan_avro_schemas
       glob: /enviroscan/enviroscan_parsed.avsc
+  - pfs:
+      name: FILE_META_CALIBRATION
+      repo: enviroscan_metadata_calibrations
+      glob: /enviroscan/soilSpecCalDepths.csv
   # - pfs:
   #     name: FILE_SCHEMA_DATA
   #     repo: enviroscan_avro_schemas
@@ -133,28 +138,28 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: enviroscan_calibration_assignment
-        glob: /enviroscan/(2025)/(10)/(20)
+        glob: /enviroscan/(2025)/(10)/(18)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
         repo: enviroscan_data_source_trino
-        glob: /enviroscan/(2025)/(10)/(20)
+        glob: /enviroscan/(2025)/(10)/(18)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: enviroscan_data_source_kafka
-        glob: /enviroscan/(2025)/(10)/(20)
+        glob: /enviroscan/(2025)/(10)/(18)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: LOCATION_PATH
         repo: enviroscan_location_asset_assignment
-        glob: /enviroscan/(2025)/(10)/(20)
+        glob: /enviroscan/(2025)/(10)/(18)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.

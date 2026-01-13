@@ -1,0 +1,68 @@
+---
+pipeline:
+  name: enviroscan_location_group_and_restructure
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # NOTE: this is a non-standard configuration! Enviroscan location data was fed into calibration_group_and_convert
+    # there is no need for filter joiner 
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+     rm -rf /tmp/pfs/structured
+     rm -rf /tmp/pfs/structuredCopy
+    
+    # Run first module - structure repo by location
+    Rscript ./flow.loc.repo.strc.R \
+      DirIn=$DATA_PATH \
+      DirOut=/tmp/pfs/structured \
+      DirErr=/pfs/out/errored_datums \
+      Comb=TRUE
+      
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/structured /tmp/pfs/structuredCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -rf /tmp/pfs/structured 
+    
+    # Run third module - merge data by location
+    Rscript ./flow.loc.data.trnc.comb.R \
+      DirIn=/tmp/pfs/structuredCopy \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirSubCombData=data|flags|uncertainty_data" \
+      DirSubCombUcrt=uncertainty_coef \
+      DirSubCopy=location 
+      
+    EOF
+input:
+  pfs:
+    name: DATA_PATH
+    repo: enviroscan_calibration_group_and_convert
+    glob: /enviroscan/(*)/(*)/(*)
+    joinOn: $1/$2/$3
+    outer_join: true
+    empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2.2G
+  cpu: 3.3
+resource_limits:
+  memory: 4G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
