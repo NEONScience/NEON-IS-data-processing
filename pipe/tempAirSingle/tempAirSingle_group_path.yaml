@@ -44,9 +44,6 @@ transform:
     fi
     
     EOF
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m group_path.group_path_main
   env:
     GROUP: aspirated-single_
     LOG_LEVEL: INFO
