@@ -39,14 +39,14 @@ input:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
       repo: tempSoil_group_assignment
-      glob: /temp-soil/(2025/08/05)
+      glob: /temp-soil/(2025/08/0*)
       joinOn: $1
   - union: 
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
         repo: prt_fill_date_gaps_and_regularize
-        glob: /prt/(2025/08/05)
+        glob: /prt/(2025/08/0*)
         joinOn: $1
 #    - pfs:
 #        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
