@@ -6,10 +6,44 @@ transform:
   # - battelleecology-quay-read-all-pull-secret
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.1
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m group_path.group_path_main
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Do the "union" that is typically in separate datums for the group_path module
+    #   within the same datum. 
+    
+    # Check if the group assignments are there. If not, do not proceed.
+    if [ ${GROUP_ASSIGNMENT_PATH+x} ]; then 
+      echo "GROUP_ASSIGNMENT_PATH found: $GROUP_ASSIGNMENT_PATH"
+    else
+      echo "GROUP_ASSIGNMENT_PATH does not exist (no active groups). Skipping..."
+      exit 0
+    fi
+
+    # Do prt
+    if [ ${LOCATION_FOCUS_PATH_PRT+x} ]; then 
+      export LOCATION_FOCUS_PATH=$LOCATION_FOCUS_PATH_PRT
+      python3 -m group_path.group_path_main
+    fi
+    
+    # Do dualfan
+    if [ ${LOCATION_FOCUS_PATH_DUALFAN+x} ]; then 
+      export LOCATION_FOCUS_PATH=$LOCATION_FOCUS_PATH_DUALFAN
+      python3 -m group_path.group_path_main
+    fi
+    
+    # Do windobserverii
+    if [ ${LOCATION_FOCUS_PATH_WINDOBSERVER+x} ]; then 
+      export LOCATION_FOCUS_PATH=$LOCATION_FOCUS_PATH_WINDOBSERVER
+      python3 -m group_path.group_path_main
+    fi
+    
+    EOF
   env:
     GROUP: aspirated-single_
     LOG_LEVEL: INFO
@@ -32,8 +66,10 @@ transform:
     GROUP_FOCUS_DAY_INDEX: '5'
     GROUP_FOCUS_GROUP_INDEX: '6'
 input:
-# The input to the group_path module must be a join between the group_assignment module and the union of any/all 
-#   data repos that are currently in a location focus structure or a (different/L1+ dependency) group focus structure
+# This input structure is different than the typical group_path inputs because prt and dualfan
+#   sensors share the same named location, resulting in duplicate file names for the group file 
+#   output from the different datums. This causes an error in Pachyderm. This is a workaround
+#   that results in the same output.
   join:
   - pfs:
       # name must be GROUP_ASSIGNMENT_PATH
@@ -41,31 +77,31 @@ input:
       repo: tempAirSingle_group_assignment
       glob: /aspirated-single/(*/*/*)
       joinOn: $1
-  - union: 
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: prt_fill_date_gaps_and_regularize
-        glob: /prt/(*/*/*)
-        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: dualfan_location_group_and_restructure
-        glob: /dualfan/(*/*/*)
-        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: windobserverii_fill_date_gaps_and_regularize
-        glob: /windobserverii/(*/*/*)
-        joinOn: $1
-#    - pfs:
-#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-#        name: GROUP_FOCUS_PATH
-#        repo: 
-#        glob: /(*/*/*)
-#        joinOn: $1
+      outer_join: True
+  - pfs:
+      name: LOCATION_FOCUS_PATH_PRT
+      repo: prt_fill_date_gaps_and_regularize
+      glob: /prt/(*/*/*)
+      joinOn: $1
+      outer_join: True
+  - pfs:
+      name: LOCATION_FOCUS_PATH_DUALFAN
+      repo: dualfan_location_group_and_restructure
+      glob: /dualfan/(*/*/*)
+      joinOn: $1
+      outer_join: True
+  - pfs:
+      name: LOCATION_FOCUS_PATH_WINDOBSERVER
+      repo: windobserverii_fill_date_gaps_and_regularize
+      glob: /windobserverii/(*/*/*)
+      joinOn: $1
+      outer_join: True
+ # - pfs:
+ #     # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
+ #     name: GROUP_FOCUS_PATH
+ #     repo:
+ #     glob: /(*/*/*)
+ #     joinOn: $1
 parallelism_spec:
   constant: 5
 autoscaling: true
