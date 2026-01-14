@@ -58,6 +58,9 @@
 #     original creation
 #   Edward Ayres (2026-01-06)
 #     Added ability to apply manufacturer default calibration and soil-specific calibration to the EnviroSCAN data
+#   Teresa Burlingame (2026-01-14)
+#     Added depth as a variable for later data product splitting. 
+
 ##############################################################################################
 def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0)),
                                         varConv = setdiff(base::names(data),c('source_id','site_id','readout_time')),
@@ -101,6 +104,8 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
     dataUcrtIdx <- data.frame(ucrtMeas=dataConvIdx) # Uncertainty for each var must be a data frame. At least one var should be ucrtMeas
     dataUcrtIdxAlt <- data.frame(ucrtMeas=dataConvIdx) # Uncertainty for the second calibrated output
     varIdxAlt <- paste0(varIdx,'Alt') # This is what we're going to name the alternate output variable
+    dataDepthIdx <- as.numeric(NA)*dataVarIdx # add depth to table for later splits. 
+    varIdxDepth <- paste0(varIdx,'Depth') # This is what we are going to name the depth variable
     
     # Return NA if no cal info supplied
     # Revisit if this should be dropped so we can produce manufacturer cal data even if soil-specific cal is missing
@@ -127,6 +132,10 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         next
       }
       
+      # Identify the sensor depth if the installation reference is exactly at the soil surface ("CVALD1") and divide by -100 to convert to meters and indicate it's below the soil surface.
+      depth <- as.numeric(infoCal$cal$Value[grep("CVALD1", infoCal$cal$Name)]) / -100 + Meta[["Locations"]][[1]][["geolocations"]][[1]][["z_offset"]]
+      dataDepthIdx[setCal] <- depth
+      
       # --------- Apply calibration function ----------
       
       if(grepl(pattern="VSWC",varIdx)){
@@ -136,8 +145,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         dataSf <- (((data[, varIdx])^as.numeric(infoCal$cal$Value[grep("CVALA2", infoCal$cal$Name)])) * as.numeric(infoCal$cal$Value[grep("CVALA1", infoCal$cal$Name)])) + as.numeric(infoCal$cal$Value[grep("CVALA3", infoCal$cal$Name)]) # Apply the equation to calculate sensor scaled frequency as described in Sentek 2011, CALIBRATION MANUAL For Sentek Soil Moisture Sensors, Version 2.0, Figure 9. Sentek Pty Ltd, Stepney, South Australia.
 
         
-        # Identify the sensor depth if the installation reference is exactly at the soil surface ("CVALD1") and divide by -100 to convert to meters and indicate it's below the soil surface.
-        depth <- as.numeric(infoCal$cal$Value[grep("CVALD1", infoCal$cal$Name)]) / -100 + Meta[["Locations"]][[1]][["geolocations"]][[1]][["z_offset"]]
+
         
         # Only apply soil-specific calibrations at sites that have them (i.e., not the permafrost sites)
         if(!Meta[["Locations"]][[1]][["site"]] %in% c("BARR", "TOOL", "BONA", "HEAL")){
@@ -236,6 +244,20 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
     dataConv[[varIdx]] <- dataConvIdx
     if(grepl(pattern="VSWC",varIdx)){
       dataConv[[varIdxAlt]] <- dataConvIdxAlt
+      
+      # Re-arrange the data frame to insert the new variable immediately 
+      #   after the first calibrated variable (not required, just an example)
+      nameVar <- names(dataConv)
+      numVar <- length(nameVar)
+      idxVarConv <- which(nameVar == varIdx)
+      if(idxVarConv < numVar-1){
+        dataConv <- dataConv[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
+      } 
+    }
+    
+    #add depth after VSIC
+    if(grepl(pattern="VSIC",varIdx)){
+      dataConv[[varIdxDepth]] <- dataDepthIdx
       
       # Re-arrange the data frame to insert the new variable immediately 
       #   after the first calibrated variable (not required, just an example)
