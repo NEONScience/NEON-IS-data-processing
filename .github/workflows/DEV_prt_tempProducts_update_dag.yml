@@ -1,13 +1,15 @@
-name: DEV-prt-tempAirSingle-update-dag
+name: DEV-prt-tempProducts-update-dag
 on:
   push:
     branches:
-      - 'prt'
+      - 'prtSoil'
     paths:
       - 'pipe/prt/*.yaml'
       - 'pipe/prt/pipe_list_prt_development.txt'
       - 'pipe/tempAirSingle/*.yaml'
       - 'pipe/tempAirSingle/pipe_list_tempAirSingle.txt'
+      - 'pipe/tempSoil/*.yaml'
+      - 'pipe/tempSoil/pipe_list_tempSoil.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
@@ -53,7 +55,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
-      PATHS: 'pipe/prt=pipe_list_prt_development.txt,pipe/tempAirSingle=pipe_list_tempAirSingle.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      PATHS: 'pipe/prt=pipe_list_prt_development.txt,pipe/tempAirSingle=pipe_list_tempAirSingle.txt,pipe/tempSoil=pipe_list_tempSoil.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
