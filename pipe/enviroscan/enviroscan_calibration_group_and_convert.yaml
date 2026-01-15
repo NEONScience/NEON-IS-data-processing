@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-7f93d34
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-b45cfec
   cmd:
   - sh
   - "-c"
@@ -53,6 +53,7 @@ transform:
       "ConvFuncTerm1=def.cal.conv.enviro.multi.out:rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
       "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
       "DirSubCopy=calibration|location" \
+      FileSchmData=$FILE_SCHEMA_DATA \
       "Meta=pathCalSoilSpec:$FILE_META_CALIBRATION"
 
     EOF
@@ -92,7 +93,6 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
-    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     OUT_PATH_JOINER: /tmp/pfs/filter_joined 
@@ -125,10 +125,10 @@ input:
       name: FILE_META_CALIBRATION
       repo: enviroscan_metadata_calibrations
       glob: /enviroscan/soilSpecCalDepths.csv
-  # - pfs:
-  #     name: FILE_SCHEMA_DATA
-  #     repo: enviroscan_avro_schemas
-  #     glob: /enviroscan/enviroscan_calibrated.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: enviroscan_avro_schemas
+      glob: /enviroscan/enviroscan_calibrated.avsc
   # - pfs:
   #     name: FILE_SCHEMA_FLAGS
   #     repo: enviroscan_avro_schemas
