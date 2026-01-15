@@ -91,7 +91,7 @@ input:
     repo: g2131i_data_source_kafka
     glob: /g2131i_raw/(*)/(*)/(*)/(*)
 parallelism_spec:
-  constant: 5
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 500M
