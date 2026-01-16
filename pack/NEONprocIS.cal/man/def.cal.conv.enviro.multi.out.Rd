@@ -2,7 +2,7 @@
 % Please edit documentation in R/def.cal.conv.enviro.multi.out.R
 \name{def.cal.conv.enviro.multi.out}
 \alias{def.cal.conv.enviro.multi.out}
-\title{Test function for producing multiple outputs, including uncertainty info and cal flags}
+\title{Test function for producing multiple outputs, including uncertainty info and cal flags, for the EnviroSCAN sensor}
 \usage{
 def.cal.conv.enviro.multi.out(
   data = data.frame(data = base::numeric(0)),
@@ -45,6 +45,7 @@ Definition function. Template for custom calibration function that produces the 
 - uncertainty estimates for all calibrated outputs
 - uncertainty coefficients for all calibrated outputs
 - calibration quality flags for all calibrated outputs (not implemented yet, but possible)
+- sensor depths
 }
 \examples{
 None currently
@@ -66,6 +67,7 @@ NEON.DOC.000785 TIS Calibrated Measurements and Level 1 Data Products Uncertaint
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
+Edward Ayres \email{eayres@battelleecology.org}
 }
 \keyword{Currently}
 \keyword{none}
