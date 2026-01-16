@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-b45cfec
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-235eaa0
   cmd:
   - sh
   - "-c"
@@ -54,6 +54,7 @@ transform:
       "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
       "DirSubCopy=calibration|location" \
       FileSchmData=$FILE_SCHEMA_DATA \
+      FileSchmQf=$FILE_SCHEMA_FLAGS \
       "Meta=pathCalSoilSpec:$FILE_META_CALIBRATION"
 
     EOF
@@ -129,10 +130,10 @@ input:
       name: FILE_SCHEMA_DATA
       repo: enviroscan_avro_schemas
       glob: /enviroscan/enviroscan_calibrated.avsc
-  # - pfs:
-  #     name: FILE_SCHEMA_FLAGS
-  #     repo: enviroscan_avro_schemas
-  #     glob: /enviroscan/flags_calibration_enviroscan.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: enviroscan_avro_schemas
+      glob: /enviroscan/flags_calibration_enviroscan.avsc
   # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
