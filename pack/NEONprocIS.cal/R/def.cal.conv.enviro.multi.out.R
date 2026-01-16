@@ -1,8 +1,10 @@
 ##############################################################################################
-#' @title Test function for producing multiple outputs, including uncertainty info and cal flags
+#' @title Test function for producing multiple outputs, including uncertainty info and cal flags, for the EnviroSCAN sensor
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
+#' Edward Ayres \email{eayres@battelleecology.org}
+
 
 #' @description
 #' Definition function. Template for custom calibration function that produces the following:\cr
@@ -10,6 +12,7 @@
 #' - uncertainty estimates for all calibrated outputs
 #' - uncertainty coefficients for all calibrated outputs
 #' - calibration quality flags for all calibrated outputs (not implemented yet, but possible)
+#' - sensor depths
 
 #' @param data Data frame of raw, uncalibrated measurements. This data frame must have a column
 #' called "readout_time"
@@ -60,6 +63,8 @@
 #     Added ability to apply manufacturer default calibration and soil-specific calibration to the EnviroSCAN data
 #   Teresa Burlingame (2026-01-14)
 #     Added depth as a variable for later data product splitting. 
+#   Edward Ayres (2026-01-15)
+#     Cleaned up the script and added additional header information
 
 ##############################################################################################
 def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0)),
@@ -108,7 +113,6 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
     varIdxDepth <- paste0(varIdx,'Depth') # This is what we are going to name the depth variable
     
     # Return NA if no cal info supplied
-    # Revisit if this should be dropped so we can produce manufacturer cal data even if soil-specific cal is missing
     if(base::is.null(calSlctIdx)){
       log$warn(base::paste0('No applicable calibration files available for ',varIdx, '. Returning NA for calibrated output.'))
       calSlctIdx <- base::data.frame() # Will cause skipping to the end
@@ -145,14 +149,10 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         dataSf <- (((data[, varIdx])^as.numeric(infoCal$cal$Value[grep("CVALA2", infoCal$cal$Name)])) * as.numeric(infoCal$cal$Value[grep("CVALA1", infoCal$cal$Name)])) + as.numeric(infoCal$cal$Value[grep("CVALA3", infoCal$cal$Name)]) # Apply the equation to calculate sensor scaled frequency as described in Sentek 2011, CALIBRATION MANUAL For Sentek Soil Moisture Sensors, Version 2.0, Figure 9. Sentek Pty Ltd, Stepney, South Australia.
 
         
-
-        
         # Only apply soil-specific calibrations at sites that have them (i.e., not the permafrost sites)
         if(!Meta[["Locations"]][[1]][["site"]] %in% c("BARR", "TOOL", "BONA", "HEAL")){
           
           # Read in NEON soil-specific bounded60 Sentek EnviroSCAN soil moisture calibrations
-          # neonBounded60Cal <- read.csv("~/GLUG Hydrophenology/Data/Reprocessed SWC Sensor Data/Bounded60_SoilMoistureDepths_FromAs-built_DontOpenInExcel.csv", header=T, stringsAsFactors=F)
-          # Meta$pathCalSoilSpec <- "~/scratch/soilSpecCalDepths.csv" # Delete this once added to Meta
           neonBounded60Cal <- read.csv(Meta$pathCalSoilSpec, header=T, stringsAsFactors=F)
         
           # Identify the soil-specific calibration row that corresponds to the depth and site of the sensor
@@ -175,14 +175,6 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         dataConvIdx[setCal] <- ((dataSf - 0.02852) / 0.1957)^(1/0.404) / 100
         
         
-        # Plot the data (only for testing the code)
-        # plot(data$readout_time, data[, varIdx]/100, pch=".", ylim=c(0,2), ylab="SWC m3 m-3", main=varIdx)
-        # points(data$readout_time, dataSf, pch=".", col="red")
-        # points(data$readout_time, dataConvIdxAlt[setCal], pch=".", col="blue")
-        # points(data$readout_time, dataConvIdx[setCal], pch=".", col="green")
-        # legend("topleft", legend=c("Raw data", "Scaled Freq", "Soil-specific", "Manufacturer"), col=c("black", "red", "blue", "green"), lty=1, bty="n", cex=0.8)
-
-        
         # --------- Assign uncertainty (manufacturer) ----------
         
         # Uncertainty of manufacturer's default calibration
@@ -195,18 +187,12 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         # No further processing of the ion content measurement is performed
         dataConvIdx[setCal] <- data[, varIdx]
         
-        # Plot the data (only for testing the code)
-        # plot(data$readout_time, data[, varIdx], pch=".", ylim=c(0.1,100000), log="y", ylab="Ion content (unitless)", main=varIdx)
-
-        
         # --------- Assign uncertainty ----------
         
         # The manufacturer does not provide an accuracy for the ion content measurement. See NEON.DOC.000007.
         dataUcrtIdx$ucrtMeas[setCal] <- 0
 
       }
-      
-      
       
       
       # -------- Record uncertainty coefficients -------------
