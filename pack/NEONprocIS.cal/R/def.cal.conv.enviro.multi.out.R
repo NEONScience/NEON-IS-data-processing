@@ -65,7 +65,8 @@
 #     Added depth as a variable for later data product splitting. 
 #   Edward Ayres (2026-01-15)
 #     Cleaned up the script and added additional header information
-
+#  Teresa Burlingame (2026-01-20)
+#     adjusting code so that depth variable is more robust to missing calibration files
 ##############################################################################################
 def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0)),
                                         varConv = setdiff(base::names(data),c('source_id','site_id','readout_time')),
@@ -110,7 +111,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
     dataUcrtIdxAlt <- data.frame(ucrtMeas=dataConvIdx) # Uncertainty for the second calibrated output
     varIdxAlt <- paste0(varIdx,'Alt') # This is what we're going to name the alternate output variable
     dataDepthIdx <- as.numeric(NA)*dataVarIdx # add depth to table for later splits. 
-    varIdxDepth <- paste0(varIdx,'Depth') # This is what we are going to name the depth variable
+    varIdxDepth <- paste0("L0",gsub("\\D", "", varIdx),'Depth') # This is what we are going to name the depth variable
     
     # Return NA if no cal info supplied
     if(base::is.null(calSlctIdx)){
@@ -194,7 +195,6 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
 
       }
       
-      
       # -------- Record uncertainty coefficients -------------
       # Add in cal metadata to the coefs, excluding the directory path
       infoCal$ucrt$id <- calSlctIdx$id[idxRow]
@@ -228,21 +228,17 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
     
     # Replace raw data with calibrated data.
     dataConv[[varIdx]] <- dataConvIdx
+    
+    #add depth var to end of DF. If it doesn't exist add it, else only add it if it's NA currently. 
+    
+    # assign if the column is missing OR it's all NA
+    if (!(varIdxDepth %in% names(dataConv)) ||
+        all(is.na(dataConv[[varIdxDepth]]))) {
+      dataConv[[varIdxDepth]] <- dataDepthIdx
+    }
+      
     if(grepl(pattern="VSWC",varIdx)){
       dataConv[[varIdxAlt]] <- dataConvIdxAlt
-      
-      # Re-arrange the data frame to insert the new variable immediately 
-      #   after the first calibrated variable (not required, just an example)
-      nameVar <- names(dataConv)
-      numVar <- length(nameVar)
-      idxVarConv <- which(nameVar == varIdx)
-      if(idxVarConv < numVar-1){
-        dataConv <- dataConv[,c(1:idxVarConv,numVar,(idxVarConv+1):(numVar-1))]
-      } 
-    }
-    
-    #add depth after VSIC
-    if(grepl(pattern="VSIC",varIdx)){
       dataConv[[varIdxDepth]] <- dataDepthIdx
       
       # Re-arrange the data frame to insert the new variable immediately 
