@@ -2,7 +2,7 @@ name: CERT-ptb330a-pressureAir-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/ptb330a/*.yaml'
       - 'pipe/ptb330a/pipe_list_ptb330a.txt'
