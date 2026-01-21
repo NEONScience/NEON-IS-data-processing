@@ -5,7 +5,7 @@ transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
   cmd: ["/bin/bash"]
   env:
-    LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
   stdin:

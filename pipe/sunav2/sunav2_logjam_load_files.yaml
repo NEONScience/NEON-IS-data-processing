@@ -13,7 +13,7 @@ transform:
   - python3 -m logjam_loader.load_all_logjam_files
   
   env:
-    LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     STARTING_PATH_INDEX: "7"
@@ -24,7 +24,7 @@ input:
   pfs:
     name: IN_PATH
     repo: sunav2_logjam_list_files
-    glob: /*/*/*/logjam_dev/sunav2/
+    glob: /*/*/*/logjam_prod/sunav2/
     empty_files: true
 parallelism_spec:
   constant: 10
