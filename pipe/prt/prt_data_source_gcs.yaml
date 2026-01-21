@@ -1,0 +1,76 @@
+---
+pipeline:
+  name: prt_data_source_gcs
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-gcs-loader:v2.1.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Get today's date for evaluating kafka data retention period
+    date_today=$(date -u +%Y-%m-%d)
+    kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    
+    # Get data from GCS bucket
+    echo "Processing $import_trigger"
+    p=${import_trigger#/pfs}
+    IFS="/"; arr=($p); unset IFS;
+    source_type=${arr[2]}
+    year=${arr[3]}
+    month=${arr[4]}
+    day=${arr[5]}
+    if [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]
+    then
+      echo "Extracting $year-$month-$day for $source_type from GCS"
+      python3 -m l0_gcs_loader.l0_gcs_loader
+    else
+      echo "$year/$month/$day is within the Kafka retention period and should be loaded from Kafka. Skipping..."
+    fi
+
+    EOF
+  env:
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+    KAFKA_RETENTION_DAYS: "15"
+    BUCKET_VERSION_PATH: "v2"  # The root path of the bucket, indicative of the version (e.g. v2)
+    SOURCE_TYPE_INDEX: "3"
+    YEAR_INDEX: "4"
+    MONTH_INDEX: "5"
+    DAY_INDEX: "6"
+    BUCKET_NAME: neon-l0-ingest # Always pull from prod bucket
+  # secrets:
+  # - name: l0-bucket # Using this secret will use the dev/cert/prod bucket linked to the Pachyderm environment
+  #   env_var: BUCKET_NAME
+  #   key: LO_BUCKET
+
+input:
+  pfs:
+    name: import_trigger
+    repo: prt_cron_daily_and_date_control
+    # Glob must be daily
+    glob: "/prt/*/*/*"
+output_branch: master
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 0.5
+resource_limits:
+  memory: 800M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 2.4G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
