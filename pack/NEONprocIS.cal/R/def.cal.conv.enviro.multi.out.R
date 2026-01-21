@@ -67,17 +67,18 @@
 #     Cleaned up the script and added additional header information
 #  Teresa Burlingame (2026-01-20)
 #     adjusting code so that depth variable is more robust to missing calibration files
+#     moving csv read so that it is not read over and over again. 
 ##############################################################################################
 def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0)),
-                                        varConv = setdiff(base::names(data),c('source_id','site_id','readout_time')),
-                                        calSlct=NULL,
-                                        Meta=list(),
-                                        log = NULL) {
+                                          varConv = setdiff(base::names(data),c('source_id','site_id','readout_time')),
+                                          calSlct=NULL,
+                                          Meta=list(),
+                                          log = NULL) {
   # Intialize logging if needed
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
-
+  
   # Ensure input is data frame with variables to be calibrated
   chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c(varConv,'readout_time'),TestEmpty=FALSE, log = log)
   if (!chk) {
@@ -86,6 +87,13 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
   
   # Basic starting info
   timeMeas <- data$readout_time
+  
+  # Read soil-specific calibration file once if provided
+  if(!is.null(Meta$pathCalSoilSpec)) {
+    neonBounded60Cal <- read.csv(Meta$pathCalSoilSpec, header=T, stringsAsFactors=F)
+  } else {
+    neonBounded60Cal <- NULL
+  }
   
   # Initialize the uncertainty data and uncertainty coefficients output lists
   ucrtData <- list()
@@ -101,7 +109,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
     if (!chk) {
       stop()
     }
-
+    
     # Pull cal information for this variable and initialize output
     calSlctIdx <- calSlct[[varIdx]]
     dataVarIdx <- dataConv[[varIdx]]
@@ -145,17 +153,14 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
       
       if(grepl(pattern="VSWC",varIdx)){
         # Soil water content
-
+        
         # First step is to back-calculate the sensor scaled frequency using the calibration coefficients loaded in the sensor
         dataSf <- (((data[, varIdx])^as.numeric(infoCal$cal$Value[grep("CVALA2", infoCal$cal$Name)])) * as.numeric(infoCal$cal$Value[grep("CVALA1", infoCal$cal$Name)])) + as.numeric(infoCal$cal$Value[grep("CVALA3", infoCal$cal$Name)]) # Apply the equation to calculate sensor scaled frequency as described in Sentek 2011, CALIBRATION MANUAL For Sentek Soil Moisture Sensors, Version 2.0, Figure 9. Sentek Pty Ltd, Stepney, South Australia.
-
+        
         
         # Only apply soil-specific calibrations at sites that have them (i.e., not the permafrost sites)
         if(!Meta[["Locations"]][[1]][["site"]] %in% c("BARR", "TOOL", "BONA", "HEAL")){
           
-          # Read in NEON soil-specific bounded60 Sentek EnviroSCAN soil moisture calibrations
-          neonBounded60Cal <- read.csv(Meta$pathCalSoilSpec, header=T, stringsAsFactors=F)
-        
           # Identify the soil-specific calibration row that corresponds to the depth and site of the sensor
           soilSpecCalRow <- intersect(intersect(which((neonBounded60Cal$Top.depth.where.calibration.applicable / -100) > depth), 
                                                 which((neonBounded60Cal$Bottom.depth.where.calibration.applicable / -100) <= depth)), 
@@ -181,7 +186,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         # Uncertainty of manufacturer's default calibration
         dataUcrtIdx$ucrtMeas[setCal] <- 0.1068177 # Uncertainty of the manufacturer default calibration
         
-
+        
       } else if (grepl(pattern="VSIC",varIdx)){
         
         # Soil ion content
@@ -192,7 +197,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         
         # The manufacturer does not provide an accuracy for the ion content measurement. See NEON.DOC.000007.
         dataUcrtIdx$ucrtMeas[setCal] <- 0
-
+        
       }
       
       # -------- Record uncertainty coefficients -------------
@@ -220,7 +225,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
           ucrtCoefIdxAlt[[idxRow]]$Value[3] <- neonBounded60Cal$U_CVALA1[soilSpecCalRow]
         }
       }
-
+      
     } # End loop around calibration files
     
     
@@ -236,10 +241,9 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         all(is.na(dataConv[[varIdxDepth]]))) {
       dataConv[[varIdxDepth]] <- dataDepthIdx
     }
-      
+    
     if(grepl(pattern="VSWC",varIdx)){
       dataConv[[varIdxAlt]] <- dataConvIdxAlt
-      dataConv[[varIdxDepth]] <- dataDepthIdx
       
       # Re-arrange the data frame to insert the new variable immediately 
       #   after the first calibrated variable (not required, just an example)
@@ -271,7 +275,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
                                NEONprocIS.cal::def.ucrt.expn(ucrtComb=dataUcrtIdx[['ucrtComb']],log=log)
     )
     dataUcrtIdxAlt <- base::cbind(dataUcrtIdxAlt,
-                               NEONprocIS.cal::def.ucrt.expn(ucrtComb=dataUcrtIdxAlt[['ucrtComb']],log=log)
+                                  NEONprocIS.cal::def.ucrt.expn(ucrtComb=dataUcrtIdxAlt[['ucrtComb']],log=log)
     )
     
     # Place uncertainty data in list output (list elements named for the variable - should match the corresponding column name in data)
