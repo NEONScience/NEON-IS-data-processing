@@ -1,11 +1,11 @@
-name: DEV-l2130i-update-dag
+name: CERT-ncon127tm-update-dag
 on:
   push:
     branches:
       - 'none'
     paths:
-      - 'pipe/l2130i/*.yaml'
-      - 'pipe/l2130i/pipe_list_l2130i.txt'
+      - 'pipe/ncon127tm/*.yaml'
+      - 'pipe/ncon127tm/pipe_list_ncon127tm.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
@@ -48,9 +48,9 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
-      PATHS: 'pipe/l2130i=pipe_list_l2130i.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
+      PATHS: 'pipe/ncon127tm=pipe_list_ncon127tm.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
