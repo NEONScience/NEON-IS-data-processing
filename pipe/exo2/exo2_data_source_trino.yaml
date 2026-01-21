@@ -113,7 +113,7 @@ transform:
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
       # Example: /pfs/out/li191r/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for troubleshooting
+      set -x # Uncomment for troubleshooting
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -142,7 +142,7 @@ transform:
       echo "Removing temporary files"
       rm -rf $linkdir
       
-      # set +x # Uncomment for troubleshooting
+      set +x # Uncomment for troubleshooting
     fi
     EOF
   env:
@@ -169,7 +169,7 @@ transform:
     GEN_SCHEMA_FILE_6: "/usr/src/app/schemas/exo2phorp/exo2phorp.avsc"
     GEN_YAML_CONF_7: "/usr/src/app/genscript/configs/exo2turbidity_streams.yaml"
     GEN_SCHEMA_FILE_7: "/usr/src/app/schemas/exo2turbidity/exo2turbidity.avsc"
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
     IN_PATH: /tmp/interimData

@@ -1,46 +1,6 @@
 [
-  {
-	"site" : "BARC",
-	"kafka_start_date" : "2024-08-11"
-	},
-	{
-	"site" : "BLWA",
-	"kafka_start_date" : "2024-08-22"
-	},
 	{
 	"site" : "CRAM",
 	"kafka_start_date" : "2024-07-20"
-	},
-	{
-	"site" : "FLNT",
-	"kafka_start_date" : "2024-08-11"
-	},
-	{
-	"site" : "HQTW",
-	"kafka_start_date" : "2023-03-03"
-	},
-	{
-	"site" : "LIRO",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "PRLA",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "PRPO",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "SUGG",
-	"kafka_start_date" : "2024-08-11"
-	},
-	{
-	"site" : "TOMB",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "TOOK",
-	"kafka_start_date" : "2024-08-10"
 	}
 ]
