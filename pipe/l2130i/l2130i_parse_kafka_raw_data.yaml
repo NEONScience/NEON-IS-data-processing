@@ -90,7 +90,7 @@ input:
     repo: l2130i_data_source_kafka
     glob: /l2130i_raw/*/*/*/*
 parallelism_spec:
-  constant: 5
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 100M
