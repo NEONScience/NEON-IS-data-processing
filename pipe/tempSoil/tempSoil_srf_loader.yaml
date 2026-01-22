@@ -4,7 +4,7 @@ transform:
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX: temp-soil
+    GROUP_PREFIX: temp-soil_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
