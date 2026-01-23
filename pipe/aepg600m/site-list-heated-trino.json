@@ -25,7 +25,8 @@
 	},
 	{
 	"site" : "HQTW",
-	"kafka_start_date" : "2026-01-22"
+	"kafka_start_date" : "2026-01-22",
+	"start_date" : "2026-01-22"
 	},
 	{
 	"site" : "KONZ",
