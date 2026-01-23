@@ -17,7 +17,7 @@ def load() -> None:
     env = environs.Env()
     ingest_bucket_name = env.str('CVAL_INGEST_BUCKET')
     in_path: Path = env.path('IN_PATH')
-    #print("IN_PATH value is:", in_path)
+    # print("IN_PATH value is:", in_path)
     output_directory: Path = env.path('OUT_PATH')
     sensor_type = env.str('SOURCE_TYPE')
     schema_name = env.str('SCHEMA_NAME',sensor_type)
@@ -38,7 +38,7 @@ def load() -> None:
                     filename = pathname.split('/')
 
                     filename = filename[-1] + ".xml"
-                    #print("FileName is: ", filename)
+                    print("FileName is: ", filename)
                     blob = ingest_bucket.get_blob(filename)
 
                     with blob.open("r") as f:
