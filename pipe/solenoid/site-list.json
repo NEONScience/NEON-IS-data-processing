@@ -61,6 +61,10 @@
 	"kafka_start_date" : "2023-06-01"
 	},
 	{
+	"site" : "HQTW",
+	"kafka_start_date" : "2023-06-01",
+	},
+	{
 	"site" : "JERC",
 	"kafka_start_date" : "2023-03-09"
 	},

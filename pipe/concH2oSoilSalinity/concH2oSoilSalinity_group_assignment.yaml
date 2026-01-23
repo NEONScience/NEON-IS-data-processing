@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: enviroscan_location_asset_assignment
+  name: concH2oSoilSalinity_group_assignment
 transform:
   cmd: ["/bin/bash"]
   stdin:
@@ -12,9 +12,7 @@ transform:
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-      TypeFile=asset
-      "Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|locationMetadata:DistZaxsLvlMeasSoil|locationMetadata:LvlMeasSoil"
-
+      TypeFile=group
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.0
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
@@ -24,24 +22,24 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: enviroscan_location_asset
-      glob: /enviroscan/*
+      repo: concH2oSoilSalinity_group_loader
+      glob: /aspirated-single/*
   - pfs:
       name: FILE_YEAR
       repo: enviroscan_cron_daily_and_date_control
-      glob: /data_year*.txt
+      glob: /data_year_*.txt
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 600M
-  cpu: 1.5
+  memory: 250M
+  cpu: 1
 resource_limits:
-  memory: 1G
+  memory: 400M
   cpu: 2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.3
+  memory: 1G
+  cpu: 0.5
 datum_set_spec:
   number: 5
 scheduling_spec:
