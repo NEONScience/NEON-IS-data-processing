@@ -1,0 +1,48 @@
+---
+pipeline:
+  name: sunav2_location_asset_assignment
+transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
+  - Rscript
+      ./flow.loc.grp.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+      TypeFile=asset
+      "Prop=HOR|VER|install_date|remove_date|name|site|Data Rate"
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.0
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: sunav2_location_asset
+      glob: /sunav2/*
+  - pfs:
+      name: FILE_YEAR
+      repo: sunav2_cron_daily_and_date_control
+      glob: /data_year*.txt
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
