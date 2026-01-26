@@ -12,31 +12,15 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf $OUT_PATH
-    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
-    
-    # NOTE: sunav2_raw is the name for both the sensor_type and the avro_schema_name in the database
-    #   This is because the airflow transitions use the sunav2_raw L0 data
-    #   When Airflow transitions are no longer active, best to update the sensor_type
-    #   to "sunav2" in the database and use the commented env vars in the typical 
-    #   workflow for this pipeline (i.e. not loading to a tempdir and renaming)
-    
-    python3 -m calval_loader.load_all_calval_files #run the calibration loader
-    
-    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
-      cp -r $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
-    fi
+    python3 -m calval_loader.load_all_calval_files # run the calibration loader
     
     EOF
   env:
     CVAL_INGEST_BUCKET: neon-cval
-    OUT_PATH: /tmp/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: "sunav2_raw"
-    SOURCE_TYPE_OUT: "sunav2"
-    # SOURCE_TYPE: "sunav2"
-    # SCHEMA_NAME: "sunav2_raw"
+    OUT_PATH: /pfs/out
+    SOURCE_TYPE: "sunav2"
+    SCHEMA_NAME: "sunav2_raw"
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret

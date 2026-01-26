@@ -11,16 +11,16 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    #
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
     rm -rf $OUT_PATH
     mkdir -p /tmp/pfs/filter_joined
     mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
-    #
+    
     # Run filter-joiner for data (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
-    #
+    
     # Run calibration conversion module
     Rscript ./flow.cal.conv.R \
         DirIn=/tmp/pfs/filter_joined \
