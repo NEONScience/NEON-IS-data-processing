@@ -11,9 +11,9 @@
 DirWrk00 <-
   
   # Cove
-  "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
-  # Guy
-  # "/home/NEON/glitt/R/NEON-IS-data-processing-glitt"
+  # "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+  # Teresa
+   "/home/NEON/tburlingame/GitHub/NEON-IS-data-processing"
   # Ed
   #"/home/NEON/ayres/R/NEON-IS-data-processing"
   # Nora

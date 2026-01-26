@@ -2,7 +2,7 @@
 pipeline:
   name: lt400_hu24_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.1.0
   cmd:
   - sh
   - "-c"
