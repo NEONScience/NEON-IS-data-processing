@@ -1,0 +1,71 @@
+---
+pipeline:
+  name: concH2oSoilSalinity_group_path
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.1
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m group_path.group_path_main
+  env:
+    GROUP: conc-h2o-soil-salinity_
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    LOCATION_FOCUS_SOURCE_TYPE_INDEX: '3'
+    LOCATION_FOCUS_YEAR_INDEX: '4'
+    LOCATION_FOCUS_MONTH_INDEX: '5'
+    LOCATION_FOCUS_DAY_INDEX: '6'
+    LOCATION_FOCUS_LOCATION_INDEX: '7'
+    LOCATION_FOCUS_DATA_TYPE_INDEX: '8'
+    GROUP_FOCUS_YEAR_INDEX: '3'
+    GROUP_FOCUS_MONTH_INDEX: '4'
+    GROUP_FOCUS_DAY_INDEX: '5'
+    GROUP_FOCUS_GROUP_INDEX: '6'
+input:
+# The input to the group_path module must be a join between the group_assignment module and the union of any/all 
+#   data repos that are currently in a location focus structure or a (different/L1+ dependency) group focus structure
+  join:
+  - pfs:
+      # name must be GROUP_ASSIGNMENT_PATH
+      name: GROUP_ASSIGNMENT_PATH
+      repo: concH2oSoilSalinity_group_assignment
+      glob: /conc-h2o-soil-salinity/(2025/10/18)
+      joinOn: $1
+      outer_join: True
+  - pfs:
+      name: LOCATION_FOCUS_PATH
+      repo: enviroscan_fill_date_gaps_and_regularize
+      glob: /*/(2025/10/18)
+      joinOn: $1
+      outer_join: True
+  - pfs:
+      name: GROUP_FOCUS_PATH
+      repo: tempSoil_level1_group_consolidate_srf
+      glob: /(2025/10/18)
+      joinOn: $1
+      outer_join: True
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 600M
+  cpu: 0.4
+resource_limits:
+  memory: 2G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

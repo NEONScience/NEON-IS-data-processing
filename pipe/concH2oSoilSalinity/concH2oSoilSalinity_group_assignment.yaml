@@ -23,7 +23,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: concH2oSoilSalinity_group_loader
-      glob: /aspirated-single/*
+      glob: /conc-h2o-soil-salinity/*
   - pfs:
       name: FILE_YEAR
       repo: enviroscan_cron_daily_and_date_control
