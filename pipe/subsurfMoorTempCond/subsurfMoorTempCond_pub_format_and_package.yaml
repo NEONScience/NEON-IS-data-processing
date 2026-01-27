@@ -11,12 +11,36 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    shopt -s globstar # enable recursive globbing
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH_TRANSFORMER
     rm -rf $OUT_PATH_PACKAGER
     mkdir $OUT_PATH_TRANSFORMER
     mkdir $OUT_PATH_PACKAGER
+
+    
+    # SPECIFIC TO SUB-SURFACE MOORED TEMP CHAIN.
+    # If there are no hobou24 location files for this product-site-month, there is no data we want to publish (i.e. the logged files were not ingested)
+    #set -x # Echo commands to output for debugging
+    
+    matches="${GROUPED_PATH}/**/hobou24_*_locations.json"
+    files_exist=0
+    for f in $matches; do
+      if [[ -f "$f" ]]; then
+        files_exist=1
+      fi
+    done
+    if ((${files_exist} == 0)); then
+      # ---- No matches action ----
+      echo "No hobou24 location-asset data found in $GROUPED_PATH. Not creating pub package for this site month" 
+      exit 0
+    else
+      # Found location-asset files. Proceed with publication
+      echo "Creating publication package for $GROUPED_PATH."
+    fi
+    #set +x
+    
 
     # Set some environment variables for the pub transformer module
     export DATA_PATH=$GROUPED_PATH
@@ -32,7 +56,7 @@ transform:
     export OUT_PATH=$OUT_PATH_PACKAGER
     product_month_paths="${OUT_PATH_TRANSFORMER}/*/*/*"
     for path in $product_month_paths; do
-      echo "Processing product-month path $path"
+      echo "Pub packager: Processing product-month path $path (original datum: $GROUPED_PATH)"
       export DATA_PATH=$path
       python3 -m pub_packager.pub_packager_main
     done
@@ -101,7 +125,8 @@ input:
   pfs:
     name: GROUPED_PATH
     repo: subsurfMoorTempCond_pub_group
-    # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
+    # Glob MUST be product-site-monthly for bash code to work properly above. 
+    # Also, Product-site-month datums reduce unneccesary republication.
     # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
     glob: /*/*/*/*
 parallelism_spec:

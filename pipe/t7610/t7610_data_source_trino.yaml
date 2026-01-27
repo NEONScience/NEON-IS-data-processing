@@ -94,7 +94,7 @@ transform:
   env:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/t7610_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/t7610/t7610.avsc"
+    GEN_SCHEMA_FILE: "/usr/src/app/parsed-schemas/t7610/t7610.avsc"
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step

@@ -12,7 +12,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2025-09-01"
-    END_DATE: "2025-10-03"
+    END_DATE: "2025-09-05"
     SOURCE_TYPE: "cmp22"
   stdin:
   - "#!/bin/bash"

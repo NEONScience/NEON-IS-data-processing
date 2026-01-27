@@ -2,7 +2,7 @@ name: CERT-lt400-hu24-subsurfMoorTempCond-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/leveltroll400_hobou24/*.yaml'
       - 'pipe/leveltroll400_hobou24/pipe_list_leveltroll400_hobou24.txt'
