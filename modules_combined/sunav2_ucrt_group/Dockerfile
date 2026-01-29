@@ -1,9 +1,7 @@
-# Dockerfile for NEON IS Data Processing - SUNA logs fill module combined with filter-joiner 
-# Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
-# docker build -t neon-is-sunav2-logs-group-fill -f ./modules_combined/sunav2_logs_group_and_fill/Dockerfile .
+# Dockerfile for NEON IS Data Processing - sunav2 uncertainty module combined with filter-joiner and insufficient data
 
-# Start with the base R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
+# Start with the cal package image. 
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.1.0
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
@@ -36,27 +34,27 @@ RUN apt update && \
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
-# Load kafka combiner
-# Copy the lockfile and restore known working versions of R dependency packages
-# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./flow/flow.kfka.comb/renv.lock .
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
-# Copy in R code
-COPY ./flow/flow.kfka.comb/flow.kfka.comb.R .
-COPY ./flow/flow.kfka.comb/wrap.kfka.comb.R .
-
-# Build in the log file filler module
+# Build in the uncertainty module
 ARG MODULE_DIR="flow"
-ARG APP_DIR_1="flow.sunav2.logfiles.fill"
+ARG APP_DIR_1="flow.sunav2.exp.uncert"
+ARG APP_DIR_2="flow.insufficient.data"
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./flow/flow.sunav2.logfiles.fill/renv.lock .
+COPY ./flow/flow.sunav2.exp.uncert/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
 # Copy in R code
-COPY ./flow/flow.sunav2.logfiles.fill/flow.sunav2.logfiles.fill.R .
-COPY ./flow/flow.sunav2.logfiles.fill/wrap.sunav2.logfiles.fill.R .
+COPY ./flow/flow.sunav2.exp.uncert/flow.sunav2.exp.uncert.R .
+COPY ./flow/flow.sunav2.exp.uncert/wrap.sunav2.exp.uncert.R .
+
+# Copy the lockfile and restore known working versions of R dependency packages
+COPY ./flow/flow.insufficient.data/renv.lock .
+RUN R -e 'renv::restore(lockfile="./renv.lock")'
+
+# Copy in R code
+COPY ./flow/flow.insufficient.data/flow.insufficient.data.R .
+COPY ./flow/flow.insufficient.data/wrap.insufficient.data.R .
 
 # Run as app user
 USER appuser

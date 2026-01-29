@@ -1,4 +1,4 @@
-# Dockerfile for NEON IS Data Processing - SUNA logs fill module combined with filter-joiner 
+# Dockerfile for NEON IS Data Processing - sunav2 logs fill module combined with filter-joiner 
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-sunav2-logs-group-fill -f ./modules_combined/sunav2_logs_group_and_fill/Dockerfile .
 
