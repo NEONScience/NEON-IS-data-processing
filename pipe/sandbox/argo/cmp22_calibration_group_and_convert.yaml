@@ -1,0 +1,196 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cmp22-calibration-group-and-convert
+spec:
+  # You can set sensible defaults here, can override in the workflow
+  entrypoint: run
+  # This block for granting setting the group permissions on the emptyDir volumes
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: OnRootMismatch
+  arguments:
+    parameters:
+      - name: log-level
+        value: DEBUG
+      - name: out-path-joiner
+        value: /outputs/pfs/filter_joined
+      - name: out-path-kafka-comb
+        value: /outputs/pfs/kafka_combined
+      - name: err-path
+        value: /outputs/errored_datums
+      - name: out-path-cal-conv
+        value: /outputs/cmp22_calibration_group_and_convert
+      - name: relative-path-index
+        value: 3
+      - name: link-type
+        value: SYMLINK
+      - name: schema-l0
+        value: /inputs/schemas/cmp22/cmp22.avsc
+      - name: schema-calibrated
+        value: /inputs/schemas/cmp22/cmp22_calibrated.avsc
+      - name: schema-cal-flags
+        value: /inputs/schemas/cmp22/flags_calibration_cmp22.avsc
+      - name: file-uncertainty-fdas
+        value: /inputs/uncertainty_fdas/fdas_calibration_uncertainty_general.json
+      - name: parallelism-spec
+        value: 1
+        
+  templates:
+    - name: run
+      
+      container:
+        image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.1.0
+        # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+        # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+        securityContext:
+          runAsUser: 1001 
+          runAsGroup: 1001
+        resources:
+          requests:
+            memory: "1500Mi"
+            cpu: "2"
+          limits:
+            memory: "2Gi"
+            cpu: "3"
+        command:
+        - bash
+        - -c
+        - |
+          # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+          set -euo pipefail
+          IFS=$'\n\t'
+          
+          ls -l /inputs
+          ls -l /inputs/CALIBRATION_PATH
+          ls -l /inputs/CALIBRATION_PATH/cmp22
+          
+          # Join files from the archive and from Kafka
+          export OUT_PATH=$OUT_PATH_JOINER
+          python3 -m filter_joiner.filter_joiner_main
+          
+          ls -l $OUT_PATH_JOINER
+          
+          # Combine data from Kafka and the archive
+          # In this case we are just removing fields outside the schema
+          Rscript ./flow.kfka.comb.R \
+            DirIn=$OUT_PATH_JOINER \
+            DirOut=$OUT_PATH_KAFKA_COMB \
+            DirErr=$ERR_PATH \
+            FileSchmL0=$FILE_SCHEMA_L0 \
+            DirSubCopy=calibration
+
+          ls -l $OUT_PATH_KAFKA_COMB
+          
+          # Run calibration conversion module
+          Rscript ./flow.cal.conv.R  \
+            DirIn=$OUT_PATH_KAFKA_COMB \
+            DirOut=$OUT_PATH_CAL_CONV \
+            DirErr=$ERR_PATH \
+            FileSchmData=$FILE_SCHEMA_DATA \
+            FileSchmQf=$FILE_SCHEMA_FLAGS \
+            ConvFuncTerm1=def.cal.conv.poly:voltage \
+            TermQf=voltage \
+            UcrtFuncTerm1=def.ucrt.meas.mult:voltage \
+            UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage \
+            FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
+
+          ls -l $OUT_PATH_KAFKA_COMB
+          
+        env:
+          # Environment variables for filter-joiner
+          - name: CONFIG
+            value: |
+                  ---
+                  # Configuration for filter-joiner module that will bring together the data and calibrations
+                  # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+                  # Metadata indices will typically begin at index 3.
+                  input_paths:
+                    - path:
+                        name: DATA_PATH_ARCHIVE
+                        # Filter for data directory
+                        glob_pattern: /inputs/DATA_PATH_ARCHIVE/cmp22/*/*/*/*/**
+                        # Join on named location (already joined below by day)
+                        join_indices: [7]
+                        outer_join: true
+                    - path:
+                        name: CALIBRATION_PATH
+                        # Filter for data directory
+                        glob_pattern: /inputs/CALIBRATION_PATH/cmp22/*/*/*/*/**
+                        # Join on named location (already joined below by day)
+                        join_indices: [7]
+                        outer_join: true
+          - name: OUT_PATH_JOINER
+            value: "{{workflow.parameters.out-path-joiner}}"   # <- parameterized
+          - name: OUT_PATH_KAFKA_COMB
+            value: "{{workflow.parameters.out-path-kafka-comb}}"   # <- parameterized
+          - name: OUT_PATH_CAL_CONV
+            value: "{{workflow.parameters.out-path-cal-conv}}"   # <- parameterized
+          - name: ERR_PATH
+            value: "{{workflow.parameters.err-path}}"   # <- parameterized
+          - name: LOG_LEVEL
+            value: "{{workflow.parameters.log-level}}"   # <- parameterized
+          - name: RELATIVE_PATH_INDEX
+            value: "{{workflow.parameters.relative-path-index}}"   # <- parameterized
+          - name: LINK_TYPE
+            value: "{{workflow.parameters.link-type}}"   # <- parameterized
+          - name: FILE_SCHEMA_L0
+            value: "{{workflow.parameters.schema-l0}}"   # <- parameterized
+          - name: FILE_SCHEMA_DATA
+            value: "{{workflow.parameters.schema-calibrated}}"   # <- parameterized
+          - name: FILE_SCHEMA_FLAGS
+            value: "{{workflow.parameters.schema-cal-flags}}"   # <- parameterized
+          - name: FILE_UNCERTAINTY_FDAS
+            value: "{{workflow.parameters.file-uncertainty-fdas}}"   # <- parameterized
+          - name: PARALLELISM_SPEC
+            value: "{{workflow.parameters.parallelism-spec}}"   # <- parameterized
+        
+        # The input volume is not required, as it will automatically be created with the input artifacts (/inputs), 
+        #   but it is needed if a containerset template is used in order to share the input artifacts across containers
+        volumeMounts:
+          - name: in-vol
+            mountPath: /inputs
+          - name: out-vol
+            mountPath: /outputs
+            # /tmp is required to run R code if it ever creates a temp directory
+          - name: tmp-vol
+            mountPath: /tmp
+      inputs:
+        artifacts: 
+        - name: l0-data
+          path: /inputs/DATA_PATH_ARCHIVE
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_data_source_gcs
+        - name: calibrations
+          path: /inputs/CALIBRATION_PATH
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_calibration_assignment
+        - name: schemas
+          path: /inputs/schemas
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_avro_schemas
+        - name: uncertainty-fdas
+          path: /inputs/uncertainty_fdas
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_uncertainty_fdas
+      # Note: Argo places any outputs that are a directory structure into a gzipped file in the bucket. 
+      #   We don't want this. Use rclone in the code to place output in the bucket in repository form
+      # outputs:
+      #   artifacts:
+      #   - name: cmp22_calibration_group_and_convert
+      #     path: /outputs/cmp22_calibration_group_and_convert
+      #     gcs:
+      #       bucket: neon-nonprod-argo-artifacts
+      #       key: cmp22_calibration_group_and_convert
+      volumes:
+        - name: in-vol
+          emptyDir: { }
+        - name: out-vol
+          emptyDir: { }
+        - name: tmp-vol
+          emptyDir: { }
