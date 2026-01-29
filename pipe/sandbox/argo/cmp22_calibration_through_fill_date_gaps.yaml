@@ -1,0 +1,445 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cmp22-cal-loc-fill-rglr
+spec:
+  # You can set sensible defaults here, can override in the workflow
+  entrypoint: run
+  # This block for granting setting the group permissions on the emptyDir volumes
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: OnRootMismatch
+  arguments:
+    parameters:
+      - name: log-level # All modules
+        value: DEBUG
+      - name: out-path-cal-joiner
+        value: /pfs/data_cal_joined
+      - name: out-path-kafka-comb
+        value: /pfs/kafka_combined
+      - name: err-path # All modules
+        value: /pfs/errored_datums
+      - name: out-path-cal-conv
+        value: /pfs/cmp22_calibration_group_and_convert
+      - name: out-path-loc-joiner
+        value: /pfs/data_loc_joined
+      - name: out-path-loc-strc
+        value: /pfs/loc_strc
+      - name: out-path-loc-merg
+        value: /pfs/cmp22_location_group_and_restructure
+      - name: out-path-date-filler
+        value: /pfs/date_gap_filler
+      - name: out-path-rglr
+        value: /pfs/regularized
+      - name: relative-path-index
+        value: 3
+      - name: link-type
+        value: SYMLINK
+      - name: schema-l0
+        value: /inputs/schemas/cmp22/cmp22.avsc
+      - name: schema-calibrated
+        value: /inputs/schemas/cmp22/cmp22_calibrated.avsc
+      - name: schema-cal-flags
+        value: /inputs/schemas/cmp22/flags_calibration_cmp22.avsc
+      - name: file-uncertainty-fdas
+        value: /inputs/uncertainty_fdas/fdas_calibration_uncertainty_general.json
+      - name: parallelism-internal # All R modules
+        value: 3
+      - name: output-directories # Date gap filler
+        value: data,location,uncertainty_data,uncertainty_coef,flags
+      - name: data-source-type-index # Date gap filler
+        value: "3"
+      - name: data-year-index # Date gap filler
+        value: "4"
+      - name: data-month-index # Date gap filler
+        value: "5"
+      - name: data-day-index # Date gap filler
+        value: "6"
+      - name: data-location-index # Date gap filler
+        value: "7"
+      - name: data-type-index # Date gap filler
+        value: "8"
+      - name: location-source-type-index # Date gap filler
+        value: "3"
+      - name: location-year-index # Date gap filler
+        value: "4"
+      - name: location-month-index # Date gap filler
+        value: "5"
+      - name: location-day-index # Date gap filler
+        value: "6"
+      - name: location-index # Date gap filler
+        value: "7"
+      - name: empty-file-type-index # Date gap filler
+        value: "4"
+
+  templates:
+    - name: run
+      volumes:
+        - name: in-vol
+          emptyDir: { }
+        - name: out-vol
+          emptyDir: { }
+        - name: tmp-vol
+          emptyDir: { }
+          
+      inputs:
+        artifacts: 
+        - name: l0-data
+          path: /inputs/DATA_PATH_ARCHIVE
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_data_source_gcs
+        - name: calibrations
+          path: /inputs/CALIBRATION_PATH
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_calibration_assignment
+        - name: location_asset
+          path: /inputs/LOCATION_ASSET_PATH
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_location_asset_assignment
+        - name: location_active_dates
+          path: /inputs/LOCATION_ACTIVE_DATES
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_location_active_dates_assignment
+        - name: schemas
+          path: /inputs/schemas
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_avro_schemas
+        - name: uncertainty-fdas
+          path: /inputs/uncertainty_fdas
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_uncertainty_fdas
+        - name: empty-files
+          path: /inputs/empty_files
+          gcs:
+            bucket: neon-nonprod-argo-artifacts
+            key: cmp22_empty_files
+      containerSet:
+      
+        # Note: Must mount volume with the input artifact(s) in order to have it accessible to all containers 
+        #   (otherwise it is only accessible to the "main" container). Same goes for outputs.
+        volumeMounts:
+          - name: in-vol
+            mountPath: /inputs
+          - name: out-vol
+            mountPath: /pfs
+            # /tmp is required to run R code if it ever creates a temp directory
+          - name: tmp-vol
+            mountPath: /tmp
+            
+        containers:
+          - name: calibration-group-and-convert
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.1.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+              
+            # NOTE: The individual resources requested for each container don't really matter. 
+            #   It's the sum total of them that is actually available to each container, so long as they run in sequence.
+            #   Any containers that run in parallel need to have the sum of their resource needs available
+            resources:
+              requests:
+                memory: "700Mi"
+                cpu: "1"
+              limits:
+                memory: "1Gi"
+                cpu: "1.25"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              ls -l /inputs
+              ls -l /inputs/CALIBRATION_PATH
+              ls -l /inputs/CALIBRATION_PATH/cmp22
+              
+              # Join files from the archive and from Kafka
+              export OUT_PATH=$OUT_PATH_JOINER
+              python3 -m filter_joiner.filter_joiner_main
+              
+              ls -l $OUT_PATH_JOINER
+              
+              # Combine data from Kafka and the archive
+              # In this case we are just removing fields outside the schema
+              Rscript ./flow.kfka.comb.R \
+                DirIn=$OUT_PATH_JOINER \
+                DirOut=$OUT_PATH_KAFKA_COMB \
+                DirErr=$ERR_PATH \
+                FileSchmL0=$FILE_SCHEMA_L0 \
+                DirSubCopy=calibration
+    
+              ls -l $OUT_PATH_KAFKA_COMB
+              
+              # Run calibration conversion module
+              Rscript ./flow.cal.conv.R  \
+                DirIn=$OUT_PATH_KAFKA_COMB \
+                DirOut=$OUT_PATH_CAL_CONV \
+                DirErr=$ERR_PATH \
+                FileSchmData=$FILE_SCHEMA_DATA \
+                FileSchmQf=$FILE_SCHEMA_FLAGS \
+                ConvFuncTerm1=def.cal.conv.poly:voltage \
+                TermQf=voltage \
+                UcrtFuncTerm1=def.ucrt.meas.mult:voltage \
+                UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage \
+                FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
+    
+              ls -l $OUT_PATH_KAFKA_COMB
+              
+            env:
+              # Environment variables for filter-joiner
+              - name: CONFIG
+                value: |
+                      ---
+                      # Configuration for filter-joiner module that will bring together the data and calibrations
+                      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+                      # Metadata indices will typically begin at index 3.
+                      input_paths:
+                        - path:
+                            name: DATA_PATH_ARCHIVE
+                            # Filter for data directory
+                            glob_pattern: /inputs/DATA_PATH_ARCHIVE/cmp22/*/*/*/*/**
+                            # Join on named location (already joined below by day)
+                            join_indices: [7]
+                            outer_join: true
+                        - path:
+                            name: CALIBRATION_PATH
+                            # Filter for data directory
+                            glob_pattern: /inputs/CALIBRATION_PATH/cmp22/*/*/*/*/**
+                            # Join on named location (already joined below by day)
+                            join_indices: [7]
+                            outer_join: true
+              - name: OUT_PATH_JOINER
+                value: "{{workflow.parameters.out-path-cal-joiner}}"   # <- parameterized
+              - name: OUT_PATH_KAFKA_COMB
+                value: "{{workflow.parameters.out-path-kafka-comb}}"   # <- parameterized
+              - name: OUT_PATH_CAL_CONV
+                value: "{{workflow.parameters.out-path-cal-conv}}"   # <- parameterized
+              - name: ERR_PATH
+                value: "{{workflow.parameters.err-path}}"   # <- parameterized
+              - name: LOG_LEVEL
+                value: "{{workflow.parameters.log-level}}"   # <- parameterized
+              - name: RELATIVE_PATH_INDEX
+                value: "{{workflow.parameters.relative-path-index}}"   # <- parameterized
+              - name: LINK_TYPE
+                value: "{{workflow.parameters.link-type}}"   # <- parameterized
+              - name: FILE_SCHEMA_L0
+                value: "{{workflow.parameters.schema-l0}}"   # <- parameterized
+              - name: FILE_SCHEMA_DATA
+                value: "{{workflow.parameters.schema-calibrated}}"   # <- parameterized
+              - name: FILE_SCHEMA_FLAGS
+                value: "{{workflow.parameters.schema-cal-flags}}"   # <- parameterized
+              - name: FILE_UNCERTAINTY_FDAS
+                value: "{{workflow.parameters.file-uncertainty-fdas}}"   # <- parameterized
+              - name: PARALLELISM_INTERNAL
+                value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
+                
+                
+                
+          - name: location-group-and-restructure
+          # - name: main # One container must be named main
+            dependencies:
+              - calibration-group-and-convert
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.1
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "700Mi"
+                cpu: "1"
+              limits:
+                memory: "1Gi"
+                cpu: "1.25"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              ls -l /inputs
+              ls -l /inputs/LOCATION_ASSET_PATH
+              ls -l /inputs/LOCATION_ASSET_PATH/cmp22
+              
+              # Join files from the archive and from Kafka
+              export OUT_PATH=$OUT_PATH_JOINER
+              python3 -m filter_joiner.filter_joiner_main
+              
+              ls -l $OUT_PATH_JOINER
+              
+              # Structure repo by location
+              Rscript ./flow.loc.repo.strc.R \
+                DirIn=$OUT_PATH_JOINER \
+                DirOut=$OUT_PATH_LOC_STRC \
+                DirErr=$ERR_PATH \
+                Comb=TRUE
+    
+              ls -l $OUT_PATH_LOC_STRC
+              
+              # Merge data by location
+              Rscript ./flow.loc.data.trnc.comb.R \
+                DirIn=$OUT_PATH_LOC_STRC \
+                DirOut=$OUT_PATH_LOC_MERG \
+                DirErr=$ERR_PATH \
+                "DirSubCombData=data|flags|uncertainty_data" \
+                DirSubCombUcrt=uncertainty_coef \
+                DirSubCopy=location 
+    
+              ls -l $OUT_PATH_LOC_MERG
+              
+            env:
+              # Environment variables for filter-joiner
+              - name: CONFIG
+                value: |
+                      ---
+                      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+                      # Metadata indices will typically begin at index 3.
+                      input_paths:
+                        - path:
+                            name: DATA_PATH
+                            # Filter for data directory
+                            glob_pattern: /pfs/cmp22_calibration_group_and_convert/cmp22/*/*/*/*/**
+                            # Join on named location (already joined below by day)
+                            join_indices: [7]
+                            outer_join: true
+                        - path:
+                            name: LOCATION_ASSET_PATH
+                            # Filter for data directory
+                            glob_pattern: /inputs/LOCATION_ASSET_PATH/cmp22/*/*/*/*/**
+                            # Join on named location (already joined below by day)
+                            join_indices: [7]
+              - name: OUT_PATH_JOINER
+                value: "{{workflow.parameters.out-path-loc-joiner}}"   # <- parameterized
+              - name: OUT_PATH_LOC_STRC
+                value: "{{workflow.parameters.out-path-loc-strc}}"   # <- parameterized
+              - name: OUT_PATH_LOC_MERG
+                value: "{{workflow.parameters.out-path-loc-merg}}"   # <- parameterized
+              - name: ERR_PATH
+                value: "{{workflow.parameters.err-path}}"   # <- parameterized
+              - name: LOG_LEVEL
+                value: "{{workflow.parameters.log-level}}"   # <- parameterized
+              - name: RELATIVE_PATH_INDEX
+                value: "{{workflow.parameters.relative-path-index}}"   # <- parameterized
+              - name: LINK_TYPE
+                value: "{{workflow.parameters.link-type}}"   # <- parameterized
+              - name: PARALLELIZATION_INTERNAL
+                value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
+                
+                
+          - name: main
+            dependencies:
+              - location-group-and-restructure
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "1.2Gi"
+                cpu: "1"
+              limits:
+                memory: "2Gi"
+                cpu: "1.25"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              ls -l /inputs
+              ls -l /inputs/LOCATION_ACTIVE_DATES
+              ls -l /inputs/LOCATION_ACTIVE_DATES/cmp22
+              
+              # Date-gap-filler (using environment variables as input parameters)
+              python3 -m date_gap_filler.date_gap_filler_main
+              
+              # Regularize
+              Rscript ./flow.rglr.R \
+                DirIn=$OUT_PATH \
+                DirOut=$OUT_PATH_RGLR \
+                DirErr=$ERR_PATH \
+                "DirRglr=data|uncertainty_data|flags" \
+                MethRglr=CybiEc \
+                WndwRglr=Trlg \
+                IdxWndw=IdxWndwMinNotNa \
+                RptTimeWndw=FALSE \
+                DropNotNumc=FALSE \
+                "DirSubCopy=location|uncertainty_coef"
+    
+              ls -l $OUT_PATH_RGLR
+              
+            env:
+              # Environment variables for date gap filler
+              - name: LOG_LEVEL
+                value: "{{workflow.parameters.log-level}}"   # <- parameterized
+              - name: DATA_PATH
+                value: "{{workflow.parameters.out-path-loc-merg}}"   # <- parameterized
+              - name: LOCATION_PATH
+                value: /inputs/LOCATION_ACTIVE_DATES
+              - name: EMPTY_FILE_PATH
+                value: /inputs/empty_files
+              - name: OUT_PATH
+                value: "{{workflow.parameters.out-path-date-filler}}"   # <- parameterized
+              - name: OUT_PATH_RGLR
+                value: "{{workflow.parameters.out-path-rglr}}"   # <- parameterized
+              - name: OUTPUT_DIRECTORIES
+                value: "{{workflow.parameters.output-directories}}"   # <- parameterized
+              - name: DATA_SOURCE_TYPE_INDEX
+                value: "{{workflow.parameters.data-source-type-index}}"   # <- parameterized
+              - name: DATA_YEAR_INDEX
+                value: "{{workflow.parameters.data-year-index}}"   # <- parameterized
+              - name: DATA_MONTH_INDEX
+                value: "{{workflow.parameters.data-month-index}}"   # <- parameterized
+              - name: DATA_DAY_INDEX
+                value: "{{workflow.parameters.data-day-index}}"   # <- parameterized
+              - name: DATA_LOCATION_INDEX
+                value: "{{workflow.parameters.data-location-index}}"   # <- parameterized
+              - name: DATA_TYPE_INDEX
+                value: "{{workflow.parameters.data-type-index}}"   # <- parameterized
+              - name: LOCATION_SOURCE_TYPE_INDEX
+                value: "{{workflow.parameters.location-source-type-index}}"   # <- parameterized
+              - name: LOCATION_YEAR_INDEX
+                value: "{{workflow.parameters.location-year-index}}"   # <- parameterized
+              - name: LOCATION_MONTH_INDEX
+                value: "{{workflow.parameters.location-month-index}}"   # <- parameterized
+              - name: LOCATION_DAY_INDEX
+                value: "{{workflow.parameters.location-day-index}}"   # <- parameterized
+              - name: LOCATION_INDEX
+                value: "{{workflow.parameters.location-index}}"   # <- parameterized
+              - name: EMPTY_FILE_TYPE_INDEX
+                value: "{{workflow.parameters.empty-file-type-index}}"   # <- parameterized
+              - name: LINK_TYPE
+                value: "{{workflow.parameters.link-type}}"   # <- parameterized
+              - name: ERR_PATH
+                value: "{{workflow.parameters.err-path}}"   # <- parameterized
+              - name: PARALLELIZATION_INTERNAL
+                value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
+
+
+      # Note: Argo places any outputs that are a directory structure into a gzipped file in the bucket. 
+      #   We don't want this. Use rclone in the code to place output in the bucket in repository form
+      # outputs:
+      #   artifacts:
+      #   - name: cmp22_calibration_group_and_convert
+      #     path: /pfs/cmp22_calibration_group_and_convert
+      #     gcs:
+      #       bucket: neon-nonprod-argo-artifacts
+      #       key: cmp22_calibration_group_and_convert
