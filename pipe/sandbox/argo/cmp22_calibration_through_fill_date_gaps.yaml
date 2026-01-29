@@ -72,6 +72,8 @@ spec:
         value: "7"
       - name: empty-file-type-index # Date gap filler
         value: "4"
+      - name: bucket-name # Bucket upload
+        value: neon-nonprod-argo-artifacts
 
   templates:
     - name: run
@@ -340,7 +342,7 @@ spec:
                 value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
                 
                 
-          - name: main
+          - name: fill-date-gaps-and-regularize
             dependencies:
               - location-group-and-restructure
             image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.0
@@ -433,6 +435,71 @@ spec:
               - name: PARALLELIZATION_INTERNAL
                 value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
 
+          - name: main
+            dependencies:
+              - fill-date-gaps-and-regularize
+            image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "100m"
+              limits:
+                memory: "500Mi"
+                cpu: "1"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              ls -l $OUT_PATH
+
+              # Export data to bucket
+              if [[ -d "$OUT_PATH" ]]; then
+                linkdir=$(mktemp -d)
+                shopt -s globstar
+                out_parquet_glob="${OUT_PATH}/**/*.*" # Get all files, assuming there is an extension
+                # Example: /pfs/out/cmp22/2023/01/01/12345/data/file.parquet
+                echo "Linking output files to ${linkdir}"
+                # set -x # Uncomment for troubleshooting
+                for f in $out_parquet_glob; do
+                  # Parse the path
+                  [[ "$f" =~ ^$OUT_PATH/(.*)$ ]]
+                  file_path="${BASH_REMATCH[1]}"
+                  outdir="${linkdir}/cmp22_fill_date_gaps_and_regularize/${file_path}"
+                  mkdir -p "${outdir}"
+                  ln -s "${f}" "${outdir}"
+                done
+          
+                echo "Syncing files to bucket"
+                rclone \
+                  --no-check-dest \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  --gcs-no-check-bucket \
+                  copy \
+                  "${linkdir}" \
+                  ":gcs://${BUCKET_NAME}"
+                  
+                echo "Removing temporary files"
+                rm -rf $linkdir
+                
+                # set +x # Uncomment for troubleshooting
+              fi
+                        
+            env:
+              # Environment variables for data upload
+              - name: OUT_PATH
+                value: "{{workflow.parameters.out-path-rglr}}"   # <- parameterized
+              - name: BUCKET_NAME
+                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
 
       # Note: Argo places any outputs that are a directory structure into a gzipped file in the bucket. 
       #   We don't want this. Use rclone in the code to place output in the bucket in repository form
