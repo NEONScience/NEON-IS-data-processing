@@ -161,22 +161,22 @@ spec:
         - name: l0-data
           path: /inputs/DATA_PATH_ARCHIVE
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_data_source_gcs
         - name: calibrations
           path: /inputs/CALIBRATION_PATH
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_calibration_assignment
         - name: schemas
           path: /inputs/schemas
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_avro_schemas
         - name: uncertainty-fdas
           path: /inputs/uncertainty_fdas
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_uncertainty_fdas
       # Note: Argo places any outputs that are a directory structure into a gzipped file in the bucket. 
       #   We don't want this. Use rclone in the code to place output in the bucket in repository form
@@ -185,7 +185,7 @@ spec:
       #   - name: cmp22_calibration_group_and_convert
       #     path: /outputs/cmp22_calibration_group_and_convert
       #     gcs:
-      #       bucket: neon-nonprod-argo-artifacts
+      #       bucket: neon-dev-argo-workflow-test
       #       key: cmp22_calibration_group_and_convert
       volumes:
         - name: in-vol
