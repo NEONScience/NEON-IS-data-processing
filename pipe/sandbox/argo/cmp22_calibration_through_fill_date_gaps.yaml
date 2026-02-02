@@ -73,7 +73,7 @@ spec:
       - name: empty-file-type-index # Date gap filler
         value: "4"
       - name: bucket-name # Bucket upload
-        value: neon-nonprod-argo-artifacts
+        value: neon-dev-argo-workflow-test
 
   templates:
     - name: run
@@ -90,37 +90,37 @@ spec:
         - name: l0-data
           path: /inputs/DATA_PATH_ARCHIVE
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_data_source_gcs
         - name: calibrations
           path: /inputs/CALIBRATION_PATH
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_calibration_assignment
         - name: location_asset
           path: /inputs/LOCATION_ASSET_PATH
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_location_asset_assignment
         - name: location_active_dates
           path: /inputs/LOCATION_ACTIVE_DATES
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_location_active_dates_assignment
         - name: schemas
           path: /inputs/schemas
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_avro_schemas
         - name: uncertainty-fdas
           path: /inputs/uncertainty_fdas
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_uncertainty_fdas
         - name: empty-files
           path: /inputs/empty_files
           gcs:
-            bucket: neon-nonprod-argo-artifacts
+            bucket: neon-dev-argo-workflow-test
             key: cmp22_empty_files
       containerSet:
       
@@ -508,5 +508,5 @@ spec:
       #   - name: cmp22_calibration_group_and_convert
       #     path: /pfs/cmp22_calibration_group_and_convert
       #     gcs:
-      #       bucket: neon-nonprod-argo-artifacts
+      #       bucket: neon-dev-argo-workflow-test
       #       key: cmp22_calibration_group_and_convert
