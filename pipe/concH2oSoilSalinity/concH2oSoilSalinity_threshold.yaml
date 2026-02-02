@@ -1,0 +1,65 @@
+---
+pipeline:
+  name: concH2oSoilSalinity_threshold
+transform:
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-threshold-loader:v1.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Create output directories
+    mkdir -p /pfs/out/ion-content
+    mkdir -p /pfs/out/water-content-factory
+    mkdir -p /pfs/out/water-content-soil-spec
+    
+    if [ ${CTXT_IC+x} ]; then 
+      export CTXT=$CTXT_IC
+      export OUT_PATH=/pfs/out/ion-content
+      python3 -m threshold_loader.threshold_loader_main
+    fi
+    
+    if [ ${CTXT_FACTWC+x} ]; then 
+      export CTXT=$CTXT_FACTWC
+      export OUT_PATH=/pfs/out/water-content-factory
+      python3 -m threshold_loader.threshold_loader_main
+    fi
+    
+    if [ ${CTXT_SSWC+x} ]; then 
+      export CTXT=$CTXT_SSWC
+      export OUT_PATH=/pfs/out/water-content-soil-spec
+      python3 -m threshold_loader.threshold_loader_main
+    fi
+    
+    EOF
+  env:
+    LOG_LEVEL: INFO
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: VSICDepth01|VSICDepth02|VSICDepth03|VSICDepth04|VSICDepth05|VSICDepth06|VSICDepth07|VSICDepth08|VSWCfactoryDepth01|VSWCfactoryDepth02|VSWCfactoryDepth03|VSWCfactoryDepth04|VSWCfactoryDepth05|VSWCfactoryDepth06|VSWCfactoryDepth07|VSWCfactoryDepth08|VSWCsoilSpecificDepth01|VSWCsoilSpecificDepth02|VSWCsoilSpecificDepth03|VSWCsoilSpecificDepth04|VSWCsoilSpecificDepth05|VSWCsoilSpecificDepth06|VSWCsoilSpecificDepth07|VSWCsoilSpecificDepth08
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT_IC: soil|ion-content
+    CTXT_FACTWC: soil|water-content|factory
+    CTXT_SSWC: soil|water-content|soil-specific
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    repo: enviroscan_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 32M
+  cpu: 0.05
+resource_limits:
+  memory: 200M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 120M
+  cpu: 0.1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
