@@ -212,7 +212,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: sunav2_cron_daily_and_date_control_kafka
+    repo: sunav2_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/*/*/*/*"
 parallelism_spec:
