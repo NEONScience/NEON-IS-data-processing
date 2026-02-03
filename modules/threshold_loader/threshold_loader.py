@@ -22,19 +22,24 @@ def load_thresholds(get_thresholds: Callable[[str], Iterator[Threshold]], out_pa
         all_thresholds = []
         seen = set()  # Track unique thresholds to avoid duplicates
         
+        # Get all thresholds once (generator, so materialize it to a list)
+        all_db_thresholds = list(get_thresholds(term=term))
+        
         # Process each context set
         for context in contexts:
             context_l = context.split("|") if context != 'none' else []
             
-            # Get all thresholds for the term and filter by this context
-            for threshold in get_thresholds(term=term):
-                if threshold[3]:  # if threshold has contexts
-                    if set(context_l).issubset(set(threshold[3])):
-                        # Create unique key to avoid duplicates
-                        unique_key = (threshold[0], threshold[1], threshold[2])  # threshold_name, term_name, location_name
-                        if unique_key not in seen:
-                            seen.add(unique_key)
-                            all_thresholds.append(threshold._asdict())
+            # Filter thresholds by this context
+            for threshold in all_db_thresholds:
+                threshold_contexts = threshold[3] if threshold[3] else []
+                
+                # If no context filter, or if context filter matches
+                if not context_l or set(context_l).issubset(set(threshold_contexts)):
+                    # Create unique key to avoid duplicates
+                    unique_key = (threshold[0], threshold[1], threshold[2])  # threshold_name, term_name, location_name
+                    if unique_key not in seen:
+                        seen.add(unique_key)
+                        all_thresholds.append(threshold._asdict())
         
         threshold_data = {'thresholds': all_thresholds}
         json_data = json.dumps(threshold_data, indent=4, sort_keys=True, default=str)
