@@ -10,31 +10,35 @@ transform:
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Create output directories
-    mkdir -p /pfs/out/ion-content
-    mkdir -p /pfs/out/water-content-factory
-    mkdir -p /pfs/out/water-content-soil-spec
+    
+    # Create output directories using environment variables
+    mkdir -p $OUT_PATH_IC
+    mkdir -p $OUT_PATH_FACT
+    mkdir -p $OUT_PATH_SSWC
     
     if [ ${CTXT_IC+x} ]; then 
       export CTXT=$CTXT_IC
-      export OUT_PATH=/pfs/out/ion-content
+      export OUT_PATH=$OUT_PATH_IC
       python3 -m threshold_loader.threshold_loader_main
     fi
     
     if [ ${CTXT_FACTWC+x} ]; then 
       export CTXT=$CTXT_FACTWC
-      export OUT_PATH=/pfs/out/water-content-factory
+      export OUT_PATH=$OUT_PATH_FACT
       python3 -m threshold_loader.threshold_loader_main
     fi
     
     if [ ${CTXT_SSWC+x} ]; then 
       export CTXT=$CTXT_SSWC
-      export OUT_PATH=/pfs/out/water-content-soil-spec
+      export OUT_PATH=$OUT_PATH_SSWC
       python3 -m threshold_loader.threshold_loader_main
     fi
     
     EOF
   env:
+    OUT_PATH_IC: /pfs/out/ion-content
+    OUT_PATH_FACT: /pfs/out/water-content-factory
+    OUT_PATH_SSWC: /pfs/out/water-content-soil-spec
     LOG_LEVEL: INFO
     # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
     TERM: VSICDepth01|VSICDepth02|VSICDepth03|VSICDepth04|VSICDepth05|VSICDepth06|VSICDepth07|VSICDepth08|VSWCfactoryDepth01|VSWCfactoryDepth02|VSWCfactoryDepth03|VSWCfactoryDepth04|VSWCfactoryDepth05|VSWCfactoryDepth06|VSWCfactoryDepth07|VSWCfactoryDepth08|VSWCsoilSpecificDepth01|VSWCsoilSpecificDepth02|VSWCsoilSpecificDepth03|VSWCsoilSpecificDepth04|VSWCsoilSpecificDepth05|VSWCsoilSpecificDepth06|VSWCsoilSpecificDepth07|VSWCsoilSpecificDepth08

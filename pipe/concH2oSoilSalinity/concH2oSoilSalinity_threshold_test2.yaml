@@ -1,15 +1,21 @@
 ---
 pipeline:
-  name: concH2oSoilSalinity_threshold
+  name: concH2oSoilSalinity_threshold_test2
 transform:
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-threshold-loader:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-threshold-loader:v1.0.0
   cmd:
   - sh
   - "-c"
   - |-
     /bin/bash <<'EOF'
+    # Create output directories
+    
+    # Install jq for testing (download static binary)
+    curl -L https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64 -o /tmp/jq
+    chmod +x /tmp/jq
+    
     # Create output directories using environment variables
     mkdir -p $OUT_PATH_IC
     mkdir -p $OUT_PATH_FACT
@@ -33,11 +39,11 @@ transform:
       python3 -m threshold_loader.threshold_loader_main
     fi
     
-    # Merge all threshold files using environment variables
-    jq -s '{thresholds: ([.[].thresholds // []] | flatten | unique_by(.threshold_name + .term_name + .location_name))}' \
-      $OUT_PATH_IC/thresholds.json \
-      $OUT_PATH_FACT/thresholds.json \
-      $OUT_PATH_SSWC/thresholds.json \
+    # Merge using the downloaded jq
+    /tmp/jq -s '{thresholds: ([.[].thresholds // []] | flatten | unique_by(.threshold_name + .term_name + .location_name))}' \
+      /pfs/out/ion-content/thresholds.json \
+      /pfs/out/water-content-factory/thresholds.json \
+      /pfs/out/water-content-soil-spec/thresholds.json \
       > /pfs/out/thresholds.json
     
     EOF
@@ -46,12 +52,10 @@ transform:
     OUT_PATH_FACT: /pfs/out/water-content-factory
     OUT_PATH_SSWC: /pfs/out/water-content-soil-spec
     LOG_LEVEL: INFO
-    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
     TERM: VSICDepth01|VSICDepth02|VSICDepth03|VSICDepth04|VSICDepth05|VSICDepth06|VSICDepth07|VSICDepth08|VSWCfactoryDepth01|VSWCfactoryDepth02|VSWCfactoryDepth03|VSWCfactoryDepth04|VSWCfactoryDepth05|VSWCfactoryDepth06|VSWCfactoryDepth07|VSWCfactoryDepth08|VSWCsoilSpecificDepth01|VSWCsoilSpecificDepth02|VSWCsoilSpecificDepth03|VSWCsoilSpecificDepth04|VSWCsoilSpecificDepth05|VSWCsoilSpecificDepth06|VSWCsoilSpecificDepth07|VSWCsoilSpecificDepth08
-    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT_IC: soil|ion-content
     CTXT_FACTWC: soil|water-content|factory
-    CTXT_SSWC: soil|water-content|sensor-specific
+    CTXT_SSWC: soil|water-content|soil-specific
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
