@@ -1,4 +1,4 @@
-name: DEV-sunav2-update-dag
+name: CERT-sunav2-update-dag
 on:
   push:
     branches:

@@ -1,4 +1,4 @@
-name: DEV-sunav2-site-list
+name: CERT-sunav2-site-list
 on:
   push:
     branches:
