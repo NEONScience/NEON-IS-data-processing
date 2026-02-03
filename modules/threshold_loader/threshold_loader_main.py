@@ -18,15 +18,31 @@ def main() -> None:
     env = environs.Env()
     out_path: Path = env.path('OUT_PATH')
     term: str = env.str('TERM')
-    context: str = env.str('CTXT')
+    
+    # Read multiple context sets - support CTXT_1, CTXT_2, CTXT_3, etc.
+    contexts = []
+    for i in range(1, 100):  # Support up to 99 context sets
+        ctxt_var = f'CTXT_{i}'
+        context = env.str(ctxt_var, default=None)
+        if context:
+            contexts.append(context)
+        else:
+            break  # Stop at first missing number
+    
+    # Fallback to single CTXT for backward compatibility
+    if not contexts:
+        context = env.str('CTXT', default='none')
+        contexts = [context]
+    
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'out_path: {out_path}')
+    log.debug(f'contexts: {contexts}')
     db_config = read_from_mount(Path('/var/db_secret'))
     with closing(DbConnector(db_config)) as connector:
         get_thresholds_partial = partial(get_thresholds, connector=connector)
-        load_thresholds(get_thresholds_partial, out_path, term=term, context=context)
+        load_thresholds(get_thresholds_partial, out_path, term=term, contexts=contexts)
 
 
 if __name__ == "__main__":
