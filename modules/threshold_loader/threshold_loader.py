@@ -33,10 +33,20 @@ def load_thresholds(get_thresholds: Callable[[str], Iterator[Threshold]], out_pa
             for threshold in all_db_thresholds:
                 threshold_contexts = threshold[3] if threshold[3] else []
                 
-                # If no context filter, or if context filter matches
-                if not context_l or set(context_l).issubset(set(threshold_contexts)):
-                    # Create unique key to avoid duplicates
-                    unique_key = (threshold[0], threshold[1], threshold[2])  # threshold_name, term_name, location_name
+                # Exact context match: threshold must have exactly these contexts (no more, no less)
+                # If no context filter (empty list), only match thresholds with no contexts
+                if set(context_l) == set(threshold_contexts):
+                    # Create unique key including dates to avoid losing seasonal thresholds
+                    # threshold[4]=start_date, threshold[5]=end_date, threshold[7]=start_day_of_year, threshold[8]=end_day_of_year
+                    unique_key = (
+                        threshold[0],  # threshold_name
+                        threshold[1],  # term_name
+                        threshold[2],  # location_name
+                        threshold[4],  # start_date
+                        threshold[5],  # end_date
+                        threshold[7],  # start_day_of_year
+                        threshold[8]   # end_day_of_year
+                    )
                     if unique_key not in seen:
                         seen.add(unique_key)
                         all_thresholds.append(threshold._asdict())
