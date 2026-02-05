@@ -1,3 +1,10 @@
+# This workflow runs a series of 3 modules in a containerset:
+#   cmp22_calibration_group_and_convert
+#   cmp22_location_group_and_restructure
+#   cmp22_fill_date_gaps_and_regularize
+# A hard-coded set of data is loaded from gcs into a local volume accessible
+#   to all containers in the containerset
+# The final output is copied to a hard-coded path in the specified output bucket
 
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
@@ -472,8 +479,10 @@ spec:
                 for f in $out_parquet_glob; do
                   # Parse the path
                   [[ "$f" =~ ^$OUT_PATH/(.*)$ ]]
-                  file_path="${BASH_REMATCH[1]}"
-                  outdir="${linkdir}/cmp22_fill_date_gaps_and_regularize/${file_path}"
+                  rel_path="${BASH_REMATCH[1]}"
+                  fname="${rel_path##*/}"
+                  rel_dir="${rel_path%/*}"
+                  outdir="${linkdir}/cmp22_fill_date_gaps_and_regularize/${rel_dir}"
                   mkdir -p "${outdir}"
                   ln -s "${f}" "${outdir}"
                 done
