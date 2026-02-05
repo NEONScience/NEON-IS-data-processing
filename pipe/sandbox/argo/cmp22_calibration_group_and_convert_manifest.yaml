@@ -1,4 +1,9 @@
-
+# This workflow template reads a manifest of datums to process.
+# Each manifest contains a list of paths (datums) to retrieve from particular folders in GCS.
+# Each datum can be specified to whatever path makes sense. For example, can specify to 
+# the /source_type/year/month/day, or to the /source_type/year/month/day/source-id
+# The data is loaded to a local volume.
+# The calibration group and convert module processes whatever is in the volume.
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
