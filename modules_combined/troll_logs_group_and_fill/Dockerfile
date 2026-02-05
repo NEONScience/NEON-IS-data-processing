@@ -1,6 +1,6 @@
-# Dockerfile for NEON IS Data Processing - SUNA logs fill module combined with filter-joiner 
+# Dockerfile for NEON IS Data Processing - Troll logs fill module combined with filter-joiner 
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
-# docker build -t neon-is-sunav2-logs-group-fill -f ./modules_combined/sunav2_logs_group_and_fill/Dockerfile .
+# docker build -t neon-is-troll-logs-group-fill -f ./modules_combined/troll_logs_group_and_fill/Dockerfile .
 
 # Start with the base R image. 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
@@ -48,15 +48,15 @@ COPY ./flow/flow.kfka.comb/wrap.kfka.comb.R .
 
 # Build in the log file filler module
 ARG MODULE_DIR="flow"
-ARG APP_DIR_1="flow.sunav2.logfiles.fill"
+ARG APP_DIR_1="flow.troll.logfiles.fill"
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./flow/flow.sunav2.logfiles.fill/renv.lock .
+COPY ./flow/flow.troll.logfiles.fill/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
 # Copy in R code
-COPY ./flow/flow.sunav2.logfiles.fill/flow.sunav2.logfiles.fill.R .
-COPY ./flow/flow.sunav2.logfiles.fill/wrap.sunav2.logfiles.fill.R .
+COPY ./flow/flow.troll.logfiles.fill/flow.troll.logfiles.fill.R .
+COPY ./flow/flow.troll.logfiles.fill/wrap.troll.logfiles.fill.R .
 
 # Run as app user
 USER appuser

@@ -14,7 +14,15 @@ MAINTAINER "Bobby Hensley" hensley@battelleecology.org
 COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
+# Create app user
+RUN groupadd app && \
+    useradd app -g app
+WORKDIR /home/app
+
 # Copy in sunav2 flag workflow
 COPY ${FLOW_DIR}/${APP_DIR}/flow.sunav2.quality.flags.R .
 COPY ${FLOW_DIR}/${APP_DIR}/wrap.sunav2.quality.flags.R .
 
+# Run as app user
+RUN chown app:app -R /home/app
+USER app

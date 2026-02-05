@@ -118,7 +118,7 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
 DirSubCopy <-
   base::unique(base::setdiff(
     Para$DirSubCopy,
-    c('data','flags')
+    c('data')
   ))
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
@@ -127,9 +127,9 @@ log$debug(base::paste0(
 
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data','flags','threshold')
+nameDirSub <- c('data','flags')
 log$debug(base::paste0(
-  'Expected subdirectories: ',
+  'Additional subdirectories to copy: ',
   base::paste0(nameDirSub, collapse = ',')
 ))
 
