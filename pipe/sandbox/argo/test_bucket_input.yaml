@@ -1,0 +1,78 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: test-input-artifact
+spec:
+
+  # You can set sensible defaults here, can override in the workflow
+  entrypoint: run
+  # This block for granting setting the group permissions on the emptyDir volumes
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: OnRootMismatch
+  arguments:
+    parameters:
+      - name: log-level # All modules
+        value: DEBUG
+
+  templates:
+    - name: run
+      volumes:
+        - name: in-vol
+          emptyDir: { }
+        - name: out-vol
+          emptyDir: { }
+        - name: tmp-vol
+          emptyDir: { }
+      inputs:
+        artifacts: 
+        - name: test-file
+          path: /inputs/cmp22_empty_files
+          gcs:
+            bucket: neon-dev-argo-workflow-test
+            key: cmp22_empty_files
+
+      containerSet:
+        # Note: Must mount volume with the input artifact(s) in order to have it accessible to all containers 
+        #   (otherwise it is only accessible to the "main" container). Same goes for outputs.
+        volumeMounts:
+          - name: in-vol
+            mountPath: /inputs
+          - name: out-vol
+            mountPath: /pfs
+            # /tmp is required to run R code if it ever creates a temp directory
+          - name: tmp-vol
+            mountPath: /tmp
+        containers:
+          - name: main
+            image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "100m"
+              limits:
+                memory: "500Mi"
+                cpu: "1"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              
+              ls -l /inputs
+              ls -l /inputs/cmp22_empty_files
+
+            env:
+              # Environment variables for data upload
+              - name: LOG_LEVEL
+                value: "{{workflow.parameters.log-level}}"   # <- parameterized
+
