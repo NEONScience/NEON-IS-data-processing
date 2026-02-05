@@ -1,0 +1,394 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cmp22-cal-conv-loop-each-manifest
+spec:
+  # You can set sensible defaults here, can override in the workflow
+  entrypoint: run-per-manifest
+  # This block for granting setting the group permissions on the emptyDir volumes
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: OnRootMismatch
+  arguments:
+    parameters:
+      - name: log-level # All modules
+        value: INFO
+      - name: datum-manifests # Data loader
+        value: '["datum_manifest1.txt","datum_manifest2.txt"]'
+      - name: out-path-cal-joiner
+        value: /pfs/data_cal_joined
+      - name: out-path-kafka-comb
+        value: /pfs/kafka_combined
+      - name: err-path # All modules
+        value: /pfs/errored_datums
+      - name: out-path-cal-conv
+        value: /pfs/cmp22_calibration_group_and_convert
+      - name: relative-path-index
+        value: 3
+      - name: link-type
+        value: SYMLINK
+      - name: schema-l0
+        value: /inputs/schemas/cmp22/cmp22.avsc
+      - name: schema-calibrated
+        value: /inputs/schemas/cmp22/cmp22_calibrated.avsc
+      - name: schema-cal-flags
+        value: /inputs/schemas/cmp22/flags_calibration_cmp22.avsc
+      - name: file-uncertainty-fdas
+        value: /inputs/uncertainty_fdas/fdas_calibration_uncertainty_general.json
+      - name: parallelism-internal # All R modules
+        value: 3
+      - name: bucket-name # Bucket download/upload
+        value: neon-dev-argo-workflow-test
+      - name: out-repo
+        value: cmp22_calibration_group_and_convert
+
+  templates:
+    - name: run-per-manifest
+      parallelism: 2 # Do N manifests at once
+      steps:
+      - - name: run-bundle
+          template: run
+          arguments:
+            parameters:
+            - name: datum-manifest
+              value: "{{item}}"
+          withParam: "{{workflow.parameters.datum-manifests}}"
+          
+          
+    - name: run
+      volumes:
+        - name: in-vol
+          emptyDir: { }
+        - name: out-vol
+          emptyDir: { }
+        - name: tmp-vol
+          emptyDir: { }
+          
+      inputs:
+        parameters:
+        - name: datum-manifest
+        artifacts: 
+        - name: manifest-folder
+          path: /inputs/datum_manifests
+          gcs:
+            bucket: neon-dev-argo-workflow-test
+            key: cmp22_datum_manifests
+        - name: schemas
+          path: /inputs/schemas
+          gcs:
+            bucket: neon-dev-argo-workflow-test
+            key: cmp22_avro_schemas
+        - name: uncertainty-fdas
+          path: /inputs/uncertainty_fdas
+          gcs:
+            bucket: neon-dev-argo-workflow-test
+            key: cmp22_uncertainty_fdas
+
+      containerSet:
+        # Note: Must mount volume with the input artifact(s) in order to have it accessible to all containers 
+        #   (otherwise it is only accessible to the "main" container). Same goes for outputs.
+        volumeMounts:
+          - name: in-vol
+            mountPath: /inputs
+          - name: out-vol
+            mountPath: /pfs
+            # /tmp is required to run R code if it ever creates a temp directory
+          - name: tmp-vol
+            mountPath: /tmp
+            
+        containers:
+          - name: load-data
+            image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "100m"
+              limits:
+                memory: "500Mi"
+                cpu: "1"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              echo $BUCKET_NAME
+              echo $DATUM_MANIFEST
+              
+              MANIFEST_PATH="/inputs/datum_manifests/${DATUM_MANIFEST}"
+              DATA_REPO="cmp22_data_source_gcs"
+              DATA_DEST="/inputs/DATA_PATH_ARCHIVE"
+              CAL_REPO="cmp22_calibration_assignment"
+              CAL_DEST="/inputs/CALIBRATION_PATH"
+              
+              #set -x  # Uncomment for troubleshooting
+              
+              # Clean list:
+              # - strip CRLF (THIS IS SUPER IMPORTANT FOR A TEXT FILE, you don't see the carriage return in echo or ls output)
+              # - trim whitespace
+              # - drop blank lines
+              # - drop comments (# ...)
+              CLEAN_MANIFEST="$(mktemp)"
+              sed -e 's/\r$//' \
+                  -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
+                  -e '/^$/d' -e '/^#/d' \
+                  "${MANIFEST_PATH}" > "$CLEAN_MANIFEST"
+
+              # Normalize repo prefixes (remove leading/trailing slashes)
+              DATA_REPO="${DATA_REPO#/}"
+              DATA_REPO="${DATA_REPO%/}"
+              CAL_REPO="${CAL_REPO#/}"
+              CAL_REPO="${CAL_REPO%/}"
+
+              DATA_ROOT=":gcs://${BUCKET_NAME}/${DATA_REPO}"
+              CAL_ROOT=":gcs://${BUCKET_NAME}/${CAL_REPO}"
+              
+              mkdir -p "$DATA_DEST"
+              mkdir -p "$CAL_DEST"
+              
+              echo "Datum Manifest:        $DATUM_MANIFEST"
+              echo "Data Root:             $DATA_ROOT"
+              echo "Data Dest:             $DATA_DEST"
+              echo "Cal Root:              $CAL_ROOT"
+              echo "Cal Dest:              $CAL_DEST"
+              echo
+              
+              # Helper: copy everything under a prefix
+              # This keeps things simple and reliable for small lists.
+              echo "Reading manifest: ${CLEAN_MANIFEST}"
+              
+              cat ${CLEAN_MANIFEST} | while IFS= read -r rel; do
+                # Get data
+                echo "Getting data datum: $rel"
+                
+                src="${DATA_ROOT}/${rel}"
+                dst="${DATA_DEST}/${rel}"
+                mkdir -p "$dst"
+
+                rclone \
+                  --no-check-dest \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  --gcs-no-check-bucket \
+                  copy \
+                  --progress \
+                  "${src}" "${dst}" 
+
+                # Get calibrations
+                echo "Getting calibration datum: $rel"
+                
+                src="${CAL_ROOT}/${rel}"
+                dst="${CAL_DEST}/${rel}"
+                mkdir -p "$dst"
+
+                rclone \
+                  --no-check-dest \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  --gcs-no-check-bucket \
+                  copy \
+                  --progress \
+                  "${src}" "${dst}" 
+              done
+              
+              echo "Done getting data and calibrations."
+              
+              #set +x # Uncomment for troubleshooting
+                        
+            env:
+              # Environment variables for data upload
+              - name: DATUM_MANIFEST
+                value: "{{inputs.parameters.datum-manifest}}"   # <- parameterized
+              - name: BUCKET_NAME
+                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
+
+          - name: calibration-group-and-convert
+            dependencies:
+              - load-data
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.1.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+              
+            # NOTE: The individual resources requested for each container don't really matter. 
+            #   It's the sum total of them that is actually available to each container, so long as they run in sequence.
+            #   Any containers that run in parallel need to have the sum of their resource needs available
+            resources:
+              requests:
+                memory: "700Mi"
+                cpu: "1"
+              limits:
+                memory: "1Gi"
+                cpu: "1.25"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              # ls -l /inputs
+              # ls -l /inputs/DATA_PATH_ARCHIVE
+              # ls -l /inputs/DATA_PATH_ARCHIVE/cmp22/2025/10
+
+              # Join files from the archive and from Kafka
+              export OUT_PATH=$OUT_PATH_JOINER
+              python3 -m filter_joiner.filter_joiner_main
+              
+              # ls -l $OUT_PATH_JOINER
+              
+              # Combine data from Kafka and the archive
+              # In this case we are just removing fields outside the schema
+              Rscript ./flow.kfka.comb.R \
+                DirIn=$OUT_PATH_JOINER \
+                DirOut=$OUT_PATH_KAFKA_COMB \
+                DirErr=$ERR_PATH \
+                FileSchmL0=$FILE_SCHEMA_L0 \
+                DirSubCopy=calibration
+    
+              # ls -l $OUT_PATH_KAFKA_COMB
+              
+              # Run calibration conversion module
+              Rscript ./flow.cal.conv.R  \
+                DirIn=$OUT_PATH_KAFKA_COMB \
+                DirOut=$OUT_PATH_CAL_CONV \
+                DirErr=$ERR_PATH \
+                FileSchmData=$FILE_SCHEMA_DATA \
+                FileSchmQf=$FILE_SCHEMA_FLAGS \
+                ConvFuncTerm1=def.cal.conv.poly:voltage \
+                TermQf=voltage \
+                UcrtFuncTerm1=def.ucrt.meas.mult:voltage \
+                UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage \
+                FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
+    
+              # ls -l $OUT_PATH_KAFKA_COMB
+              
+            env:
+              # Environment variables for filter-joiner
+              - name: CONFIG
+                value: |
+                      ---
+                      # Configuration for filter-joiner module that will bring together the data and calibrations
+                      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+                      # Metadata indices will typically begin at index 3.
+                      input_paths:
+                        - path:
+                            name: DATA_PATH_ARCHIVE
+                            # Filter for data directory
+                            glob_pattern: /inputs/DATA_PATH_ARCHIVE/cmp22/*/*/*/*/**
+                            # Join on named location (already joined below by day)
+                            join_indices: [7]
+                            outer_join: true
+                        - path:
+                            name: CALIBRATION_PATH
+                            # Filter for data directory
+                            glob_pattern: /inputs/CALIBRATION_PATH/cmp22/*/*/*/*/**
+                            # Join on named location (already joined below by day)
+                            join_indices: [7]
+                            outer_join: true
+              - name: OUT_PATH_JOINER
+                value: "{{workflow.parameters.out-path-cal-joiner}}"   # <- parameterized
+              - name: OUT_PATH_KAFKA_COMB
+                value: "{{workflow.parameters.out-path-kafka-comb}}"   # <- parameterized
+              - name: OUT_PATH_CAL_CONV
+                value: "{{workflow.parameters.out-path-cal-conv}}"   # <- parameterized
+              - name: ERR_PATH
+                value: "{{workflow.parameters.err-path}}"   # <- parameterized
+              - name: LOG_LEVEL
+                value: "{{workflow.parameters.log-level}}"   # <- parameterized
+              - name: RELATIVE_PATH_INDEX
+                value: "{{workflow.parameters.relative-path-index}}"   # <- parameterized
+              - name: LINK_TYPE
+                value: "{{workflow.parameters.link-type}}"   # <- parameterized
+              - name: FILE_SCHEMA_L0
+                value: "{{workflow.parameters.schema-l0}}"   # <- parameterized
+              - name: FILE_SCHEMA_DATA
+                value: "{{workflow.parameters.schema-calibrated}}"   # <- parameterized
+              - name: FILE_SCHEMA_FLAGS
+                value: "{{workflow.parameters.schema-cal-flags}}"   # <- parameterized
+              - name: FILE_UNCERTAINTY_FDAS
+                value: "{{workflow.parameters.file-uncertainty-fdas}}"   # <- parameterized
+              - name: PARALLELISM_INTERNAL
+                value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
+                
+          - name: main
+            dependencies:
+              - calibration-group-and-convert
+            image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "100m"
+              limits:
+                memory: "500Mi"
+                cpu: "1"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              ls -l $OUT_PATH
+
+              # Export data to bucket
+              if [[ -d "$OUT_PATH" ]]; then
+                linkdir=$(mktemp -d)
+                shopt -s globstar
+                out_parquet_glob="${OUT_PATH}/**/*.*" # Get all files, assuming there is an extension
+                # Example: /pfs/out/cmp22/2023/01/01/12345/data/file.parquet
+                echo "Linking output files to ${linkdir}"
+                # set -x # Uncomment for troubleshooting
+                for f in $out_parquet_glob; do
+                  # Parse the path
+                  [[ "$f" =~ ^$OUT_PATH/(.*)$ ]]
+                  rel_path="${BASH_REMATCH[1]}"
+                  fname="${rel_path##*/}"
+                  rel_dir="${rel_path%/*}"
+                  outdir="${linkdir}/${OUT_REPO}/${rel_dir}"
+                  mkdir -p "${outdir}"
+                  ln -s "${f}" "${outdir}"
+                done
+          
+                echo "Syncing files to bucket"
+                rclone \
+                  --no-check-dest \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  --gcs-no-check-bucket \
+                  copy \
+                  "${linkdir}" \
+                  ":gcs://${BUCKET_NAME}"
+                  
+                echo "Removing temporary files"
+                rm -rf $linkdir
+                
+                # set +x # Uncomment for troubleshooting
+              fi
+                        
+            env:
+              # Environment variables for data upload
+              - name: OUT_PATH
+                value: "{{workflow.parameters.out-path-cal-conv}}"   # <- parameterized
+              - name: BUCKET_NAME
+                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
+              - name: OUT_REPO
+                value: "{{workflow.parameters.out-repo}}"   # <- parameterized
+
