@@ -128,20 +128,17 @@ input:
     glob: "/rmyoung/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 2
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 0.8
-resource_limits:
-  memory: 600M
-  cpu: 1.5
-sidecar_resource_requests:
-  memory: 1G
-  cpu: 0.5
-sidecar_resource_limits:
-  memory: 3G
+  memory: 400M
   cpu: 1.2
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:
