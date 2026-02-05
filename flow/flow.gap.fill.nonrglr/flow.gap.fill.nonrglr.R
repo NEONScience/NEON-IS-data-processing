@@ -4,16 +4,14 @@
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org} \cr
 
-#' @description Workflow. Bin data to generate a regular time sequence of observations.
+#' @description Workflow.
 #' General code workflow:
 #'    Parse input parameters
 #'    Read in output schemas if indicated in parameters
 #'    Determine datums to process (set of files/folders to process as a single unit)
 #'    For each datum:
 #'      Create output directories and copy (by symbolic link) unmodified components
-#'      Read regularization frequency from location file (if not in input parameters)
-#'      Loop through all data files
-#'        Regularize data in each file
+#'      Loop through all data files and fill gaps
 #'        Write out the gap filled data
 #'      
 #' This script is run at the command line with the following arguments. Each argument must be a
@@ -47,7 +45,7 @@
 #' gap filled resides. This will be one or more child levels away from "DirIn". All files in the
 #' terminal directory will be gap filled. The value may also be a vector of terminal directories,
 #' separated by pipes (|). All terminal directories must be present and at the same directory level.
-#' For example, "DirFill=data|flags" indicates to regularize the data files within each the data
+#' For example, "DirFill=data|flags" indicates to gap fill the data files within each the data
 #' and flags directories.
 #' 
 #' #' 5. "FileSchm=value" (optional), where value is the full path to schema for data output by
@@ -67,7 +65,7 @@
 #' 30-minute  interval. 
 #'
 #' 7. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
-#' pipes, at the same level as the regularization folder in the input path that are to be copied with a
+#' pipes, at the same level as the folders in the input path that are to be copied with a
 #' symbolic link to the output path.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -141,7 +139,7 @@ Para <-
 
 # Retrieve output schema(s)
 log$debug(base::paste0(
-  'Output schema(s) for regularized data: ',
+  'Output schema(s) for gap-filled data: ',
   base::paste0(Para$FileSchm, collapse = ',')
 ))
 if(length(Para$FileSchm)>0){
@@ -172,7 +170,7 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0(
-  'Terminal Directories to regularize: ',
+  'Terminal Directories to gap fill: ',
   base::paste0(Para$DirFill, collapse = ',')
 ))
 

@@ -55,7 +55,7 @@
 #' Bobby Hensley (2025-12-18)
 #' Updated so that finalQF is solely determined by insufficientDataQF.
 ##############################################################################################
-wrap.insufficient.data <- function(DirIn,
+wrap.qf.insuff.data <- function(DirIn,
                                       minPoints,
                                       DirOutBase,
                                       SchmStats=NULL,
@@ -109,28 +109,21 @@ wrap.insufficient.data <- function(DirIn,
   }
   
   #' Identify the column name with the number of points and finalQF
-  ptsColName<-grep("NumPts",names(statsData),value=TRUE)
-  finalQfColName<-grep("FinalQF",names(qmData),value=TRUE)
+  ptsColName<-grep("NumPts",names(statsData),value=TRUE,ignore.case=TRUE)
+  finalQfColName<-grep("FinalQF",names(qmData),value=TRUE,ignore.case=TRUE)
   
   #' If the number of points is NA, set it to 0.
-  for(i in 1:nrow(statsData)){
-    if(is.na(statsData[i,which(colnames(statsData)==ptsColName)])){
-      statsData[i,which(colnames(statsData)==ptsColName)]=0}}
+  statsData[is.na(statsData[[ptsColName]]), ptsColName] <- 0
   
   #' If the number of points is greater than or equal to the minimum required, 
   #' revert the insufficient data quality flag (default is to apply it).
   qmData$insufficientDataQF=1
   minPoints<-as.numeric(minPoints)
-  for(i in 1:nrow(statsData)){
-    if(statsData[i,which(colnames(statsData)==ptsColName)]>=minPoints){
-      qmData[i,which(colnames(qmData)=='insufficientDataQF')]=0}}
+  qmData[statsData[[ptsColName]] >= minPoints, 'insufficientDataQF'] <- 0
   
   #' If there is insufficient data, set the final quality flag to 1.
   #' If there is sufficient data, set the final quality flag to 0.
-  for(i in 1:nrow(qmData)){
-    if(qmData[i,which(colnames(qmData)=='insufficientDataQF')]==1){
-      qmData[i,which(colnames(qmData)==finalQfColName)]=1}
-    else{qmData[i,which(colnames(qmData)==finalQfColName)]=0}}
+  qmData[[finalQfColName]] <- ifelse(qmData[['insufficientDataQF']] == 1, 1, 0)
   qmData <- qmData[c(setdiff(names(qmData), finalQfColName), finalQfColName)] #' Move finalQF back to the end
   
   #' Write out stats file.  

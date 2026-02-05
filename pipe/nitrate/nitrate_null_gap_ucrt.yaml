@@ -31,7 +31,7 @@ transform:
       "DirSubCopy=group|location|quality_metrics"
     
     # Run third module - insufficient data
-    Rscript ./flow.insufficient.data.R \
+    Rscript ./flow.qf.insuff.data.R \
       DirIn=/tmp/pfs/interimUcrt \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \

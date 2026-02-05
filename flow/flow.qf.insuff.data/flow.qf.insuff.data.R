@@ -37,7 +37,7 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.insufficient.data <- function(DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",                        
+#' flow.qf.insuff.data <- function(DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",                        
 #'                               minPoints=10,
 #'                               DirOut<-"~/pfs/nitrate_null_gap_ucrt_updated/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733" ,
 #'                               SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse=''), 
@@ -45,8 +45,8 @@
 #'                               log=log)
 #' Stepping through the code in R studio                               
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt_updated/nitrate-surfacewater_SUGG103100",
-#           "minPoints=5","DirOut=~/pfs/nitrate_null_gap_ucrt_updated2","DirErr=~/pfs/out/errored_datums","DirSubCopy=location",
+# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2019/11/18/nitrate-surfacewater_SUGG103100",
+#           "minPoints=5","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","DirSubCopy=location",
 #          "SchmQMs=~/pfs/nitrate_avro_schemas/nitrate/nitrate_insufficient_data.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
 
@@ -66,7 +66,7 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.insufficient.data.R")
+source("./wrap.qf.insuff.data.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -128,7 +128,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.insufficient.data(
+      wrap.qf.insuff.data(
         DirIn=idxFileIn,
         minPoints=Para$minPoints,
         DirOutBase=Para$DirOut,
@@ -139,19 +139,17 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
       ),
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
-        log$error(err$message)
-        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxFileIn, 
-                                                             log = log)
-        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
-        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
-                                      log = log)
-        csvname <- DirSub %>%
-          strsplit( "/" ) %>%
-          sapply( tail, 1 )
-        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
-        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
-        con <- base::file(nameFileErr, "w")
-        base::close(con)
+        
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
       }
     ),
     # This simply to avoid returning the error

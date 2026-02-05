@@ -38,7 +38,7 @@ COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 # Build in the uncertainty module
 ARG MODULE_DIR="flow"
 ARG APP_DIR_1="flow.sunav2.exp.uncert"
-ARG APP_DIR_2="flow.insufficient.data"
+ARG APP_DIR_2="flow.qf.insuff.data"
 
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ./flow/flow.sunav2.exp.uncert/renv.lock .
@@ -49,12 +49,12 @@ COPY ./flow/flow.sunav2.exp.uncert/flow.sunav2.exp.uncert.R .
 COPY ./flow/flow.sunav2.exp.uncert/wrap.sunav2.exp.uncert.R .
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./flow/flow.insufficient.data/renv.lock .
+COPY ./flow/flow.qf.insuff.data/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
 # Copy in R code
-COPY ./flow/flow.insufficient.data/flow.insufficient.data.R .
-COPY ./flow/flow.insufficient.data/wrap.insufficient.data.R .
+COPY ./flow/flow.qf.insuff.data/flow.qf.insuff.data.R .
+COPY ./flow/flow.qf.insuff.data/wrap.qf.insuff.data.R .
 
 # Run as app user
 USER appuser

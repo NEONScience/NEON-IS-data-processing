@@ -4,14 +4,15 @@
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
-#' @description Wrapper function. Bin data to generate a regular time sequence of observations.
+#' @description Wrapper function.
 #' General code workflow:
-#'      Error-check input parameters
-#'      Read regularization frequency from location file if expected
+#'    Parse input parameters
+#'    Read in output schemas if indicated in parameters
+#'    Determine datums to process (set of files/folders to process as a single unit)
+#'    For each datum:
 #'      Create output directories and copy (by symbolic link) unmodified components
-#'      Loop through all data files
-#'        Regularize data in each file
-#'        Write out the regularized data
+#'      Loop through all data files and fill gaps
+#'        Write out the gap filled data
 #'
 #'
 #' @param DirIn Character value. The input path to the data from a single sensor or location, structured as follows: 
@@ -29,7 +30,7 @@
 #' gap filled resides. This will be one or more child levels away from "DirIn". All files in the
 #' terminal directory will be gap filled. The value may also be a vector of terminal directories,
 #' separated by pipes (|). All terminal directories must be present and at the same directory level.
-#' For example, "DirFill=data|flags" indicates to regularize the data files within each the data
+#' For example, "DirFill=data|flags" indicates to gap fill the data files within each the data
 #' and flags directories.
 #' 
 #' @param FileSchm Character value (optional), where value is the full path to schema for data output by
@@ -56,7 +57,7 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 
-#' @return Regularized data output in Parquet format in DirOutBase, where DirOutBase directory
+#' @return Gap filled data output in Parquet format in DirOutBase, where DirOutBase directory
 #' replaces BASE_REPO of DirIn but otherwise retains the child directory structure of the input path.
 
 #' @references
