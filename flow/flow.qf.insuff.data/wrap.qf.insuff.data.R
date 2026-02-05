@@ -13,7 +13,18 @@
 #'
 #' @param DirIn Character value. The base file path to the averaged stats and quality metrics.
 #' 
-#' @param minPoints Character value. The minimum number of points required to not trigger the insufficient data quality flag.
+#' @param numPoints Character value. The name(s) of the field(s) in the input data frame containing 
+#' the number of points. 
+#' 
+#' @param minPoints Character value. For each set of numPoints, the corresponding minimum number of 
+#' points required to not trigger the insufficient data quality flag.
+#' 
+#' @param insuffQFnames Character value. For each set of numPoints, the names of the corresponding 
+#' insufficient data QF's in the output data frame that should be triggered if less than minPoints.
+#' 
+#' @param finalQFnames Character value. For each set of numPoints, the names of the corresponding 
+#' final data QF's in the output data frame that should be triggered if the insufficient data QF 
+#' is triggered.
 #'  
 #' @param DirOut Character value. The base file path for the output data. 
 #' 
@@ -41,7 +52,10 @@
 #' @examples
 #' # Not run
 # DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733"
-# minPoints=5
+# numPoints=c("nitrateNumPts")
+# minPoints=c(5)
+# insuffQFnames=c("nitrateInsufficientDataQF")
+# finalQFnames=c("nitrateFinalQF")
 # DirOut<-"~/pfs/nitrate_null_gap_ucrt_updated/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733" 
 # SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse='')
 # SchmQMs<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse='')
@@ -54,14 +68,20 @@
 #' 
 #' Bobby Hensley (2025-12-18)
 #' Updated so that finalQF is solely determined by insufficientDataQF.
+#' 
+#' Bobby Hensley (2026-02-05)
+#' Updated to test multiple variables. 
 ##############################################################################################
 wrap.qf.insuff.data <- function(DirIn,
-                                      minPoints,
-                                      DirOutBase,
-                                      SchmStats=NULL,
-                                      SchmQMs=NULL,
-                                      DirSubCopy=NULL,
-                                      log=NULL
+                                numPoints,
+                                minPoints,
+                                insuffQFnames,
+                                finalQFnames,
+                                DirOutBase,
+                                SchmStats=NULL,
+                                SchmQMs=NULL,
+                                DirSubCopy=NULL,
+                                log=NULL
 ){
   
   #' Start logging if not already.
@@ -108,23 +128,28 @@ wrap.qf.insuff.data <- function(DirIn,
     log$debug(base::paste0('Successfully read in file: ',qmFileName))
   }
   
-  #' Identify the column name with the number of points and finalQF
-  ptsColName<-grep("NumPts",names(statsData),value=TRUE,ignore.case=TRUE)
-  finalQfColName<-grep("FinalQF",names(qmData),value=TRUE,ignore.case=TRUE)
+
+  #' Create data frame of variables, min points and flags
+     testParams<-data.frame(numPoints,minPoints,insuffQFnames,finalQFnames) 
   
-  #' If the number of points is NA, set it to 0.
-  statsData[is.na(statsData[[ptsColName]]), ptsColName] <- 0
-  
-  #' If the number of points is greater than or equal to the minimum required, 
-  #' revert the insufficient data quality flag (default is to apply it).
-  qmData$insufficientDataQF=1
-  minPoints<-as.numeric(minPoints)
-  qmData[statsData[[ptsColName]] >= minPoints, 'insufficientDataQF'] <- 0
-  
-  #' If there is insufficient data, set the final quality flag to 1.
-  #' If there is sufficient data, set the final quality flag to 0.
-  qmData[[finalQfColName]] <- ifelse(qmData[['insufficientDataQF']] == 1, 1, 0)
-  qmData <- qmData[c(setdiff(names(qmData), finalQfColName), finalQfColName)] #' Move finalQF back to the end
+  #' Starts loop that performs test for each variable specified in the testParams table
+    for(i in 1:nrow(testParams)){
+      numPoints<-testParams[i,1]
+      minPoints<-testParams[i,2]
+      insuffQFnames<-testParams[i,3]
+      finalQFnames<-testParams[i,4]
+   
+      #' If the number of points is NA, set it to 0.
+      statsData[is.na(statsData[[numPoints]]), numPoints] <- 0 
+    
+      #' If the number of points is greater than or equal to the minimum required, 
+      #' revert the insufficient data quality flag (default is to apply it).
+      qmData[[insuffQFnames]]<-1
+      qmData[statsData[[numPoints]] >= minPoints, insuffQFnames] <- 0 
+    
+      #' If insufficient data QF is applied, apply final QF.
+      qmData[[finalQFnames]] <- ifelse(qmData[[insuffQFnames]] == 1, 1, 0) 
+   } # Ends test loop
   
   #' Write out stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = statsData,
