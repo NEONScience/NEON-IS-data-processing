@@ -49,14 +49,13 @@
 #' flow.qf.insuff.data <- function(DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",                        
 #'                               insuffInfo1<-"term:nitrate|wndw:015|minPoints:5",
 #'                               DirOut<-"~/pfs/nitrate_null_gap_ucrt_updated/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733" ,
-#'                               SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse=''), 
-#'                               SchmQMs<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse=''),
+#'                               SchmStats<-base::paste0(base::readLines('~/pfs/nitrate_avro_schemas/sunav2_stats.avsc'),collapse=''), 
+#'                               SchmQMs<-base::paste0(base::readLines('~/pfs/nitrate_avro_schemas/sunav2_quality_metrics.avsc'),collapse=''),
 #'                               log=log)
 #' Stepping through the code in R studio                               
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate-surfacewater_CRAM103100/sunav2/CFGLOC110733",
+# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733",
 #           "insuffInfo1=term:nitrate|wndw:015|minPoints:5",
-#           "insuffInfo2=term:nitrate|wndw:030|minPoints:10",
 #           "DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","DirSubCopy=location",
 #           "SchmQMs=~/pfs/nitrate_avro_schemas/nitrate/nitrate_insufficient_data.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
