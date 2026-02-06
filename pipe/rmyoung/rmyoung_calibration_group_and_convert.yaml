@@ -37,10 +37,10 @@ transform:
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
       FileUcrtFdas=$FILE_UNCERTAINTY_FDAS \
-      ConvFuncTerm1=def.cal.conv.poly:resistance \
+      ConvFuncTerm1=def.cal.conv.nmnl:speed \
       "TermQf=resistance" \
-      "UcrtFuncTerm1=def.ucrt.meas.cnst:resistance" \
-      "UcrtFuncTerm2=def.ucrt.fdas.rstc.poly:resistance"
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" \
+      "UcrtFuncTerm2=def.ucrt.fdas.rstc.poly:speed"
 
     EOF
 
