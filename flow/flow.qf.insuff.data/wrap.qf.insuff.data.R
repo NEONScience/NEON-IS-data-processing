@@ -73,10 +73,7 @@
 #' Updated to test multiple variables. 
 ##############################################################################################
 wrap.qf.insuff.data <- function(DirIn,
-                                numPoints,
-                                minPoints,
-                                insuffQFnames,
-                                finalQFnames,
+                                insuffParam,
                                 DirOutBase,
                                 SchmStats=NULL,
                                 SchmQMs=NULL,
