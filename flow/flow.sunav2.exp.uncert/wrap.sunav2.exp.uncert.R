@@ -73,8 +73,7 @@ wrap.sunav2.exp.uncert <- function(DirIn,
     log$error(base::paste0('Stats file not found in ', DirInStats)) 
     stop()
   } else {
-    statsData<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInStats, '/', statsFileName),
-                                                       log = log),silent = FALSE)
+    statsData<-NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInStats, '/', statsFileName))
     log$debug(base::paste0('Successfully read in file: ',statsFileName))
   }
   
@@ -84,8 +83,7 @@ wrap.sunav2.exp.uncert <- function(DirIn,
     log$error(base::paste0('Uncertainty coefficient not found in ', DirInCoeff)) 
     stop()
   } else {
-    uncertCoeff<-base::try(NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = base::paste0(DirInCoeff, '/', coeffileName)),
-                              silent = FALSE)
+    uncertCoeff<-NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = base::paste0(DirInCoeff, '/', coeffileName))
     log$debug(base::paste0('Successfully read in file: ',coeffileName))
   }
   

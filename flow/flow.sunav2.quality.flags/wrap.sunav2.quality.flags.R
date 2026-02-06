@@ -145,49 +145,37 @@ wrap.sunav2.quality.flags <- function(DirIn,
   humidityThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Maximum Internal humidity"),]
   maxHumidity<-humidityThreshold$number_value
   sensorFlags$nitrateHumidityQF<-NA
-  for(i in 1:nrow(sunaData)){
-    if(is.na(sunaData[i,which(colnames(sunaData)=='relative_humidity')])){
-      sensorFlags[i,which(colnames(sensorFlags)=='nitrateHumidityQF')]=-1}
-    if(!is.na(sunaData[i,which(colnames(sunaData)=='relative_humidity')])){
-      if(sunaData[i,which(colnames(sunaData)=='relative_humidity')]>maxHumidity){
-        sensorFlags[i,which(colnames(sensorFlags)=='nitrateHumidityQF')]=1}
-      else{sensorFlags[i,which(colnames(sensorFlags)=='nitrateHumidityQF')]=0}}  
-  }
+  sensorFlags[['nitrateHumidityQF']] <- ifelse(
+    is.na(sunaData[['relative_humidity']]),
+    -1,
+    ifelse(sunaData[['relative_humidity']] > maxHumidity, 1, 0)
+  )
   
   #' Perform lamp temperature test (New condition need to be created. Using default for now).
   # lampTempThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Maximum Lamp Temperature"),]
   # maxLampTemp<-lampTempThreshold$number_value
   maxLampTemp=35 #' Hard-coded until thresholds are updated.
   sensorFlags$nitrateLampTempQF<-NA
-  for(i in 1:nrow(sunaData)){
-    if(is.na(sunaData[i,which(colnames(sunaData)=='lamp_temperature')])){
-      sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampTempQF')]=-1}
-    if(!is.na(sunaData[i,which(colnames(sunaData)=='lamp_temperature')])){
-      if(sunaData[i,which(colnames(sunaData)=='lamp_temperature')]>maxLampTemp){
-        sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampTempQF')]=1}
-      else{sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampTempQF')]=0}}  
-  }
+  sensorFlags[['nitrateLampTempQF']] <- ifelse(
+    is.na(sunaData[['lamp_temperature']]),
+    -1,
+    ifelse(sunaData[['lamp_temperature']] > maxLampTemp, 1, 0)
+  )
    
   #' Perform light to dark spectral ratio test.
   spectralRatioThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Minimum Light to Dark Spec Average Ratio"),]
   minLightDarkRatio<-spectralRatioThreshold$number_value
   sensorFlags$nitrateLightDarkRatioQF<-NA
-  for(i in 1:nrow(sunaData)){
-    if(is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])|is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
-      sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=-1}
-    if(!is.na(sunaData[i,which(colnames(sunaData)=='dark_signal_average')])&!is.na(sunaData[i,which(colnames(sunaData)=='spec_average')])){
-      if(sunaData[i,which(colnames(sunaData)=='spec_average')]/sunaData[i,which(colnames(sunaData)=='dark_signal_average')]<minLightDarkRatio){
-        sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=1}
-      if(sunaData[i,which(colnames(sunaData)=='light_dark_frame')]==0){
-        sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=-1}
-      else{sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=0}}  
-  }
+  sensorFlags[['nitrateLightDarkRatioQF']] <- case_when(
+    is.na(sunaData[['dark_signal_average']]) | is.na(sunaData[['spec_average']]) ~ -1,
+    sunaData[['light_dark_frame']] == 0 ~ -1,
+    sunaData[['spec_average']] / sunaData[['dark_signal_average']] < minLightDarkRatio ~ 1,
+    TRUE ~ 0
+  )
   #' Extra test so that low transmittance error codes (-1) always trigger spectral ratio test regardless of threshold
-  for(i in 1:nrow(sunaData)){
-    if(!is.na(sunaData[i,which(colnames(sunaData)=='nitrate')])&!is.na(sunaData[i,which(colnames(sunaData)=='nitrogen_in_nitrate')])){
-      if(sunaData[i,which(colnames(sunaData)=='nitrate')]==-1){
-        if(sunaData[i,which(colnames(sunaData)=='nitrogen_in_nitrate')]==-1){
-          sensorFlags[i,which(colnames(sensorFlags)=='nitrateLightDarkRatioQF')]=1}}}}
+  sensorFlags[!is.na(sunaData[['nitrate']]) & !is.na(sunaData[['nitrogen_in_nitrate']]) & 
+                sunaData[['nitrate']] == -1 & sunaData[['nitrogen_in_nitrate']] == -1, 
+              'nitrateLightDarkRatioQF'] <- 1
   
   #' Identifies light measurement number within burst and performs lamp stabilization test.
   # lampStabilizeThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="Nitrates Lamp Stabilization Points"),]
@@ -202,15 +190,9 @@ wrap.sunav2.quality.flags <- function(DirIn,
       else{sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=0}}
   }
   #' If light dark header is missing, assumes value was added null "filler" for a missing burst that needs to be passed.
-  for(i in 1:nrow(sunaData)){
-    if(is.na(sunaData[i,which(colnames(sunaData)=='light_dark_frame')])){
-      sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]=9999}
-  }
+  sensorFlags[is.na(sunaData[['light_dark_frame']]), 'burstNumber'] <- 9999
   sensorFlags$nitrateLampStabilizeQF<-0
-  for(i in 1:nrow(sensorFlags)){
-    if(sensorFlags[i,which(colnames(sensorFlags)=='burstNumber')]<=lampStabilizePoints){
-      sensorFlags[i,which(colnames(sensorFlags)=='nitrateLampStabilizeQF')]=1}
-    }
+  sensorFlags[sensorFlags[['burstNumber']] <= lampStabilizePoints, 'nitrateLampStabilizeQF'] <- 1
   
   #' Combines all flags into a single file.
   allFlags<-base::merge(plausFlags,sensorFlags)

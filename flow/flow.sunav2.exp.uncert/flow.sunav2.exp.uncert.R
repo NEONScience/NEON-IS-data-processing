@@ -123,19 +123,17 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
       ),
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
-        log$error(err$message)
-        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxFileIn, 
-                                                             log = log)
-        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
-        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
-                                      log = log)
-        csvname <- DirSub %>%
-          strsplit( "/" ) %>%
-          sapply( tail, 1 )
-        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
-        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
-        con <- base::file(nameFileErr, "w")
-        base::close(con)
+        
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
       }
     ),
     # This simply to avoid returning the error
