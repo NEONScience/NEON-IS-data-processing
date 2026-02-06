@@ -13,20 +13,14 @@
 #'
 #' @param DirIn Character value. The base file path to the averaged stats and quality metrics.
 #' 
-#' @param numPoints Character value. The name(s) of the field(s) in the input data frame containing 
-#' the number of points. 
-#' 
-#' @param minPoints Character value. For each set of numPoints, the corresponding minimum number of 
-#' points required to not trigger the insufficient data quality flag.
-#' 
-#' @param insuffQFnames Character value. For each set of numPoints, the names of the corresponding 
-#' insufficient data QF's in the output data frame that should be triggered if less than minPoints.
-#' 
-#' @param finalQFnames Character value. For each set of numPoints, the names of the corresponding 
-#' final data QF's in the output data frame that should be triggered if the insufficient data QF 
-#' is triggered.
-#'  
 #' @param DirOut Character value. The base file path for the output data. 
+#' 
+#' @param numPoints Data frame including one or more info set parameters and user-defined values for 
+#' determining data insufficiency. Required columns include:
+#'         InfoSet - designation for group of related parameters
+#'         term - Name of the product e.g."nitrate" 
+#'         wndw - window of time for which insufficient data will be calculated
+#'         minPoints - minimum number of points required to not trigger the insufficient data quality flag
 #' 
 #' @param SchmStats (optional), A json-formatted character string containing the schema for the output averaged stats parquet.
 #' Should be the same as the input. 
@@ -54,8 +48,8 @@
 # DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733"
 # numPoints=c("nitrateNumPts")
 # minPoints=c(5)
-# insuffQFnames=c("nitrateInsufficientDataQF")
-# finalQFnames=c("nitrateFinalQF")
+# insuffQFname=c("nitrateInsufficientDataQF")
+# finalQFcolumn=c("nitrateFinalQF")
 # DirOut<-"~/pfs/nitrate_null_gap_ucrt_updated/2025/06/24/nitrate_CRAM103100/sunav2/CFGLOC110733" 
 # SchmStats<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_stats.avsc'),collapse='')
 # SchmQMs<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_quality_metrics.avsc'),collapse='')
@@ -68,9 +62,8 @@
 #' 
 #' Bobby Hensley (2025-12-18)
 #' Updated so that finalQF is solely determined by insufficientDataQF.
-#' 
-#' Bobby Hensley (2026-02-05)
-#' Updated to test multiple variables. 
+#' Nora Catolico (2026-02-06)
+#' Updated for data frame input of multiple variables. 
 ##############################################################################################
 wrap.qf.insuff.data <- function(DirIn,
                                 insuffParam,
@@ -103,71 +96,109 @@ wrap.qf.insuff.data <- function(DirIn,
                                        log=log)
   }
   
-  #' Read in parquet file of averaged stats.
-  statsFileName<-base::list.files(DirInStats,full.names=FALSE)
-  if(length(statsFileName)==0){
-    log$error(base::paste0('Stats file not found in ', DirInStats)) 
-    stop()
-  } else {
-    statsData<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInStats, '/', statsFileName),
-                                                       log = log),silent = FALSE)
-    log$debug(base::paste0('Successfully read in file: ',statsFileName))
-  }
+  #take stock of available files
+  statsFileNames<-base::list.files(DirInStats,full.names=FALSE)
+  qmFileNames<-base::list.files(DirInQMs,full.names=FALSE)
   
-  #' Read in parquet file of quality metrics.
-  qmFileName<-base::list.files(DirInQMs,full.names=FALSE)
-  if(length(qmFileName)==0){
-    log$error(base::paste0('Quality metrics not found in ', DirInQMs)) 
-    stop()
-  } else {
-    qmData<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInQMs, '/', qmFileName),
-                                                         log = log),silent = FALSE)
-    log$debug(base::paste0('Successfully read in file: ',qmFileName))
-  }
+  #loop through unique insuffParam values
+  paramGroups<-unique(insuffParam$InfoSet)
+  numGroups<-length(paramGroups)
   
-
-  #' Create data frame of variables, min points and flags
-     testParams<-data.frame(numPoints,minPoints,insuffQFnames,finalQFnames) 
-  
-  #' Starts loop that performs test for each variable specified in the testParams table
-    for(i in 1:nrow(testParams)){
-      numPoints<-testParams[i,1]
-      minPoints<-testParams[i,2]
-      insuffQFnames<-testParams[i,3]
-      finalQFnames<-testParams[i,4]
-   
-      #' If the number of points is NA, set it to 0.
-      statsData[is.na(statsData[[numPoints]]), numPoints] <- 0 
+  for (groupIdx in 1:numGroups){
+    #subset to one group
+    paramGroup <- insuffParam[insuffParam$InfoSet == paramGroups[groupIdx],]
     
-      #' If the number of points is greater than or equal to the minimum required, 
-      #' revert the insufficient data quality flag (default is to apply it).
-      qmData[[insuffQFnames]]<-1
-      qmData[statsData[[numPoints]] >= minPoints, insuffQFnames] <- 0 
+    #identify averaging index and min points
+    wndw <- as.character(paramGroup$value[paramGroup$field == "wndw"])
+    minPoints <- as.numeric(paramGroup$value[paramGroup$field == "minPoints"])
+    term <- as.character(paramGroup$value[paramGroup$field == "term"])
     
-      #' If insufficient data QF is applied, apply final QF.
-      qmData[[finalQFnames]] <- ifelse(qmData[[insuffQFnames]] == 1, 1, 0) 
-   } # Ends test loop
-  
-  #' Write out stats file.  
-  rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = statsData,
-                                                    NameFile = base::paste0(DirOutStats,'/',statsFileName),
-                                                    Schm = SchmStats),silent=TRUE)
-  if(class(rptOutStats)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName),'. ',attr(rptOutStats, "condition")))
-    stop()
-  } else {
-    log$info(base::paste0('Updated stats written successfully in ', base::paste0(DirOutStats,'/',statsFileName)))
-  }
-  
-  #' Write out QMs file.  
-  rptOutQMs <- try(NEONprocIS.base::def.wrte.parq(data = qmData,
-                                                    NameFile = base::paste0(DirOutQMs,'/',qmFileName),
+    #' choose appropriate file and read in averaged stats parquet
+    statsFile <- statsFileNames[grepl(paste0(wndw, "\\.parquet$"), statsFileNames)]
+    if(length(statsFile)==0){
+      log$error(base::paste0('Stats file with averaging window ', wndw,' not found in ', DirInStats)) 
+      stop()
+    }
+    statsData<-NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInStats, '/', statsFile),
+                                              log = log)
+    log$debug(base::paste0('Successfully read in file: ',statsFile))
+    
+    #' choose appropriate file and read in averaged quality parquet
+    qmFile <- qmFileNames[grepl(paste0(wndw, "\\.parquet$"), qmFileNames)]
+    if(length(qmFile)==0){
+      log$error(base::paste0('Quality metrics file with averaging window ', wndw,' not found in ', DirInQMs)) 
+      stop()
+    }
+    qmData<-NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInQMs, '/', qmFile),
+                                              log = log)
+    log$debug(base::paste0('Successfully read in file: ',qmFile))
+    
+    
+    
+    # Return the column name(s) containing term and number of points
+    numPointsColumn <- names(statsData)[grepl(term, names(statsData), ignore.case = TRUE) & 
+                                   grepl("Num", names(statsData), ignore.case = TRUE)]
+    if(length(numPointsColumn)!=1){
+      log$error(base::paste0('No column found with name the includes ', term,' and num in', DirInStats)) 
+      stop()
+    }
+    #' If the number of points is NA, set it to 0.
+    statsData[is.na(statsData[[numPointsColumn]]), numPointsColumn] <- 0 
+    
+    #find insufficient data column name if it already exists 
+    insuffQFColumn <- names(qmData)[grepl("insuf", names(qmData), ignore.case = TRUE)]
+    #search by term if multiple exist
+    if(length(insuffQFColumn)>1){
+      insuffQFColumn <- names(qmData)[grepl(term, names(qmData), ignore.case = TRUE) & 
+                                        grepl("insuf", names(qmData), ignore.case = TRUE)]
+    }
+    #add it in if it doesn't exist
+    if(length(insuffQFColumn)==0){
+      insuffQFColumn <- "insufficientDataQF"
+    }
+    #' If the number of points is greater than or equal to the minimum required, 
+    #' revert the insufficient data quality flag (default is to apply it).
+    qmData[[insuffQFColumn]]<-1
+    qmData[statsData[[numPointsColumn]] >= minPoints, insuffQFColumn] <- 0 
+      
+      
+    #find final QF column name if it already exists 
+    finalQFcolumn <- names(qmData)[grepl("final", names(qmData), ignore.case = TRUE)]
+    #search by term if multiple exist
+    if(length(finalQFcolumn)>1){
+      finalQFcolumn <- names(qmData)[grepl(term, names(qmData), ignore.case = TRUE) & 
+                                        grepl("final", names(qmData), ignore.case = TRUE)]
+    }
+    #add it in if it doesn't exist
+    if(length(finalQFcolumn)==0){
+      finalQFcolumn <- "finalQF"
+    }
+    
+    #' If insufficient data QF is applied, apply final QF.
+    qmData[[finalQFcolumn]] <- ifelse(qmData[[insuffQFColumn]] == 1, 1, 0) 
+    
+    #' Write out stats file.  
+    rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = statsData,
+                                                      NameFile = base::paste0(DirOutStats,'/',statsFile),
+                                                      Schm = SchmStats),silent=TRUE)
+    if(class(rptOutStats)[1] == 'try-error'){
+      log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFile),'. ',attr(rptOutStats, "condition")))
+      stop()
+    } else {
+      log$info(base::paste0('Updated stats written successfully in ', base::paste0(DirOutStats,'/',statsFile)))
+    }
+    
+    #' Write out QMs file.  
+    rptOutQMs <- try(NEONprocIS.base::def.wrte.parq(data = qmData,
+                                                    NameFile = base::paste0(DirOutQMs,'/',qmFile),
                                                     Schm = SchmQMs),silent=TRUE)
-  if(class(rptOutQMs)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write updated QMs to ',base::paste0(DirOutQMs,'/',qmFileName),'. ',attr(rptOutQMs, "condition")))
-    stop()
-  } else {
-    log$info(base::paste0('Updated QMs written successfully in ', base::paste0(DirOutQMs,'/',qmFileName)))
+    if(class(rptOutQMs)[1] == 'try-error'){
+      log$error(base::paste0('Cannot write updated QMs to ',base::paste0(DirOutQMs,'/',qmFile),'. ',attr(rptOutQMs, "condition")))
+      stop()
+    } else {
+      log$info(base::paste0('Updated QMs written successfully in ', base::paste0(DirOutQMs,'/',qmFile)))
+    }
+    
   }
   
 }
