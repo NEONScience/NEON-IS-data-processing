@@ -1,0 +1,90 @@
+---
+pipeline:
+  name: concH2oSoilSalinity_thresh_select_ts_pad
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.2.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/threshold_select
+    rm -rf /tmp/threshold_selectCopy
+    mkdir -p /tmp/threshold_select
+    # Run first module - threshold_select
+    Rscript ./flow.thsh.slct.R \
+      DirIn=$REPO_LOCATIONS \
+      DirOut=/tmp/threshold_select \
+      DirErr=/pfs/out/errored_datums \
+      FileThsh=$FILE_THRESHOLDS \
+      "TermCtxt1=VSICDepth02|soil|ion-content" \
+      "TermCtxt2=VSICDepth03|soil|ion-content" \
+      "TermCtxt3=VSICDepth04|soil|ion-content" \
+      "TermCtxt4=VSICDepth05|soil|ion-content" \
+      "TermCtxt5=VSICDepth06|soil|ion-content" \
+      "TermCtxt6=VSICDepth07|soil|ion-content" \
+      "TermCtxt7=VSICDepth08|soil|ion-content" \
+      "TermCtxt8=VSICDepth01|soil|ion-content" \
+      "TermCtxt9=VSWCfactoryDepth02|soil|water-content|factory" \
+      "TermCtxt10=VSWCfactoryDepth03|soil|water-content|factory" \
+      "TermCtxt11=VSWCfactoryDepth04|soil|water-content|factory" \
+      "TermCtxt12=VSWCfactoryDepth05|soil|water-content|factory" \
+      "TermCtxt13=VSWCfactoryDepth06|soil|water-content|factory" \
+      "TermCtxt14=VSWCfactoryDepth07|soil|water-content|factory" \
+      "TermCtxt15=VSWCfactoryDepth08|soil|water-content|factory" \
+      "TermCtxt16=VSWCfactoryDepth01|soil|water-content|factory" \
+      "TermCtxt17=VSWCsoilSpecificDepth02|soil|water-content|soil-specific" \
+      "TermCtxt18=VSWCsoilSpecificDepth03|soil|water-content|soil-specific" \
+      "TermCtxt19=VSWCsoilSpecificDepth04|soil|water-content|soil-specific" \
+      "TermCtxt20=VSWCsoilSpecificDepth05|soil|water-content|soil-specific" \
+      "TermCtxt21=VSWCsoilSpecificDepth06|soil|water-content|soil-specific" \
+      "TermCtxt22=VSWCsoilSpecificDepth07|soil|water-content|soil-specific" \
+      "TermCtxt23=VSWCsoilSpecificDepth08|soil|water-content|soil-specific" \
+      "TermCtxt24=VSWCsoilSpecificDepth01|soil|water-content|soil-specific" \
+      "DirSubCopy=data|location"
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/threshold_select 
+    # Run second module - timeseries_padder
+    python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+    EOF
+  env:
+    DATA_PATH: /tmp/threshold_selectCopy
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    PAD_DIR: data
+    COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory to copy to the output
+    RELATIVE_PATH_INDEX: '3'
+    PARALLELIZATION_INTERNAL: '5' # For threshold select module
+output_branch: master
+input:
+  cross:
+  - pfs:
+      name: REPO_LOCATIONS
+      repo: concH2oSoilSalinity_group_path
+      glob: /*/*/*
+  - pfs:
+      name: FILE_THRESHOLDS
+      repo: concH2oSoilSalinity_threshold_test3 #test 2 
+      glob: /thresholds.json
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 5.5
+resource_limits:
+  memory: 3G
+  cpu: 6.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

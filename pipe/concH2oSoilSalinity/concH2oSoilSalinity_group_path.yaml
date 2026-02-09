@@ -37,19 +37,19 @@ input:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
       repo: concH2oSoilSalinity_group_assignment
-      glob: /conc-h2o-soil-salinity/(2025/10/18)
+      glob: /conc-h2o-soil-salinity/(2025/10/(16|17|18))
       joinOn: $1
       outer_join: True
   - pfs:
       name: LOCATION_FOCUS_PATH
       repo: enviroscan_fill_date_gaps_and_regularize
-      glob: /*/(2025/10/18)
+      glob: /*/(2025/10/(16|17|18))
       joinOn: $1
       outer_join: True
   - pfs:
       name: GROUP_FOCUS_PATH
       repo: tempSoil_level1_group_consolidate_srf
-      glob: /(2025/10/18)
+      glob: /(2025/10/(16|17|18))
       joinOn: $1
       outer_join: True
 parallelism_spec:
