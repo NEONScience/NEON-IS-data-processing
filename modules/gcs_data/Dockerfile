@@ -8,7 +8,6 @@
 # Use ubi9 as the base image
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.7
 ARG MODULE_DIR="./modules"
-ARG APP_DIR=""
 ARG CONTAINER_APP_DIR="/usr/src/app"
 
 # For rclone
@@ -26,8 +25,8 @@ RUN microdnf update -y --disableplugin=subscription-manager && \
             tar && \
             microdnf clean all --disableplugin=subscription-manager &&\
     groupadd appuser -g 1001 && \
-    useradd appuser -d ${APPDIR} -g appuser -u 1001 &&\
-    rm -rf ${APPDIR}/venv 
+    useradd appuser -d ${CONTAINER_APP_DIR} -g appuser -u 1001 &&\
+    rm -rf ${CONTAINER_APP_DIR}/venv 
 
 # Multi-platform package install for rclone
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; \
