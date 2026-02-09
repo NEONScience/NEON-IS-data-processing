@@ -64,6 +64,7 @@ options(digits.secs = 3)
 library(foreach)
 library(doParallel)
 library(lubridate)
+library(dplyr)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.sunav2.quality.flags.R")

@@ -243,10 +243,10 @@ wrap.sunav2.quality.flags <- function(DirIn,
                                                     NameFile = base::paste0(DirOutData,'/',dataFileName),
                                                     Schm = SchmDataOut),silent=TRUE)
   if(class(rptOutData)[1] == 'try-error'){
-    log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutData,'/',dataFileName,".parquet"),'. ',attr(rptOutData, "condition")))
+    log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutData,'/',dataFileName),'. ',attr(rptOutData, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Data written successfully in ', base::paste0(DirOutData,'/',dataFileName,".parquet")))
+    log$info(base::paste0('Data written successfully in ', base::paste0(DirOutData,'/',dataFileName)))
   }
   
   #' Write out flags file.  
