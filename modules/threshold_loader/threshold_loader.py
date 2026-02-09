@@ -38,13 +38,7 @@ def load_thresholds(get_thresholds: Callable[[str], Iterator[Threshold]], out_pa
                 if set(context_l) == set(threshold_contexts):
                     # Create unique key including dates to avoid losing seasonal thresholds
                     unique_key = (
-                        threshold.threshold_name,
-                        threshold.term_name,
-                        threshold.location_name,
-                        threshold.start_date,
-                        threshold.end_date,
-                        threshold.start_day_of_year,
-                        threshold.end_day_of_year
+                        threshold.threshold_uuid
                     )
                     if unique_key not in seen:
                         seen.add(unique_key)
