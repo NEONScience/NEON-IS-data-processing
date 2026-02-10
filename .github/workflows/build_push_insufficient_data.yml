@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'flow/flow.insufficient.data/**'
+      - 'flow/flow.qf.insuff.data/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,7 +22,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/flow.insufficient.data
+  MODULE_PATH: ./flow/flow.qf.insuff.data
   IMAGE_NAME: neon-is-insufficient-data
 
 jobs:

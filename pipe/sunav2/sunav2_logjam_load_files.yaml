@@ -1,0 +1,45 @@
+---
+pipeline:
+  name: sunav2_logjam_load_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 --version
+  - python3 -c "import environs; print(environs.__version__)"
+  - python3 -c "import marshmallow; print(marshmallow.__version__)"
+  - python3 -m logjam_loader.load_all_logjam_files
+  
+  env:
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: DEBUG
+    STARTING_PATH_INDEX: "7"
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    name: IN_PATH
+    repo: sunav2_logjam_list_files
+    glob: /*/*/*/logjam_prod/sunav2/
+    empty_files: true
+parallelism_spec:
+  constant: 10
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
