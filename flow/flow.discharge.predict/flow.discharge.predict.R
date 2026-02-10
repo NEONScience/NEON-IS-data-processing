@@ -39,12 +39,13 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-# Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2024/03/20/l4discharge_HOPB132100')
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=$DIR_IN",
-#          "DirBaM=~/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
-#          "DirOut=~/pfs/out",
-#          "DirErr=~/pfs/out/errored_datums")
+setwd("/home/NEON/ncatolico/R/NEON-IS-data-processing/flow/flow.discharge.predict")
+Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2024/03/20/l4discharge_HOPB132100')
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+arg <- c("DirIn=$DIR_IN",
+         "DirBaM=~/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
+         "DirOut=~/pfs/out",
+         "DirErr=~/pfs/out/errored_datums")
 #"FileSchmData=~/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
 # rm(list=setdiff(ls(),c('arg','log')))
 #setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict")
@@ -116,19 +117,17 @@ for(idxDirIn in DirIn){
       ),
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
-        log$error(err$message)
-        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn, 
-                                                             log = log)
-        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
-        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
-                                      log = log)
-        csvname <- DirSub %>%
-          strsplit( "/" ) %>%
-          sapply( tail, 1 )
-        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
-        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
-        con <- base::file(nameFileErr, "w")
-        base::close(con)
+        
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
       }
     ),
     # This simply to avoid returning the error
