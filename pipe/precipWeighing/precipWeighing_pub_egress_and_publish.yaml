@@ -84,7 +84,7 @@ transform:
           ":gcs://${BUCKET_NAME_MDP}/${PRODUCT}"
       done
       echo "============ Done for MDP sites"
-      cp -f "$OUT_MDP_SITES" $OUT_PATH_MDP/mdp_sites.txt
+      #cp -f "$OUT_MDP_SITES" $OUT_PATH_MDP/mdp_sites.txt
     else
       echo "No MDP pub output to egress"
     fi

@@ -75,6 +75,8 @@ sidecar_resource_requests:
   memory: 2G
   cpu: 0.5
 autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class

@@ -2,7 +2,7 @@
 pipeline:
   name: l2130i_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -90,7 +90,7 @@ input:
     repo: l2130i_data_source_kafka
     glob: /l2130i_raw/*/*/*/*
 parallelism_spec:
-  constant: 5
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 100M

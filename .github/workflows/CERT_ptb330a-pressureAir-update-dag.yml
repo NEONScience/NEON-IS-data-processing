@@ -2,10 +2,10 @@ name: CERT-ptb330a-pressureAir-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/ptb330a/*.yaml'
-      - 'pipe/ptb330a/pipe_list_ptb330a_development.txt'
+      - 'pipe/ptb330a/pipe_list_ptb330a.txt'
       - 'pipe/pressureAir/*.yaml'
       - 'pipe/pressureAir/pipe_list_pressureAir.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
@@ -52,7 +52,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
-      PATHS: 'pipe/ptb330a=pipe_list_ptb330a_development.txt,pipe/pressureAir=pipe_list_pressureAir.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      PATHS: 'pipe/ptb330a=pipe_list_ptb330a.txt,pipe/pressureAir=pipe_list_pressureAir.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}

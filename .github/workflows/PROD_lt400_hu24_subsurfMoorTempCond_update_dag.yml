@@ -1,13 +1,13 @@
-name: DEV-prt-tempAirSingle-update-dag
+name: PROD-lt400-hu24-subsurfMoorTempCond-update-dag
 on:
   push:
     branches:
-      - 'prt'
+      - 'prod'
     paths:
-      - 'pipe/prt/*.yaml'
-      - 'pipe/prt/pipe_list_prt_development.txt'
-      - 'pipe/tempAirSingle/*.yaml'
-      - 'pipe/tempAirSingle/pipe_list_tempAirSingle.txt'
+      - 'pipe/leveltroll400_hobou24/*.yaml'
+      - 'pipe/leveltroll400_hobou24/pipe_list_leveltroll400_hobou24.txt'
+      - 'pipe/subsurfMoorTempCond/*.yaml'
+      - 'pipe/subsurfMoorTempCond/pipe_list_subsurfMoorTempCond.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
@@ -30,7 +30,6 @@ jobs:
   # Event `push`: Compare the preceding remote commit -> to the current commit of the main branch 
   # ----------------------------------------------------------------------------------------------
 
-
   changed_files:
     runs-on: ubuntu-latest  # windows-latest || macos-latest
     outputs:
@@ -51,9 +50,9 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
-      PATHS: 'pipe/prt=pipe_list_prt_development.txt,pipe/tempAirSingle=pipe_list_tempAirSingle.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
+      PATHS: 'pipe/leveltroll400_hobou24=pipe_list_leveltroll400_hobou24.txt,pipe/subsurfMoorTempCond=pipe_list_subsurfMoorTempCond.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}

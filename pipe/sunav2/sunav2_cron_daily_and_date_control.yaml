@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: ptb330a_cron_daily_and_date_control_trino
+  name: sunav2_cron_daily_and_date_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   cmd: ["/bin/bash"]
@@ -11,9 +11,9 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2025-04-01" # Inclusive
-    END_DATE: "2025-05-29"
-    SOURCE_TYPE: "ptb330a"
+    START_DATE: "2026-01-19" # Inclusive
+    #END_DATE: "2019-12-02" # Inclusive
+    SOURCE_TYPE: "sunav2"
   stdin:
   - "#!/bin/bash"
   - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
@@ -22,12 +22,12 @@ input:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      #spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
-      spec: "@never"
+      #spec: "@never"
+      spec: "0 0 * * *" # Run at 00:00 GMT
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: ptb330a_site_list
+      repo: sunav2_site_list
       glob: /site-list.json
 resource_requests:
   memory: 100M
@@ -37,10 +37,7 @@ resource_limits:
   cpu: 1.5
 sidecar_resource_requests:
   memory: 500M
-  cpu: 0.2
-sidecar_resource_limits:
-  memory: 1G
-  cpu: 1
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:
