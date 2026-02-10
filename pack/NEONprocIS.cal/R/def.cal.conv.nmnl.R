@@ -45,7 +45,7 @@
 #'                TimeBgn = as.POSIXct('2025-01-01'),
 #'                TimeEnd = as.POSIXct('2025-01-04'),
 #'                )
-#' dataCal <- def.cal.conv.nmnl.b(data=data,nomVal=c(15/90,355),calID=c(CVAL_A1,CVAL_B1),varConv=c('var1','var2'),calSlct=calSlct)
+#' dataCal <- def.cal.conv.nmnl(data=data,nomVal=c(15/90,355),calID=c(CVAL_A1,CVAL_B1),varConv=c('var1','var2'),calSlct=calSlct)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly}

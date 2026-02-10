@@ -14,7 +14,7 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: tchain
+    SOURCE_TYPE: rmyoung
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
