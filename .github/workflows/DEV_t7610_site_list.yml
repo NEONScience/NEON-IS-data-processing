@@ -2,7 +2,7 @@ name: DEV-t7610-site-list
 on:
   push:
     branches:
-      - 'none'
+      - 'master'
     paths:
       - 'pipe/t7610/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
