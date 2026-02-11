@@ -23,7 +23,11 @@ spec:
       - name: log-level # All modules
         value: INFO
       - name: datum-manifests # Data loader
-        value: '["datum_manifest1.txt","datum_manifest2.txt"]'
+        value: |
+         [
+          {"paths": ["cmp22/2025/10/01","cmp22/2025/10/02/11185"]},
+          {"paths": ["cmp22/2025/10/03"]}
+         ]
       - name: out-path-cal-joiner
         value: /pfs/data_cal_joined
       - name: out-path-kafka-comb
@@ -60,7 +64,7 @@ spec:
           arguments:
             parameters:
             - name: datum-manifest
-              value: "{{item}}"
+              value: "{{item.paths}}"
           withParam: "{{workflow.parameters.datum-manifests}}"
           
           
@@ -77,11 +81,6 @@ spec:
         parameters:
         - name: datum-manifest
         artifacts: 
-        - name: manifest-folder
-          path: /inputs/datum_manifests
-          gcs:
-            bucket: neon-dev-argo-workflow-test
-            key: cmp22_datum_manifests
         - name: schemas
           path: /inputs/schemas
           gcs:
@@ -107,9 +106,9 @@ spec:
             
         containers:
           - name: load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-b7a7a33
             # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
-            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            # Note that the image might set the user and group as something else, but this doesn't matter because we don't need write priveleges in the container
             securityContext:
               runAsUser: 1001 
               runAsGroup: 1001
@@ -131,7 +130,6 @@ spec:
               echo $BUCKET_NAME
               echo $DATUM_MANIFEST
               
-              MANIFEST_PATH="/inputs/datum_manifests/${DATUM_MANIFEST}"
               DATA_REPO="cmp22_data_source_gcs"
               DATA_DEST="/inputs/DATA_PATH_ARCHIVE"
               CAL_REPO="cmp22_calibration_assignment"
@@ -139,17 +137,6 @@ spec:
               
               #set -x  # Uncomment for troubleshooting
               
-              # Clean list:
-              # - strip CRLF (THIS IS SUPER IMPORTANT FOR A TEXT FILE, you don't see the carriage return in echo or ls output)
-              # - trim whitespace
-              # - drop blank lines
-              # - drop comments (# ...)
-              CLEAN_MANIFEST="$(mktemp)"
-              sed -e 's/\r$//' \
-                  -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
-                  -e '/^$/d' -e '/^#/d' \
-                  "${MANIFEST_PATH}" > "$CLEAN_MANIFEST"
-
               # Normalize repo prefixes (remove leading/trailing slashes)
               DATA_REPO="${DATA_REPO#/}"
               DATA_REPO="${DATA_REPO%/}"
@@ -168,17 +155,14 @@ spec:
               echo "Cal Root:              $CAL_ROOT"
               echo "Cal Dest:              $CAL_DEST"
               echo
-              
-              # Helper: copy everything under a prefix
-              # This keeps things simple and reliable for small lists.
-              echo "Reading manifest: ${CLEAN_MANIFEST}"
-              
-              cat ${CLEAN_MANIFEST} | while IFS= read -r rel; do
-                # Get data
-                echo "Getting data datum: $rel"
-                
-                src="${DATA_ROOT}/${rel}"
-                dst="${DATA_DEST}/${rel}"
+
+
+              for datum_path in $(printf '%s' "$DATUM_MANIFEST" | jq -r '.[]'); do
+
+                echo "DATUM: $datum_path"
+
+                src="${DATA_ROOT}/${datum_path}"
+                dst="${DATA_DEST}/${datum_path}"
                 mkdir -p "$dst"
 
                 rclone \
@@ -191,10 +175,10 @@ spec:
                   "${src}" "${dst}" 
 
                 # Get calibrations
-                echo "Getting calibration datum: $rel"
+                echo "Getting calibration datum: $datum_path"
                 
-                src="${CAL_ROOT}/${rel}"
-                dst="${CAL_DEST}/${rel}"
+                src="${CAL_ROOT}/${datum_path}"
+                dst="${CAL_DEST}/${datum_path}"
                 mkdir -p "$dst"
 
                 rclone \
@@ -333,7 +317,7 @@ spec:
           - name: main
             dependencies:
               - calibration-group-and-convert
-            image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-b7a7a33
             # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
             # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
             securityContext:
@@ -377,13 +361,11 @@ spec:
           
                 echo "Syncing files to bucket"
                 rclone \
-                  --no-check-dest \
                   --copy-links \
                   --gcs-bucket-policy-only \
-                  --gcs-no-check-bucket \
                   copy \
-                  "${linkdir}" \
-                  ":gcs://${BUCKET_NAME}"
+                  "${linkdir}/${OUT_REPO}" \
+                  ":gcs://${BUCKET_NAME}/${OUT_REPO}"
                   
                 echo "Removing temporary files"
                 rm -rf $linkdir
