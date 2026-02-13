@@ -1,0 +1,346 @@
+# This workflow template accepts a list of manifest files to retrieve from a gcs bucket, 
+#   parallelizing over them to process each one.
+# Each manifest contains a list of paths (datums) to retrieve from particular folders in GCS.
+# Each datum can be specified to whatever path makes sense. For example, can specify to 
+# the /source_type/year/month/day, or to the /source_type/year/month/day/source-id
+# The data is loaded to a local volume.
+# The calibration group and convert module processes whatever is in the volume.
+# The final output is copied to a specified repo in the specified output bucket
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cmp22-loc-strc
+spec:
+  # You can set sensible defaults here, can override in the workflow
+  entrypoint: run-per-manifest
+  # This block for granting setting the group permissions on the emptyDir volumes
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: OnRootMismatch
+  arguments:
+    parameters:
+      - name: log-level # All modules
+        value: INFO
+      - name: datum-manifests # Data loader
+        value: |
+         [
+          {"paths": ["cmp22/2025/10/01/11185","cmp22/2025/10/02/11185"]},
+          {"paths": ["cmp22/2025/10/03/11185"]}
+         ]
+      - name: out-path-joiner
+        value: /pfs/filter_joined
+      - name: out-path-loc-strc
+        value: /pfs/structured
+      - name: err-path # All modules
+        value: /pfs/errored_datums
+      - name: out-path-loc-merg
+        value: /pfs/cmp22_location_group_and_restructure
+      - name: relative-path-index
+        value: 3
+      - name: link-type
+        value: SYMLINK
+      - name: parallelism-internal # All R modules
+        value: 3
+      - name: bucket-name # Bucket download/upload
+        value: neon-dev-argo-workflow-test
+      - name: out-repo
+        value: cmp22_location_group_and_restructure
+
+  templates:
+    - name: run-per-manifest
+      parallelism: 2 # Do N manifests at once
+      steps:
+      - - name: run-bundle
+          template: run
+          arguments:
+            parameters:
+            - name: datum-manifest
+              value: "{{item.paths}}"
+          withParam: "{{workflow.parameters.datum-manifests}}"
+          
+          
+    - name: run
+      volumes:
+        - name: in-vol
+          emptyDir: { }
+        - name: out-vol
+          emptyDir: { }
+        - name: tmp-vol
+          emptyDir: { }
+          
+      inputs:
+        parameters:
+        - name: datum-manifest
+        artifacts: 
+
+      containerSet:
+        # Note: Must mount volume with the input artifact(s) in order to have it accessible to all containers 
+        #   (otherwise it is only accessible to the "main" container). Same goes for outputs.
+        volumeMounts:
+          - name: in-vol
+            mountPath: /inputs
+          - name: out-vol
+            mountPath: /pfs
+            # /tmp is required to run R code if it ever creates a temp directory
+          - name: tmp-vol
+            mountPath: /tmp
+            
+        containers:
+          - name: load-data
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-b7a7a33
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image might set the user and group as something else, but this doesn't matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "100m"
+              limits:
+                memory: "500Mi"
+                cpu: "1"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              echo $BUCKET_NAME
+              echo $DATUM_MANIFEST
+              
+              DATA_REPO="cmp22_calibration_group_and_convert"
+              DATA_DEST="/inputs/DATA_PATH"
+              LOC_REPO="cmp22_location_asset_assignment"
+              LOC_DEST="/inputs/LOCATION_PATH"
+              
+              #set -x  # Uncomment for troubleshooting
+              
+              # Normalize repo prefixes (remove leading/trailing slashes)
+              DATA_REPO="${DATA_REPO#/}"
+              DATA_REPO="${DATA_REPO%/}"
+              LOC_REPO="${LOC_REPO#/}"
+              LOC_REPO="${LOC_REPO%/}"
+
+              DATA_ROOT=":gcs://${BUCKET_NAME}/${DATA_REPO}"
+              LOC_ROOT=":gcs://${BUCKET_NAME}/${LOC_REPO}"
+              
+              mkdir -p "$DATA_DEST"
+              mkdir -p "$LOC_DEST"
+              
+              echo "Datum Manifest:        $DATUM_MANIFEST"
+              echo "Data Root:             $DATA_ROOT"
+              echo "Data Dest:             $DATA_DEST"
+              echo "Loc Root:              $LOC_ROOT"
+              echo "Loc Dest:              $LOC_DEST"
+              echo
+
+
+              for datum_path in $(printf '%s' "$DATUM_MANIFEST" | jq -r '.[]'); do
+
+                echo "DATUM: $datum_path"
+
+                src="${DATA_ROOT}/${datum_path}"
+                dst="${DATA_DEST}/${datum_path}"
+                mkdir -p "$dst"
+
+                rclone \
+                  --no-check-dest \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  --gcs-no-check-bucket \
+                  copy \
+                  --progress \
+                  "${src}" "${dst}" 
+
+                # Get calibrations
+                echo "Getting calibration datum: $datum_path"
+                
+                src="${LOC_ROOT}/${datum_path}"
+                dst="${LOC_DEST}/${datum_path}"
+                mkdir -p "$dst"
+
+                rclone \
+                  --no-check-dest \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  --gcs-no-check-bucket \
+                  copy \
+                  --progress \
+                  "${src}" "${dst}" 
+              done
+              
+              echo "Done getting data and calibrations."
+              
+              #set +x # Uncomment for troubleshooting
+                        
+            env:
+              # Environment variables for data upload
+              - name: DATUM_MANIFEST
+                value: "{{inputs.parameters.datum-manifest}}"   # <- parameterized
+              - name: BUCKET_NAME
+                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
+
+          - name: location-group-and-restructure
+            dependencies:
+              - load-data
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.1
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+              
+            # NOTE: The individual resources requested for each container don't really matter. 
+            #   It's the sum total of them that is actually available to each container, so long as they run in sequence.
+            #   Any containers that run in parallel need to have the sum of their resource needs available
+            resources:
+              requests:
+                memory: "700Mi"
+                cpu: "1"
+              limits:
+                memory: "1Gi"
+                cpu: "1.25"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              # ls -l /inputs
+              # ls -l /inputs/DATA_PATH
+              # ls -l /inputs/DATA_PATH/cmp22/2025/10
+
+              # Join files from the archive and from Kafka
+              export OUT_PATH=$OUT_PATH_JOINER
+              python3 -m filter_joiner.filter_joiner_main
+              
+              # Structure repo by location
+              Rscript ./flow.loc.repo.strc.R \
+                DirIn=$OUT_PATH_JOINER \
+                DirOut=$OUT_PATH_LOC_STRC \
+                DirErr=$ERR_PATH \
+                Comb=TRUE
+              
+              # Merge data by location
+              Rscript ./flow.loc.data.trnc.comb.R \
+                DirIn=$OUT_PATH_LOC_STRC \
+                DirOut=$OUT_PATH_LOC_MERG \
+                DirErr=$ERR_PATH \
+                "DirSubCombData=data|flags|uncertainty_data" \
+                DirSubCombUcrt=uncertainty_coef \
+                DirSubCopy=location 
+    
+            env:
+              # Environment variables for filter-joiner
+              - name: CONFIG
+                value: |
+                      ---
+                      # Configuration for filter-joiner module that will bring together the data and calibrations
+                      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+                      # Metadata indices will typically begin at index 3.
+                      input_paths:
+                        - path:
+                            name: DATA_PATH
+                            # Filter for data directory
+                            glob_pattern: /inputs/DATA_PATH/cmp22/*/*/*/*/**
+                            # Join on named location (already joined below by day)
+                            join_indices: [7]
+                            outer_join: true
+                        - path:
+                            name: LOCATION_PATH
+                            # Filter for data directory
+                            glob_pattern: /inputs/LOCATION_PATH/cmp22/*/*/*/*/**
+                            # Join on named location (already joined below by day)
+                            join_indices: [7]
+                            outer_join: true
+              - name: OUT_PATH_JOINER
+                value: "{{workflow.parameters.out-path-joiner}}"   # <- parameterized
+              - name: OUT_PATH_LOC_STRC
+                value: "{{workflow.parameters.out-path-loc-strc}}"   # <- parameterized
+              - name: OUT_PATH_LOC_MERG
+                value: "{{workflow.parameters.out-path-loc-merg}}"   # <- parameterized
+              - name: ERR_PATH
+                value: "{{workflow.parameters.err-path}}"   # <- parameterized
+              - name: LOG_LEVEL
+                value: "{{workflow.parameters.log-level}}"   # <- parameterized
+              - name: RELATIVE_PATH_INDEX
+                value: "{{workflow.parameters.relative-path-index}}"   # <- parameterized
+              - name: LINK_TYPE
+                value: "{{workflow.parameters.link-type}}"   # <- parameterized
+              - name: PARALLELISM_INTERNAL
+                value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
+                
+          - name: main
+            dependencies:
+              - location-group-and-restructure
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-b7a7a33
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "100m"
+              limits:
+                memory: "500Mi"
+                cpu: "1"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              ls -l $OUT_PATH
+
+              # Export data to bucket
+              if [[ -d "$OUT_PATH" ]]; then
+                linkdir=$(mktemp -d)
+                shopt -s globstar
+                out_parquet_glob="${OUT_PATH}/**/*.*" # Get all files, assuming there is an extension
+                # Example: /pfs/out/cmp22/2023/01/01/12345/data/file.parquet
+                echo "Linking output files to ${linkdir}"
+                # set -x # Uncomment for troubleshooting
+                for f in $out_parquet_glob; do
+                  # Parse the path
+                  [[ "$f" =~ ^$OUT_PATH/(.*)$ ]]
+                  rel_path="${BASH_REMATCH[1]}"
+                  fname="${rel_path##*/}"
+                  rel_dir="${rel_path%/*}"
+                  outdir="${linkdir}/${OUT_REPO}/${rel_dir}"
+                  mkdir -p "${outdir}"
+                  ln -s "${f}" "${outdir}"
+                done
+          
+                echo "Syncing files to bucket"
+                rclone \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  copy \
+                  "${linkdir}/${OUT_REPO}" \
+                  ":gcs://${BUCKET_NAME}/${OUT_REPO}"
+                  
+                echo "Removing temporary files"
+                rm -rf $linkdir
+                
+                # set +x # Uncomment for troubleshooting
+              fi
+                        
+            env:
+              # Environment variables for data upload
+              - name: OUT_PATH
+                value: "{{workflow.parameters.out-path-loc-merg}}"   # <- parameterized
+              - name: BUCKET_NAME
+                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
+              - name: OUT_REPO
+                value: "{{workflow.parameters.out-repo}}"   # <- parameterized
+
