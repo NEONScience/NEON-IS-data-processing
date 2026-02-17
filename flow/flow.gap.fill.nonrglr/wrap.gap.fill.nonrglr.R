@@ -83,6 +83,8 @@ wrap.gap.fill.nonrglr <- function(DirIn,
                       log=NULL
 ){
   
+  library(dplyr)
+  
   # Start logging if not already
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
