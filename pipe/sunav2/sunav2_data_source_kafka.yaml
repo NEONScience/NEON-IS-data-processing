@@ -2,20 +2,12 @@
 pipeline:
   name: sunav2_data_source_kafka
 transform:
-<<<<<<< HEAD
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.10.1
-=======
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-3a11e51
->>>>>>> master
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out #also used for parser
     SOURCE_TYPE: "sunav2_raw"
-<<<<<<< HEAD
     LOG_LEVEL: INFO
-=======
-    LOG_LEVEL: DEBUG
->>>>>>> master
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
@@ -39,12 +31,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
-<<<<<<< HEAD
-=======
   - name: pachyderm-kafka-auth
     env_var: KAFKA_LOG_TOPIC
     key: KAFKA_LOG_TOPIC
->>>>>>> master
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -72,21 +61,6 @@ transform:
     
     # Get GCP zone
     meta=$(curl -sH "Metadata-Flavor: Google" "http://metadata/computeMetadata/v1/instance/zone")
-<<<<<<< HEAD
-    zone=$(echo $meta | cut -d "/" -f 4)
-    echo $zone
-    
-    # Get today's date for evaluating kafka data retention period
-    date_today=$(date -u +%Y-%m-%d)
-    kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
-    
-    # Get date from input path. Terminal path structure must be /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
-    # Datum must be set at /SOURCE_TYPE/YYYY/MM/DD or /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
-    date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
-    echo $date_path
-    date_str=$(date -u +%Y-%m-%d -d $date_path)
-    
-=======
     zone=$(echo "${meta}" | cut -d "/" -f 4)
     echo "GCP Zone: ${zone}"
 
@@ -100,30 +74,12 @@ transform:
     echo "${date_path}"
     date_str=$(date -u +%Y-%m-%d -d "${date_path}")
 
->>>>>>> master
     # Get each site to run
     if [[ -f ${import_trigger} ]]; then
       import_trigger_glob="${import_trigger}"
     else
       import_trigger_glob="${import_trigger}/*"
     fi
-<<<<<<< HEAD
-    
-    sites_output=()
-
-    for site_kafka in $import_trigger_glob; do
-      site_file=$(basename $site_kafka) # Strip off any path prefix
-      site=$(echo $site_file | cut -f 1 -d "." --only-delimited) # Extract the site from site.kafka. Ignore site-only files (e.g. CPER vs. CPER.kafka)
-      type=$(echo $site_file | cut -f 2 -d "." --only-delimited) # Extract the 'kafka' from site.kafka
-      if [ "$type" != "kafka" ]
-      then
-        echo "$site_file is not indicated to be streaming from Kafka. Skipping..."
-        continue
-      elif [ "$(date -u +%s -d "$date_str")" -lt "$(date -u +%s -d "$kafka_min_date")" ]
-      then
-        echo -n "Cannot extract $date_str Kafka data for $site. "
-        echo -n "Today's date ($date_today) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping..."
-=======
 
     mkdir -p "${OUT_PATH}/${SOURCE_TYPE}"
 
@@ -139,62 +95,10 @@ transform:
       then
         echo -n "Cannot extract ${date_str} Kafka data for ${site}. "
         echo -n "Today's date (${date_today}) is beyond the Kafka retention period (${KAFKA_RETENTION_DAYS} days). Skipping..."
->>>>>>> master
         continue
       fi
       
       # We are ok to run
-<<<<<<< HEAD
-      echo "Extracting $date_str kafka data for $SOURCE_TYPE at $site"
-      
-      # Get "current data" - data that came in on the specified day, which is the same day it was measured
-      # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
-      
-      # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
-      date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
-      
-      sites_output+=($site)
-
-    done
-    
-    # Upload L0 files to bucket, compacting with any existing file with the same name
-    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
-      linkdir=$(mktemp -d)
-      shopt -s globstar
-      out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/li191r/2023/01/01/12345/data/file.parquet
-      echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for debugging
-      for f in $out_parquet_glob; do
-        # Parse the path
-        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
-        fsourcetype="${BASH_REMATCH[1]}"
-        fyear="${BASH_REMATCH[2]}"
-        fmonth="${BASH_REMATCH[3]}"
-        fday="${BASH_REMATCH[4]}"
-        fsourceid="${BASH_REMATCH[5]}"
-        fname="${BASH_REMATCH[7]}"
-        # fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
-        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
-        mkdir -p "${outdir}"
-        ln -s "${f}" "${outdir}/${fname}"
-        
-      done
-      
-      # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
-      
-      # Update the airflow triggering table
-      for site_output in "${sites_output[@]}"; do
-        ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
-      done
-
-      # set +x # Uncomment for debugging
-      rm -rf $linkdir
-    fi
-=======
       echo "Extracting ${date_str} kafka data for ${site}"
       
       # Make a directory to store the output files by site
@@ -257,44 +161,11 @@ transform:
       fi
 
     done
->>>>>>> master
-    
+
     # run data parser
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       python3 -m raw_data_parsers.raw_data_parser.suna_data_parser_main
     
-<<<<<<< HEAD
-    # save parsed data to gcs 
-      export SOURCE_TYPE=sunav2
-    
-      linkdir=$(mktemp -d)
-      shopt -s globstar
-      out_parquet_glob="${OUT_PATH}/${SOURCE_TYPE}/**/*.parquet"
-      # /pfs/out/sunav2/2023/01/01/12345/data/file.parquet
-      echo "Linking output files to ${linkdir}"
-      # set -x
-      for f in $out_parquet_glob; do
-        # Parse the path
-        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
-        fsourcetype="${BASH_REMATCH[1]}"
-        fyear="${BASH_REMATCH[2]}"
-        fmonth="${BASH_REMATCH[3]}"
-        fday="${BASH_REMATCH[4]}"
-        fsourceid="${BASH_REMATCH[5]}"
-        fname="${BASH_REMATCH[7]}"
-        # fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
-        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
-        mkdir -p "${outdir}"
-        ln -s "${f}" "${outdir}/${fname}"
-        
-      done
-      
-      # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
-
-      # set +x # Uncomment for debugging
-      rm -rf $linkdir
-=======
       # Upload L0 files to bucket, compacting with any existing file with the same name
       # when SOURCE_TYPE is sunav2_raw, OUT_SOURCE_TYPE is sunav2
       OUT_SOURCE_TYPE=${SOURCE_TYPE%%_raw} 
@@ -334,27 +205,17 @@ transform:
         rm -rf $linkdir
       fi
 
->>>>>>> master
-
     fi
 
     EOF
 input:
   pfs:
     name: import_trigger
-<<<<<<< HEAD
-    repo: sunav2_cron_daily_and_date_control_kafka
-    # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/sunav2/*/*/*"
-parallelism_spec:
-  constant: 3
-=======
     repo: sunav2_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/*/*/*/*"
 parallelism_spec:
   constant: 1
->>>>>>> master
 autoscaling: true
 resource_requests:
   memory: 2.5G
