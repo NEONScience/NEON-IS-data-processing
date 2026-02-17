@@ -230,14 +230,24 @@ wrap.envscn.temp.flags <- function(DirIn,
                                 ' at depth ', targetDepth, 'm. Temperature test flag will remain -1 (test not run).'))
           # Leave flag at -1 (already initialized)
         } else {
-          # Check if sensor is within acceptable distance (0.25m)
+          # Determine distance threshold based on depth level
+          depthLevel <- base::as.numeric(depthNum)
+          if (depthLevel <= 2) {
+            distThreshold <- 0.15  # Levels 1-2
+          } else if (depthLevel <= 5) {
+            distThreshold <- 0.35  # Levels 3-5
+          } else {
+            distThreshold <- 0.75  # Levels 6-8
+          }
+          
+          # Check if sensor is within acceptable distance
           sensorDepth <- sensorInfo$depth_m
           depthDiff <- base::abs(targetDepth - sensorDepth)
           
-          if (depthDiff > 0.25) {
+          if (depthDiff > distThreshold) {
             log$warn(base::paste0('Temperature sensor for ', col, ' is ', 
                                   base::round(depthDiff, 3), 'm away from target depth ',
-                                  targetDepth, 'm (max allowed: 0.25m). ',
+                                  targetDepth, 'm (max allowed: ', distThreshold, 'm for level ', depthLevel, '). ',
                                   'Temperature test flag will remain -1 (test not run).'))
             # Leave flag at -1 (already initialized)
           } else {
@@ -245,6 +255,7 @@ wrap.envscn.temp.flags <- function(DirIn,
             tempData <- def.calc.temp.flags(
               sensorInfo = sensorInfo,
               targetDepth = targetDepth,
+              distThreshold = distThreshold,
               log = log
             )
             

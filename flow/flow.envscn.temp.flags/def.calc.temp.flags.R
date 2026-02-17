@@ -10,6 +10,7 @@
 
 #' @param sensorInfo List containing 'closest' sensor and 'neighbors' list (from def.find.temp.sensor)
 #' @param targetDepth Numeric. The target depth (in meters) for distance validation
+#' @param distThreshold Numeric. Maximum allowed distance (in meters) between sensor and target depth
 #' @param log A logger object. Defaults to NULL.
 
 #' @return Data frame with columns:
@@ -32,6 +33,7 @@
 ##############################################################################################
 def.calc.temp.flags <- function(sensorInfo,
                                 targetDepth = NULL,
+                                distThreshold = NULL,
                                 log = NULL) {
   
   # Initialize log if not provided
@@ -76,14 +78,14 @@ def.calc.temp.flags <- function(sensorInfo,
     nextHigher <- sensorInfo$neighbors$higher
     nextLower <- sensorInfo$neighbors$lower
     
-    # Check if neighbors exist and are within acceptable distance (0.25m)
+    # Check if neighbors exist and are within acceptable distance
     useNeighbors <- FALSE
-    if (!base::is.null(nextHigher) && !base::is.null(nextLower) && !base::is.null(targetDepth)) {
+    if (!base::is.null(nextHigher) && !base::is.null(nextLower) && !base::is.null(targetDepth) && !base::is.null(distThreshold)) {
       distHigher <- base::abs(targetDepth - nextHigher$depth_m)
       distLower <- base::abs(targetDepth - nextLower$depth_m)
       
-      if (distHigher > 0.25 || distLower > 0.25) {
-        log$warn(base::paste0('Neighbor sensors exceed 0.25m distance threshold. ',
+      if (distHigher > distThreshold || distLower > distThreshold) {
+        log$warn(base::paste0('Neighbor sensors exceed ', distThreshold, 'm distance threshold. ',
                               'Higher: ', base::round(distHigher, 3), 'm, ',
                               'Lower: ', base::round(distLower, 3), 'm. ',
                               'Skipping neighbor averaging.'))
@@ -91,7 +93,7 @@ def.calc.temp.flags <- function(sensorInfo,
         useNeighbors <- TRUE
       }
     } else if (!base::is.null(nextHigher) && !base::is.null(nextLower)) {
-      # targetDepth not provided, proceed without distance check (legacy behavior)
+      # targetDepth or distThreshold not provided, proceed without distance check (legacy behavior)
       useNeighbors <- TRUE
     }
     
