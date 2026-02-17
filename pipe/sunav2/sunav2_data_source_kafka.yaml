@@ -7,7 +7,7 @@ transform:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out #also used for parser
     SOURCE_TYPE: "sunav2_raw"
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
