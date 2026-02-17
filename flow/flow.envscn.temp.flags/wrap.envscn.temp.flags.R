@@ -224,19 +224,26 @@ wrap.envscn.temp.flags <- function(DirIn,
           log = log
         )
         
-        # Calculate temperature flags
-        tempData <- def.calc.temp.flags(
-          sensorInfo = sensorInfo,
-          log = log
-        )
-        
-        # Apply flags to high-frequency data
-        dataSm <- def.apply.temp.flags(
-          dataSm = dataSm,
-          tempData = tempData,
-          qfColName = qfName,
-          log = log
-        )
+        # Check if a matching sensor was found
+        if (base::is.null(sensorInfo)) {
+          log$warn(base::paste0('No temperature sensor found for ', col,
+                                ' at depth ', targetDepth, 'm. Temperature test flag will remain -1 (test not run).'))
+          # Leave flag at -1 (already initialized)
+        } else {
+          # Calculate temperature flags
+          tempData <- def.calc.temp.flags(
+            sensorInfo = sensorInfo,
+            log = log
+          )
+          
+          # Apply flags to high-frequency data
+          dataSm <- def.apply.temp.flags(
+            dataSm = dataSm,
+            tempData = tempData,
+            qfColName = qfName,
+            log = log
+          )
+        }
       }
     }
     } # End temperature test loop
