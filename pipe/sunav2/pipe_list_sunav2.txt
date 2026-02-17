@@ -1,22 +1,2 @@
 sunav2_cron_daily_and_date_control.yaml
-<<<<<<< HEAD
-sunav2_logjam_list_files.yaml
-sunav2_logjam_load_files.yaml
-sunav2_logjam_assign_clean_files.yaml
 sunav2_data_source_kafka.yaml
-sunav2_data_source_trino.yaml
-sunav2_trino_data_parser.yaml
-sunav2_fill_log_files.yaml
-sunav2_calibration_list_files.yaml
-sunav2_calibration_loader.yaml
-sunav2_calibration_assignment.yaml
-sunav2_calibration_group_and_convert.yaml
-sunav2_location_asset.yaml
-sunav2_location_asset_assignment.yaml
-sunav2_location_loader.yaml
-sunav2_location_active_dates_assignment.yaml
-sunav2_location_group_and_restructure.yaml
-sunav2_fill_date_gaps.yaml
-=======
-sunav2_data_source_kafka.yaml
->>>>>>> master
