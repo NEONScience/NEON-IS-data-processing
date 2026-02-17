@@ -1,18 +1,26 @@
 ---
 pipeline:
-  name: l2130i_data_source_kafka
+  name: sunav2_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
   env:
-    OUT_PATH: /pfs/out
-    SOURCE_TYPE: "l2130i_raw"
+    # environment variables for kafka loader
+    OUT_PATH: /pfs/out #also used for parser
+    SOURCE_TYPE: "sunav2_raw"
     LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
     KAFKA_RETENTION_DAYS: "15"
+    
+    # environment variables for the parser
+    PARSE_FIELD: serial_output
+    RELATIVE_PATH_INDEX: "4"
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/sunav2/sunav2_parsed.avsc 
+    SOURCE_TYPE: 'sunav2_raw'
+    DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
+    UPDATE_TRIGGER_TABLE: "False"
+    RM_OFFSETS: "False"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -46,10 +54,11 @@ transform:
   - "-c"
   - |-
     /bin/bash <<'EOF'
+    
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-
+    
     # Get GCP zone
     meta=$(curl -sH "Metadata-Flavor: Google" "http://metadata/computeMetadata/v1/instance/zone")
     zone=$(echo "${meta}" | cut -d "/" -f 4)
@@ -95,7 +104,7 @@ transform:
       # Make a directory to store the output files by site
       siteoutpath="${OUT_PATH}/${site}"
       mkdir -p "${siteoutpath}"
-
+      
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
       ./extract-kafka-sensor.py -s "${site}" -S "${SOURCE_TYPE}" -D "${siteoutpath}/${SOURCE_TYPE}" -d "${date_str}" --only current --consumer "client.rack=${zone}"
@@ -103,13 +112,13 @@ transform:
       # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
       date_str_1=$(date +%Y-%m-%d -d "${date_str} + 1 day")
       ./extract-kafka-sensor.py -s "${site}" -S "${SOURCE_TYPE}" -D "${siteoutpath}/${SOURCE_TYPE}" -d "${date_str_1}" --only noncurrent --consumer client.rack="${zone}"
-
+      
       # Upload L0 files to bucket, compacting with any existing file with the same name
       if [[ -d "${siteoutpath}/${SOURCE_TYPE}" ]]; then
         linkdir=$(mktemp -d)
         shopt -s globstar
         out_parquet_glob="${siteoutpath}/**/*.parquet"
-        # /pfs/out/ABBY/l2130i/2023/01/01/12345/data/file.parquet
+        # /pfs/out/ABBY/gmp343/2023/01/01/12345/data/file.parquet
         echo "Linking output files to ${linkdir}"
         # set -x # Uncomment for debugging
         for f in ${out_parquet_glob}; do
@@ -135,7 +144,7 @@ transform:
         echo "Updating airflow trigger table for ${site} ${date_str}"
         ./update-trigger-table.py -s "${site}" -S "${SOURCE_TYPE}" -D "${siteoutpath}/${SOURCE_TYPE}"
 
-        # set +x # Uncomment for troubleshooting
+        # set +x # Uncomment for debugging
         rm -rf "${linkdir}"
         # Move the per site files to the structure expected by pachyderm
         cd "${siteoutpath}/${SOURCE_TYPE}/"
@@ -152,22 +161,69 @@ transform:
       fi
 
     done
+    
+    # run data parser
+    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+      python3 -m raw_data_parsers.raw_data_parser.suna_data_parser_main
+    
+      # Upload L0 files to bucket, compacting with any existing file with the same name
+      # when SOURCE_TYPE is sunav2_raw, OUT_SOURCE_TYPE is sunav2
+      OUT_SOURCE_TYPE=${SOURCE_TYPE%%_raw} 
+      
+      if [[ -d "$OUT_PATH/$OUT_SOURCE_TYPE" ]]; then
+        linkdir=$(mktemp -d)
+        shopt -s globstar
+        parquet_files=( ${OUT_PATH}/${OUT_SOURCE_TYPE}/**/*.parquet )
+        # /pfs/out/sunav2/2023/01/01/12345/data/file.parquet
+        # set -x # Uncomment for debugging
+  
+        echo "Found parquet files: ${parquet_files[@]}"
+  
+        if [[ ${#parquet_files[@]} -gt 0 && "${parquet_files[0]}" != "$OUT_PATH/**/*.parquet" ]]; then
+          echo "Linking output files to ${linkdir}"
+          for f in "${parquet_files[@]}"; do
+            echo "Processing file: $f"
+            # Parse the path
+            [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+            fsourcetype="${BASH_REMATCH[1]}"
+            fyear="${BASH_REMATCH[2]}"
+            fmonth="${BASH_REMATCH[3]}"
+            fday="${BASH_REMATCH[4]}"
+            fsourceid="${BASH_REMATCH[5]}"
+            fname="${BASH_REMATCH[6]}"
+            outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+            mkdir -p "${outdir}"
+            ln -s "${f}" "${outdir}/${fname}"
+  
+          done
+  
+          # Upload to bucket, compacting with any existing file
+          ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+        fi
+  
+        # set +x # Uncomment for debugging
+        rm -rf $linkdir
+      fi
+
+
+    fi
+
     EOF
 input:
   pfs:
     name: import_trigger
-    repo: l2130i_cron_daily_and_date_control
+    repo: sunav2_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/l2130i/*/*/*"
+    glob: "/*/*/*/*"
 parallelism_spec:
-  constant: 3
+  constant: 1
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.3
-resource_limits:
-  memory: 1.5G
+  memory: 2.5G
   cpu: 2
+resource_limits:
+  memory: 3G
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.5
@@ -176,4 +232,3 @@ datum_set_spec:
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
-
