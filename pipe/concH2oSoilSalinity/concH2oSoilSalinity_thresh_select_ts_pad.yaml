@@ -45,7 +45,7 @@ transform:
       "TermCtxt22=VSWCsoilSpecificDepth07|soil|water-content|soil-specific" \
       "TermCtxt23=VSWCsoilSpecificDepth08|soil|water-content|soil-specific" \
       "TermCtxt24=VSWCsoilSpecificDepth01|soil|water-content|soil-specific" \
-      "DirSubCopy=data|location"
+      "DirSubCopy=data|location|uncertainty_coef|uncertainty_data"
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/threshold_select 
@@ -57,7 +57,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     PAD_DIR: data
-    COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory to copy to the output
+    COPY_DIR: location,uncertainty_coef,uncertainty_data # Can be multiple, separated by commas without spaces. Directories other than the pad directory to copy to the output
     RELATIVE_PATH_INDEX: '3'
     PARALLELIZATION_INTERNAL: '5' # For threshold select module
 output_branch: master
@@ -69,7 +69,7 @@ input:
       glob: /*/*/*/*/enviroscan
   - pfs:
       name: FILE_THRESHOLDS
-      repo: concH2oSoilSalinity_threshold_test3 #test 2 
+      repo: concH2oSoilSalinity_threshold_test3
       glob: /thresholds.json
 parallelism_spec:
   constant: 5
