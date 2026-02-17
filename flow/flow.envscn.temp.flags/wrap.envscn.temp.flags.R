@@ -189,8 +189,13 @@ wrap.envscn.temp.flags <- function(DirIn,
   # ===== Load temperature sensor metadata =====
   sensorDepthDf <- def.load.temp.sensors(DirTemp = DirTemp, log = log)
   
-  # ===== Apply temperature test to each depth =====
-  for (col in soilCols) {
+  # Check if we have any temperature sensors available
+  if (nrow(sensorDepthDf) == 0) {
+    log$warn("No temperature sensors available. All temperature test flags will remain -1 (test not run).")
+    # Skip temperature testing - flags already initialized to -1
+  } else {
+    # ===== Apply temperature test to each depth =====
+    for (col in soilCols) {
     
     depthNum <- base::sub("^depth(\\d{2}).*$", "\\1", col)
     qfName <- base::paste0("tempTestDepth", depthNum, "QF")
@@ -206,28 +211,36 @@ wrap.envscn.temp.flags <- function(DirIn,
       # Find target depth from maximum sensor depth in the data
       targetDepth <- base::max(dataSm[[col]], na.rm = TRUE)
       
-      # Find closest temperature sensor
-      sensorInfo <- def.find.temp.sensor(
-        targetDepth = targetDepth,
-        sensorDepthDf = sensorDepthDf,
-        log = log
-      )
-      
-      # Calculate temperature flags
-      tempData <- def.calc.temp.flags(
-        sensorInfo = sensorInfo,
-        log = log
-      )
-      
-      # Apply flags to high-frequency data
-      dataSm <- def.apply.temp.flags(
-        dataSm = dataSm,
-        tempData = tempData,
-        qfColName = qfName,
-        log = log
-      )
+      # Check if target depth is valid
+      if (!base::is.finite(targetDepth) || base::is.na(targetDepth)) {
+        log$warn(base::paste0('No valid depth data found for ', col, 
+                              '. Temperature test flag will remain -1 (test not run).'))
+        # Leave flag at -1 (already initialized)
+      } else {
+        # Find closest temperature sensor
+        sensorInfo <- def.find.temp.sensor(
+          targetDepth = targetDepth,
+          sensorDepthDf = sensorDepthDf,
+          log = log
+        )
+        
+        # Calculate temperature flags
+        tempData <- def.calc.temp.flags(
+          sensorInfo = sensorInfo,
+          log = log
+        )
+        
+        # Apply flags to high-frequency data
+        dataSm <- def.apply.temp.flags(
+          dataSm = dataSm,
+          tempData = tempData,
+          qfColName = qfName,
+          log = log
+        )
+      }
     }
-  } 
+    } # End temperature test loop
+  } # End check for available sensors
   
   # ===== Merge with existing plausibility flags =====
   qfFlags <- dataSm[, c("readout_time", qfCols)]

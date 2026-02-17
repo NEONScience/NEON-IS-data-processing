@@ -55,8 +55,10 @@ def.load.temp.sensors <- function(DirTemp,
   }
   
   if (base::length(filesTempLocation) == 0) {
-    log$error(base::paste0('No temperature location files found in ', DirTemp))
-    stop()
+    log$warn(base::paste0('No temperature location files found in ', DirTemp, 
+                          '. Temperature test will not run.'))
+    return(data.frame(sensor_id = character(), depth_m = numeric(), 
+                      location_path = character(), data_path = character()))
   }
   
   # Helper function to extract sensor ID from path
@@ -86,7 +88,27 @@ def.load.temp.sensors <- function(DirTemp,
     location_path = filesTempLocation,
     stringsAsFactors = FALSE
   )
-  dfLocations <- dfLocations[!base::duplicated(dfLocations$sensor_id), ]
+  
+  # Check for duplicate sensor_ids and average depths if found
+  dupCheck <- base::table(dfLocations$sensor_id)
+  dupSensors <- base::names(dupCheck)[dupCheck > 1]
+  
+  if (base::length(dupSensors) > 0) {
+    log$warn(base::paste0('Multiple location files found for sensor(s): ',
+                          base::paste(dupSensors, collapse = ', '),
+                          '. Averaging depths.'))
+    
+    # Average depths for duplicate sensors
+    avgDepths <- base::aggregate(
+      depth_m ~ sensor_id, 
+      data = dfLocations, 
+      FUN = function(x) base::mean(x, na.rm = TRUE)
+    )
+    firstPaths <- dfLocations[!base::duplicated(dfLocations$sensor_id), c('sensor_id', 'location_path')]
+    dfLocations <- base::merge(avgDepths, firstPaths, by = 'sensor_id')
+  } else {
+    dfLocations <- dfLocations[!base::duplicated(dfLocations$sensor_id), ]
+  }
   
   # Build data file table
   dataIds <- extract_sensor_id(filesTempData)
