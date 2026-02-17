@@ -230,19 +230,32 @@ wrap.envscn.temp.flags <- function(DirIn,
                                 ' at depth ', targetDepth, 'm. Temperature test flag will remain -1 (test not run).'))
           # Leave flag at -1 (already initialized)
         } else {
-          # Calculate temperature flags
-          tempData <- def.calc.temp.flags(
-            sensorInfo = sensorInfo,
-            log = log
-          )
+          # Check if sensor is within acceptable distance (0.25m)
+          sensorDepth <- sensorInfo$depth_m
+          depthDiff <- base::abs(targetDepth - sensorDepth)
           
-          # Apply flags to high-frequency data
-          dataSm <- def.apply.temp.flags(
-            dataSm = dataSm,
-            tempData = tempData,
-            qfColName = qfName,
-            log = log
-          )
+          if (depthDiff > 0.25) {
+            log$warn(base::paste0('Temperature sensor for ', col, ' is ', 
+                                  base::round(depthDiff, 3), 'm away from target depth ',
+                                  targetDepth, 'm (max allowed: 0.25m). ',
+                                  'Temperature test flag will remain -1 (test not run).'))
+            # Leave flag at -1 (already initialized)
+          } else {
+            # Calculate temperature flags
+            tempData <- def.calc.temp.flags(
+              sensorInfo = sensorInfo,
+              targetDepth = targetDepth,
+              log = log
+            )
+            
+            # Apply flags to high-frequency data
+            dataSm <- def.apply.temp.flags(
+              dataSm = dataSm,
+              tempData = tempData,
+              qfColName = qfName,
+              log = log
+            )
+          }
         }
       }
     }
