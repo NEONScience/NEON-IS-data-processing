@@ -14,6 +14,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     TERM: VSICDepth01|VSICDepth02|VSICDepth03|VSICDepth04|VSICDepth05|VSICDepth06|VSICDepth07|VSICDepth08|VSWCfactoryDepth01|VSWCfactoryDepth02|VSWCfactoryDepth03|VSWCfactoryDepth04|VSWCfactoryDepth05|VSWCfactoryDepth06|VSWCfactoryDepth07|VSWCfactoryDepth08|VSWCsoilSpecificDepth01|VSWCsoilSpecificDepth02|VSWCsoilSpecificDepth03|VSWCsoilSpecificDepth04|VSWCsoilSpecificDepth05|VSWCsoilSpecificDepth06|VSWCsoilSpecificDepth07|VSWCsoilSpecificDepth08
+    #if you are pulling multiple term and they have different contexts, list them here numerically. 
     CTXT_1: soil|ion-content
     CTXT_2: soil|water-content|factory
     CTXT_3: soil|water-content|soil-specific
