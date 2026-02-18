@@ -92,17 +92,16 @@
 ##############################################################################################
 library(foreach)
 library(doParallel)
-#TODO uncomment! 
 # # Source the wrapper function and other dependency functions. Assume it is in the working directory
-# source("./wrap.envscn.temp.flags.R")
-# source("./def.apply.temp.flags.R")
-# source("./def.find.temp.sensor.R")
-# source("./def.load.temp.sensor.R")
-# source("./def.sort.qf.cols.R")
-# source("./def.calc.temp.flags.R")
+source("./wrap.envscn.temp.flags.R")
+source("./def.apply.temp.flags.R")
+source("./def.find.temp.sensor.R")
+source("./def.load.temp.sensor.R")
+source("./def.sort.qf.cols.R")
+source("./def.calc.temp.flags.R")
 
 # # Pull in command line arguments (parameters)
-# arg <- base::commandArgs(trailingOnly = TRUE)
+arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Start logging
 log <- NEONprocIS.base::def.log.init()
