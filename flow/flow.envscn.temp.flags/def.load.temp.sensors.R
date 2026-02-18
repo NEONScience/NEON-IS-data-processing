@@ -72,11 +72,16 @@ def.load.temp.sensors <- function(DirTemp,
     base::tryCatch({
       locData <- jsonlite::fromJSON(path, simplifyVector = FALSE)
       zOffset <- locData$features[[1]]$properties$locations$features[[1]]$properties$z_offset
+      # Check if zOffset is NULL or has length 0
+      if (base::is.null(zOffset) || base::length(zOffset) == 0) {
+        return(NA_real_)
+      }
       return(base::as.numeric(zOffset))
     }, error = function(e) {
       return(NA_real_)
     })
   }
+  
   
   # Build location metadata table
   sensorIds <- extract_sensor_id(filesTempLocation)
@@ -99,7 +104,7 @@ def.load.temp.sensors <- function(DirTemp,
                           '. Averaging depths.'))
     
     # Average depths for duplicate sensors
-    avgDepths <- base::aggregate(
+    avgDepths <- stats::aggregate(
       depth_m ~ sensor_id, 
       data = dfLocations, 
       FUN = function(x) base::mean(x, na.rm = TRUE)
@@ -125,9 +130,8 @@ def.load.temp.sensors <- function(DirTemp,
   # Validate that all depths were successfully extracted
   if (base::any(base::is.na(sensorDepthDf$depth_m))) {
     failedSensors <- sensorDepthDf$sensor_id[base::is.na(sensorDepthDf$depth_m)]
-    log$error(base::paste0('Failed to extract depth from location files for: ',
+    log$warn(base::paste0('Failed to extract depth from location files for: ',
                            base::paste(failedSensors, collapse = ', ')))
-    stop()
   }
   
   log$info(base::paste0('Loaded ', base::nrow(sensorDepthDf), ' temperature sensors'))

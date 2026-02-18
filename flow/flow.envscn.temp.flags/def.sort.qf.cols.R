@@ -51,9 +51,9 @@ def.sort.qf.cols <- function(cols) {
   )
   
   # Extract depth number
-  sortDf$depth <- base::as.numeric(
+  sortDf$depth <- base::suppressWarnings(base::as.numeric(
     base::gsub(".*Depth(\\d+).*|.*depth(\\d+).*", "\\1\\2", sortDf$col)
-  )
+  ))
   
   # Classify QF test type
   sortDf$qfType <- base::ifelse(
