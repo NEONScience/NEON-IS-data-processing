@@ -27,7 +27,7 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
   MODULE_PATH: ./modules_combined/analyze_pad_qaqc_envscn
-  IMAGE_NAME: neon-is-qaqc-plau-rad
+  IMAGE_NAME: neon-is-qaqc-plau-envscn
 
 jobs:
   build-push:
