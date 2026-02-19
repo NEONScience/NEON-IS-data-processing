@@ -41,6 +41,8 @@
 #     add error checking for null values in non-nullable fields 
 #   Cove Sturtevant (2025-05-07)
 #     Do not attempt to convert lists 
+#   Cove Sturtevant (2026-02-19)
+#     Expand handling for list data columns
 ##############################################################################################
 def.data.conv.type.parq <- function(data,
                                     type,
@@ -83,7 +85,7 @@ def.data.conv.type.parq <- function(data,
     } else if (base::any(typeIdx %in% c('bool','boolean','logical'))){
       base::class(data[[nameIdx]]) <- "logical"
       
-    } else if (base::any(base::grepl('int',typeIdx)) || base::any(typeIdx %in% c("long","short"))){
+    } else if (base::any(base::grepl('int',typeIdx) & !substr(typeIdx,1,5) == 'list<') || base::any(typeIdx %in% c("long","short"))){
       base::class(data[[nameIdx]]) <- "integer"
       
     } else if (base::any(base::grepl('float',typeIdx) & !substr(typeIdx,1,5) == 'list<') || base::any(typeIdx %in% c("numeric","decimal"))){
