@@ -62,7 +62,7 @@ test_that("when NameFileSchm exists, write the file",
 test_that("use arrow schema",
           {
                   # Successful case - pass in arrow schema 
-                  data <- NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet'))
                   NameFile <- 'out.parquet'
                   Sys.setenv(LOG_LEVEL='debug')
                   # Create a parquet schema that changes a field name
@@ -91,7 +91,7 @@ test_that("use arrow schema",
                   
                   
                   # Failure case: number of vars in the schema don't match that of data frame
-                  data <- NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/flags/prt_14491_2019-01-01_flagsCal.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/flags/prt_14491_2019-01-01_flagsCal.parquet'))
                   # Write it out
                   rpt <- base::try(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile,Schm=SchmNew),silent=FALSE)
                   testthat::expect_true('try-error' %in% base::class(rpt))
@@ -128,7 +128,7 @@ test_that("use arrow schema",
 test_that("use schema input as arrow schema object",
           {
                   # Successful case
-                  data <- NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet'))
                   NameFile <- 'out.parquet'
                   Sys.setenv(LOG_LEVEL='debug')
                   # Create and attach parquet schema that changes a field name
@@ -144,7 +144,7 @@ test_that("use schema input as arrow schema object",
                   if (file.exists(NameFile)) { file.remove(NameFile)}
                   
                   # Failure case: number of vars in the schema don't match that of data frame
-                  data <- NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/flags/prt_14491_2019-01-01_flagsCal.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/flags/prt_14491_2019-01-01_flagsCal.parquet'))
                   attr(data,'schema') <- SchmNew # Attach calibrated data schema to flags data
                   # Write it out
                   rpt <- base::try(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile),silent=FALSE)
