@@ -1,0 +1,39 @@
+{
+    "features":[
+        {
+            "AngNedZaxs":"NA",
+            "AngPtch":"0",
+            "Cal$PrdLab":"one time before installation",
+            "Data Rate":"0.1",
+            "DistZaxsLvlMeasSoil":"-0.025",
+            "FreqSamp":"0.1",
+            "HOR":"005",
+            "IS Processing Default Start Date":"2017-08-20T00:00:00Z",
+            "Required Asset Management Location Code":"CFGLOC105363",
+            "VER":"501",
+            "geometry":null,
+            "location":"plot5",
+            "properties":{
+                "active_periods":[
+                    {
+                        "start_date":"2025-10-17T00:00:00Z",
+                        "end_date":"2025-10-18T00:00:00Z"
+                    }
+                ],
+                "context":[
+
+                ],
+                "description":"Great Smoky Mountains Soil Temp Profile SP5, Z1 Depth",
+                "domain":"D07",
+                "name":"CFGLOC105363",
+                "site":"GRSM",
+                "type":"CONFIG"
+            },
+            "subLocation":"depth1",
+            "subSystem":"temp-profile",
+            "system":"soil",
+            "type":"Feature"
+        }
+    ],
+    "type":"FeatureCollection"
+}

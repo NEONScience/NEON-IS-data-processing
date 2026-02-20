@@ -42,8 +42,8 @@ def.find.temp.sensor <- function(targetDepth,
   validSensors <- sensorDepthDf[!base::is.na(sensorDepthDf$depth_m), ]
   
   if (base::nrow(validSensors) == 0) {
-    log$error('No valid temperature sensors with depth information')
-    stop()
+    log$warn('no valid temperature depths found, all data will be flagged -1')
+    return(NULL)
   }
   
   # Calculate absolute difference from target depth

@@ -209,7 +209,7 @@ wrap.envscn.temp.flags <- function(DirIn,
       log$debug(base::paste0('Running temperature test for ', col))
       
       # Find target depth from maximum sensor depth in the data
-      targetDepth <- base::max(dataSm[[col]], na.rm = TRUE)
+      targetDepth <- suppressWarnings(base::max(dataSm[[col]], na.rm = TRUE))
       
       # Check if target depth is valid
       if (!base::is.finite(targetDepth) || base::is.na(targetDepth)) {
