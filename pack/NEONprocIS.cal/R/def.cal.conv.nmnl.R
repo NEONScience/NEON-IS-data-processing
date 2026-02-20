@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Convert nominal cal to calibrated data using NEON CVALB1
+#' @title Convert nominal cal to calibrated data
 
 #' @author
 #' Kaelin Cawley \email{kcawley@battelleecology.org}
@@ -60,12 +60,28 @@
 #   Kaelin Cawley (2026-02-06)
 #     created new function to be used for RMyoung 05108 buoy wind speed data
 ##############################################################################################
-def.cal.conv.poly.b <- function(data = data.frame(data=base::numeric(0)),
+# # For Testing speed calibration
+# data = NEONprocIS.base::def.read.parq(NameFile = '~/pfs/rmyoung_data_source_trino/rmyoung/2025/12/14/32356/data/rmyoung_32356_2025-12-14.parquet')
+# nomVal = 15/90
+# calID = 'CVAL_B1'
+# varConv = base::names(data)[4] #speed
+# NumDayExpiMax = as.data.frame(matrix(data = c("speed",365), nrow = 1, ncol = 2))
+# names(NumDayExpiMax) <- c('var','NumDayExpiMax')
+# NumDayExpiMax$NumDayExpiMax <- as.numeric(NumDayExpiMax$NumDayExpiMax)
+# calSlct <- NEONprocIS.cal::wrap.cal.slct(
+#                DirCal = '~/pfs/rmyoung_calibration_assignment/rmyoung/2025/12/14/32356/calibration',
+#                NameVarExpc = c('speed'),
+#                TimeBgn = as.POSIXct('2025-12-13'),
+#                TimeEnd = as.POSIXct('2025-12-15'),
+#                NumDayExpiMax = NumDayExpiMax
+#                )
+# log = NULL
+##############################################################################################
+def.cal.conv.nmnl <- function(data = data.frame(data=base::numeric(0)),
                                 nomVal = NULL,
                                 calID = NULL,
                                 varConv = base::names(data)[1],
                                 calSlct = NULL,
-                                Meta = list(),
                                 log = NULL) {
   # Intialize logging if needed
   if (base::is.null(log)) {
@@ -128,9 +144,11 @@ def.cal.conv.poly.b <- function(data = data.frame(data=base::numeric(0)),
       }
       
       # Remove the nominal value
+      dataConvOutIdx <- data[[varIdx]]/nomVal
       
       # Apply the value associated with the calID
-    
+      dataConvOutIdx <- dataConvOutIdx*as.numeric(infoCal$cal$Value)
+      
     } # End loop around calibration files
     
     # Replace raw data with calibrated data
