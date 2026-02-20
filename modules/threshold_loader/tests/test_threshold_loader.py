@@ -38,7 +38,7 @@ class ThresholdLoaderTest(DatabaseBackedTest):
                             number_value=10,
                             string_value='value')
 
-        load_thresholds(get_thresholds, self.out_path, 'term_name', 'context1|context2')
+        load_thresholds(get_thresholds, self.out_path, 'term_name', ['context1|context2'])
         expected_path = self.out_path.joinpath('thresholds.json')
         self.assertTrue(expected_path.exists())
         with open(expected_path, 'r') as threshold_file:
@@ -67,6 +67,90 @@ class ThresholdLoaderTest(DatabaseBackedTest):
             self.assertTrue(end_day_of_year == 365)
             self.assertTrue(number_value == 10)
             self.assertTrue(string_value == 'value')
+            print(json.dumps(json_data, indent=2, sort_keys=False))
+
+    def test_multiple_contexts(self):
+
+        def get_thresholds(term) -> Iterator[Threshold]:
+            """
+            Mock function yielding thresholds with different contexts.
+            """
+            # Threshold with context1|context2
+            yield Threshold(threshold_name='threshold_for_context1_2',
+                            term_name=term,
+                            location_name='CPER',
+                            context=['context1', 'context2'],
+                            start_date='2024-01-01',
+                            end_date='2024-12-31',
+                            is_date_constrained=True,
+                            start_day_of_year=1,
+                            end_day_of_year=365,
+                            number_value=10,
+                            string_value='value1')
+            
+            # Threshold with context3 only
+            yield Threshold(threshold_name='threshold_for_context3',
+                            term_name=term,
+                            location_name='CPER',
+                            context=['context3'],
+                            start_date='2024-01-01',
+                            end_date='2024-12-31',
+                            is_date_constrained=True,
+                            start_day_of_year=1,
+                            end_day_of_year=365,
+                            number_value=20,
+                            string_value='value2')
+            
+            # Threshold with no context
+            yield Threshold(threshold_name='threshold_no_context',
+                            term_name=term,
+                            location_name='CPER',
+                            context=[],
+                            start_date='2024-01-01',
+                            end_date='2024-12-31',
+                            is_date_constrained=True,
+                            start_day_of_year=1,
+                            end_day_of_year=365,
+                            number_value=30,
+                            string_value='value3')
+            
+            # Threshold with different context that shouldn't match
+            yield Threshold(threshold_name='threshold_for_other_context',
+                            term_name=term,
+                            location_name='CPER',
+                            context=['otherContext'],
+                            start_date='2024-01-01',
+                            end_date='2024-12-31',
+                            is_date_constrained=True,
+                            start_day_of_year=1,
+                            end_day_of_year=365,
+                            number_value=40,
+                            string_value='value4')
+
+        # Test with multiple context sets
+        load_thresholds(get_thresholds, self.out_path, 'term_name', ['context1|context2', 'context3'])
+        expected_path = self.out_path.joinpath('thresholds.json')
+        self.assertTrue(expected_path.exists())
+        
+        with open(expected_path, 'r') as threshold_file:
+            json_data = json.load(threshold_file)
+            thresholds = json_data['thresholds']
+            
+            # Should have 2 thresholds: one matching context1|context2, one matching context3
+            self.assertEqual(len(thresholds), 2)
+            
+            # Get threshold names
+            threshold_names = [t['threshold_name'] for t in thresholds]
+            
+            # Should include both matching thresholds
+            self.assertIn('threshold_for_context1_2', threshold_names)
+            self.assertIn('threshold_for_context3', threshold_names)
+            
+            # Should NOT include non-matching thresholds
+            self.assertNotIn('threshold_no_context', threshold_names)
+            self.assertNotIn('threshold_for_other_context', threshold_names)
+            
+            print("\nMultiple contexts test results:")
             print(json.dumps(json_data, indent=2, sort_keys=False))
 
     @unittest.skip('Integration test skipped due to long process time.')
