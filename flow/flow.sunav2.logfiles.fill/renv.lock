@@ -9,22 +9,6 @@
     ]
   },
   "Packages": {
-    "R6": {
-      "Package": "R6",
-      "Version": "2.6.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d4335fe7207f1c01ab8c41762f5840d4",
-      "Requirements": []
-    },
-    "cli": {
-      "Package": "cli",
-      "Version": "3.6.5",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "16850760556401a2eeb27d39bd11c9cb",
-      "Requirements": []
-    },
     "codetools": {
       "Package": "codetools",
       "Version": "0.2-18",
@@ -35,10 +19,10 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.5.2",
+      "Version": "0.5.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "2720e3fd3dad08f34b19b56b3d6f073d",
+      "Hash": "af5958631ca49510aff96d0f5c0bbb76",
       "Requirements": []
     },
     "doParallel": {
@@ -50,36 +34,6 @@
       "Requirements": [
         "foreach",
         "iterators"
-      ]
-    },
-    "dplyr": {
-      "Package": "dplyr",
-      "Version": "1.1.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "fedd9d00c2944ff00a0e2696ccf048ec",
-      "Requirements": [
-        "R6",
-        "cli",
-        "generics",
-        "glue",
-        "lifecycle",
-        "magrittr",
-        "pillar",
-        "rlang",
-        "tibble",
-        "tidyselect",
-        "vctrs"
-      ]
-    },
-    "ellipsis": {
-      "Package": "ellipsis",
-      "Version": "0.3.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "bb0eec2fe32e88d9e2836c2f73ea2077",
-      "Requirements": [
-        "rlang"
       ]
     },
     "foreach": {
@@ -109,14 +63,6 @@
       "Hash": "4b29bf698d0c7bdb9f1e4976e7ade41d",
       "Requirements": []
     },
-    "glue": {
-      "Package": "glue",
-      "Version": "1.8.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "5899f1eaa825580172bb56c08266f37c",
-      "Requirements": []
-    },
     "iterators": {
       "Package": "iterators",
       "Version": "1.0.14",
@@ -124,18 +70,6 @@
       "Repository": "CRAN",
       "Hash": "8954069286b4b2b0d023d1b288dce978",
       "Requirements": []
-    },
-    "lifecycle": {
-      "Package": "lifecycle",
-      "Version": "1.0.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b8552d117e1b808b09a832f589b79035",
-      "Requirements": [
-        "cli",
-        "glue",
-        "rlang"
-      ]
     },
     "lubridate": {
       "Package": "lubridate",
@@ -148,122 +82,13 @@
         "timechange"
       ]
     },
-    "magrittr": {
-      "Package": "magrittr",
-      "Version": "2.0.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "7ce2733a9826b3aeb1775d56fd305472",
-      "Requirements": []
-    },
-    "pillar": {
-      "Package": "pillar",
-      "Version": "1.10.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "1098920a19b5cd5a15bacdc74a89979d",
-      "Requirements": [
-        "cli",
-        "glue",
-        "lifecycle",
-        "rlang",
-        "utf8",
-        "vctrs"
-      ]
-    },
-    "pkgconfig": {
-      "Package": "pkgconfig",
-      "Version": "2.0.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "01f28d4278f15c76cddbea05899c5d6f",
-      "Requirements": []
-    },
-    "purrr": {
-      "Package": "purrr",
-      "Version": "1.0.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "cc8b5d43f90551fa6df0a6be5d640a4f",
-      "Requirements": [
-        "cli",
-        "lifecycle",
-        "magrittr",
-        "rlang",
-        "vctrs"
-      ]
-    },
     "renv": {
       "Package": "renv",
       "Version": "0.16.0",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "renv",
-      "RemoteUsername": "rstudio",
-      "RemoteRef": "0.16.0",
-      "RemoteSha": "0e3aab27a928eb261819a3fc45a3ee2b4ba902a5",
-      "Hash": "9e5e2246d73254a29a4182f4e8257c09",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c9e8442ab69bc21c9697ecf856c1e6c7",
       "Requirements": []
-    },
-    "rlang": {
-      "Package": "rlang",
-      "Version": "1.1.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "892124978869b74935dc3934c42bfe5a",
-      "Requirements": []
-    },
-    "tibble": {
-      "Package": "tibble",
-      "Version": "3.3.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "784b27d0801c3829de602105757b2cd7",
-      "Requirements": [
-        "cli",
-        "lifecycle",
-        "magrittr",
-        "pillar",
-        "pkgconfig",
-        "rlang",
-        "vctrs"
-      ]
-    },
-    "tidyr": {
-      "Package": "tidyr",
-      "Version": "1.2.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d8b95b7fee945d7da6888cf7eb71a49c",
-      "Requirements": [
-        "cpp11",
-        "dplyr",
-        "ellipsis",
-        "glue",
-        "lifecycle",
-        "magrittr",
-        "purrr",
-        "rlang",
-        "tibble",
-        "tidyselect",
-        "vctrs"
-      ]
-    },
-    "tidyselect": {
-      "Package": "tidyselect",
-      "Version": "1.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "829f27b9c4919c16b593794a6344d6c0",
-      "Requirements": [
-        "cli",
-        "glue",
-        "lifecycle",
-        "rlang",
-        "vctrs",
-        "withr"
-      ]
     },
     "timechange": {
       "Package": "timechange",
@@ -274,35 +99,6 @@
       "Requirements": [
         "cpp11"
       ]
-    },
-    "utf8": {
-      "Package": "utf8",
-      "Version": "1.2.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d526d558be176e9ceb68c3d1e83479b7",
-      "Requirements": []
-    },
-    "vctrs": {
-      "Package": "vctrs",
-      "Version": "0.6.5",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "c03fa420630029418f7e6da3667aac4a",
-      "Requirements": [
-        "cli",
-        "glue",
-        "lifecycle",
-        "rlang"
-      ]
-    },
-    "withr": {
-      "Package": "withr",
-      "Version": "3.0.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "cc2d62c76458d425210d1eb1478b30b4",
-      "Requirements": []
     }
   }
 }
