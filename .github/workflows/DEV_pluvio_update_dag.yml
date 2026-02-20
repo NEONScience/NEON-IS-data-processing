@@ -1,11 +1,11 @@
-name: DEV-pluvio-update-dag
+name: DEV-pluvio-precipWeighingV2-update-dag
 on:
   push:
     branches:
       - 'pluvio'
     paths:
       - 'pipe/pluvio/*.yaml'
-      - 'pipe/pluvio/pipe_list_pluvio.txt'
+      - 'pipe/pluvio/pipe_list_pluvio_development.txt'
       - 'pipe/precipWeighingv2/*.yaml'
       - 'pipe/precipWeighingv2/pipe_list_precipWeighingv2.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
@@ -52,7 +52,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
-      PATHS: 'pipe/pluvio=pipe_list_pluvio.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      PATHS: 'pipe/pluvio=pipe_list_pluvio_development.txt,pipe/precipWeighingv2=pipe_list_precipWeighingv2.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
