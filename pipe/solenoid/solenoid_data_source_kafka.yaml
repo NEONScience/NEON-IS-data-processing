@@ -160,10 +160,10 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/solenoid/*/*/*"
 parallelism_spec:
-  constant: 1
+  constant: 3
 autoscaling: true
 resource_requests:
-  memory: 400M
+  memory: 600M
   cpu: 1.8
 resource_limits:
   memory: 1.5G
