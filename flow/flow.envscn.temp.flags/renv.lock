@@ -9,6 +9,24 @@
     ]
   },
   "Packages": {
+    "R6": {
+      "Package": "R6",
+      "Version": "2.6.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d4335fe7207f1c01ab8c41762f5840d4",
+      "Requirements": []
+    },
+    "askpass": {
+      "Package": "askpass",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c39f4155b3ceb1a9a2799d700fbd4b6a",
+      "Requirements": [
+        "sys"
+      ]
+    },
     "codetools": {
       "Package": "codetools",
       "Version": "0.2-18",
@@ -17,12 +35,52 @@
       "Hash": "019388fc48e48b3da0d3a76ff94608a8",
       "Requirements": []
     },
+    "covr": {
+      "Package": "covr",
+      "Version": "3.5.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6d80a9fc3c0c8473153b54fa54719dfd",
+      "Requirements": [
+        "crayon",
+        "digest",
+        "httr",
+        "jsonlite",
+        "rex",
+        "withr",
+        "yaml"
+      ]
+    },
+    "crayon": {
+      "Package": "crayon",
+      "Version": "1.5.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "859d96e65ef198fd43e82b9628d593ef",
+      "Requirements": []
+    },
+    "curl": {
+      "Package": "curl",
+      "Version": "5.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "9123f3ef96a2c1a93927d828b2fe7d4c",
+      "Requirements": []
+    },
     "data.table": {
       "Package": "data.table",
       "Version": "1.18.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "498817481016697c065f66fe14f3bcce",
+      "Requirements": []
+    },
+    "digest": {
+      "Package": "digest",
+      "Version": "0.6.29",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cf6b206a045a684728c3267ef7596190",
       "Requirements": []
     },
     "doParallel": {
@@ -55,6 +113,20 @@
       "Hash": "7eb1e342eee7e0a7449c49cdaa526d39",
       "Requirements": []
     },
+    "httr": {
+      "Package": "httr",
+      "Version": "1.4.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ac107251d9d9fd72f0ca8049988f1d7f",
+      "Requirements": [
+        "R6",
+        "curl",
+        "jsonlite",
+        "mime",
+        "openssl"
+      ]
+    },
     "iterators": {
       "Package": "iterators",
       "Version": "1.0.14",
@@ -71,6 +143,32 @@
       "Hash": "b0776f526d36d8bd4a3344a88fe165c4",
       "Requirements": []
     },
+    "lazyeval": {
+      "Package": "lazyeval",
+      "Version": "0.2.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d908914ae53b04d4c0c0fd72ecc35370",
+      "Requirements": []
+    },
+    "mime": {
+      "Package": "mime",
+      "Version": "0.13",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0ec19f34c72fab674d8f2b4b1c6410e1",
+      "Requirements": []
+    },
+    "openssl": {
+      "Package": "openssl",
+      "Version": "2.3.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bc54d87ebf858b28de18df4bca6528d3",
+      "Requirements": [
+        "askpass"
+      ]
+    },
     "renv": {
       "Package": "renv",
       "Version": "0.16.0",
@@ -82,6 +180,40 @@
       "RemoteRef": "0.16.0",
       "RemoteSha": "0e3aab27a928eb261819a3fc45a3ee2b4ba902a5",
       "Hash": "9e5e2246d73254a29a4182f4e8257c09",
+      "Requirements": []
+    },
+    "rex": {
+      "Package": "rex",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ae34cd56890607370665bee5bd17812f",
+      "Requirements": [
+        "lazyeval"
+      ]
+    },
+    "sys": {
+      "Package": "sys",
+      "Version": "3.4.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "de342ebfebdbf40477d0758d05426646",
+      "Requirements": []
+    },
+    "withr": {
+      "Package": "withr",
+      "Version": "3.0.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cc2d62c76458d425210d1eb1478b30b4",
+      "Requirements": []
+    },
+    "yaml": {
+      "Package": "yaml",
+      "Version": "2.3.12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7cd77cb32abd9220d744307e9fc94ffb",
       "Requirements": []
     }
   }
