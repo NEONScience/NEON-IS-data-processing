@@ -38,6 +38,8 @@
 #' @changelog
 #' Bobby Hensley (2025-11-03)
 #' Initial creation.
+#' Nora Catolico (2026-02-23)
+#' vectorized for loops for code efficiency
 #' 
 ##############################################################################################
 wrap.sunav2.exp.uncert <- function(DirIn,
@@ -94,23 +96,21 @@ wrap.sunav2.exp.uncert <- function(DirIn,
     uncertCoeff$Value<-as.numeric(uncertCoeff$Value)
     
     #' Determines which uncertainty coefficients to be applied to each time interval.
-    #' (In case there are more than one on a particular day)
-    uncertCoeff<-uncertCoeff[order(uncertCoeff$start_date), ]
-    uncertCoeffA1<-uncertCoeff[(uncertCoeff$Name=="U_CVALA1"),]
-    statsData$uncertCoeffA1<-NA
-    for (i in 1:nrow(statsData)){
-      for (j in 1:nrow(uncertCoeffA1)){
-        if(statsData[i,which(colnames(statsData)=="startDateTime")]>=uncertCoeffA1[j,which(colnames(uncertCoeffA1)=="start_date")]){
-          statsData[i,which(colnames(statsData)=="uncertCoeffA1")]=uncertCoeffA1[j,which(colnames(uncertCoeffA1)=="Value")]}}}
-    uncertCoeffA3<-uncertCoeff[(uncertCoeff$Name=="U_CVALA3"),]
-    statsData$uncertCoeffA3<-NA
-    for (i in 1:nrow(statsData)){
-      for (j in 1:nrow(uncertCoeffA3)){
-        if(statsData[i,which(colnames(statsData)=="startDateTime")]>=uncertCoeffA3[j,which(colnames(uncertCoeffA3)=="start_date")]){
-          statsData[i,which(colnames(statsData)=="uncertCoeffA3")]=uncertCoeffA3[j,which(colnames(uncertCoeffA3)=="Value")]}}}
+    uncertCoeff <- uncertCoeff[order(uncertCoeff$start_date), ]
+    
+    # Vectorized assignment of uncertCoeffA1
+    uncertCoeffA1 <- uncertCoeff[uncertCoeff$Name == "U_CVALA1", ]
+    indices_a1 <- findInterval(statsData[["startDateTime"]], uncertCoeffA1[["start_date"]])
+    statsData$uncertCoeffA1 <- ifelse(indices_a1 > 0, uncertCoeffA1[["Value"]][indices_a1], NA)
+    
+    # Vectorized assignment of uncertCoeffA3
+    uncertCoeffA3 <- uncertCoeff[uncertCoeff$Name == "U_CVALA3", ]
+    indices_a3 <- findInterval(statsData[["startDateTime"]], uncertCoeffA3[["start_date"]])
+    statsData$uncertCoeffA3 <- ifelse(indices_a3 > 0, uncertCoeffA3[["Value"]][indices_a3], NA)
     
     #' Identify the column name with the mean, variance and number of points
     meanName<-grep("Mean",names(statsData),value=TRUE)
+    meanName<-meanName[!grepl("StdEr",meanName)]
     varianceName<-grep("Variance",names(statsData),value=TRUE)
     pointsName<-grep("NumPts",names(statsData),value=TRUE)
     
@@ -118,31 +118,23 @@ wrap.sunav2.exp.uncert <- function(DirIn,
     #' Concentrations <= 20 mg/L have fixed calibration uncertainty equal to coeffA1. 
     #' Concentrations greater than 20 mg/L uncertainty equals concentration times coeffA1.
     #' Note stats data concentrations are in uM so threshold needs to be converted from mg/L by dividing by 0.014 (14 g/mol / 1000 ug/mg)  
-    statsData$calUncert<-NA
-    for (i in 1:nrow(statsData)){
-      if(is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="calUncert")]=NA}
-      if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){
-        if(statsData[i,which(colnames(statsData)==meanName)]<=(20/0.014)){statsData[i,which(colnames(statsData)=="calUncert")]=statsData[i,which(colnames(statsData)=="uncertCoeffA1")]}
-        if(statsData[i,which(colnames(statsData)==meanName)]>(20/0.014)){statsData[i,which(colnames(statsData)=="calUncert")]=statsData[i,which(colnames(statsData)=="uncertCoeffA3")]}
-      }
-    }
+    threshold <- 20 / 0.014
+    statsData$calUncert <- ifelse(
+      is.na(statsData[[meanName]]), 
+      NA,
+      ifelse(statsData[[meanName]] <= threshold, 
+             statsData$uncertCoeffA1, 
+             statsData$uncertCoeffA3)
+    )
     
-    #' Calculates the repeatability (natural variation). See ATBD for more details. 
-    statsData$natVar<-NA 
-    for (i in 1:nrow(statsData)){
-      if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="natVar")]=
-        sqrt(statsData[i,which(colnames(statsData)==varianceName)]/statsData[i,which(colnames(statsData)==pointsName)])}
-    }
+    #' Calculates the repeatability (natural variation). Vectorized version.
+    statsData$natVar <- sqrt(statsData[[varianceName]] / statsData[[pointsName]])
     
-    #' Calculates the expanded uncertainty, which is estimated as 2x the combined uncertainty. See ATBD for more details.
-    statsData$surfWaterNitrateExpUncert<-NA  
-    for (i in 1:nrow(statsData)){
-      if(!is.na(statsData[i,which(colnames(statsData)==meanName)])){statsData[i,which(colnames(statsData)=="surfWaterNitrateExpUncert")]=
-        2*sqrt(statsData[i,which(colnames(statsData)=="natVar")]+statsData[i,which(colnames(statsData)=="calUncert")])}
-    }
+    #' Calculates the expanded uncertainty. Vectorized version.
+    statsData$surfWaterNitrateExpUncert <- 2 * sqrt(statsData$natVar + statsData$calUncert)
     
     #' Removes unnecessary columns.
-    statsData<-subset(statsData,select=-c(uncertCoeffA3,uncertCoeffA1,calUncert,natVar))
+    statsData <- subset(statsData, select = -c(uncertCoeffA3, uncertCoeffA1, calUncert, natVar))
   }else{
     #add required columns to stats data
     statsData$surfWaterNitrateExpUncert<-NA

@@ -42,78 +42,104 @@
 #   Mija Choi (2024-05-03)
 #     Updated after a change in one of the input parameters of wrap.troll.logfiles.R, 
 #     DirIn to FileIn.
-#
 ##############################################################################################
-context("\n                       Unit test of wrap.sunav2.logfiles.R\n")
+# Define test context
+context("\n                       Unit test of wrap.troll.logfiles.R\n")
 
-test_that("Unit test of wrap.sunav2.logfiles.R", {
+# Unit test of wrap.troll.logfiles.R
+test_that("Unit test of wrap.troll.logfiles.R", {
   
-  source('../../flow.sunav2.logfiles/wrap.sunav2.logfiles.R')
+  source('../../flow.troll.logfiles/wrap.troll.logfiles.R')
   library(stringr)
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+  #
+  # Test 1. Only the input of directories, resistance and voltage, and output directry are passed in
   
-  # Test 1: process a typical file and expect daily output directories created
   workingDirPath <- getwd()
-  file.path(workingDirPath, 'pfs/logjam_load_files/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv')
-  testDirOut = file.path(workingDirPath, 'pfs/out_sunav2')
+  testFileIn = file.path(workingDirPath, 'pfs/logjam_load_files/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv')
+  testDirOut = file.path(workingDirPath, 'pfs/out')
+  #
+  fileData <- base::list.files(testFileIn,full.names=TRUE)
+  log_file  <- base::try(read.table(paste0(testFileIn), header = FALSE, sep = ",", 
+                                    col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
+                                    stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
+  #log_file$V1[52]  "11/5/2019 19:50"
+  #log_file$V1[53]  "11/19/2019 19:11"
+  #log_file$V2[13] "Level TROLL 500"
   
-  # Demo read for info (format and index below may be modified for real SunAV2 data)
-  log_file <- base::try(read.table(testFileIn, header=FALSE, sep=",", col.names=paste0("V",seq_len(8)),
-                                   encoding="utf-8", stringsAsFactors=FALSE, fill=TRUE, strip.white=TRUE, na.strings=c(-1,"")), silent=TRUE)
-  sensor_id <- tolower(gsub(" ", "", as.character(log_file$V2[5])))
-  yr <- format(as.Date(log_file$V1[11], format="%m/%d/%Y"),"%Y")
-  mo <- format(as.Date(log_file$V1[11], format="%m/%d/%Y"),"%m")
-  startDate <- format(as.Date(log_file$V1[11], format="%m/%d/%Y"),"%d")
-  endDate <- format(as.Date(log_file$V1[12], format="%m/%d/%Y"),"%d")
-  testDirOutDir <- file.path(testDirOut, sensor_id, yr, mo)
-  
-  if (dir.exists(testDirOut)) {
-    unlink(testDirOut, recursive=TRUE)
-  }
-  
-  wrap.sunav2.logfiles(FileIn=testFileIn, DirOut=testDirOut, SchmDataOut=NULL, log=log)
-  
-  for (iDate in as.numeric(startDate):as.numeric(endDate)){
-    expect_true(file.exists(file.path(testDirOutDir, str_pad(iDate, 2, pad="0"))))
-  }
-  
-  # Test 2: Not NULL Schema is passed in
-  if (dir.exists(testDirOut)) {
-    unlink(testDirOut, recursive=TRUE)
-  }
-  # Example dummy data for schema (modify columns as appropriate for SunAV2!)
-  source_id <- c("10001")
-  log_time <- c("2020-01-02T00:00:00Z")
-  voltage <- c("12.3")
-  temperature <- c("22.5")
-  logFlag <- c("1")
-  logDateErrorFlag <- c("0")
-  df1 <- data.frame(source_id, log_time, voltage, temperature, logFlag, logDateErrorFlag)
-  schm <- NEONprocIS.base::def.schm.parq.from.df(df=df1, log=NULL)
-  
-  wrap.sunav2.logfiles(FileIn=testFileIn, DirOut=testDirOut, SchmDataOut=schm, log=log)
-  
-  # Test 3: input file has all dates before 2018 (should still process)
-  testFileIn_past <- file.path(workingDirPath,'pfs/sunav2_logfiles_before2018/10001/abcd1234.csv')
-  log_file_past  <- base::try(read.table(testFileIn_past, header=FALSE, sep=",", col.names=paste0("V",seq_len(8)),
-                                         encoding="utf-8", stringsAsFactors=FALSE, fill=TRUE, strip.white=TRUE, na.strings=c(-1,"")), silent=TRUE)
-  sensor_id_past <- tolower(gsub(" ", "", as.character(log_file_past$V2[5])))
-  yr_past <- format(as.Date(log_file_past$V1[11], format="%m/%d/%Y"),"%Y")
-  mo_past <- format(as.Date(log_file_past$V1[11], format="%m/%d/%Y"),"%m")
-  startDate_past <- format(as.Date(log_file_past$V1[11], format="%m/%d/%Y"),"%d")
-  endDate_past <- format(as.Date(log_file_past$V1[12], format="%m/%d/%Y"),"%d")
-  testDirOutDir_past <- file.path(testDirOut, sensor_id_past, yr_past, mo_past)
+  sensor = tolower(gsub(" ", "", paste(log_file$V2[13])))
+  #datePattern = "\d{1,2}\/\d{1,2}\/\d{2,4}"
+  #format(as.Date(df1$Date, format="%d/%m/%Y"),"%Y")
+  yr = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%Y")
+  mo = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%m")
+  startDate = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%d")
+  endDate = format(as.Date(log_file$V1[53], format="%m/%d/%Y"),"%d")
+  testDirOutDir = file.path(testDirOut, sensor, yr, mo)
   
   if (dir.exists(testDirOut)) {
-    unlink(testDirOut, recursive=TRUE)
+    unlink(testDirOut, recursive = TRUE)
   }
-  wrap.sunav2.logfiles(FileIn=testFileIn_past, DirOut=testDirOut, SchmDataOut=NULL, log=log)
-  expect_true(file.exists(testDirOutDir_past))
   
-  # Additional negative/robustness tests could be added, e.g. missing column, corrupt file, etc
+  wrap.troll.logfiles (FileIn=testFileIn,
+                       DirOut=testDirOut,
+                       SchmDataOut=NULL,
+                       log=log)
+  
+  for (iDate in startDate:endDate){
+    #need to keep leading 0 in the directory
+    expect_true (file.exists(file.path(testDirOutDir, str_pad(iDate, 2, pad = "0"))))
+  }
+  #
+  # Test 2. Not NULL Schema is passed in
+  # 
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  # 
+  #generate schema of "source_id", "readout_time", "pressure", "temperature", "logFlag" and "logDateErrorFlag")
+  #from data frame
+  source_id <- c("21115")
+  readout_time <- c("2019-01-03T00:00:00Z")
+  pressure <- c("0.000000000")
+  temperature <- c("191428.000000000")
+  logFlag <- c("1.0")
+  logDateErrorFlag <- c("0.1")
+  
+  df1 <- data.frame(source_id, readout_time, pressure, temperature, logFlag,  logDateErrorFlag)
+  schm = NEONprocIS.base::def.schm.parq.from.df (df = df1, log=NULL)
+  
+  wrap.troll.logfiles (FileIn=testFileIn,
+                       DirOut=testDirOut,
+                       SchmDataOut=schm,
+                       log=log)
+  
+  # Test 3. The input file has date < 2018
+  
+  testFileIn = file.path(workingDirPath, 'pfs/logjam_load_files_before2018/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv')
+  fileData <- base::list.files(testFileIn,full.names=TRUE)
+  
+  log_file  <- base::try(read.table(paste0(testFileIn), header = FALSE, sep = ",", 
+                                    col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
+                                    stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
+  sensor = tolower(gsub(" ", "", paste(log_file$V2[13])))
+  yr = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%Y")
+  mo = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%m")
+  startDate = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%d")
+  endDate = format(as.Date(log_file$V1[53], format="%m/%d/%Y"),"%d")
+  testDirOutDir = file.path(testDirOut, sensor, yr, mo)
   
   if (dir.exists(testDirOut)) {
-    unlink(testDirOut, recursive=TRUE)
+    unlink(testDirOut, recursive = TRUE)
+  }
+  wrap.troll.logfiles (FileIn=testFileIn,
+                       DirOut=testDirOut,
+                       SchmDataOut=NULL,
+                       log=log)
+  
+  expect_true (file.exists(file.path(testDirOutDir)))
+  
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
   }
   
 })

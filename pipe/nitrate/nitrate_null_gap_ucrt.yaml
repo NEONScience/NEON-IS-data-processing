@@ -35,7 +35,7 @@ transform:
       DirIn=/tmp/pfs/interimUcrt \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      minPoints=5 \
+      "insuffInfo1=term:nitrate|wndw:015|minPoints:5" \
       SchmQMs=$FILE_SCHEMA_INSUF \
       "DirSubCopy=location"
     

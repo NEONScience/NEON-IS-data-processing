@@ -48,7 +48,7 @@ test_that("Unit test of wrap.sunav2.logfiles.fill.R", {
   library(stringr)
   
   workingDirPath <- getwd()
-  testDirOut = file.path(workingDirPath, 'pfs/out')
+  testDirOut = file.path(workingDirPath, 'pfs/nitrate_out')
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
   
   if (dir.exists(testDirOut)) {
@@ -64,10 +64,6 @@ test_that("Unit test of wrap.sunav2.logfiles.fill.R", {
   subDir <- paste0(subDirParts, collapse = '', sep = '/')
   subDirPath <- file.path(subDir)
   testOutputDirPath <- base::paste0(testDirOut, "/", subDirPath)
-  
-  if (dir.exists(testDirOut)) {
-    unlink(testDirOut, recursive = TRUE)
-  }
   
   wrap.sunav2.logfiles.fill(
     DirInLogs = DirInLogs,
@@ -147,6 +143,11 @@ test_that("Unit test of wrap.sunav2.logfiles.fill.R", {
   
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
+  
+  #delete output directory
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
 
   
 })

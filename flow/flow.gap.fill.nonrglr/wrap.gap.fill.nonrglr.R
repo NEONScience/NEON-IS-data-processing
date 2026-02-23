@@ -122,6 +122,15 @@ wrap.gap.fill.nonrglr <- function(DirIn,
     subDirIn <- fs::path(DirIn,subDir)
     files <- base::list.files(subDirIn,full.names=FALSE)
     
+    if(length(files)==0){
+      log$error(base::paste0('Error: No files found in ', subDirIn))
+      base::stop()
+    }
+    
+    # create output directories
+    subDirOut <- paste0(dirOut,'/',subDir,'/')
+    base::dir.create(subDirOut,recursive=TRUE)
+    
     #loop through files in directory
     for (j in 1:length(files)){
       fileName <- files[j]
@@ -161,12 +170,10 @@ wrap.gap.fill.nonrglr <- function(DirIn,
         }
       }
       
-      # create output directories
-      subDirOut <- paste0(dirOut,'/',subDir,'/')
-      base::dir.create(subDirOut,recursive=TRUE)
+      
       
       # select output schema
-      if(!is.na(SchmFill)){
+      if(typeof(SchmFill) == "list"){
         FileSchmFill<-SchmFill$FileSchmFill[grepl(subDir,SchmFill$DirFill)]
         if(length(FileSchmFill)>1){
           #specific to suna for now. can be updated if needed down the road

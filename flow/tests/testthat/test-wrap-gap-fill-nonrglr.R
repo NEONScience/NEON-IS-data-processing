@@ -124,13 +124,13 @@ test_that("Unit test of wrap.gap.fill.nonrglr", {
   num_starts <- length(all_starts)
   testthat::expect_true(length(dataChk$readout_time)>=num_starts)
   
-  # 3. Remove output
+  # Remove output
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  # 4. No files in input directory: should error
-  DirIn_nofiles <- "pfs/gap_fill_nonrglr/empty_folder/2020/01/01/CFGLOCEMPTY"
+  # 3. No files in input directory: should error
+  DirIn_nofiles <- "pfs/sunav2_location_group_and_restructure/sunav2/2025/06/24/CFGLOCEMPTY"
   returnedOutput <- try(wrap.gap.fill.nonrglr(
     DirIn = DirIn_nofiles,
     DirOutBase = DirOutBase,
@@ -140,7 +140,12 @@ test_that("Unit test of wrap.gap.fill.nonrglr", {
   ), silent = TRUE)
   testthat::expect_true("try-error" %in% class(returnedOutput))
   
-  # 6. File missing readout_time column: should error
+  # Remove output
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  # 4. File missing readout_time column: should error
   DirIn_noreadout <- NEONprocIS.base::def.read.parq(NameFile=fs::path(dirOutData,fileData))
   DirIn_noreadout$readout_time<-NULL
   returnedOutput <- try(wrap.gap.fill.nonrglr(
@@ -151,4 +156,9 @@ test_that("Unit test of wrap.gap.fill.nonrglr", {
     SchmFill = SchmFill
   ), silent = TRUE)
   testthat::expect_true("try-error" %in% class(returnedOutput))
+  
+  # Remove output
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
 })
