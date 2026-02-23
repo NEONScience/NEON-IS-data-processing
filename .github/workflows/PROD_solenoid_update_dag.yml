@@ -1,8 +1,8 @@
-name: DEV-solenoid-update-dag
+name: PROD-solenoid-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'prod'
     paths:
       - 'pipe/solenoid/*.yaml'
       - 'pipe/solenoid/pipe_list_solenoid.txt'
@@ -48,8 +48,8 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
       PATHS: 'pipe/solenoid=pipe_list_solenoid.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.

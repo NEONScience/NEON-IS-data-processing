@@ -5,9 +5,12 @@
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description 
-#' Definition function. Create an arrow schema object auto-detected from data frame
+#' Definition function. Create an arrow schema object auto-detected from data frame.
+#' Optionally, the user can allow arrow to infer the schema. If unsuccessful, the 
+#' schema is inferred and constructed from the R data types.
 
 #' @param df Data frame
+#' @param Infer TRUE/FALSE. TRUE first let's arrow attempt to infer the schema. Returned if successful.
 #' @param log Optional. A logger object as produced by NEONprocIS.base::def.log.init to produce structured log 
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be 
 #' created for use within this function. 
@@ -28,13 +31,29 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2023-08-14)
 #     original creation
+#   Cove Sturtevant (2026-02-20)
+#     First try to let arrow infer the schema. Better handles rarer data types.
 ##############################################################################################
 def.schm.parq.from.df <- function(df,
+                                  Infer=TRUE,
                                   log=NULL
 ){
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
+  }
+  
+  # First try letting arrow derive the schema (if selected)
+  if(Infer == TRUE){
+    schm <- NULL
+    try(schm <- arrow::schema(df))
+    
+    if(!base::is.null(schm)){
+      log$debug("Arrow successfully derived schema from data frame.")
+      return(schm)
+    } else {
+      log$debug("Arrow could not infer the schema from the data frame. Attempting manual derivation.")
+    }
   }
   
   # Parse 
