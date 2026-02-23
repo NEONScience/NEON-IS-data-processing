@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighingv2_level1_group_consolidate_srf
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.2
   cmd:
   - sh
   - "-c"
