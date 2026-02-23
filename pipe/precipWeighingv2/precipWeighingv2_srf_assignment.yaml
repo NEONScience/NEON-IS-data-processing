@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighingv2_srf_assignment
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.1.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.1.3
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
