@@ -3,7 +3,7 @@
 # docker build --no-cache -t neon-is-precip-aepg-comb-r <path to this directory>
 
 # Start with the neon-is-precip-aepg-comb-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.precip.aepg.comb"
