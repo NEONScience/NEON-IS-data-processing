@@ -13,7 +13,7 @@
       "TermCtxt1=par|par-met|upward-facing",
       "DirSubCopy=location"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct:v1.1.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct:v1.1.2",
     "env": {
       "LOG_LEVEL": "INFO"
     }
