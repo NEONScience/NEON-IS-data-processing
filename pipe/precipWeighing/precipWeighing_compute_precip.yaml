@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighing_compute_precip
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:v1.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:v1.2.1
   cmd:
   - sh
   - "-c"
