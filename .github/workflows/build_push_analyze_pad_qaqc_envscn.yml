@@ -3,7 +3,7 @@ name: "Build-push_analyze_pad_qaqc_envscn"
 on:
   push:
     branches:
-      - 'master'
+      - 'swc.dev'
     paths:
       - 'modules_combined/qaqc_plau_and_radiation_custom/**'
       - 'modules/padded_timeseries_analyzer/**'

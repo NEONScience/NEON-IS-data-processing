@@ -69,7 +69,7 @@ input:
       glob: /*/*/*/*/enviroscan
   - pfs:
       name: FILE_THRESHOLDS
-      repo: concH2oSoilSalinity_threshold_test3
+      repo: concH2oSoilSalinity_threshold
       glob: /thresholds.json
 parallelism_spec:
   constant: 5
