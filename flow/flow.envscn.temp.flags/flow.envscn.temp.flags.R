@@ -96,7 +96,7 @@ library(doParallel)
 source("./wrap.envscn.temp.flags.R")
 source("./def.apply.temp.flags.R")
 source("./def.find.temp.sensor.R")
-source("./def.load.temp.sensor.R")
+source("./def.load.temp.sensors.R")
 source("./def.sort.qf.cols.R")
 source("./def.calc.temp.flags.R")
 
