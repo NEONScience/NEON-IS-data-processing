@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: concH2oSoilSalinity_analyze_pad_qaqc_envscn
+  name: concH2oSoilSalinity_analyze_pad_qaqc_envscn_v2
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -86,15 +86,11 @@ input:
   - pfs:
       name: DATA_PATH
       repo: concH2oSoilSalinity_thresh_select_ts_pad
-      glob: /*/*/*/*/enviroscan
-      join_on: $1/$2/$3/$4
+      glob: /*/*/*/
   - pfs:
       name: TEMP_PATH
       repo: concH2oSoilSalinity_group_path
-      glob: /*/*/*/*
-      join_on: $1/$2/$3/$4
-      group_by: $1/$2/$3/$4
-      empty_files: false
+      glob: /*/*/*/
   # - pfs:
   #     name: SCHEMA_FLAGS
   #     repo: concH2oSoilSalinity_avro_schemas
