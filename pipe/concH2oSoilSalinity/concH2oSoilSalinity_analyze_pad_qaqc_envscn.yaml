@@ -86,14 +86,14 @@ input:
   - pfs:
       name: DATA_PATH
       repo: concH2oSoilSalinity_thresh_select_ts_pad
-      glob: /*/*/*/*/enviroscan
-      join_on: $1/$2/$3/$4
+      glob:  /(*)/(*)/(*)/(*)
+      joinOn: $1/$2/$3/$4
   - pfs:
       name: TEMP_PATH
       repo: concH2oSoilSalinity_group_path
-      glob: /*/*/*/*
-      join_on: $1/$2/$3/$4
-      group_by: $1/$2/$3/$4
+      glob:  /(*)/(*)/(*)/(*)
+      joinOn: $1/$2/$3/$4
+      groupBy: $1/$2/$3/$4
       empty_files: false
   # - pfs:
   #     name: SCHEMA_FLAGS
