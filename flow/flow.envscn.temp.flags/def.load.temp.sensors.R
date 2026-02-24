@@ -135,6 +135,7 @@ def.load.temp.sensors <- function(DirTemp,
   }
   
   log$info(base::paste0('Loaded ', base::nrow(sensorDepthDf), ' temperature sensors'))
+  log$info(base::paste0('Temp sensors found: ', sensorDepthDf$sensor_id))
   
   return(sensorDepthDf)
 }
