@@ -1,0 +1,86 @@
+{
+    "type": "record",
+    "name": "nitrate_stats",
+    "namespace": "org.neonscience.schema.dp01",
+    "doc": "L1 statistics for nitrate in surfacewater",
+    "__version": "1.0",
+    "fields": [
+    {
+      "name": "startDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is initiated (inclusive)"
+    },
+    {
+      "name": "endDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is completed (exclusive)"
+    },
+    {
+      "name": "surfWaterNitrateMean",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Arithmetic mean of nitrate-N",
+      "__neon_units": "micromolesPerLiter"
+    },
+    {
+      "name": "surfWaterNitrateMinimum",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Minimum nitrate-N",
+      "__neon_units": "micromolesPerLiter"
+    },
+    {
+      "name": "surfWaterNitrateMaximum",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Maximum nitrate-N",
+      "__neon_units": "micromolesPerLiter"
+    },
+    {
+      "name": "surfWaterNitrateVariance",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Variance in nitrate-N",
+      "__neon_units": "micromolesPerLiterSquared"
+    },
+    {
+      "name": "surfWaterNitrateNumPts",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Number of points used to calculate the arithmetic mean of nitrate-N",
+      "__neon_units": "number"
+    },
+    {
+      "name": "surfWaterNitrateStdErMean",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Standard error of the mean for nitrate-N",
+      "__neon_units": "micromolesPerLiter"
+    }
+    ]
+}
+

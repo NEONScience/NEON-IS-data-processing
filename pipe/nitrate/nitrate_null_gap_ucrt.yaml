@@ -1,0 +1,135 @@
+---
+pipeline:
+  name: nitrate_null_gap_ucrt
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-7c3dcd5
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    rm -rf /tmp/pfs/interimUcrt
+    mkdir -p /tmp/pfs/filter_joined
+    mkdir /tmp/pfs/interimUcrt
+    
+
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # Run second module - uncertianty
+    Rscript ./flow.sunav2.exp.uncert.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/tmp/pfs/interimUcrt \
+      DirErr=/pfs/out/errored_datums \
+      SchmStats=$FILE_SCHEMA_UCRT \
+      "DirSubCopy=group|location|quality_metrics"
+    
+    # Run third module - insufficient data
+    Rscript ./flow.qf.insuff.data.R \
+      DirIn=/tmp/pfs/interimUcrt \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "insuffInfo1=term:nitrate|wndw:015|minPoints:5" \
+      SchmQMs=$FILE_SCHEMA_INSUF \
+      "DirSubCopy=location"
+    
+    EOF
+  env:
+    # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
+    # these repos in order to pull them in with or without the SRF
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: QUALITY_METRICS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+        - path:
+            name: STATISTICS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+        - path:
+            name: GROUP_PATH
+            # Grab group information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+        - path:
+            name: GROUP_PATH
+            # Grab location information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/location/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+        - path:
+            name: GROUP_PATH
+            # Grab location information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/uncertainty*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
+    LOG_LEVEL: INFO # Shared among all modules
+    
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_UCRT
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_ucrt.avsc
+  - pfs:
+      name: FILE_SCHEMA_INSUF
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_insufficient_data.avsc
+  - join:
+    - pfs:
+        name: QUALITY_METRICS_PATH
+        repo: nitrate_qm_group_and_compute
+        glob: /(*/*/*)
+        joinOn: $1
+        outer_join: true # Need outer join to pull in with or without SRFs
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: STATISTICS_PATH
+        repo: nitrate_stats_group_and_compute
+        glob: /(*/*/*)
+        joinOn: $1
+        outer_join: true # Need outer join to pull in with or without SRFs
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: GROUP_PATH
+        repo: nitrate_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        outer_join: true # Need outer join to pull in with or without SRFs
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 2.2
+resource_limits:
+  memory: 2G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

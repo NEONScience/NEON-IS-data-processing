@@ -1,0 +1,195 @@
+---
+pipeline:
+  name: sunav2_fill_log_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-5a8d722
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/kafka_merged
+    rm -rf $OUT_PATH_LIMIT_LOGFILES
+    rm -rf $OUT_PATH_JOIN_SOURCES
+    mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    mkdir -p $OUT_PATH_LIMIT_LOGFILES # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    mkdir -p $OUT_PATH_JOIN_SOURCES # R modules must have pfs in the repo structure
+    
+    # Check if there is any data (could just be the DATE_CONTROL, in which case we'll skip)
+    data="F"
+    if [ ${DATA_PATH_KAFKA+x} ]; then 
+      data="T"
+    fi
+    if [ ${DATA_PATH_ARCHIVE+x} ]; then 
+      data="T"
+    fi
+    if [ ${DATA_PATH_LOG+x} ]; then 
+      data="T"
+    fi
+    if [ $data = "F" ]; then
+      echo "No actual data in datum. Skipping..."
+      exit 0
+    fi
+    
+    # Get source type
+    path_glob="/pfs/DATA_PATH_*/*/"
+    for path in $path_glob; do
+      # Parse the path
+      [[ "$path" =~ ^/pfs/DATA_PATH_(.*)/(.*)/$ ]]
+      source_type="${BASH_REMATCH[2]}"
+    done
+    
+    # If we have log files, limit them to the dates in the date_control pipeline
+    echo "Running filter-joiner to limit log files"
+    export CONFIG=$CONFIG_LIMIT_LOGFILES
+    export OUT_PATH=$OUT_PATH_LIMIT_LOGFILES
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # If data come from Kafka, run the Kafka-merger (could be multiple files)
+    if [ ${DATA_PATH_KAFKA+x} ]; then 
+      # Data from kafka. 
+      # Run kafka combiner
+      Rscript ./flow.kfka.comb.R \
+          DirIn=$DATA_PATH_KAFKA \
+          DirOut=/tmp/kafka_merged \
+          DirErr=/pfs/out/errored_datums \
+          FileSchmL0=$FILE_SCHEMA_L0_PARSED
+    fi 
+    
+    # Run the filter joiner to merge files from all sources. 
+    echo "Running filter-joiner to merge all data sources"
+    export CONFIG=$CONFIG_JOIN_SOURCES
+    export OUT_PATH=$OUT_PATH_JOIN_SOURCES
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # Run log filler script
+    Rscript ./flow.sunav2.logfiles.fill.R \
+      DirIn=$OUT_PATH_JOIN_SOURCES \
+      DirOut=/pfs/out \
+      FileSchmData=$FILE_SCHEMA_DATA \
+      DirErr=/pfs/out/errored_datums
+      
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    # Ensure the path for the kafka data is listed prior to that for the archive data. When a conflict arises, 
+    # such as when Kafka re-streams data, the Kafka data will take precedence because it is 
+    # the latest and greatest.
+    CONFIG_LIMIT_LOGFILES: |
+      ---
+      # Configuration for filter-joiner module that will limit log files to the dates in
+      # the date control pipeline
+      # Make sure the DATE_CONTROL path is second. We actually don't want these files and 
+      # they won't be copied if log files for the site are present
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_LOG
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_LOG/*/*/*/**
+            # Join on y/m/d and sourceID
+            join_indices: [3,4,5,6]
+            outer_join: False
+        - path:
+            name: DATE_CONTROL
+            # Filter for data directory
+            glob_pattern: /pfs/DATE_CONTROL/*/*/*/**
+            # Join on y/m/d and sourceID 
+            join_indices: [3,4,5,6]
+            outer_join: False
+    CONFIG_JOIN_SOURCES: |
+      ---
+      # Configuration for filter-joiner module that will bring together all sources of data
+      # Make sure the DATA_PATH_LOG path is second. Any site files from the date_control pipeline
+      # won't be copied if there are files from the archive, kafka, or the log files. 
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_KAFKA
+            # Filter for data directory
+            glob_pattern: /tmp/kafka_merged/*/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [3,4,5,6]
+            outer_join: true
+        - path:
+            name: DATA_PATH_ARCHIVE
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_ARCHIVE/*/*/*/**
+            # Join on y/m/d and sourceID 
+            join_indices: [3,4,5,6]
+            outer_join: True
+        - path:
+            name: DATA_PATH_LOG
+            # Filter for data directory
+            glob_pattern: /tmp/log_limited/*/*/*/**
+            # Join on y/m/d and sourceID
+            join_indices: [3,4,5,6]
+            outer_join: True
+    OUT_PATH_LIMIT_LOGFILES: /tmp/log_limited 
+    OUT_PATH_JOIN_SOURCES: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_L0_PARSED
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_parsed.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_logfilled.avsc
+  - join:
+    - pfs:
+        name: DATA_PATH_ARCHIVE
+        repo: sunav2_data_source_gcs
+        glob: /(sunav2/*/*/*) #sunav2/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+    - pfs:
+        name: DATA_PATH_KAFKA
+        repo: sunav2_data_source_kafka
+        glob: /(sunav2/*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+        outer_join: true
+    - pfs:
+        name: DATA_PATH_LOG
+        repo: sunav2_logjam_assign_clean_files
+        glob: /(sunav2/*/*/*) #sunav2/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+    - pfs:
+        name: DATE_CONTROL
+        repo: sunav2_cron_daily_and_date_control
+        glob: /(sunav2/*/*/*) #sunav2/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 1.5
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

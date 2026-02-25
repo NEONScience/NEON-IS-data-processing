@@ -161,7 +161,7 @@ transform:
       fi
 
     done
-    
+
     # run data parser
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       python3 -m raw_data_parsers.raw_data_parser.suna_data_parser_main
@@ -204,7 +204,6 @@ transform:
         # set +x # Uncomment for debugging
         rm -rf $linkdir
       fi
-
 
     fi
 
