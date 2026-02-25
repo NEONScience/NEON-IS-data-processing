@@ -2,7 +2,7 @@
 pipeline:
   name: ONEOFF_parQuantumLine_level1_bucket_rewrite
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.2
   cmd:
   - sh
   - "-c"
