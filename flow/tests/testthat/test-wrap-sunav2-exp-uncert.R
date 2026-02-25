@@ -55,8 +55,8 @@ test_that("Unit test of wrap.sunav2.exp.uncert.R", {
   testDirOutPath <- base::paste0(DirOutBase, testDirRepo, "/stats")
   
   # Clean output before test
-  if (dir.exists(testDirOutPath)) {
-    unlink(testDirOutPath, recursive = TRUE)
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
   }
   
   # Run wrapper
@@ -77,4 +77,10 @@ test_that("Unit test of wrap.sunav2.exp.uncert.R", {
     statsData <- NEONprocIS.base::def.read.parq(NameFile = statsFiles[1])
     testthat::expect_true(all(is.na(statsData$surfWaterNitrateMean[is.nan(statsData$surfWaterNitrateMean)])))
   }
+  
+  #delete output directory
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
 })

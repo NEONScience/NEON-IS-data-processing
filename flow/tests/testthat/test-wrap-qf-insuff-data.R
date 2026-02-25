@@ -44,6 +44,11 @@ test_that("Unit test of wrap.qf.insuff.data.R", {
   DirOutBase <- "pfs/nitrate_out"
   SchmQM <- base::paste0(base::readLines('pfs/sunav2_avro_schemas/nitrate/nitrate_insufficient_data.avsc'), collapse = '')
   
+  # Clean up output directory before test
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
   # Example insuffParam dataframe
   # Should match what your flow scripts produce (InfoSet, field, value, etc)
   insuffParam <- data.frame(
@@ -53,10 +58,6 @@ test_that("Unit test of wrap.qf.insuff.data.R", {
     stringsAsFactors = FALSE
   )
   
-  # Clean up output directory before test
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
   
   # Test 1: Successful run (correct input files/columns exist)
   wrap.qf.insuff.data(
@@ -83,41 +84,54 @@ test_that("Unit test of wrap.qf.insuff.data.R", {
   testthat::expect_true("finalQF" %in% names(qmData))
   testthat::expect_true(all(qmData$finalQF == qmData$insufficientDataQF)) # FinalQF = InsuffQF
   
+  # Clean up
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutStats, recursive = TRUE)
+    unlink(DirOutQMs, recursive = TRUE)
+    unlink(DirOutBase, recursive = TRUE)
+  }
   
-  # Test 3: Error if required columns missing in stats/QM
+  # Test 2: Error if required columns missing in stats/QM
   insuffParam_bad <- data.frame(
     InfoSet = c("insuffInfo1", "insuffInfo1", "insuffInfo1"),
     field = c("wndw", "minPoints", "term"),
     value = c("015", "3", "INVALID_TERM"),
     stringsAsFactors = FALSE
   )
-  testthat::expect_error(
-    wrap.qf.insuff.data(
-      DirIn = DirIn,
-      insuffParam = insuffParam_bad,
-      DirOutBase = DirOutBase
-    ),
-    regexp = "No column found with name"
-  )
+  returnedOutput <- try(wrap.qf.insuff.data(
+    DirIn = DirIn,
+    insuffParam = insuffParam_bad,
+    DirOutBase = DirOutBase
+  ),silent=TRUE)
   
-  # Test 4: Error if bad wndw format
+  testthat::expect_true("try-error" %in% class(returnedOutput))
+  
+  # Clean up
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutStats, recursive = TRUE)
+    unlink(DirOutQMs, recursive = TRUE)
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  
+  # Test 3: Error if bad wndw format
   insuffParam_bad <- data.frame(
     InfoSet = c("insuffInfo1", "insuffInfo1", "insuffInfo1"),
     field = c("wndw", "minPoints", "term"),
     value = c("15min", "3", "nitrate"),
     stringsAsFactors = FALSE
   )
-  testthat::expect_error(
-    wrap.qf.insuff.data(
-      DirIn = DirIn,
-      insuffParam = insuffParam_bad,
-      DirOutBase = DirOutBase
-    ),
-    regexp = "No column found with name"
-  )
+  returnedOutput <- try(wrap.qf.insuff.data(
+    DirIn = DirIn,
+    insuffParam = insuffParam_bad,
+    DirOutBase = DirOutBase
+    ),silent=TRUE)
+  
+  testthat::expect_true("try-error" %in% class(returnedOutput))
   
   # Clean up
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
+  
 })

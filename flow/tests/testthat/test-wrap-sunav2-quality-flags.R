@@ -84,4 +84,8 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
   testthat::expect_true(dir.exists(DirOutFlags))
   # You may add further checks for file output, schema format, etc.
   
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  
 })
