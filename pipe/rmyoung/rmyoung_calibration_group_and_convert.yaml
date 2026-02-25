@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.1.0@sha256:f42d27ce9f018f1cd773188718c7773e8d870718f9cc2b812ae3e06ae87d57af
   cmd:
   - sh
   - "-c"
@@ -30,17 +30,15 @@ transform:
           DirSubCopy=calibration
 
     # Run calibration conversion module
+    # Removed schemas for now, probably add back in later
     Rscript ./flow.cal.conv.R \
       DirIn=/tmp/pfs/kafka_merged \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums\
-      FileSchmData=$FILE_SCHEMA_DATA \
-      FileSchmQf=$FILE_SCHEMA_FLAGS \
       FileUcrtFdas=$FILE_UNCERTAINTY_FDAS \
       ConvFuncTerm1=def.cal.conv.nmnl:speed \
       "TermQf=speed" \
-      "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" \
-      "UcrtFuncTerm2=def.ucrt.fdas.rstc.poly:speed"
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" 
 
     EOF
 
@@ -74,15 +72,6 @@ transform:
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
 input:
-  cross:
-  - pfs:
-      name: FILE_SCHEMA_PARSED
-      repo: rmyoung_avro_schemas
-      glob: /rmyoung/rmyoung_parsed.avsc
-  - pfs:
-      name: FILE_SCHEMA_FLAGS
-      repo: rmyoung_avro_schemas
-      glob: /rmyoung/rmyoung_flags_calibration.avsc
   # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
@@ -94,14 +83,7 @@ input:
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
-        repo: rmyoung_data_source_gcs
-        glob: /rmyoung/(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    - pfs:
-        name: KAFKA_UNMERGED_DATA
-        repo: rmyoung_data_source_kafka
+        repo: rmyoung_data_source_trino
         glob: /rmyoung/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true

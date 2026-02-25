@@ -60,14 +60,32 @@
 #   Kaelin Cawley (2026-02-06)
 #     created new function to be used for RMyoung 05108 buoy wind speed data
 ##############################################################################################
+# # For Testing flow.cal.conv.R with this function
+# setwd("/home/NEON/kcawley/NEON-IS-data-processing/flow/flow.cal.conv")
+# # FileSchmData=$FILE_SCHEMA_DATA_AQUATROLL
+# # FileSchmQf=$FILE_SCHEMA_FLAGS_AQUATROLL
+# DirSubCopy=flags
+# 
+# Sys.setenv(DIR_IN='/scratch/pfs/rmyoung_calibration_assignment')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# NumDayExpiMax = as.data.frame(matrix(data = c("speed",365), nrow = 1, ncol = 2))
+# names(NumDayExpiMax) <- c('var','NumDayExpiMax')
+# NumDayExpiMax$NumDayExpiMax <- as.numeric(NumDayExpiMax$NumDayExpiMax)
+# arg <- c(DirIn=$DIR_IN, 
+#          DirOut="/pfs/out",
+#          dirErr="/pfs/out/errored_datums",
+#          ConvFuncTerm1=def.cal.conv.nmnl:speed, 
+#          NumDayExpiMax = NumDayExpiMax, 
+#          UcrtFuncTerm1=def.ucrt.meas.cnst:speed)
+# # Then copy and paste rest of workflow into the command window
+# 
+# 
 # # For Testing speed calibration
 # data = NEONprocIS.base::def.read.parq(NameFile = '~/pfs/rmyoung_data_source_trino/rmyoung/2025/12/14/32356/data/rmyoung_32356_2025-12-14.parquet')
 # nomVal = 15/90
 # calID = 'CVAL_B1'
 # varConv = base::names(data)[4] #speed
-# NumDayExpiMax = as.data.frame(matrix(data = c("speed",365), nrow = 1, ncol = 2))
-# names(NumDayExpiMax) <- c('var','NumDayExpiMax')
-# NumDayExpiMax$NumDayExpiMax <- as.numeric(NumDayExpiMax$NumDayExpiMax)
+# 
 # calSlct <- NEONprocIS.cal::wrap.cal.slct(
 #                DirCal = '~/pfs/rmyoung_calibration_assignment/rmyoung/2025/12/14/32356/calibration',
 #                NameVarExpc = c('speed'),
@@ -151,8 +169,14 @@ def.cal.conv.nmnl <- function(data = data.frame(data=base::numeric(0)),
       
     } # End loop around calibration files
     
-    # Replace raw data with calibrated data
-    data[[varIdx]] <- dataConvOutIdx
+    # Add calibrated data and retain raw data
+    currNames <- names(data)
+    nameToAdd <- paste0(varIdx,"Calibrated")
+    
+    data[[ncol(data)+1]] <- NA
+    names(data) <- c(currNames,nameToAdd)
+    
+    data[[nameToAdd]] <- dataConvOutIdx
     
   } # End loop around variables
   
