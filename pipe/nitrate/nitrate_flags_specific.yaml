@@ -21,7 +21,7 @@ input:
       name: DIR_IN
       repo: nitrate_analyze_pad_and_qaqc_plau
       # /YYYY/MM/DD/group/sourcetype/CFGLOC
-      glob: /(*/*/*/*)
+      glob: /*/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: nitrate_avro_schemas

@@ -34,7 +34,7 @@ input:
   - pfs:
       name: QAQC_PLAUSIBILITY_PATH
       repo: nitrate_flags_specific
-      glob: /*/*/*/*
+      glob: /*/*/*
 parallelism_spec:
   constant: 5
 autoscaling: true
