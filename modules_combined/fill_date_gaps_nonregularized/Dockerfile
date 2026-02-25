@@ -2,7 +2,7 @@
 # This image combines the two modules: date_gap_filler and flow.gap.fill.nonrglr
 
 # Start with the base R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
