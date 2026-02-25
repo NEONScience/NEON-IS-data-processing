@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.1.0@sha256:f42d27ce9f018f1cd773188718c7773e8d870718f9cc2b812ae3e06ae87d57af
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:sha-e7548b6@sha256:4a591bdfbfef7fff9339fc654f72561c06ebfaa411c062968e9bdc902a39a777
   cmd:
   - sh
   - "-c"
@@ -39,7 +39,7 @@ transform:
       ConvFuncTerm1=def.cal.conv.nmnl:speed \
       "TermQf=speed" \
       "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" 
-
+    fi
     EOF
 
   env:
