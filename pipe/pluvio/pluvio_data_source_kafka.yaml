@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -25,13 +25,13 @@ transform:
     RM_OFFSETS: "False"
 
   secrets:
-  - name: pachyderm-kafka-nonprod-auth
+  - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
     key: KAFKA_USER
-  - name: pachyderm-kafka-nonprod-auth
+  - name: pachyderm-kafka-auth
     env_var: KAFKA_PASSWORD
     key: KAFKA_PASSWORD
-  - name: pachyderm-kafka-nonprod-auth
+  - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
   - name: pachyderm-kafka-auth

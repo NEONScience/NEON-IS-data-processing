@@ -13,7 +13,7 @@
       "TermTest1=dissolvedOxygen:null|gap|range|step|spike|persistence",
       "TermTest2=dissolvedOxygenSaturation:null|gap|range|step|spike|persistence"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau:v1.1.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau:v1.1.2",
     "env": {
       "LOG_LEVEL": "INFO"
     }

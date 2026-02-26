@@ -1,0 +1,19 @@
+{
+    "features":[
+        {
+            "Data Rate":"0.0033333333333",
+            "geometry":null,
+            "HOR":"103",
+            "properties":{
+                "install_date":"2025-06-23T00:00:00Z",
+                "name":"CFGLOC110819",
+                "remove_date":"2025-06-24T00:00:00Z",
+                "site":"SUGG"
+            },
+            "VER":"100"
+        }
+    ],
+    "source_id":    49259,
+    "source_type":"sunav2_raw",
+    "type":"FeatureCollection"
+}

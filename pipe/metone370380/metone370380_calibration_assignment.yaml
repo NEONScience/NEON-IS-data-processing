@@ -2,7 +2,7 @@
 pipeline:
   name: metone370380_calibration_assignment
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.0.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.0.4
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

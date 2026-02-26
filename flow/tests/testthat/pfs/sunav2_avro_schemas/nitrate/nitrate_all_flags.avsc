@@ -1,0 +1,128 @@
+{
+    "type": "record",
+    "name": "nitrate_all_flags",
+    "namespace": "org.neonscience.schema.device",
+    "doc": "Combined flags for nitrate in surfacewater",
+    "__version": "1.0",
+    "fields": [
+        {
+            "name": "readout_time",
+            "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+            },
+            "doc": "Timestamp of readout expressed in milliseconds since epoch",
+            "__neon_units": "millisecond"
+        },
+        {
+          "name": "nitrateRangeQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna range plausibility test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateStepQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna step plausibility test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitratePersistenceQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna persistence plausibility test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateSpikeQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna spike plausibility test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateHumidityQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna internal humidity test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateLampTempQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna lamp temperature test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateLightDarkRatioQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna light to dark spectral ratio test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateLampStabilizeQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna number of light measurments for the lamp to stabilize test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "validCalQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Indicator flag for the suna valid calibration test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "suspectCalQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Indicator flag for the suna suspect calibration test (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "sunaLogDataQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Indicator flag for the suna logged data (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        }
+    ]
+}
