@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: rmyoung_calibration_group_and_convert_test
+  name: rmyoung_calibration_group_and_convert
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-276e3ab
   cmd:
@@ -36,7 +36,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums\
         ConvFuncTerm1=def.cal.conv.nmnl:speed \
-        "TermQf=speed" \
+        TermQf=speed \
         "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" 
 
     

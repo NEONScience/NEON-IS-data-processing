@@ -12,12 +12,6 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf $OUT_PATH
-    rm -rf /tmp/pfs/kafka_merged
-    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
-    mkdir -p /tmp/pfs/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
-    
     # Join files
     python3 -m filter_joiner.filter_joiner_main
     
