@@ -98,7 +98,9 @@ transform:
       DirIn=/tmp/pfs/joined_dataCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCopy=data|location|flags"
+      "DirSubCopy=data|location|flags" \
+      SchmQf=$SCHEMA_FLAGS
+      
       
     EOF
   env:
@@ -126,18 +128,23 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [3,4,5,6]
 input:
-  join: 
+  cross:
   - pfs:
-      name: DATA_PATH
-      repo: concH2oSoilSalinity_thresh_select_ts_pad
-      glob:  /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-  - pfs:
-      name: TEMP_PATH
-      repo: concH2oSoilSalinity_group_path
-      glob:  /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: false
+      name: SCHEMA_FLAGS
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_flags_plausibility.avsc
+  - join: 
+    - pfs:
+        name: DATA_PATH
+        repo: concH2oSoilSalinity_thresh_select_ts_pad
+        glob:  /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+    - pfs:
+        name: TEMP_PATH
+        repo: concH2oSoilSalinity_group_path
+        glob:  /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false
 parallelism_spec:
   constant: 5
 autoscaling: true
