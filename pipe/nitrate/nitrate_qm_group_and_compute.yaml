@@ -1,0 +1,68 @@
+---
+pipeline:
+  name: nitrate_qm_group_and_compute
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # ---- Run module - quality metrics (averaged) ----
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=$QAQC_PLAUSIBILITY_PATH \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "WndwAgr=015" \
+      "WghtAlphBeta=2|1" \
+      Thsh=0.2 \
+      FileSchmQm=$FILE_SCHEMA_QM \
+      "GrpQfAlph1=nitrate:nitrateRangeQF|nitrateStepQF|nitrateSpikeQF|nitratePersistenceQF|nitrateHumidityQF|nitrateLampTempQF|nitrateLightDarkRatioQF|nitrateLampStabilizeQF" \
+      "GrpQfBeta1=nitrate:nitrateRangeQF|nitrateStepQF|nitrateSpikeQF"
+  env:
+    LOG_LEVEL: DEBUG
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_quality_metrics.avsc
+  - pfs:
+      name: QAQC_PLAUSIBILITY_PATH
+      repo: nitrate_flags_specific
+      glob: /*/*/*
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 1.2
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

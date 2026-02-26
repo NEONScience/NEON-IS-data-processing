@@ -1,0 +1,45 @@
+---
+pipeline:
+  name: nitrate_flags_specific
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-flags-specific:sha-4b20cf0
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - Rscript ./flow.sunav2.quality.flags.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      FileSchmQf=$SCHEMA_FLAGS
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: nitrate_analyze_pad_and_qaqc_plau
+      # /YYYY/MM/DD/group/sourcetype/CFGLOC
+      glob: /*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_all_flags.avsc
+parallelism_spec:
+  constant: 6
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 1.2
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
