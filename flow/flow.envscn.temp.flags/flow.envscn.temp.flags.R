@@ -143,7 +143,6 @@ log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Retrieve output schema for  flags
 FileSchmQf <- Para$SchmQf
-log$debug(base::paste0('Output schema for bulk precipitation custom flags: ',base::paste0(FileSchmData,collapse=',')))
 
 # Read in the schema 
 if(base::is.null(FileSchmQf) || FileSchmQf == 'NA'){
