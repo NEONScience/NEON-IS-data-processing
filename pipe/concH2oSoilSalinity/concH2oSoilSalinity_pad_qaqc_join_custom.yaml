@@ -1,0 +1,154 @@
+---
+pipeline:
+  name: concH2oSoilSalinity_pad_qaqc_join_custom
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau-envscn:sha-1f92c45
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    echo "=== Starting pipeline ==="
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/padded_analyzer
+    rm -rf /tmp/pfs/padded_analyzerCopy
+    mkdir -p /tmp/pfs/padded_analyzer
+    
+    rm -rf /tmp/qaqc_plau
+    rm -rf /tmp/qaqc_plauCopy
+    mkdir -p /tmp/qaqc_plau
+    
+    rm -rf /tmp/pfs/joined_data
+    rm -rf /tmp/pfs/joined_dataCopy
+    mkdir -p /tmp/pfs/joined_data
+
+    # ---- Run first module - padded_timeseries_analyzer ----pc d
+    # This validates the padded data from thresh_select_ts_pad has complete manifests
+    echo "=== Running padded_timeseries_analyzer ==="
+    export OUT_PATH=/tmp/pfs/padded_analyzer
+
+    python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/pfs/padded_analyzer 
+    
+    echo "=== Padded analyzer complete ==="
+    
+    # Run second module - qaqc plausibility
+    
+    Rscript ./flow.qaqc.plau.R \
+      DirIn=/tmp/pfs/padded_analyzerCopy \
+      DirOut=/tmp/qaqc_plau \
+      DirErr=/pfs/out/errored_datums \
+      "TermTest1=VSICDepth02:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest2=VSICDepth03:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest3=VSICDepth04:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest4=VSICDepth05:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest5=VSICDepth06:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest6=VSICDepth07:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest7=VSICDepth08:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest8=VSICDepth01:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest9=VSWCfactoryDepth02:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest10=VSWCfactoryDepth03:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest11=VSWCfactoryDepth04:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest12=VSWCfactoryDepth05:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest13=VSWCfactoryDepth06:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest14=VSWCfactoryDepth07:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest15=VSWCfactoryDepth08:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest16=VSWCfactoryDepth01:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest17=VSWCsoilSpecificDepth02:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest18=VSWCsoilSpecificDepth03:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest19=VSWCsoilSpecificDepth04:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest20=VSWCsoilSpecificDepth05:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest21=VSWCsoilSpecificDepth06:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest22=VSWCsoilSpecificDepth07:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest23=VSWCsoilSpecificDepth08:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "TermTest24=VSWCsoilSpecificDepth01:null|gap|range(rmv)|step(rmv)|persistence(rmv)|spike(rmv)" \
+      "DirSubCopy=location|threshold"
+      
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/qaqc_plau /tmp/qaqc_plauCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/qaqc_plau
+    
+    # ---- Run third module - filter-joiner ----
+    # Now join the base qc data with temperature data to prep for second test
+    echo "=== Running filter_joiner to add temperature data ==="
+    export DATA_PATH=/tmp/qaqc_plauCopy
+    export OUT_PATH=/tmp/pfs/joined_data
+    python3 -m filter_joiner.filter_joiner_main
+    
+    cp -rL /tmp/pfs/joined_data /tmp/pfs/joined_dataCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/pfs/joined_data
+    
+    echo "=== Filter_joiner complete ==="
+
+    Rscript ./flow.envscn.temp.flags.R \
+      DirIn=/tmp/pfs/joined_dataCopy \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirSubCopy=data|location|flags"
+      
+    EOF
+  env:
+    # Environment variables for padded timeseries analyzer
+    LOG_LEVEL: DEBUG
+    ERR_PATH: /pfs/out/errored_datums
+    RELATIVE_PATH_INDEX: "3"
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # Join validated padded data with temperature data
+      input_paths:
+        - path:
+            name: QAQC_DATA
+            # Filter validated output from qaqc 
+            ##NOTE: Filter joiner came after qaqc, so no /pfs/ in glob to keep indices in line
+            glob_pattern: /tmp/qaqc_plauCopy/*/*/*/*/**
+            # Join on Y/M/D/group
+            join_indices: [3,4,5,6]
+        - path:
+            name: TEMP_PATH
+            # Filter for temperature data
+            glob_pattern: /pfs/TEMP_PATH/*/*/*/*/temp-soil*/**
+            # Join on named location (already joined below by day)
+            join_indices: [3,4,5,6]
+    
+    LINK_TYPE: COPY
+input:
+  join: 
+  - pfs:
+      name: DATA_PATH
+      repo: concH2oSoilSalinity_thresh_select_ts_pad
+      glob:  /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+  - pfs:
+      name: TEMP_PATH
+      repo: concH2oSoilSalinity_group_path
+      glob:  /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 5.5
+resource_limits:
+  memory: 4G
+  cpu: 7
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
