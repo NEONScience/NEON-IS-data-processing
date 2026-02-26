@@ -30,12 +30,15 @@ transform:
     rm -rf /tmp/pfs/joined_dataCopy
     mkdir -p /tmp/pfs/joined_data
 
-    # ---- Run first module - padded_timeseries_analyzer ----pc d
+    # ---- Run first module - padded_timeseries_analyzer ----
     # This validates the padded data from thresh_select_ts_pad has complete manifests
+    
     echo "=== Running padded_timeseries_analyzer ==="
+    # set outpath for pad analyzer
     export OUT_PATH=/tmp/pfs/padded_analyzer
 
     python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+    
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output)
     rm -r -f /tmp/pfs/padded_analyzer 
@@ -80,6 +83,7 @@ transform:
     
     # ---- Run third module - filter-joiner ----
     # Now join the base qc data with temperature data to prep for second test
+    
     echo "=== Running filter_joiner to add temperature data ==="
     export DATA_PATH=/tmp/qaqc_plauCopy
     export OUT_PATH=/tmp/pfs/joined_data
@@ -102,6 +106,7 @@ transform:
     LOG_LEVEL: DEBUG
     ERR_PATH: /pfs/out/errored_datums
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY
     # Environment variables for filter-joiner
     CONFIG: |
       ---
@@ -120,8 +125,6 @@ transform:
             glob_pattern: /pfs/TEMP_PATH/*/*/*/*/temp-soil*/**
             # Join on named location (already joined below by day)
             join_indices: [3,4,5,6]
-    
-    LINK_TYPE: COPY
 input:
   join: 
   - pfs:

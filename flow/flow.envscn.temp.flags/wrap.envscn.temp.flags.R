@@ -54,8 +54,8 @@
 #' @examples 
 #' # NOT RUN
 #' 
-#' "DirIn=/scratch/pfs/concH2oSoilSalinity_analyze_pad_and_qaqc_plau/2025/10/17/conc-h2o-soil-salinity_GRSM001501/",
-#' "DirTemp=/scratch/pfs/concH2oSoilSalinity_group_path/2025/10/17/conc-h2o-soil-salinity_GRSM005501/",
+#' "DirIn=/scratch/pfs/concH2oSoilSalinity_pad_qaqc_join/2025/10/17/conc-h2o-soil-salinity_GRSM001501/",
+#' "DirTemp=/scratch/pfs/concH2oSoilSalinity_pad_qaqc_join/2025/10/17/conc-h2o-soil-salinity_GRSM005501/",
 #' "DirOut=/scratch/pfs/tb_out",
 #' "DirErr=/scratch/pfs/tb_out/errored_datums"
 #' wrap.envscn.temp.flags(DirIn,DirOutBase,DirTemp,DirSubCopy)
@@ -68,7 +68,7 @@
 ##############################################################################################
 wrap.envscn.temp.flags <- function(DirIn,
                                    DirOutBase,
-                                   DirTemp,
+                                   DirTemp = DirIn,
                                    SchmQf = NULL,
                                    DirSubCopy = NULL,
                                    log = NULL
@@ -78,11 +78,15 @@ wrap.envscn.temp.flags <- function(DirIn,
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
   } 
+  #Set variable for enviroscan Dir in
+  DirInEnviro <- NEONprocIS.base::def.dir.in(DirIn, nameDirSub = c('data', 'flags'))
+  # def dir in with 'data'/flags'
+  ###clean up all below to look for DirInEnviro.
   
   # Gather info about the input directory and create the output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
-  dirInData <- fs::path(DirIn,'data')
-  dirInQf <- fs::path(DirIn,'flags')
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInEnviro,log=log)
+  dirInData <- fs::path(DirInEnviro,'data')
+  dirInQf <- fs::path(DirInEnviro,'flags')
   
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutQf <- fs::path(dirOut,'flags')
@@ -95,14 +99,14 @@ wrap.envscn.temp.flags <- function(DirIn,
   # Copy with a symbolic link the desired subfolders 
   DirSubCopy <- base::unique(base::setdiff(DirSubCopy, c('flags')))
   if(base::length(DirSubCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(DirSrc = fs::path(DirIn, DirSubCopy),
+    NEONprocIS.base::def.dir.copy.symb(DirSrc = fs::path(DirInEnviro, DirSubCopy),
                                        DirDest = dirOut,
                                        LnkSubObj = FALSE,
                                        log = log)
   }    
   
   # ===== Load and validate thresholds =====
-  dirInThrsh <- fs::path(DirIn, 'threshold')
+  dirInThrsh <- fs::path(DirInEnviro, 'threshold')
   fileThsh <- base::list.files(dirInThrsh)
   
   if (base::length(fileThsh) == 0) {

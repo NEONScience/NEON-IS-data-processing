@@ -4,9 +4,9 @@
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 #' 
-#' @description Workflow. Compute the heater and status flags by assessing the bit rate. Only 
-#' flagging alarm codes of interest. Add columns to qfPlau table prior to push to QM calculation module. 
-#'
+#' @description Workflow. Use envirscan data and prt locations to match sensors based on depth, 
+#' assess temperature of soil, if too cold, flag data. If nearest isn't available average neighbors and 
+#' check if data below 1C. 
 #'
 #' General code workflow:
 #'    Parse input parameters
@@ -14,9 +14,11 @@
 #'    For each datum:
 #'      Create output directories and copy (by symbolic link) unmodified components
 #'      Read in the L0 data files into arrow datasets
-#'      Compute flags based on sensor status streams
-#'      aggregate data to 5 and 30 minutes
-#'      Write stats and flags output to file
+#'      check if data needs temperature test (threshold)
+#'      Calculate nearest sensors
+#'      check for freezing temperatures
+#'      flag as necessary
+#'      write flags to output file
 #'
 #' This script is run at the command line with the following arguments. Each argument must be a string
 #' in the format "Para=value", where "Para" is the intended parameter name and "value" is the value of
@@ -27,18 +29,17 @@
 #'
 #' 1. "DirIn=value", where value is the path to the input data directory. 
 #' The input repo should be structured by source ID as follows: 
-#' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/source-id, where # indicates any number of parent and child directories 
+#' #/pfs/BASE_REPO/#/yyyy/mm/dd/group/ where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
 #' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr
 #'
-#' Nested within the path for each source ID is (at a minimum) the folder:
-#'         /data
-#'         /flags
+#' Nested within the path for each location is (at a minimum) the folder:
+#'         /sensor/location/data
+#'         /sensor/location/flags
+#'         /temp-sensor-group/data
+#'         /temp-sensor-group/location
 #' The data/flags folders holds any number of daily data/flags files padded around the yyyy/mm/dd in the input path.
 #' #' 
-#' For example:
-#' Input path = precipWeighingv2_analyze_pad_and_qaqc_plau/2025/03/31/precip-weighing-v2_HQTW900000/pluvio/CFGLOC114405
-#'
 #' There may be other folders at the same level as the data directory. They are ignored and not passed 
 #' to the output unless indicated in SubDirCopy.
 #' 
@@ -49,12 +50,7 @@
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
 #' 4. "SchmQF=value" (optional), where value is the full path to schema for the QF flags after inputing custom flags
-#'
-#' 5. "DirTemp=valuë", where the value is the input path for soil temperature and location data to perform test. 
 #' 
-#' Ensure that any schema input here matches the column order of the auto-generated schema, 
-#' simply making any desired changes to column names.
-#'
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.
 #'
@@ -65,7 +61,7 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #'
-#' @return A repository with the computed precipitation and flags in DirOut, where DirOut replaces BASE_REPO but
+#' @return A repository with the computed enviroscan flags and data in DirOut, where DirOut replaces BASE_REPO but
 #' otherwise retains the child directory structure of the input path. The terminal directories of each 
 #' sensor location folder are "data" and "flags". 
 #'
@@ -76,10 +72,9 @@
 
 #' @examples 
 #' Not Run - Stepping through the code in Rstudio
-#' Sys.setenv(DIR_IN="DirIn=/scratch/pfs/concH2oSoilSalinity_analyze_pad_and_qaqc_plau/2025/10/17/conc-h2o-soil-salinity_GRSM001501/")
+#' Sys.setenv(DIR_IN="DirIn=/scratch/pfs/concH2oSoilSalinity_pad_qaqc_join/2025/10/17/conc-h2o-soil-salinity_GRSM001501/")
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg = c( "DirIn=$DIR_IN",
-#'          "DirTemp=/scratch/pfs/concH2oSoilSalinity_group_path/2025/10/17/conc-h2o-soil-salinity_GRSM005501/",
 #'          "DirOut=/scratch/pfs/tb_out",
 #'          "DirErr=/scratch/pfs/tb_out/errored_datums")
 #' Then copy and paste rest of workflow into the command window
@@ -128,7 +123,6 @@ Para <-
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "DirTemp",
                      "SchmQf"
                      ),
     log = log
@@ -159,22 +153,12 @@ log$debug(base::paste0(
 ))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- c('data','flags')
+#nameDirSub <- c('data','flags')
+nameDirSub <- c('enviroscan')
 log$debug(base::paste0(
   'Minimum expected subdirectories of each datum path: ',
   base::paste0(nameDirSub, collapse = ',')
 ))
-
-# Retrieve DirTemp if provided
-FileDirTemp <- Para$DirTemp
-
-# Read in the schema 
-if(base::is.null(FileDirTemp) || FileDirTemp == 'NA'){
-  FileDirTemp <- NULL
-} else {
-  log$debug(base::paste0('Temperature Directory provided: ', FileDirTemp))
-  
-}
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
@@ -187,20 +171,12 @@ DirIn <-
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
-  #if no temperature directory was provided assume it is two levels up from IdxDirIn. 
-  if (is.null(FileDirTemp)){
-    # Get the directory name two levels up
-    idxDirTemp <- dirname(dirname(idxDirIn))
-  } else {
-    tempFiles <- list.files(FileDirTemp, full.names = T)
-    idxDirTemp <- tempFiles[grepl(tempFiles, pattern =basename(dirname(dirname(idxDirIn))))]
-  }
-    # Run the wrapper function for each datum, with error routing
+  # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
       wrap.envscn.temp.flags(DirIn=idxDirIn,
                               DirOutBase=Para$DirOut,
-                              DirTemp=idxDirTemp,
+                              DirTemp=idxDirIn,
                               SchmQf=FileSchmQf, 
                               DirSubCopy=DirSubCopy,
                               log=log
