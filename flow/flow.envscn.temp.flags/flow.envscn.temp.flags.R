@@ -124,11 +124,11 @@ Para <-
     NameParaReqd = c(
                      "DirIn", 
                      "DirOut", 
-                     "DirErr",
-                     "DirTemp"
+                     "DirErr"
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
+                     "DirTemp",
                      "SchmQf"
                      ),
     log = log
@@ -139,7 +139,7 @@ Para <-
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Temperature directory: ', Para$DirTemp))
+#log$debug(base::paste0('Temperature directory: ', Para$DirTemp))
 
 # Retrieve output schema for  flags
 FileSchmQf <- Para$SchmQf
@@ -166,6 +166,17 @@ log$debug(base::paste0(
   base::paste0(nameDirSub, collapse = ',')
 ))
 
+# Retrieve DirTemp if provided
+FileDirTemp <- Para$DirTemp
+
+# Read in the schema 
+if(base::is.null(FileDirTemp) || FileDirTemp == 'NA'){
+  FileDirTemp <- NULL
+} else {
+  log$debug(base::paste0('Temperature Directory provided: ', FileDirTemp))
+  
+}
+
 # Find all the input paths (datums). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
@@ -177,13 +188,20 @@ DirIn <-
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
-  
-  # Run the wrapper function for each datum, with error routing
+  #if no temperature directory was provided assume it is two levels up from IdxDirIn. 
+  if (is.null(FileDirTemp)){
+    # Get the directory name two levels up
+    idxDirTemp <- dirname(dirname(idxDirIn))
+  } else {
+    tempFiles <- list.files(FileDirTemp, full.names = T)
+    idxDirTemp <- tempFiles[grepl(tempFiles, pattern =basename(dirname(dirname(idxDirIn))))]
+  }
+    # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
       wrap.envscn.temp.flags(DirIn=idxDirIn,
                               DirOutBase=Para$DirOut,
-                              DirTemp=Para$DirTemp,
+                              DirTemp=idxDirTemp,
                               SchmQf=FileSchmQf, 
                               DirSubCopy=DirSubCopy,
                               log=log
