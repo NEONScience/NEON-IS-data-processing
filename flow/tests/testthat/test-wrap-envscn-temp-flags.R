@@ -868,3 +868,60 @@ test_that("Integration test with missing threshold file (expect error)", {
   unlink(DirOutBase, recursive = TRUE)
   
 })
+
+test_that("Integration test with combined DirIn and DirTemp", {
+  # Use actual test data paths
+  DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/combined/tests/2025/10/17/conc-h2o-soil-salinity_GRSM001501/enviroscan/CFGLOC105245/")
+  DirOutBase <- file.path(tempdir(), "test_output")
+  
+  # Only run if test data exists
+  if (dir.exists(DirIn) ) {
+    # Clean output directory
+    if (dir.exists(DirOutBase)) {
+      unlink(DirOutBase, recursive = TRUE)
+    }
+    
+    #add flow logic for DirTemp
+    DirTemp = dirname(dirname(DirIn))
+    
+    # Run the wrap function
+    wrap.envscn.temp.flags(
+      DirIn = DirIn,
+      DirOutBase = DirOutBase,
+      DirTemp = DirTemp,
+      DirSubCopy = c("data", "location", "threshold"),
+      log = NULL
+    )
+    
+    # Check that output was created
+    expect_true(dir.exists(DirOutBase))
+    
+    # Check that flags directory was created
+    flagsDir <- file.path(DirOutBase, "combined/tests/2025/10/17/conc-h2o-soil-salinity_GRSM001501/enviroscan/CFGLOC105245/flags")
+    expect_true(dir.exists(flagsDir))
+    
+    # Check that flag file exists
+    flagFiles <- list.files(flagsDir, pattern = "flagsPlausibility.parquet")
+    expect_equal(length(flagFiles), 1)
+    
+    # Read and validate the output
+    flagData <- arrow::read_parquet(file.path(flagsDir, flagFiles[1]))
+    
+    # Check that tempTest columns were added
+    tempTestCols <- names(flagData)[grepl("tempTestDepth", names(flagData))]
+    expect_true(length(tempTestCols) == 8)
+    
+    # Check that flags have valid values (0, 1, or -1)
+    for (col in tempTestCols) {
+      expect_true(all(flagData[[col]] %in% c(-1L, 0L, 1L)))
+    }
+    
+    # Check that timestamps are present
+    expect_true("readout_time" %in% names(flagData))
+    
+    # Cleanup
+    unlink(DirOutBase, recursive = TRUE)
+  } else {
+    skip("Test data not available")
+  }
+})
