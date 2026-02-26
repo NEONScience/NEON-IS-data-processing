@@ -3,6 +3,7 @@
 # File: test-wrap-envscn-temp-flags.R
 # Author: Teresa Burlingame
 # Date: February 2026
+# Last Updated: February 26, 2026
 ################################################################################
 
 ================================================================================
@@ -12,88 +13,97 @@ UNIT TESTS (Tests 1-5)
 TEST 1: def.sort.qf.cols - Column Sorting Function
 --------------------------------------------------------------------------------
 Description: Tests the sorting of quality flag columns
-Test Cases:
-  - Correctly sorts quality flag columns with depth numbers
-  - Handles empty input 
-  - Handles columns without depth numbers
+Test Cases (3 tests):
+  1.1 Correctly sorts quality flag columns with depth numbers
+  1.2 Handles empty input
+  1.3 Handles columns without depth numbers
 
 Key Validations:
   - Static columns (readout_time) come first
-  - tempTest columns are sorted numerically by depth
+  - tempTest columns are sorted numerically by depth (e.g., 01, 02, 03)
   - All columns are preserved in output
+  - Empty inputs return empty output without error
 
 ================================================================================
 
 TEST 2: def.find.temp.sensor - Sensor Selection Logic
 --------------------------------------------------------------------------------
 Description: Tests the logic for finding the closest temperature sensor
-Test Cases:
-  - Finds closest temperature sensor to target depth
-  - Handles sensors with no valid depths (all NA)
-  - Breaks ties by preferring shallower sensors
-  - Identifies edge sensors (shallowest/deepest) without neighbors
-  - Filters out sensors with NA depths
+Test Cases (5 tests):
+  2.1 Finds closest sensor to target depth and identifies neighbors
+  2.2 Handles sensors with all NA depths (returns NULL)
+  2.3 Breaks ties by preferring shallower (less negative) sensors
+  2.4 Identifies edge sensors without neighbors on one side
+  2.5 Filters out sensors with NA depths from consideration
 
 Key Validations:
   - Returns sensor closest to target depth
-  - Correctly identifies higher (shallower) and lower (deeper) neighbors
+  - Correctly identifies higher (shallower/less negative) neighbors
+  - Correctly identifies lower (deeper/more negative) neighbors
   - Returns NULL when no valid sensors exist
-  - Handles boundary conditions properly
+  - Handles boundary conditions (shallowest/deepest sensors)
+  - Shallowest sensor has no higher neighbor
+  - Deepest sensor has no lower neighbor
 
 ================================================================================
 
 TEST 3: def.load.temp.sensors - Temperature Sensor Data Loading
 --------------------------------------------------------------------------------
 Description: Tests loading temperature sensor metadata from location files
-Test Cases:
-  - Loads temperature sensor metadata successfully
-  - Handles empty directories (no data)
-  - Averages depths when multiple location files exist for same sensor
-  - Returns empty data frame when no location files present
-  - Handles missing z_offset field in location files (results in NA depth)
+Test Cases (5 tests):
+  3.1 Loads temperature sensor metadata successfully from test data
+  3.2 Handles empty directories (returns empty data frame)
+  3.3 Averages depths when multiple location files exist for same sensor
+  3.4 Returns empty data frame when no location files present
+  3.5 Handles missing z_offset field in location files (results in NA depth)
 
 Key Validations:
   - Returns data frame with required columns: sensor_id, depth_m, data_path, location_path
   - Sensor IDs have correct prefix (temp-soil_)
-  - Depths are numeric and negative (below surface)
+  - Depths are numeric and non-positive (at or below surface, <= 0)
   - File paths exist and are accessible
-  - Multiple depths for same sensor are averaged
+  - Multiple location files for same sensor result in averaged depth
+  - Missing z_offset field leads to NA in depth_m column
 
 ================================================================================
 
 TEST 4: def.calc.temp.flags - Temperature Flag Calculation
 --------------------------------------------------------------------------------
 Description: Tests the core temperature flag calculation logic
-Test Cases:
-  - Basic flag calculation (freezing check: temp < uncertainty)
-  - Handles neighbors that are too far away (exceeds threshold distance)
-  - Falls back to neighbor data when primary sensor is flagged
+Test Cases (3 tests):
+  4.1 Basic flag calculation (freezing check: temp < uncertainty)
+  4.2 Handles neighbors that are too far away (exceeds distance threshold)
+  4.3 Falls back to neighbor data when primary sensor is flagged (finalQF != 0)
 
 Key Validations:
   - Flag = 1 when soilTempMean < soilTempExpUncert (potential freezing)
-  - Flag = 0 when temperature is above uncertainty threshold
-  - Flag = -1 when primary sensor is bad and neighbors too far or unavailable
+  - Flag = 0 when temperature is above uncertainty threshold (not frozen)
+  - Flag = -1 when primary sensor has bad QF and neighbors too far or unavailable
   - Correctly averages neighbor sensor data when needed
-  - Respects distance threshold for neighbor selection
+  - Respects distance threshold for neighbor selection (default 0.15m)
+  - Uses primary sensor when finalQF = 0 (good data)
+  - Uses neighbor average when primary sensor finalQF != 0 (flagged data)
 
 Flag Meanings:
   0  = Data is good (not frozen)
-  1  = Data flagged (potentially frozen)
-  -1 = Cannot determine (missing or unreliable data)
+  1  = Data flagged (potentially frozen: soilTempMean < soilTempExpUncert)
+  -1 = Cannot determine (missing, unreliable, or neighbors too distant)
 
 ================================================================================
 
 TEST 5: def.apply.temp.flags - Flag Application to High-Frequency Data
 --------------------------------------------------------------------------------
 Description: Tests joining minute-interval flags to high-frequency soil moisture
-Test Cases:
-  - Correctly joins flags to high-frequency data based on timestamps
-  - Handles timestamps outside any temperature interval
+Test Cases (2 tests):
+  5.1 Correctly joins flags to high-frequency data based on timestamps
+  5.2 Handles timestamps outside any temperature interval (remain -1)
 
 Key Validations:
   - High-frequency data points correctly matched to minute intervals
+  - Points inside temperature intervals receive corresponding flag (0 or 1)
   - Points outside temperature intervals retain -1 flag
-  - Temporal overlap logic works correctly (foverlaps)
+  - Temporal overlap logic works correctly using foverlaps
+  - readout_time used for temporal matching
 
 ================================================================================
 INTEGRATION TESTS (Test 6)
@@ -107,38 +117,52 @@ All integration tests verify:
   - Flags have valid values only: -1, 0, or 1
   - Timestamp column (readout_time) preserved
 
+Total Integration Tests: 8
+
 --------------------------------------------------------------------------------
 TEST 6.1: Baseline Test with Good Data
 --------------------------------------------------------------------------------
-Scenario: Normal operating conditions
+Scenario: Normal operating conditions with complete valid data
 Data:
-  - Good soil moisture data with valid depths
-  - Good temperature sensor data with valid locations
+  - Good soil moisture data with valid depths and threshold file
+  - Good temperature sensor data with valid locations and z_offset
+Test Data Path:
+  - DirIn: pfs/envscn_temp_flags/enviroscan/tests/good_data/
+  - DirTemp: pfs/envscn_temp_flags/temp/tests/good_data/
 Expected Result: 
   - Flags calculated successfully
   - Mix of 0, 1, and -1 values based on actual conditions
+  - All 8 tempTestDepth columns present and populated
 
 --------------------------------------------------------------------------------
 TEST 6.2: Missing Soil Moisture Depths
 --------------------------------------------------------------------------------
 Scenario: Depth information missing from soil moisture data files
 Data:
-  - Soil moisture data WITHOUT depth metadata
+  - Soil moisture data WITHOUT depth metadata in location files
   - Good temperature sensor data
+Test Data Path:
+  - DirIn: pfs/envscn_temp_flags/enviroscan/tests/no_depths/
+  - DirTemp: pfs/envscn_temp_flags/temp/tests/good_data/
 Expected Result:
-  - All flags set to -1 (cannot match sensors to depths)
+  - All flags set to -1 (cannot match sensors to depths without depth info)
   - Process completes without error
+  - tempTestDepth01QF and all other depth columns contain only -1
 
 --------------------------------------------------------------------------------
 TEST 6.3: Freezing Temperature Conditions
 --------------------------------------------------------------------------------
 Scenario: All temperature values indicate freezing conditions
 Data:
-  - Good soil moisture data
-  - Temperature data with all values < uncertainty threshold
+  - Good soil moisture data with valid depths
+  - Temperature data with all values < uncertainty threshold (simulated freezing)
+Test Data Path:
+  - DirIn: pfs/envscn_temp_flags/enviroscan/tests/good_data/
+  - DirTemp: pfs/envscn_temp_flags/temp/tests/all_freezing/
 Expected Result:
   - Most/all flags set to 1 (flagged as frozen)
   - Demonstrates frozen soil detection logic
+  - tempTestDepth02QF expected to be 1 for all rows
 
 --------------------------------------------------------------------------------
 TEST 6.4: Missing Temperature Data Directory
@@ -147,9 +171,13 @@ Scenario: Temperature sensor data directory does not exist
 Data:
   - Good soil moisture data
   - Non-existent temperature data path
+Test Data Path:
+  - DirIn: pfs/envscn_temp_flags/enviroscan/tests/good_data/
+  - DirTemp: pfs/envscn_temp_flags/temp/tests/no_temp_data/2020/10/14
 Expected Result:
   - All flags set to -1 (no temperature data available)
   - Process completes without error (graceful degradation)
+  - All 8 tempTestDepth columns contain only -1
 
 --------------------------------------------------------------------------------
 TEST 6.5: Missing z_offset in Location Files
@@ -157,22 +185,65 @@ TEST 6.5: Missing z_offset in Location Files
 Scenario: Temperature sensor location files lack z_offset field
 Data:
   - Good soil moisture data
-  - Temperature location files missing z_offset field
+  - Temperature location files missing z_offset field (cannot determine depth)
+Test Data Path:
+  - DirIn: pfs/envscn_temp_flags/enviroscan/tests/good_data/
+  - DirTemp: pfs/envscn_temp_flags/temp/tests/no_z_offset/
 Expected Result:
   - Some flags may be -1 where depth cannot be determined
   - Process continues with available data
   - Valid values (0, 1, -1) only
+  - All 8 tempTestDepth columns present
 
 --------------------------------------------------------------------------------
 TEST 6.6: Missing Threshold Configuration File
 --------------------------------------------------------------------------------
-Scenario: Required threshold configuration file is absent
+Scenario: Required threshold configuration file is absent from soil moisture data
 Data:
-  - Soil moisture data WITHOUT threshold file
-  - Temperature data
+  - Soil moisture data WITHOUT threshold/thresholds.json file
+  - Temperature data present but not reached due to error
+Test Data Path:
+  - DirIn: pfs/envscn_temp_flags/enviroscan/tests/no_thresholds/
+  - DirTemp: pfs/envscn_temp_flags/temp/tests/no_temp_data/
 Expected Result:
   - Function throws error (threshold file is mandatory)
   - Error handling test validates proper failure mode
+  - wrap.envscn.temp.flags() exits with expect_error
+
+--------------------------------------------------------------------------------
+TEST 6.7: NULL DirTemp Parameter (Required for Tests)
+--------------------------------------------------------------------------------
+Scenario: DirTemp parameter provided as NULL (function should handle gracefully)
+Data:
+  - Good soil moisture data with valid depths
+  - DirTemp = NULL (no temperature data path specified)
+Test Data Path:
+  - DirIn: pfs/envscn_temp_flags/enviroscan/tests/good_data/
+  - DirTemp: NULL
+Expected Result:
+  - Function runs successfully (does not error)
+  - All flags set to -1 (no temperature data available)
+  - Process completes and writes output files
+  - All 8 tempTestDepth columns present with -1 values
+Note: This validates that temp directory is required but NULL is acceptable
+
+--------------------------------------------------------------------------------
+TEST 6.8: Combined DirIn and DirTemp (Filter-Joiner Output)
+--------------------------------------------------------------------------------
+Scenario: Testing with data structure where enviroscan and temp-soil are 
+          in the same parent directory (post filter-joiner combination)
+Data:
+  - Combined directory structure with both enviroscan and temp-soil subdirs
+  - DirTemp is calculated as dirname(dirname(DirIn)) within test
+Test Data Path:
+  - DirIn: pfs/envscn_temp_flags/combined/tests/2025/10/17/
+           conc-h2o-soil-salinity_GRSM001501/enviroscan/CFGLOC105245/
+  - DirTemp: (calculated) ...conc-h2o-soil-salinity_GRSM001501/
+Expected Result:
+  - Flags calculated successfully with combined data structure
+  - All 8 tempTestDepth columns present
+  - Valid flag values (0, 1, -1) throughout
+  - Demonstrates compatibility with filter-joiner pipeline output
 
 ================================================================================
 TEST DATA ORGANIZATION
@@ -183,70 +254,104 @@ Test data is organized under: tests/testthat/pfs/envscn_temp_flags/
 Structure:
   temp/                          # Temperature sensor data
     tests/
-      good_data/                 # Normal operating data
-      multiple_depth/            # Multiple location files per sensor
+      good_data/                 # Normal operating data with valid depths
+      multiple_depth/            # Multiple location files per sensor (test averaging)
       no_locations/              # Missing location files
-      no_z_offset/               # Location files without z_offset
-      all_freezing/              # All temperatures below freezing
+      no_z_offset/               # Location files without z_offset field
+      all_freezing/              # All temperatures below freezing threshold
     2025/10/14/                  # Empty directory for "no data" test
   
   enviroscan/                    # Soil moisture data
     tests/
-      good_data/                 # Normal operating data
-      no_depths/                 # Missing depth metadata
-      no_thresholds/             # Missing threshold configuration
+      good_data/                 # Normal operating data with valid depths
+      no_depths/                 # Missing depth metadata in location files
+      no_thresholds/             # Missing threshold configuration file
+  
+  combined/                      # Combined structure (post filter-joiner)
+    tests/
+      2025/10/17/
+        conc-h2o-soil-salinity_GRSM001501/
+          enviroscan/            # Soil moisture subdirectory
+          temp-soil_*/           # Temperature sensor subdirectories
 
-Test data was copied from /scratch/pfs/ using copy_test_data.R or copy_test_data.sh
+Test data was created from production data using copy scripts:
+  - Truncated to 50 rows per parquet file for efficiency
+  - Maintains realistic data structure and relationships
+  - Filtered to single group (GRSM001501) for combined tests
 
 ================================================================================
 TESTING INSTRUCTIONS
 ================================================================================
 
 To run all tests:
-  cd ~/github/NEON-IS-data-processing/flow/tests/testthat
-  Rscript run_temp_flag_tests.R
+  cd ~/github/NEON-IS-data-processing/flow/flow.envscn.temp.flags
+  Rscript run_unit_tests.R
 
 To run tests interactively in R:
   setwd("~/github/NEON-IS-data-processing/flow/tests/testthat")
   library(testthat)
-  test_file("test-envscn-temp-flags.R")
+  test_file("test-wrap-envscn-temp-flags.R")
 
-To run a specific test:
-  test_file("test-envscn-temp-flags.R", filter = "sort.qf.cols")
+To run a specific test by name:
+  test_file("test-wrap-envscn-temp-flags.R", filter = "sort.qf.cols")
+  test_file("test-wrap-envscn-temp-flags.R", filter = "find.temp.sensor")
+  test_file("test-wrap-envscn-temp-flags.R", filter = "Integration test with good data")
+
+To run only unit tests (skip integration tests):
+  test_file("test-wrap-envscn-temp-flags.R", filter = "Test def\\.")
+
+To run only integration tests:
+  test_file("test-wrap-envscn-temp-flags.R", filter = "Integration test")
 
 Before running tests:
-  1. Ensure test data is copied: source("copy_test_data.R")
-  2. Verify working directory is tests/testthat/
-  3. Source required function files (or use run_temp_flag_tests.R)
+  1. Ensure test data exists in tests/testthat/pfs/envscn_temp_flags/
+  2. Verify working directory is correct
+  3. Required libraries: testthat, data.table, arrow, jsonlite
+  4. Source required function files (done automatically by run_unit_tests.R)
+
+Test Data Requirements:
+  - Test data must be in tests/testthat/pfs/envscn_temp_flags/
+  - Combined test data must be in combined/tests/ subdirectory
+  - Tests will skip if data directories don't exist (except error tests)
 
 ================================================================================
 COVERAGE SUMMARY
 ================================================================================
 
-Total Test Suites: 11
-Total Test Assertions: 47+
+Total Test Suites: 13 (5 unit test suites + 8 integration tests)
+Total Test Cases: 26
+  - Unit Tests: 18 test cases across 5 functions
+  - Integration Tests: 8 end-to-end scenarios
 
 Unit Test Coverage:
-  ✓ Column sorting and organization
-  ✓ Sensor depth matching logic
-  ✓ Sensor metadata loading and parsing
-  ✓ Flag calculation with fallback logic
-  ✓ Temporal flag application
+  ✓ Column sorting and organization (3 tests)
+  ✓ Sensor depth matching logic (5 tests)
+  ✓ Sensor metadata loading and parsing (5 tests)
+  ✓ Flag calculation with fallback logic (3 tests)
+  ✓ Temporal flag application (2 tests)
 
 Integration Test Coverage:
   ✓ Normal operating conditions
   ✓ Missing metadata (depths, locations, z_offset)
-  ✓ Missing data (temperature sensors)
+  ✓ Missing data (temperature sensors, directories)
   ✓ Edge conditions (freezing temperatures)
   ✓ Error conditions (missing required files)
+  ✓ NULL parameter handling (DirTemp = NULL)
+  ✓ Combined data structure (filter-joiner pipeline output)
 
 Functions Tested:
-  - def.sort.qf.cols()
-  - def.find.temp.sensor()
-  - def.load.temp.sensors()
-  - def.calc.temp.flags()
-  - def.apply.temp.flags()
-  - wrap.envscn.temp.flags()
+  - def.sort.qf.cols() - Column sorting
+  - def.find.temp.sensor() - Sensor matching
+  - def.load.temp.sensors() - Metadata loading
+  - def.calc.temp.flags() - Flag calculation
+  - def.apply.temp.flags() - Flag application
+  - wrap.envscn.temp.flags() - Main wrapper function
+
+Test Assertions: 80+
+  - Structural validations (column presence, data types)
+  - Logical validations (flag values, neighbor selection)
+  - Edge case handling (empty data, missing fields)
+  - Error handling (required parameters, missing files)
 
 ================================================================================
 END OF TEST SUMMARY

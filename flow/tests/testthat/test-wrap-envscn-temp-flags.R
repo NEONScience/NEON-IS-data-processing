@@ -20,17 +20,17 @@ library(arrow)
 library(jsonlite)
 
 # uncomment if running directly, change dirs as needed
-# Source the functions under test
-# setwd("~/GitHub/NEON-IS-data-processing/flow/tests/testthat")
-# 
-# flow_dir <- "~/GitHub/NEON-IS-data-processing/flow/flow.envscn.temp.flags/"
-# 
-# source(file.path(flow_dir, "def.load.temp.sensors.R"))
-# source(file.path(flow_dir, "def.find.temp.sensor.R"))
-# source(file.path(flow_dir, "def.calc.temp.flags.R"))
-# source(file.path(flow_dir, "def.apply.temp.flags.R"))
-# source(file.path(flow_dir, "def.sort.qf.cols.R"))
-# source(file.path(flow_dir, "wrap.envscn.temp.flags.R"))
+#Source the functions under test
+setwd("~/GitHub/NEON-IS-data-processing/flow/tests/testthat")
+
+flow_dir <- "~/GitHub/NEON-IS-data-processing/flow/flow.envscn.temp.flags/"
+
+source(file.path(flow_dir, "def.load.temp.sensors.R"))
+source(file.path(flow_dir, "def.find.temp.sensor.R"))
+source(file.path(flow_dir, "def.calc.temp.flags.R"))
+source(file.path(flow_dir, "def.apply.temp.flags.R"))
+source(file.path(flow_dir, "def.sort.qf.cols.R"))
+source(file.path(flow_dir, "wrap.envscn.temp.flags.R"))
 
 ########################################################################################################
 # Test 1: def.sort.qf.cols
@@ -869,24 +869,51 @@ test_that("Integration test with missing threshold file (expect error)", {
   
 })
 
-test_that("Integration test with DirTemp being NULL", {
+test_that("Integration test with temp directory - required for tests", {
   # Use actual test data paths
   # Soil moisture data without threshold configuration file
-  DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/enviroscan/tests/no_thresholds/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/")
+  DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/")
   # Temperature data path (test should fail before reaching here)
   DirTemp <- NULL
   DirOutBase <- file.path(tempdir(), "test_output")
   
   # Run the wrap function
   
-  expect_error(wrap.envscn.temp.flags(
+  wrap.envscn.temp.flags(
     DirIn = DirIn,
     DirOutBase = DirOutBase,
     DirTemp = DirTemp,
     DirSubCopy = c("data", "location", "threshold"),
     log = NULL
-  ))
+  )
+
+  # Check that output was created
+  expect_true(dir.exists(DirOutBase))
   
+  # Check that flags directory was created
+  flagsDir <- file.path(DirOutBase, "enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/flags")
+  expect_true(dir.exists(flagsDir))
+  
+  # Check that flag file exists
+  flagFiles <- list.files(flagsDir, pattern = "flagsPlausibility.parquet")
+  expect_equal(length(flagFiles), 1)
+  
+  # Read and validate the output
+  flagData <- arrow::read_parquet(file.path(flagsDir, flagFiles[1]))
+  
+  
+  tempTestCols <- names(flagData)[grepl("tempTestDepth", names(flagData))]
+  
+  # All flags should be -1 when no temperature data is available
+  for (col in tempTestCols) {
+    expect_true(all(flagData[[col]] %in% c(-1L)))
+  }
+  
+  # Check that all 8 columns are present
+  expect_true(length(tempTestCols)==8)
+  
+  # Check that timestamps are present
+  expect_true("readout_time" %in% names(flagData))
   # Cleanup
   unlink(DirOutBase, recursive = TRUE)
   

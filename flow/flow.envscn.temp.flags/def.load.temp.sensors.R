@@ -41,13 +41,19 @@ def.load.temp.sensors <- function(DirTemp,
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Find all temperature sensor files
-  filesTemp <- base::list.files(DirTemp, full.names = TRUE, recursive = TRUE)
-  
-  # Filter for 1-minute data files and location JSON files
-  filesTempData <- filesTemp[base::grepl("/temp-soil_[^/]+/data/[^/]+001\\.parquet$", filesTemp)]
-  filesTempLocation <- filesTemp[base::grepl("/temp-soil_[^/]+/location/[^/]*_locations\\.json$", filesTemp)]
-  
+  # Initialize log if not provided
+  if (base::is.null(DirTemp)) {
+    log$warn("no temperature data found, returning NULL")
+    filesTempData <- NULL
+    filesTempLocation <- NULL
+  } else {
+    # Find all temperature sensor files
+    filesTemp <- base::list.files(DirTemp, full.names = TRUE, recursive = TRUE)
+    # Filter for 1-minute data files and location JSON files
+    filesTempData <- filesTemp[base::grepl("/temp-soil_[^/]+/data/[^/]+001\\.parquet$", filesTemp)]
+    filesTempLocation <- filesTemp[base::grepl("/temp-soil_[^/]+/location/[^/]*_locations\\.json$", filesTemp)]
+  }
+ 
   if (base::length(filesTempData) == 0) {
     log$warn(base::paste0('No temperature data files found in ', DirTemp))
     return(data.frame(sensor_id = character(), depth_m = numeric(), 
