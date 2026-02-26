@@ -869,6 +869,29 @@ test_that("Integration test with missing threshold file (expect error)", {
   
 })
 
+test_that("Integration test with DirTemp being NULL", {
+  # Use actual test data paths
+  # Soil moisture data without threshold configuration file
+  DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/enviroscan/tests/no_thresholds/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/")
+  # Temperature data path (test should fail before reaching here)
+  DirTemp <- NULL
+  DirOutBase <- file.path(tempdir(), "test_output")
+  
+  # Run the wrap function
+  
+  expect_error(wrap.envscn.temp.flags(
+    DirIn = DirIn,
+    DirOutBase = DirOutBase,
+    DirTemp = DirTemp,
+    DirSubCopy = c("data", "location", "threshold"),
+    log = NULL
+  ))
+  
+  # Cleanup
+  unlink(DirOutBase, recursive = TRUE)
+  
+})
+
 test_that("Integration test with combined DirIn and DirTemp", {
   # Use actual test data paths
   DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/combined/tests/2025/10/17/conc-h2o-soil-salinity_GRSM001501/enviroscan/CFGLOC105245/")
