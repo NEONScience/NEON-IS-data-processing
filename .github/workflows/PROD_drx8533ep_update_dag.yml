@@ -2,7 +2,7 @@ name: PROD-drx8533ep-update-dag
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/drx8533ep/*.yaml'
       - 'pipe/drx8533ep/pipe_list_drx8533ep.txt'
