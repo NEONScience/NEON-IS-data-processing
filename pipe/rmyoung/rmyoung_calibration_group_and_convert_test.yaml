@@ -24,21 +24,10 @@ transform:
     # Combine data from Kafka and Trino
     Rscript ./flow.kfka.comb.R \
           DirIn=$OUT_PATH \
-          DirOut=/tmp/pfs/kafka_merged \
+          DirOut=/pfs/out \
           DirErr=/pfs/out/errored_datums \
           FileSchmL0=$FILE_SCHEMA_L0 \
           DirSubCopy=calibration
-          
-    # Run calibration conversion module
-    # Removed schemas for now, probably add back in later
-    Rscript ./flow.cal.conv.R \
-        DirIn=/tmp/pfs/kafka_merged \
-        DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums\
-        ConvFuncTerm1=def.cal.conv.nmnl:speed \
-        "TermQf=speed" \
-        "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" 
-
     
     EOF
 
@@ -87,21 +76,21 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: rmyoung_calibration_assignment
-        glob: /rmyoung/(*)/(*)/(*)
+        glob: /rmyoung/2025/12/18
         joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_TRINO
         repo: rmyoung_data_source_trino
-        glob: /rmyoung/(*)/(*)/(*)
+        glob: /rmyoung/2025/12/18
         joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_KAFKA
         repo: rmyoung_data_source_kafka
-        glob: /rmyoung/(*)/(*)/(*)
+        glob: /rmyoung/2025/12/18
         joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
