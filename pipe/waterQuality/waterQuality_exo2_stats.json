@@ -16,7 +16,7 @@
       "ColKeep=readout_time|readout_time|sensorDepth|sensorDepth_ucrtExpn",
       "NameFileSufx=_basicStats_100"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-comb-ts:v1.1.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-comb-ts:v1.1.2",
     "env": {
       "LOG_LEVEL": "DEBUG"
     }
