@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirSubCombData=data
   - DirSubCopy=uncertainty_data|uncertainty_coef
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-data-comb:v1.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-data-comb:v1.1.2
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:

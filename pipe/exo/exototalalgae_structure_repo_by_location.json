@@ -11,7 +11,7 @@
       "DirErr=/pfs/out/errored_datums",
       "Comb=TRUE"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-repo-strc:v1.0.7",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-repo-strc:v1.0.8",
     "env": {
       "LOG_LEVEL": "INFO"
     }
