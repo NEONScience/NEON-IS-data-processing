@@ -2,7 +2,7 @@
 pipeline:
   name: mti300ahrs_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.1
   cmd:
   - sh
   - "-c"
