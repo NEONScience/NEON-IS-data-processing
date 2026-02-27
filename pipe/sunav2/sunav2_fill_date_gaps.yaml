@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_date_gaps
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:sha-a49620f
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:v1.0.0
   cmd:
   - sh
   - "-c"
