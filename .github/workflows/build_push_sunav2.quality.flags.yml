@@ -1,11 +1,11 @@
-name: "Build-push_insufficient-data"
+name: "Build-push_sunav2.quality.flags"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'flow/flow.qf.insuff.data/**'
+      - 'flow/flow.sunav2.quality.flags/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/flow.qf.insuff.data
-  IMAGE_NAME: neon-is-insufficient-data
+  MODULE_PATH: ./flow/flow.sunav2.quality.flags
+  IMAGE_NAME: neon-is-sunav2-flags-specific
 
 jobs:
   build-push:
