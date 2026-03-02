@@ -2,7 +2,7 @@
 pipeline:
   name: mti300ahrs_kafka_combiner
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.2
   cmd:
   - sh
   - "-c"

@@ -16,7 +16,7 @@
       "RptTimeWndw=FALSE",
       "DropNotNumc=FALSE"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-rglr:v1.2.0",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-rglr:v1.2.1",
     "env": {
       "LOG_LEVEL": "INFO"
     }

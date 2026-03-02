@@ -13,7 +13,7 @@
       "DirSubCombUcrt=uncertainty_coef",
       "DirSubCopy=location"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-data-trnc-comb:v1.1.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-data-trnc-comb:v1.1.2",
     "env": {
       "LOG_LEVEL": "INFO",
       "PARALLELIZATION_INTERNAL": "1"

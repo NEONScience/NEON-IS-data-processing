@@ -2,7 +2,7 @@
 pipeline:
   name: lt400_hu24_logjam_assign_clean_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-lt400-hu24-files:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-lt400-hu24-files:v1.0.1
   cmd:
   - sh
   - "-c"
