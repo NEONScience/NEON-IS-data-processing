@@ -14,7 +14,7 @@ transform:
       FileYear=$FILE_YEAR
       TypeFile=asset
       "Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|context|location_properties:Coordinate uncertainty|location_properties:Coordinate source|location_properties:Elevation uncertainty|location_properties:Real world coordinate uncertainty|location_properties:Real world elevation uncertainty|location_properties:Survey horizontal uncertainty|location_properties:Survey vertical uncertainty|location_properties:Transformation RMSE"
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.1
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
