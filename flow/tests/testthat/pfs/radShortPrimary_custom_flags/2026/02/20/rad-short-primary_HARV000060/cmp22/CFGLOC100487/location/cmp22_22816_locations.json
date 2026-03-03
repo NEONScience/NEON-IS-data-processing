@@ -1,0 +1,85 @@
+{
+    "features":[
+        {
+            "Data Rate":"1",
+            "geometry":null,
+            "HOR":"000",
+            "properties":{
+                "install_date":"2026-02-20T00:00:00Z",
+                "locations":{
+                    "features":[
+                        {
+                            "geometry":null,
+                            "properties":{
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "end_date":"2026-02-21T00:00:00Z",
+                                "gamma":                                0,
+                                "location_properties":[
+
+                                ],
+                                "reference_location":{
+                                    "geometry":null,
+                                    "properties":{
+                                        "locations":{
+                                            "features":[
+                                                {
+                                                    "geometry":{
+                                                        "coordinates":[
+                                                                                                                        -72.17265,
+                                                                                                                        42.53691,
+                                                                                                                        348.12784
+                                                        ],
+                                                        "type":"Point"
+                                                    },
+                                                    "properties":{
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "end_date":"2026-02-21T00:00:00Z",
+                                                        "gamma":                                                        0,
+                                                        "location_properties":[
+                                                            [
+                                                                "LatTow",
+                                                                "42.53691"
+                                                            ],
+                                                            [
+                                                                "LonTow",
+                                                                "-72.17265"
+                                                            ]
+                                                        ],
+                                                        "reference_location":null,
+                                                        "start_date":"2026-02-20T00:00:00Z",
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0,
+                                                        "z_offset":                                                        0
+                                                    },
+                                                    "type":"Feature"
+                                                }
+                                            ],
+                                            "type":"FeatureCollection"
+                                        },
+                                        "name":"TOWER100450"
+                                    },
+                                    "type":"Feature"
+                                },
+                                "start_date":"2026-02-20T00:00:00Z",
+                                "x_offset":                                -0.99,
+                                "y_offset":                                -0.54,
+                                "z_offset":                                39.25
+                            },
+                            "type":"Feature"
+                        }
+                    ],
+                    "type":"FeatureCollection"
+                },
+                "name":"CFGLOC100487",
+                "remove_date":"2026-02-21T00:00:00Z",
+                "site":"HARV"
+            },
+            "VER":"060"
+        }
+    ],
+    "source_id":    22816,
+    "source_type":"cmp22",
+    "type":"FeatureCollection"
+}
