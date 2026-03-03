@@ -66,11 +66,22 @@ transform:
         
       done
 
-      # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
-
-      # set +x # Uncomment for debugging
+      echo "Syncing files to bucket"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        --metadata-set "content-type=application/vnd.apache.parquet" \
+        copy \
+        "${linkdir}" \
+        ":gcs://${BUCKET_NAME}"
+        
+      echo "Removing temporary files"
       rm -rf $linkdir
+      
+      # set +x # Uncomment for debugging
+
     fi
 
     EOF
