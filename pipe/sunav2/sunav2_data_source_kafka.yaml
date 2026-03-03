@@ -169,7 +169,6 @@ transform:
       # Upload L0 files to bucket, compacting with any existing file with the same name
       # when SOURCE_TYPE is sunav2_raw, OUT_SOURCE_TYPE is sunav2
       OUT_SOURCE_TYPE=${SOURCE_TYPE%%_raw} 
-      
       if [[ -d "$OUT_PATH/$OUT_SOURCE_TYPE" ]]; then
         linkdir=$(mktemp -d)
         shopt -s globstar
@@ -198,7 +197,7 @@ transform:
           done
   
           # Upload to bucket, compacting with any existing file
-          ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+          ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
         fi
   
         # set +x # Uncomment for debugging
