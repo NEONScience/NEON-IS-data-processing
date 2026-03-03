@@ -57,8 +57,6 @@
 #   Teresa Burlingame (2025-09-15)
 #     Original Creation
 ##############################################################################################
-# Define test context
-context("\n                       Unit test of wrap.rad.flags.cstm.R\n")
 
 # Load required libraries
 library(testthat)
@@ -66,11 +64,9 @@ library(data.table)
 library(arrow)
 library(jsonlite)
 
-# uncomment if running directly, change dirs as needed
-#Source the functions under test
-setwd("~/GitHub/NEON-IS-data-processing/flow/tests/testthat")
-
-flow_dir <- "~/GitHub/NEON-IS-data-processing/flow/flow.rad.flags.cstm/"
+# Source the functions under test
+# Use relative path from test directory - works in both CI and local
+flow_dir <- "../../flow.rad.flags.cstm/"
 
 source(file.path(flow_dir, "wrap.rad.flags.cstm.R"))
 source(file.path(flow_dir, "def.rad.shadow.flags.R"))
@@ -674,7 +670,7 @@ test_that("Unit test of def.rad.shadow.flags.R - with data that will flag (modif
       by   = "2 min"
     )
   )
- 
+  
   # Test with actual test data directory if it exists
   testDirIn <- file.path(getwd(), "pfs/radShortPrimary_custom_flags/will_flag/2026/02/20/rad-short-primary_BONA000050/cmp22/CFGLOC111996/")
   
@@ -727,8 +723,8 @@ test_that("Unit test of edge cases for custom flag functions", {
     readout_time = as.POSIXct(character(0), tz = "UTC")
   )
   
- expect_error(def.cmp22.heater.flags(data = empty_data, flagDf = empty_flagDf, log = log))
-
+  expect_error(def.cmp22.heater.flags(data = empty_data, flagDf = empty_flagDf, log = log))
+  
   
   # Edge case 2: Single row with all zeros
   single_data <- data.frame(

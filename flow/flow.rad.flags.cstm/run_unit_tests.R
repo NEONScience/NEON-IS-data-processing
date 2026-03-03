@@ -1,13 +1,16 @@
-#coverage report of unit tests. change directories to local repo as needed. 
+#coverage report of unit tests. Run from flow.rad.flags.cstm directory.
 
-library (covr)
+library(covr)
+
+# Change to the test directory where tests expect to run from
 setwd("~/GitHub/NEON-IS-data-processing/flow/tests/testthat")
-baseDir = "~/GitHub/NEON-IS-data-processing/flow"
+
+# Use relative paths from test directory
 cov <- covr::file_coverage(
-  source_files = c(paste0(baseDir,"/flow.rad.flags.cstm/wrap.rad.flags.cstm.R"),
-                   paste0(baseDir,"/flow.rad.flags.cstm/def.rad.shadow.flags.R"),
-                   paste0(baseDir, "/flow.rad.flags.cstm/def.cmp22.heater.flags.R")),
-  test_files = "~/GitHub/NEON-IS-data-processing/flow/tests/testthat/test-wrap-rad-flags-cstm.R"
+  source_files = c("../../flow.rad.flags.cstm/wrap.rad.flags.cstm.R",
+                   "../../flow.rad.flags.cstm/def.rad.shadow.flags.R",
+                   "../../flow.rad.flags.cstm/def.cmp22.heater.flags.R"),
+  test_files = "test-wrap-rad-flags-cstm.R"
 )
 
 covr::report(cov) 
