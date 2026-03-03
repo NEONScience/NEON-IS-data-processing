@@ -130,7 +130,7 @@ transform:
       
       # Upload to bucket, compacting with any existing file 
       linkdir2=$(mktemp -d)
-        ./update-trigger-table.py -s "${site}" -S "${SOURCE_TYPE}" -D "${linkdir2}"
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}"
         ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}"
 
       # set +x # Uncomment for debugging
