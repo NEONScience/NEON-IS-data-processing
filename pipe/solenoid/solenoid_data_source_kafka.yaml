@@ -133,7 +133,7 @@ transform:
         # Upload to bucket, compacting with any existing file
         echo "Uploading and compacting for ${site} ${date_str}"
         linkdir2=$(mktemp -d)
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}"
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset
         ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}"
 
         # Update the airflow triggering table
