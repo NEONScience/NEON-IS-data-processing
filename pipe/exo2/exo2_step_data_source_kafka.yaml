@@ -34,7 +34,7 @@ transform:
     key: KAFKA_LOG_TOPIC
   - name: pachyderm-kafka-auth
     env_var: KAFKA_COMPACT_TOPIC
-    key: KAFKA_COMPT_TOPIC
+    key: KAFKA_COMPACT_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
