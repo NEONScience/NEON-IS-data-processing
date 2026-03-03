@@ -1,16 +1,19 @@
-#coverage report of unit tests. change directories to local repo as needed. 
+#coverage report of unit tests. Run from flow.envscn.temp.flags directory.
 
-library (covr)
+library(covr)
+
+# Change to the test directory where tests expect to run from
 setwd("~/GitHub/NEON-IS-data-processing/flow/tests/testthat")
-baseDir = "~/GitHub/NEON-IS-data-processing/flow"
+
+# Use relative paths from test directory
 cov <- covr::file_coverage(
-  source_files = c(paste0(baseDir,"/flow.envscn.temp.flags/def.sort.qf.cols.R"),
-                   paste0(baseDir,"/flow.envscn.temp.flags/def.find.temp.sensor.R"),
-                   paste0(baseDir, "/flow.envscn.temp.flags/def.apply.temp.flags.R"),
-                   paste0(baseDir,"/flow.envscn.temp.flags/wrap.envscn.temp.flags.R"),
-                   paste0(baseDir,"/flow.envscn.temp.flags/def.calc.temp.flags.R"),
-                   paste0(baseDir,"/flow.envscn.temp.flags/def.load.temp.sensors.R")),
-  test_files = "~/GitHub/NEON-IS-data-processing/flow/tests/testthat/test-wrap-envscn-temp-flags.R"
+  source_files = c("../../flow.envscn.temp.flags/def.sort.qf.cols.R",
+                   "../../flow.envscn.temp.flags/def.find.temp.sensor.R",
+                   "../../flow.envscn.temp.flags/def.apply.temp.flags.R",
+                   "../../flow.envscn.temp.flags/wrap.envscn.temp.flags.R",
+                   "../../flow.envscn.temp.flags/def.calc.temp.flags.R",
+                   "../../flow.envscn.temp.flags/def.load.temp.sensors.R"),
+  test_files = "test-wrap-envscn-temp-flags.R"
 )
 
 covr::report(cov)

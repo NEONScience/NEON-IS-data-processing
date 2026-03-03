@@ -19,11 +19,9 @@ library(data.table)
 library(arrow)
 library(jsonlite)
 
-# uncomment if running directly, change dirs as needed
-#Source the functions under test
-setwd("~/GitHub/NEON-IS-data-processing/flow/tests/testthat")
-
-flow_dir <- "~/GitHub/NEON-IS-data-processing/flow/flow.envscn.temp.flags/"
+# Source the functions under test
+# Use relative path from test directory - works in both CI and local
+flow_dir <- "../../flow.envscn.temp.flags/"
 
 source(file.path(flow_dir, "def.load.temp.sensors.R"))
 source(file.path(flow_dir, "def.find.temp.sensor.R"))
@@ -886,7 +884,7 @@ test_that("Integration test with temp directory - required for tests", {
     DirSubCopy = c("data", "location", "threshold"),
     log = NULL
   )
-
+  
   # Check that output was created
   expect_true(dir.exists(DirOutBase))
   
