@@ -35,10 +35,10 @@
     },
     "XML": {
       "Package": "XML",
-      "Version": "3.99-0.15",
+      "Version": "3.99-0.22",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5ede9ddd092f132c14ca0b6799224cc0",
+      "Hash": "36e1c7ecde821c5372e52e26a966f2b7",
       "Requirements": []
     },
     "brio": {
@@ -62,18 +62,18 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "3.6.1",
+      "Version": "3.6.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "89e6d8219950eac806ae0c489052048a",
+      "Hash": "16850760556401a2eeb27d39bd11c9cb",
       "Requirements": []
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.5.2",
+      "Version": "0.5.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "2720e3fd3dad08f34b19b56b3d6f073d",
+      "Hash": "af5958631ca49510aff96d0f5c0bbb76",
       "Requirements": []
     },
     "crayon": {
@@ -113,22 +113,12 @@
       "Hash": "33698c4b3127fc9f506654607fb73676",
       "Requirements": []
     },
-    "ellipsis": {
-      "Package": "ellipsis",
-      "Version": "0.3.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "bb0eec2fe32e88d9e2836c2f73ea2077",
-      "Requirements": [
-        "rlang"
-      ]
-    },
     "evaluate": {
       "Package": "evaluate",
-      "Version": "1.0.3",
+      "Version": "1.0.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "e9651417729bbe7472e32b5027370e79",
+      "Hash": "94cf2c54237f6841cee68e3ba4ab5a14",
       "Requirements": []
     },
     "fs": {
@@ -157,21 +147,20 @@
     },
     "jsonlite": {
       "Package": "jsonlite",
-      "Version": "1.8.7",
+      "Version": "2.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "266a20443ca13c65688b2116d5220f76",
+      "Hash": "b0776f526d36d8bd4a3344a88fe165c4",
       "Requirements": []
     },
     "lifecycle": {
       "Package": "lifecycle",
-      "Version": "1.0.4",
+      "Version": "1.0.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b8552d117e1b808b09a832f589b79035",
+      "Hash": "36dbfe4fba6c064db50a671a90297c85",
       "Requirements": [
         "cli",
-        "glue",
         "rlang"
       ]
     },
@@ -188,10 +177,10 @@
     },
     "magrittr": {
       "Package": "magrittr",
-      "Version": "2.0.3",
+      "Version": "2.0.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "7ce2733a9826b3aeb1775d56fd305472",
+      "Hash": "8b3b213aa0c54a0dec254288ccb545d1",
       "Requirements": []
     },
     "pander": {
@@ -207,10 +196,10 @@
     },
     "pkgbuild": {
       "Package": "pkgbuild",
-      "Version": "1.4.7",
+      "Version": "1.4.8",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ae47817501cafc99f57586b6e5241134",
+      "Hash": "fc9fc4162e79a94f760aac8d328ee6c9",
       "Requirements": [
         "R6",
         "callr",
@@ -221,10 +210,10 @@
     },
     "pkgload": {
       "Package": "pkgload",
-      "Version": "1.4.0",
+      "Version": "1.5.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "2ec30ffbeec83da57655b850cf2d3e0e",
+      "Hash": "91a99cbfcb01c854584e7d1b69035c2c",
       "Requirements": [
         "cli",
         "desc",
@@ -234,8 +223,7 @@
         "pkgbuild",
         "processx",
         "rlang",
-        "rprojroot",
-        "withr"
+        "rprojroot"
       ]
     },
     "plyr": {
@@ -266,10 +254,10 @@
     },
     "processx": {
       "Package": "processx",
-      "Version": "3.8.2",
+      "Version": "3.8.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3efbd8ac1be0296a46c55387aeace0f3",
+      "Hash": "720161b280b0a35f4d1490ead2fe81d0",
       "Requirements": [
         "R6",
         "ps"
@@ -277,10 +265,10 @@
     },
     "ps": {
       "Package": "ps",
-      "Version": "1.7.5",
+      "Version": "1.9.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "709d852d33178db54b17c722e5b1e594",
+      "Hash": "093688087b0bacce6ba2f661f36328e2",
       "Requirements": []
     },
     "rapportools": {
@@ -326,18 +314,18 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "1.1.2",
+      "Version": "1.1.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "50a6dbdc522936ca35afc5e2082ea91b",
+      "Hash": "34c0d101f4613098abc538b82e0d86c5",
       "Requirements": []
     },
     "rprojroot": {
       "Package": "rprojroot",
-      "Version": "2.0.4",
+      "Version": "2.1.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4c8415e0ec1e29f3f4f6fc108bef0144",
+      "Hash": "b2453de2d29aa646afe4781defdc7903",
       "Requirements": []
     },
     "stringi": {
@@ -366,18 +354,16 @@
     },
     "testthat": {
       "Package": "testthat",
-      "Version": "3.2.0",
+      "Version": "3.3.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "877508719fcb8c9525eccdadf07a5102",
+      "Hash": "0ff174f3cfef696f36a70dc84a0fd839",
       "Requirements": [
         "R6",
         "brio",
         "callr",
         "cli",
         "desc",
-        "digest",
-        "ellipsis",
         "evaluate",
         "jsonlite",
         "lifecycle",
@@ -403,10 +389,10 @@
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.6.5",
+      "Version": "0.7.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "c03fa420630029418f7e6da3667aac4a",
+      "Hash": "c64e64d93489bb62bb8747bbb9e06c09",
       "Requirements": [
         "cli",
         "glue",
@@ -416,10 +402,10 @@
     },
     "waldo": {
       "Package": "waldo",
-      "Version": "0.6.1",
+      "Version": "0.6.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "52f574062a7b66e56926988c3fbdb3b7",
+      "Hash": "b7b91294ee9418a54527a9a9d8677597",
       "Requirements": [
         "cli",
         "diffobj",

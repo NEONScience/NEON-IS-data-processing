@@ -86,3 +86,23 @@ test_that("when data needs to be converted to list, return the same datatype as 
             testthat::expect_true(is.character(dataOut$x[3]))
 
           })
+
+test_that("when data has column(s) of list-type, do not attempt conversion",
+          {
+            data <- NEONprocIS.base::def.read.parq(NameFile='./testdata/sunav2_17313_2026-01-25_1413805_1415811.parquet')
+            type <- NEONprocIS.base::def.schm.parq.pars(schm=attr(data,'schema'))
+            dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+            testthat::expect_true('list' %in% class(data$spectrum_channels))
+
+          })
+
+test_that("bonus test of getting the schema from a parquet file",
+          {
+            data <- NEONprocIS.base::def.read.parq(NameFile='./testdata/sunav2_17313_2026-01-25_1413805_1415811.parquet')
+            schm <- NEONprocIS.base::def.schm.parq.from.df(df=data,Infer=TRUE)
+            testthat::expect_true(grepl("list",schm$fields[[17]]$type$ToString()))
+            schm <- NEONprocIS.base::def.schm.parq.from.df(df=data,Infer=FALSE)
+            testthat::expect_true(grepl("bool",schm$fields[[37]]$type$ToString()))
+            
+          })
+

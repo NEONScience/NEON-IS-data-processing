@@ -1,0 +1,379 @@
+{
+  "type": "record",
+  "name": "sunav2_logfilled",
+  "namespace": "org.neonscience.schema.dp0p",
+  "doc": "Calibrated sunav2 Data.",
+  "fields": [
+    {
+      "name": "source_id",
+      "type": "string",
+      "doc": "Source serial number or MAC address"
+    },
+    {
+      "name": "site_id",
+      "type": [
+          "null",
+          "string"
+            ],
+      "doc": "NEON site identifier"
+    },
+    {
+      "name": "readout_time",
+      "type": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp of readout expressed in milliseconds since epoch",
+      "__neon_units": "millisecond"
+    },
+    {
+      "name": "header_manufacturer",
+      "type": [
+          "null",
+          "string"
+            ],
+      "doc": "header_manufacturer"
+    },
+    {
+      "name": "header_serial_number",
+      "type": [
+          "null",
+          "string"
+            ],
+      "doc": "header_serial_number"
+    },
+    {
+      "name": "light_dark_frame",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Light or dark frame flag"
+    },
+    {
+      "name": "year_and_day",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "year_and_day",
+      "__neon_stream_id": "1"
+    },
+    {
+      "name": "time",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Time",
+      "__neon_stream_id": "2"
+    },
+    {
+      "name": "nitrate",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Nitrate concentration as micromoler",
+      "__neon_units": "micromolesPerLiter",
+      "__neon_stream_id": "3"
+    },
+    {
+      "name": "nitrogen_in_nitrate",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Nitrate concentration as micromoler",
+      "__neon_units": "milligramsPerLiter",
+      "__neon_stream_id": "4"
+    },
+    {
+      "name": "absorbance_254",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Absorbance at 254 nm",
+      "__neon_stream_id": "5"
+    },
+    {
+      "name": "absorbance_350",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Absorbance at 350 nm",
+      "__neon_stream_id": "6"
+    },
+    {
+      "name": "bromide_trace",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Bromide trace",
+      "__neon_stream_id": "7"
+    },
+    {
+      "name": "spec_average",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Spec Average or SW Average(Dark Correction Method)",
+      "__neon_stream_id": "8"
+    },
+    {
+      "name": "dark_signal_average",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Dark Signal Average (average dark intensity)",
+      "__neon_stream_id": "9"
+    },
+    {
+      "name": "integration_time_factor",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Integration Time Factor",
+      "__neon_stream_id": "10"
+    },
+    {
+      "name": "spectrum_channels",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,            
+      "doc": "256 different measurements of spectrometer intensity at a wavelength number defined by the array index plus one"
+    },
+    {
+      "name": "sensor_temperature",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Temperature of sensor",
+      "__neon_units": "celsius",
+      "__neon_stream_id": "267"
+    },
+    {
+      "name": "spectrometer_temperature",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Temperature of spectrometer",
+      "__neon_units": "celsius",
+      "__neon_stream_id": "268"
+    },
+    {
+      "name": "lamp_temperature",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Lamp temperature",
+      "__neon_units": "celsius",
+      "__neon_stream_id": "269"
+    },
+    {
+      "name": "lamp_time",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Cumulative lamp time",
+      "__neon_units": "second",
+      "__neon_stream_id": "270"
+    },
+    {
+      "name": "relative_humidity",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Relative humidity",
+      "__neon_units": "percent",
+      "__neon_stream_id": "271"
+    },
+    {
+      "name": "main_voltage",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Main Voltage",
+      "__neon_units": "volt",
+      "__neon_stream_id": "272"
+    },
+    {
+      "name": "lamp_voltage",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Lamp Voltage",
+      "__neon_units": "volt",
+      "__neon_stream_id": "273"
+    },
+    {
+      "name": "internal_voltage",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Internal Voltage",
+      "__neon_units": "volt",
+      "__neon_stream_id": "274"
+    },
+    {
+      "name": "main_current",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Main current",
+      "__neon_units": "milliampere",
+      "__neon_stream_id": "275"
+    },
+    {
+      "name": "fit_aux_1",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Fit Aux 1",
+      "__neon_stream_id": "276"
+    },
+    {
+      "name": "fit_aux_2",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Fit Aux 2",
+      "__neon_stream_id": "277"
+    },
+    {
+      "name": "fit_base_1",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Fit Base 1",
+      "__neon_stream_id": "278"
+    },
+    {
+      "name": "fit_base_2",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Fit Base 2",
+      "__neon_stream_id": "279"
+    },
+    {
+      "name": "fit_rmse",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Fit RMSE",
+      "__neon_stream_id": "280"
+    },
+    {
+      "name": "ctd_time",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "CTD time",
+      "__neon_units": "second",
+      "__neon_stream_id": "281"
+    },
+    {
+      "name": "ctd_salinity",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "CTD salinity",
+      "__neon_units": "practicalSalinityUnit",
+      "__neon_stream_id": "282"
+    },
+    {
+      "name": "ctd_temperature",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "CTD temperature",
+      "__neon_units": "celsius",
+      "__neon_stream_id": "283"
+    },
+    {
+      "name": "ctd_pressure",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "CTD pressure",
+      "__neon_units": "decibar",
+      "__neon_stream_id": "284"
+    },
+    {
+      "name": "crc",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Data crc",
+      "__neon_stream_id": "285"
+    },
+    {
+      "name": "block_of_data_complete",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "default": null,
+      "doc": "Flag that indicates if this data belongs to a complete set of 21 readouts",
+      "__neon_stream_id": "286"
+    }
+  ]
+}

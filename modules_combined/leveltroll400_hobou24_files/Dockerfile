@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-lt400-hu24-files -f ./modules_combined/pluvio_flags_comb/Dockerfile .
 
 # Start with the neon-is-base-r image.
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
 
 ARG MODULE_DIR="flow"
 ARG APP_DIR_1="flow.hobou24.files"

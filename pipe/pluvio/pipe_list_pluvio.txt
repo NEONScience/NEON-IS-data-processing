@@ -1,15 +1,2 @@
 pluvio_cron_daily_and_date_control.yaml
 pluvio_data_source_kafka.yaml
-pluvio_data_source_gcs.yaml
-pluvio_l0_combine_and_pad.yaml
-pluvio_time_shift.yaml 
-pluvio_calibration_list_files.yaml
-pluvio_calibration_loader.yaml
-pluvio_calibration_assignment.yaml
-pluvio_calibration_group_and_convert.yaml
-pluvio_location_asset.yaml
-pluvio_location_asset_assignment.yaml
-pluvio_location_group_and_restructure.yaml
-pluvio_location_loader.yaml
-pluvio_location_active_dates_assignment.yaml
-pluvio_fill_date_gaps_and_regularize.yaml

@@ -2,12 +2,12 @@
 pipeline:
   name: sunav2_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-3a11e51
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out #also used for parser
     SOURCE_TYPE: "sunav2_raw"
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
@@ -161,7 +161,7 @@ transform:
       fi
 
     done
-    
+
     # run data parser
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       python3 -m raw_data_parsers.raw_data_parser.suna_data_parser_main
@@ -169,7 +169,6 @@ transform:
       # Upload L0 files to bucket, compacting with any existing file with the same name
       # when SOURCE_TYPE is sunav2_raw, OUT_SOURCE_TYPE is sunav2
       OUT_SOURCE_TYPE=${SOURCE_TYPE%%_raw} 
-      
       if [[ -d "$OUT_PATH/$OUT_SOURCE_TYPE" ]]; then
         linkdir=$(mktemp -d)
         shopt -s globstar
@@ -198,13 +197,12 @@ transform:
           done
   
           # Upload to bucket, compacting with any existing file
-          ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+          ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
         fi
   
         # set +x # Uncomment for debugging
         rm -rf $linkdir
       fi
-
 
     fi
 

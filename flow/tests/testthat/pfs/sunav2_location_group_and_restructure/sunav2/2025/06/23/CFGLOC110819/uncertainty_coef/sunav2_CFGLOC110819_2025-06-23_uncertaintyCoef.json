@@ -1,0 +1,62 @@
+[
+   {
+      "calibration_id":      399098,
+      "term":"serial_output",
+      "start_date":"2025-06-23T00:00:00.000Z",
+      "end_date":"2025-06-24T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"0",
+      ".attrs":"mg/L"
+   },
+   {
+      "calibration_id":      399098,
+      "term":"serial_output",
+      "start_date":"2025-06-23T00:00:00.000Z",
+      "end_date":"2025-06-24T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"0",
+      ".attrs":"mg/L"
+   },
+   {
+      "calibration_id":      399098,
+      "term":"serial_output",
+      "start_date":"2025-06-23T00:00:00.000Z",
+      "end_date":"2025-06-24T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"0",
+      ".attrs":"mg/L"
+   },
+   {
+      "calibration_id":      399098,
+      "term":"serial_output",
+      "start_date":"2025-06-23T00:00:00.000Z",
+      "end_date":"2025-06-24T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"0.0333",
+      ".attrs":"mg/L"
+   },
+   {
+      "calibration_id":      399098,
+      "term":"serial_output",
+      "start_date":"2025-06-23T00:00:00.000Z",
+      "end_date":"2025-06-24T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.3",
+      ".attrs":"mg/L"
+   },
+   {
+      "calibration_id":      399098,
+      "term":"serial_output",
+      "start_date":"2025-06-23T00:00:00.000Z",
+      "end_date":"2025-06-24T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"0.666",
+      ".attrs":"mg/L"
+   }
+]

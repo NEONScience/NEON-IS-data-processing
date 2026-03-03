@@ -3,7 +3,7 @@
 # docker build -t neon-is-troll-logs-group-fill -f ./modules_combined/troll_logs_group_and_fill/Dockerfile .
 
 # Start with the base R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org

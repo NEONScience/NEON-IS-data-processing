@@ -45,6 +45,8 @@
 #     original creation
 #   Cove Sturtevant (2023-11-13)
 #     add option to remove duplicated rows
+#   Cove Sturtevant (2026-02-19)
+#     Handling for non-hashable data columns when deduplicating
 ##############################################################################################
 def.read.parq.ds <- function(fileIn,
                              Var=NULL,
@@ -63,7 +65,8 @@ def.read.parq.ds <- function(fileIn,
   
   # Load data files into an arrow dataset
   data <- arrow::open_dataset(fileIn,unify_schemas = TRUE)
-  varData <- base::names(data$schema)
+  schm <- data$schema
+  varData <- base::names(schm)
   
   # Pull the columns matching Var, sort by readout_time
   if(base::length(Var) == 0){
@@ -81,8 +84,53 @@ def.read.parq.ds <- function(fileIn,
   
   # Get rid of duplicates if selected
   if(RmvDupl == TRUE){
+    # NOTE: current limitation of the Arrow dplyr backend: distinct() evaluates 
+    #   using hash-based keys, and Arrow doesn’t support using a list<…> column 
+    #   as a key. Only solution for Arrow 19 is to collect() first. 
+    # So we need to determine if there are any non-hashable columns.
+    
+    # Helper to get list-typed column names from an Arrow Dataset/Table schema
+    # Input is the arrow schema
+    non_key_columns <- function(sch, exclude_struct_map = TRUE) {
+      fields <- sch$fields
+      is_bad_key <- vapply(
+        fields,
+        function(f) {
+          is_list <- inherits(f$type, "ListType") ||
+            inherits(f$type, "LargeListType") ||
+            inherits(f$type, "FixedSizeListType")
+          if (exclude_struct_map) {
+            is_struct_map <- inherits(f$type, "StructType") ||
+              inherits(f$type, "MapType")
+            is_list || is_struct_map
+          } else {
+            is_list
+          }
+        },
+        logical(1)
+      )
+      sch$names[is_bad_key]
+    }
+    
+    
+    # Derive key columns (exclude all list-like columns)
+    bad_cols <- non_key_columns(schm, exclude_struct_map = TRUE)
+
+    if (length(bad_cols) > 0) {
+      log$warn(base::paste0(
+        "Arrow-dplyr integration does not support lazy deduplication when there ",
+        "are non-hashable columns (including lists) in the dataset. Need to collect() ",
+        " first. A data frame will be returned."
+      ))
+      
+      dataMtch <- dataMtch %>%
+        collect()
+      Df <- TRUE # Return data frame (i.e. attach schema and attach time zones)
+    } 
+
     dataMtch <- dataMtch %>%
-      dplyr::distinct()
+      distinct(.keep_all = TRUE)
+      
   }
   
   # Return a data frame, if selected. Otherwise return arrow table.
@@ -91,7 +139,7 @@ def.read.parq.ds <- function(fileIn,
       dplyr::collect() 
     
     dataMtch <- base::data.frame(dataMtch)
-    base::attr(dataMtch,'schema') <- data$schema
+    base::attr(dataMtch,'schema') <- schm
     
     # Assign timezone for POSIX variables
     clssVar <- base::lapply(X=dataMtch,FUN=base::class)

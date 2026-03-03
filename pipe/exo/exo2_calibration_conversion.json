@@ -14,7 +14,7 @@
       "UcrtFuncTerm1=def.ucrt.meas.mult:depth",
       "TermQf=depth"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v3.0.0",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-conv:v3.0.1",
     "env": {
       "LOG_LEVEL": "INFO"
     }

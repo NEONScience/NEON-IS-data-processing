@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:v0.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:v0.0.2
   cmd:
   - sh
   - "-c"

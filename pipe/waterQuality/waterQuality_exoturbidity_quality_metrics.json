@@ -16,7 +16,7 @@
       "GrpQfBetaIgnr1=turbidity:turbidityNullQF|sensorNAQF",
       "Tmi=100"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-dp0p:v1.1.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-dp0p:v1.1.2",
     "env": {
       "LOG_LEVEL": "INFO"
     }
