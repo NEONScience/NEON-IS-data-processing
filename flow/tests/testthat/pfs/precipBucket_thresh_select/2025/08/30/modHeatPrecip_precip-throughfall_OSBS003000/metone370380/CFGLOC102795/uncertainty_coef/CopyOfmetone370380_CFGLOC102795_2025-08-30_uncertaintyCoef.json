@@ -1,0 +1,63 @@
+[
+   {
+      "calibration_id":      386967,
+      "term":"precipitation",
+      "start_date":"2025-08-30T12:00:00.000Z",
+      "end_date":"2025-08-31T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"108",
+      ".attrs":"scale factor"
+   },
+   {
+      "calibration_id":      386967,
+      "term":"precipitation",
+      "start_date":"2025-08-30T12:00:00.000Z",
+      "end_date":"2025-08-31T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"100",
+      ".attrs":"scale factor"
+   },
+   {
+      "calibration_id":      386967,
+      "term":"precipitation",
+      "start_date":"2025-08-30T12:00:00.000Z",
+      "end_date":"2025-08-31T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"206",
+      ".attrs":"scale factor"
+   },
+   {
+      "calibration_id":      386967,
+      "term":"precipitation",
+      "start_date":"2025-08-30T12:00:00.000Z",
+      "end_date":"2025-08-31T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"0.013988",
+      ".attrs":"scale factor"
+   },
+   {
+      "calibration_id":      386967,
+      "term":"precipitation",
+      "start_date":"2025-08-30T12:00:00.000Z",
+      "end_date":"2025-08-31T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.012817",
+      ".attrs":"scale factor"
+   },
+   {
+      "calibration_id":      386967,
+      "term":"precipitation",
+      "start_date":"2025-08-30T12:00:00.000Z",
+      "end_date":"2025-08-31T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"0.018972",
+      ".attrs":"scale factor"
+   }
+]
+

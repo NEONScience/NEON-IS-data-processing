@@ -1,0 +1,105 @@
+test-wrap-precip-bucket.R — Test Summary
+========================================
+
+File location:
+  flow/tests/testthat/test-wrap-precip-bucket.R
+
+Source under test:
+  flow/flow.precip.bucket/wrap.precip.bucket.R
+
+Author: Teresa Burlingame
+
+Fixture data (relative to test working directory):
+  pfs/precipBucket_thresh_select/2025/08/30/
+    precip-tipping_OSBS000060/metone370380/CFGLOC102736/
+    precip-throughfall_OSBS001000/metone370380/CFGLOC102741/
+    precip-throughfall_OSBS002000/metone370380/CFGLOC102768/
+    modHeatPrecip_precip-throughfall_OSBS003000/metone370380/CFGLOC102795/
+  Each datum folder contains: data/, flags/, location/, threshold/, uncertainty_coef/
+
+  Bad fixture data for error-handling tests (not yet created):
+    pfs/precipBucket_thresh_select/2025/08/30/
+      missingThresh_precip-throughfall_OSBS005000/metone370380/CFGLOC102849/
+      missingLoc_precip-throughfall_OSBS004000/metone370380/CFGLOC102822/
+
+Output:
+  Written to a unique tempfile() directory
+
+wrap.precip.bucket.R is sourced at the top level (outside all test_that blocks).
+
+------------------------------------------------------------------------
+test_that block 1: "Unit test of wrap.precip.bucket.R"
+------------------------------------------------------------------------
+Contains 9 tests in a single block.
+
+  Test 1 — Tipping bucket output directory structure
+    Fixture: precip-tipping_OSBS000060/metone370380/CFGLOC102736
+    Runs wrap.precip.bucket() with DirSubCopy='location'.
+    Verifies that stats/ and location/ sub-directories exist in the output.
+
+  Test 2 — Both 1-min and 30-min output files are written
+    Uses the same tipping output from Test 1.
+    Verifies exactly two Parquet files exist in stats/:
+      one matching *_stats_001.parquet and one matching *_stats_030.parquet.
+
+  Test 3 — Output schema contains all expected columns
+    Reads the 1-minute stats Parquet from Test 2.
+    Verifies all 12 required column names are present:
+      startDateTime, endDateTime, precipBulk, precipBulkExpUncert,
+      precipHeater0QM, precipHeater1QM, precipHeater2QM, precipHeater3QM,
+      validCalQF, suspectCalQF, extremePrecipQF, finalQF
+
+  Test 4 — Quality flag values are valid
+    Uses the 1-minute stats data from Test 3.
+    Verifies finalQF values are all in {0, 1}.
+    Verifies extremePrecipQF values are all in {0, 1, -1}.
+
+  Test 5 — Throughfall sensor output files are created
+    Fixture: precip-throughfall_OSBS001000/metone370380/CFGLOC102741
+    Runs wrap.precip.bucket() with DirSubCopy='location'.
+    Verifies exactly 2 stats files (_stats_001 and _stats_030) are written.
+
+  Test 6 — Throughfall area conversion reduces precipitation values
+    Uses the throughfall run from Test 5.
+    Sums raw precipitation from the input data/ Parquet and precipBulk from
+    the 1-minute output. When raw_sum > 0, expects converted_sum < raw_sum,
+    confirming the A_b/A_t area conversion factor (32429/251400 ≈ 0.129)
+    is applied. If no precipitation, expects converted_sum >= 0.
+
+  Test 7 — DirSubCopy carries additional directories to the output
+    Fixture: precip-throughfall_OSBS002000/metone370380/CFGLOC102768
+    Runs wrap.precip.bucket() with DirSubCopy=c('location', 'threshold').
+    Verifies stats/, location/, and threshold/ all exist in the output.
+
+  Test 8 — Invalid input directory produces an error
+    Constructs a path to a non-existent CFGLOC (CFGLOC_DOES_NOT_EXIST).
+    Calls wrap.precip.bucket() inside try(..., silent=TRUE).
+    Verifies the returned object has class 'try-error'.
+
+  Test 9 — Modified data with heater activity and precipitation counts
+    Fixture: modHeatPrecip_precip-throughfall_OSBS003000/metone370380/CFGLOC102795
+    (Fixture has synthetic heater_current and precipitation values and second ucert file.)
+    Runs wrap.precip.bucket() with DirSubCopy=c('location', 'threshold').
+    Verifies:
+      - stats/, location/, threshold/ exist in the output.
+      - Exactly 2 stats files are written.
+      - Area conversion is correct (same logic as Test 6).
+      - The four heater quality metric columns sum to approximately 100 per
+        row: precipHeater0QM + precipHeater1QM + precipHeater2QM +
+        precipHeater3QM is in [99, 101] for all rows (allows for rounding).
+
+------------------------------------------------------------------------
+test_that block 2: "Integration test with missing thresholds"
+------------------------------------------------------------------------
+  Fixture: missingThresh_precip-throughfall_OSBS005000/metone370380/CFGLOC102849
+  (Bad fixture: thresholds missing a required term.)
+  Calls wrap.precip.bucket() and expects an error via expect_error().
+  NOTE: Fixture path does not currently exist. Test will fail until created.
+
+------------------------------------------------------------------------
+test_that block 3: "Integration test with locations"
+------------------------------------------------------------------------
+  Fixture: missingLoc_precip-throughfall_OSBS004000/metone370380/CFGLOC102822
+  (Bad fixture: location directory absent or empty.)
+  Calls wrap.precip.bucket() and expects an error via expect_error().
+  NOTE: Fixture path does not currently exist. Test will fail until created.
