@@ -137,6 +137,8 @@ transform:
 
       # set +x # Uncomment for debugging
       rm -rf $linkdir
+      rm -rf "${linkdir2}"
+      
     fi
     EOF
 input:

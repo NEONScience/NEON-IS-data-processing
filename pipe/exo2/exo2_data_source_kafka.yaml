@@ -187,6 +187,8 @@ transform:
 
         # set +x # Uncomment for debugging
         rm -rf "${linkdir}"
+        rm -rf "${linkdir2}"
+        
         # Move the per site files to the structure expected by pachyderm
         cd "${siteoutpath}/"
         dest="${OUT_PATH}/"

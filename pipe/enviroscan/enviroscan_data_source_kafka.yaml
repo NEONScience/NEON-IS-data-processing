@@ -148,6 +148,7 @@ transform:
 
         # set +x # Uncomment for debugging
         rm -rf $linkdir
+        rm -rf "${linkdir2}"
       fi
       
       # run data parser
@@ -200,6 +201,8 @@ transform:
         # set +x # Uncomment for debugging
         
         rm -rf "${linkdir}"
+        rm -rf "${linkdir2}"
+        
         # Move the per site files to the structure expected by pachyderm
         cd "${siteoutpath}/${SOURCE_TYPE}_raw/"
         dest="${OUT_PATH}/${SOURCE_TYPE}_raw/"

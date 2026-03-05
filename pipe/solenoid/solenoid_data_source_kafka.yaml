@@ -2,7 +2,7 @@
 pipeline:
   name: solenoid_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v5.1.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -142,6 +142,8 @@ transform:
 
         # set +x # Uncomment for troubleshooting
         rm -rf "${linkdir}"
+        rm -rf "${linkdir2}"
+        
         # Move the per site files to the structure expected by pachyderm
         cd "${siteoutpath}/${SOURCE_TYPE}/"
         dest="${OUT_PATH}/${SOURCE_TYPE}/"

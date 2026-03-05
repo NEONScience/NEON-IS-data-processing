@@ -144,6 +144,7 @@ transform:
 
       # set +x # Uncomment for debugging
       rm -rf $linkdir
+      rm -rf "${linkdir2}"
     fi
     
     # run data parser
@@ -188,6 +189,7 @@ transform:
       
       # set +x # Uncomment for debugging
       rm -rf $linkdir
+      rm -rf "${linkdir2}"
 
     fi
     

@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v5.1.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -131,6 +131,7 @@ transform:
       
       # set +x # Uncomment for debugging
       rm -rf $linkdir
+      rm -rf "${linkdir2}"
     fi
     
     # run data parser
@@ -169,6 +170,7 @@ transform:
 
       # set +x # Uncomment for debugging
       rm -rf $linkdir
+      rm -rf "${linkdir2}"
 
     fi
 

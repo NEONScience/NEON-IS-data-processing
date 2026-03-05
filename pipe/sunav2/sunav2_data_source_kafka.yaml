@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v5.1.5
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out #also used for parser
@@ -151,6 +151,8 @@ transform:
 
         # set +x # Uncomment for debugging
         rm -rf "${linkdir}"
+        rm -rf "${linkdir2}"
+        
         # Move the per site files to the structure expected by pachyderm
         cd "${siteoutpath}/${SOURCE_TYPE}/"
         dest="${OUT_PATH}/${SOURCE_TYPE}/"
@@ -203,11 +205,14 @@ transform:
           done
   
           # Upload to bucket, compacting with any existing file
-          ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+          linkdir2=$(mktemp -d)
+          ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset
+          ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}"
         fi
   
         # set +x # Uncomment for debugging
         rm -rf $linkdir
+        rm -rf "${linkdir2}"
       fi
 
     fi
