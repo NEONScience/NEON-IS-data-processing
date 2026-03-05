@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Combined padded_timeseries_analyzer and Basic QA/QC module (plausibility) and enviroscan custom flagging
 # Example command (must be run from project root directory to include both modules in Docker context):
 # Build with the following command
-# docker build --no-cache -t neon-is-qaqc-plau-envscn -f ./modules_combined/analyze_pad_qaqc_envsc/Dockerfile .
+# docker build --no-cache -t neon-is-qaqc-plau-envscn -f ./modules_combined/analyze_pad_qaqc_envscn/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.10

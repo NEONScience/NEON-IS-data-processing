@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'swc.dev'
+      - 'master'
     paths:
       - 'modules_combined/qaqc_plau_and_radiation_custom/**'
       - 'modules/padded_timeseries_analyzer/**'

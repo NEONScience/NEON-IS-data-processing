@@ -4,7 +4,7 @@
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 #' 
-#' @description Workflow. Use envirscan data and prt locations to match sensors based on depth, 
+#' @description Workflow. Use enviroscan data and prt locations to match sensors based on depth, 
 #' assess temperature of soil, if too cold, flag data. If nearest isn't available average neighbors and 
 #' check if data below 1C. 
 #'
