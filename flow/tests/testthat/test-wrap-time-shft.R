@@ -19,14 +19,13 @@
 #'   pfs/timeShft/nopad/pluvio/2025/04/02/55222/ - center day only + manifest (pad incomplete)
 #'   pfs/timeShft/nomanifest/pluvio/2025/04/02/55223/ - 3-day data, no manifest
 #'
-#' Create fixtures by running (from flow/tests/testthat/):
-#'   Rscript testdata/create_time_shft_fixtures.R
-#'
 # changelog and author contributions / copyrights
 #   Teresa Burlingame (2026-03-04)
 #     Initial creation
 ##############################################################################################
 library(testthat)
+library(magrittr)
+library(dplyr)
 
 context("\n       | Unit test of time shift module for NEON IS data processing \n")
 source('../../flow.time.shft/wrap.time.shft.R')
