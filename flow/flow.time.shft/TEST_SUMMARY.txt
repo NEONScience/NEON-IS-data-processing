@@ -1,0 +1,90 @@
+test-wrap-time-shft.R — Test Summary
+=====================================
+  
+  File location:
+  flow/tests/testthat/test-wrap-time-shft.R
+
+Source under test:
+  flow/flow.time.shft/wrap.time.shft.R
+
+Author: Teresa Burlingame
+
+wrap.time.shft.R is sourced at the top level (outside all test_that blocks).
+
+Fixture data (relative to test working directory):
+  pfs/timeShft/pluvio/2025/04/02/55221/
+  - 3-day pad of 1-min parquet files (2025-04-01, -02, -03)
+- manifest.txt present
+- location/ sub-directory present
+pfs/timeShft/nopad/pluvio/2025/04/02/55222/
+  - center day only (2025-04-02), manifest.txt present, adjacent days missing
+pfs/timeShft/nomanifest/pluvio/2025/04/02/55223/
+  - 3-day pad present, no manifest.txt
+
+Create fixtures by running (from flow/tests/testthat/):
+   create_test_data.R
+
+Output:
+  Each happy-path run writes to a unique sub-directory under a single
+tempfile() root (DirOutBase), cleaned up by on.exit().
+DirOutBase/neg/   — Tests 1-3 (negative shift)
+DirOutBase/pos/   — Test 4 (positive shift)
+DirOutBase/copy/  — Test 5 (DirSubCopy)
+Error and early-return tests share DirOutBase directly since no
+parquet output is expected.
+
+------------------------------------------------------------------------
+  test_that block: "Unit test of wrap.time.shft.R"
+------------------------------------------------------------------------
+  Contains 10 tests in a single block.
+
+Test 1 — Negative shift: output directory structure is created
+Fixture: pluvio/2025/04/02/55221 (full 3-day pad)
+Runs wrap.time.shft() with TimeShft=5, TimeUnit='mins', TimeShftDir='Neg'.
+Verifies: data/ sub-directory exists in output and exactly 1 Parquet
+file is present in it.
+
+Test 2 — Negative shift: output file name contains the center date
+Uses the output from Test 1.
+Verifies: the output Parquet filename contains '2025-04-02'.
+
+Test 3 — Negative shift: all timestamps are on the center date
+Reads the output Parquet from Test 1.
+Verifies: every readout_time value, when converted to a Date, equals
+2025-04-02 (confirming the 5-minute backward shift and center-day
+            filter both worked correctly).
+
+Test 4 — Positive shift: output file is created for the center date
+Same fixture as Tests 1-3, new output directory.
+Runs wrap.time.shft() with TimeShftDir='Pos'.
+Verifies: exactly 1 Parquet file matching '2025-04-02.parquet' is
+written to the output data/ directory.
+
+Test 5 — DirSubCopy carries additional directories to the output
+Same fixture, new output directory.
+Runs wrap.time.shft() with DirSubCopy='location'.
+Verifies: location/ sub-directory exists in the output alongside data/.
+
+Test 6 — Non-numeric TimeShft produces an error
+Passes TimeShft='five' (a string).
+Verifies: result has class 'try-error'.
+
+Test 7 — Invalid TimeUnit produces an error
+Passes TimeUnit='minutes' (not in the allowed set "secs", "mins",
+                           "hours", "days", "weeks").
+Verifies: result has class 'try-error'.
+
+Test 8 — Invalid TimeShftDir produces an error
+Passes TimeShftDir='backward' (not "Pos" or "Neg").
+Verifies: result has class 'try-error'.
+
+Test 9 — Missing manifest causes early return, no output written
+Fixture: nomanifest/pluvio/2025/04/02/55223 (no manifest.txt).
+Calls wrap.time.shft(); function logs a warning and returns NULL.
+Verifies: 0 Parquet files exist in the output data/ directory.
+
+Test 10 — Incomplete pad causes early return, no output written
+Fixture: nopad/pluvio/2025/04/02/55222 (center day only, missing
+                                        the adjacent day required for a Neg shift).
+Calls wrap.time.shft(); function logs a warning and returns NULL.
+Verifies: 0 Parquet files exist in the output data/ directory.
