@@ -25,11 +25,11 @@
 library(testthat)
 
 context("\n       | Unit test of precip bucket aggregation module for NEON IS data processing \n")
-source('../../flow.precip.bucket/wrap.precip.bucket.R')
 
 test_that("Unit test of wrap.precip.bucket.R", {
+  source('../../flow.precip.bucket/wrap.precip.bucket.R')
 
-  DirFixture <- 'pfs/precipBucket_thresh_select'
+  DirFixture <- file.path(getwd(), 'pfs/precipBucket_thresh_select')
   DirOutBase <- tempfile(pattern = 'precip_bucket_test_out')
   
   # Clean up temp output after test completes
@@ -199,7 +199,7 @@ test_that("Unit test of wrap.precip.bucket.R", {
   
   testthat::expect_equal(length(stats_files_tf), 2)
   
-  #test that modified data gives same results in case there is no precip in unmodified data 
+  #test that modified data passes similar tests as unmodified data
   
   raw_file <- list.files(file.path(DirIn_tf3, 'data'), pattern = '\\.parquet$', full.names = TRUE)
   raw_data <- NEONprocIS.base::def.read.parq.ds(
@@ -242,6 +242,7 @@ test_that("Unit test of wrap.precip.bucket.R", {
 # Each bad fixture is a copy of the tipping bucket datum with exactly one thing broken.
 ##############################################################################################
 test_that("Integration test with missing thresholds", {
+  source('../../flow.precip.bucket/wrap.precip.bucket.R')
   # Use actual test data paths
   DirIn <- file.path(getwd(), "pfs/precipBucket_thresh_select/2025/08/30/missingThresh_precip-throughfall_OSBS005000/metone370380/CFGLOC102849/")
   DirOutBase <- file.path(tempdir(), "test_output")
@@ -258,6 +259,7 @@ test_that("Integration test with missing thresholds", {
 })
 
 test_that("Integration test with locations", {
+  source('../../flow.precip.bucket/wrap.precip.bucket.R')
   # Use actual test data paths
   DirIn <- file.path(getwd(), "pfs/precipBucket_thresh_select/2025/08/30/missingLoc_precip-throughfall_OSBS004000/metone370380/CFGLOC102822/")
   DirOutBase <- file.path(tempdir(), "test_output")
