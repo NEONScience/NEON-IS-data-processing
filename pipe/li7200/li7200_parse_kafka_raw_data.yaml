@@ -33,6 +33,18 @@ transform:
     env_var: PDR_PASSWORD
     key: password
   - name: pachyderm-kafka-auth
+    env_var: KAFKA_USER
+    key: KAFKA_USER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_PASSWORD
+    key: KAFKA_PASSWORD
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_BROKER
+    key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
+  - name: pachyderm-kafka-auth
     env_var: KAFKA_COMPACT_TOPIC
     key: KAFKA_COMPACT_TOPIC
   cmd: 
