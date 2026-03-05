@@ -51,7 +51,7 @@ COPY ./${MODULE_DIR}/${APP_DIR}/flow.qaqc.plau.R .
 RUN groupadd appuser && \
     useradd appuser -g appuser
 
-# Build in the custom radiation flags
+# Build in the custom enviroscan flags
 ARG APP_DIR2="flow.envscn.temp.flags"
 
 # Copy the lockfile and restore known working versions of R dependency packages

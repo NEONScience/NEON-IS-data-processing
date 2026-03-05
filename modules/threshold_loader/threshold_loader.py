@@ -44,7 +44,8 @@ def load_thresholds(get_thresholds: Callable[[str], Iterator[Threshold]], out_pa
                         threshold.start_date,
                         threshold.end_date,
                         threshold.start_day_of_year,
-                        threshold.end_day_of_year
+                        threshold.end_day_of_year,
+                        tuple(sorted(threshold_contexts))
                     )
                     if unique_key not in seen:
                         seen.add(unique_key)

@@ -35,6 +35,10 @@ class ThresholdLoaderTest(DatabaseBackedTest):
         self.out_path = Path('/out')
         self.fs.create_dir(self.out_path)
 
+    def tearDown(self):
+        for key in ('TERM', 'CTXT', 'CTXT_1', 'CTXT_2', 'CTXT_3', 'OUT_PATH', 'LOG_LEVEL'):
+            os.environ.pop(key, None)
+
     def test_write_file(self):
 
         def get_thresholds(term) -> Iterator[Threshold]:
@@ -286,6 +290,55 @@ class ThresholdLoaderTest(DatabaseBackedTest):
             # Should only have 1 threshold (duplicates removed)
             self.assertEqual(len(thresholds), 1)
             self.assertEqual(thresholds[0]['threshold_name'], 'duplicate_threshold')
+
+    def test_same_key_different_context_not_deduplicated(self):
+        """Test that thresholds identical in all fields except context are both kept."""
+
+        def get_thresholds(term) -> Iterator[Threshold]:
+            yield Threshold(
+                threshold_name='shared_threshold',
+                term_name=term,
+                location_name='CPER',
+                context=['soil', 'water-content', 'factory'],
+                start_date='2024-01-01',
+                end_date='2024-12-31',
+                is_date_constrained=True,
+                start_day_of_year=1,
+                end_day_of_year=365,
+                number_value=100.0,
+                string_value=None
+            )
+            yield Threshold(
+                threshold_name='shared_threshold',
+                term_name=term,
+                location_name='CPER',
+                context=['soil', 'water-content', 'soil-specific'],
+                start_date='2024-01-01',
+                end_date='2024-12-31',
+                is_date_constrained=True,
+                start_day_of_year=1,
+                end_day_of_year=365,
+                number_value=100.0,
+                string_value=None
+            )
+
+        load_thresholds(
+            get_thresholds,
+            self.out_path,
+            'term_name',
+            ['soil|water-content|factory', 'soil|water-content|soil-specific']
+        )
+        expected_path = self.out_path.joinpath('thresholds.json')
+
+        with open(expected_path, 'r') as threshold_file:
+            json_data = json.load(threshold_file)
+            thresholds = json_data['thresholds']
+
+        # Both context variants must be present, not collapsed into one
+        self.assertEqual(len(thresholds), 2)
+        contexts_in_output = [tuple(sorted(t['context'])) for t in thresholds]
+        self.assertIn(('factory', 'soil', 'water-content'), contexts_in_output)
+        self.assertIn(('soil', 'soil-specific', 'water-content'), contexts_in_output)
 
     # ========== INTEGRATION TESTS (Database access required) ==========
     # These tests are skipped by default to avoid requiring database credentials.
