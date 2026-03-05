@@ -1,0 +1,5604 @@
+{
+   "thresholds":[
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSICDepth02",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         360,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth02",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSICDepth03",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         360,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth03",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSICDepth04",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         360,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth04",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSICDepth05",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         360,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth05",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSICDepth06",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         360,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth06",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSICDepth07",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         360,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth07",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSICDepth08",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         360,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth08",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSICDepth01",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         360,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         20000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"ion-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSICDepth01",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth02",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth03",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth04",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth05",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth06",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth07",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth08",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"factory",
+"soil",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCfactoryDepth01",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth02",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth03",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth04",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth05",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth06",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth07",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth08",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         12,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         60,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":null,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         10,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.0001,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         86400,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         1,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         -0.4,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"soil",
+"soil-specific",
+"water-content"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"GRSM",
+         "number_value":         0.01,
+         "start_date":"2021-10-13T12:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"VSWCsoilSpecificDepth01",
+         "threshold_name":"Step Test value"
+      }
+   ]
+}

@@ -1,0 +1,407 @@
+{
+    "features":[
+        {
+            "AngNedZaxs":"NA",
+            "AngPtch":"0",
+            "asset_manufacturer":"Thermometrics",
+            "asset_model":"R000-00000011",
+            "asset_software_version":null,
+            "Cal$PrdLab":"one time before installation",
+            "Data Rate":"0.1",
+            "DistZaxsLvlMeasSoil":"-0.265",
+            "FreqSamp":"0.1",
+            "geometry":null,
+            "HOR":"005",
+            "location":"plot5",
+            "properties":{
+                "context":[
+
+                ],
+                "domain":"D07",
+                "install_date":"2025-10-17T00:00:00Z",
+                "locations":{
+                    "features":[
+                        {
+                            "geometry":null,
+                            "properties":{
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "end_date":"2025-10-18T00:00:00Z",
+                                "gamma":                                0,
+                                "location_properties":[
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "County",
+                                        "Sevier"
+                                    ],
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ],
+                                    [
+                                        "State province",
+                                        "TN"
+                                    ],
+                                    [
+                                        "UTM Zone",
+                                        "17N"
+                                    ]
+                                ],
+                                "reference_location":{
+                                    "geometry":null,
+                                    "properties":{
+                                        "locations":{
+                                            "features":[
+                                                {
+                                                    "geometry":{
+                                                        "coordinates":[
+                                                            [
+                                                                                                                                -83.50135,
+                                                                                                                                35.6892,
+                                                                                                                                576.39
+                                                            ],
+                                                            [
+                                                                                                                                -83.5014028,
+                                                                                                                                35.6892,
+                                                                                                                                575.2
+                                                            ],
+                                                            [
+                                                                                                                                -83.5014028,
+                                                                                                                                35.6892444,
+                                                                                                                                575.2
+                                                            ],
+                                                            [
+                                                                                                                                -83.5013472,
+                                                                                                                                35.6892444,
+                                                                                                                                576.39
+                                                            ],
+                                                            [
+                                                                                                                                -83.50135,
+                                                                                                                                35.6892,
+                                                                                                                                576.39
+                                                            ]
+                                                        ],
+                                                        "type":"Polygon"
+                                                    },
+                                                    "properties":{
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "end_date":"2025-10-18T00:00:00Z",
+                                                        "gamma":                                                        0,
+                                                        "location_properties":[
+                                                            [
+                                                                "AngAzXaxsRefeSoil",
+                                                                "C4"
+                                                            ],
+                                                            [
+                                                                "AngAzYaxsRefeSoil",
+                                                                "C2"
+                                                            ],
+                                                            [
+                                                                "Country",
+                                                                "USA"
+                                                            ],
+                                                            [
+                                                                "County",
+                                                                "Sevier"
+                                                            ],
+                                                            [
+                                                                "ElevSoilC1",
+                                                                "576.39"
+                                                            ],
+                                                            [
+                                                                "ElevSoilC2",
+                                                                "575.20"
+                                                            ],
+                                                            [
+                                                                "ElevSoilC3",
+                                                                "575.20"
+                                                            ],
+                                                            [
+                                                                "ElevSoilC4",
+                                                                "576.39"
+                                                            ],
+                                                            [
+                                                                "Geodetic datum",
+                                                                "WGS84"
+                                                            ],
+                                                            [
+                                                                "LatSoilC1",
+                                                                "35.6892000"
+                                                            ],
+                                                            [
+                                                                "LatSoilC2",
+                                                                "35.6892000"
+                                                            ],
+                                                            [
+                                                                "LatSoilC3",
+                                                                "35.6892444"
+                                                            ],
+                                                            [
+                                                                "LatSoilC4",
+                                                                "35.6892444"
+                                                            ],
+                                                            [
+                                                                "locDisturb",
+                                                                "1.32,2.3,NA and 0.160,3.175,NA and 0.160,2.725,NA and 1.720,3.175,NA and 1.72,2.725,NA"
+                                                            ],
+                                                            [
+                                                                "LonSoilC1",
+                                                                "-83.5013500"
+                                                            ],
+                                                            [
+                                                                "LonSoilC2",
+                                                                "-83.5014028"
+                                                            ],
+                                                            [
+                                                                "LonSoilC3",
+                                                                "-83.5014028"
+                                                            ],
+                                                            [
+                                                                "LonSoilC4",
+                                                                "-83.5013472"
+                                                            ],
+                                                            [
+                                                                "Orientation Number",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "RefeSoil",
+                                                                "C1"
+                                                            ],
+                                                            [
+                                                                "Required Asset Management Location Code",
+                                                                "SOILPL105351"
+                                                            ],
+                                                            [
+                                                                "State province",
+                                                                "TN"
+                                                            ],
+                                                            [
+                                                                "UTM Zone",
+                                                                "17N"
+                                                            ],
+                                                            [
+                                                                "x Azimuth Angle",
+                                                                                                                                3
+                                                            ],
+                                                            [
+                                                                "y Azimuth Angle",
+                                                                                                                                270
+                                                            ]
+                                                        ],
+                                                        "reference_location":null,
+                                                        "start_date":"2025-10-17T00:00:00Z",
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0
+
+                                                    },
+                                                    "type":"Feature"
+                                                }
+                                            ],
+                                            "type":"FeatureCollection"
+                                        },
+                                        "name":"SOILPL105351"
+                                    },
+                                    "type":"Feature"
+                                },
+                                "start_date":"2025-10-17T00:00:00Z",
+                                "x_offset":                                1.285,
+                                "y_offset":                                2.975
+                            },
+                            "type":"Feature"
+                        }
+                    ],
+                    "type":"FeatureCollection"
+                },
+                "name":"CFGLOC105369",
+                "remove_date":"2025-10-18T00:00:00Z",
+                "site":"GRSM",
+                "site_location":{
+                    "features":[
+                        {
+                            "geometry":{
+                                "coordinates":[
+                                                                        -83.50195,
+                                                                        35.68896,
+                                                                        575.396725
+                                ],
+                                "type":"Point"
+                            },
+                            "properties":{
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "end_date":"2025-10-18T00:00:00Z",
+                                "gamma":                                0,
+                                "location_properties":[
+                                    [
+                                        "AERONET_XREF",
+                                        "NEON_GRSM"
+                                    ],
+                                    [
+                                        "AngAzWindPrim",
+                                        "140-320"
+                                    ],
+                                    [
+                                        "AngAzWindScnd",
+                                        "NA"
+                                    ],
+                                    [
+                                        "AngAzWindTrty",
+                                        "NA"
+                                    ],
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "County",
+                                        "Sevier"
+                                    ],
+                                    [
+                                        "DEIMS-SDR Site ID",
+                                        "https://deims.org/30f887c3-135b-41e8-9f44-9b084ce2b3bd"
+                                    ],
+                                    [
+                                        "DistZaxsCnpy",
+                                        "31"
+                                    ],
+                                    [
+                                        "DistZaxsDisp",
+                                        "20.2"
+                                    ],
+                                    [
+                                        "Dom",
+                                        "D07"
+                                    ],
+                                    [
+                                        "DURATION",
+                                        "Gradient"
+                                    ],
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ],
+                                    [
+                                        "HABITAT",
+                                        "Terrestrial"
+                                    ],
+                                    [
+                                        "IS Processing Default Start Date",
+                                        "2017-08-20T00:00:00Z"
+                                    ],
+                                    [
+                                        "NEONSCI_FIELD_SITE_URL_PATH",
+                                        "great-smoky-mountains-national-park-twin-creeks"
+                                    ],
+                                    [
+                                        "Pf$AngEnuXaxs",
+                                        "NA"
+                                    ],
+                                    [
+                                        "Pf$AngEnuYaxs",
+                                        "NA"
+                                    ],
+                                    [
+                                        "Pf$Ofst",
+                                        "NA"
+                                    ],
+                                    [
+                                        "PrdDcmpMax",
+                                        "3"
+                                    ],
+                                    [
+                                        "PrdIncrAgrDcmp",
+                                        "1"
+                                    ],
+                                    [
+                                        "PrdIncrCalc",
+                                        "1"
+                                    ],
+                                    [
+                                        "PrdIncrPf",
+                                        "1"
+                                    ],
+                                    [
+                                        "PrdWndwAgrDcmp",
+                                        "5"
+                                    ],
+                                    [
+                                        "PrdWndwCalc",
+                                        "3"
+                                    ],
+                                    [
+                                        "PrdWndwPf",
+                                        "9"
+                                    ],
+                                    [
+                                        "PresAtmSite",
+                                        "93630"
+                                    ],
+                                    [
+                                        "Private",
+                                        "FALSE"
+                                    ],
+                                    [
+                                        "Read",
+                                        "HDF5"
+                                    ],
+                                    [
+                                        "Required Asset Management Location Code",
+                                        "GRSM"
+                                    ],
+                                    [
+                                        "Site Timezone",
+                                        "US/Eastern"
+                                    ],
+                                    [
+                                        "State Abbreviation",
+                                        "TN"
+                                    ],
+                                    [
+                                        "State province",
+                                        "TN"
+                                    ],
+                                    [
+                                        "TypeEco",
+                                        "Hardwood deciduous forest dominated by oaks and maples"
+                                    ],
+                                    [
+                                        "TypeSoil",
+                                        "Spivey-Santeetlah-Nowhere complex, 8 to 15 percent slopes"
+                                    ],
+                                    [
+                                        "UTM Zone",
+                                        "17N"
+                                    ],
+                                    [
+                                        "ZoneTime",
+                                        "EST"
+                                    ]
+                                ],
+                                "reference_location":null,
+                                "start_date":"2025-10-17T00:00:00Z",
+                                "x_offset":                                0,
+                                "y_offset":                                0
+                            },
+                            "type":"Feature"
+                        }
+                    ],
+                    "type":"FeatureCollection"
+                }
+            },
+            "Required Asset Management Location Code":"CFGLOC105369",
+            "subLocation":"depth4",
+            "subSystem":"temp-profile",
+            "system":"soil",
+            "type":"Feature",
+            "VER":"504"
+        }
+    ],
+    "source_id":    20037,
+    "source_type":"prt",
+    "type":"FeatureCollection"
+}
