@@ -1,0 +1,26 @@
+{
+    "features":[
+        {
+            "geometry":null,
+            "HOR":"003",
+            "properties":{
+                "active_periods":[
+                    {
+                        "start_date":"2025-08-30T00:00:00Z",
+                        "end_date":"2025-08-31T00:00:00Z"
+                    }
+                ],
+                "context":[
+                    "precipitation",
+                    "throughfall",
+                    "tipping"
+                ],
+                "description":"Ordway-Swisher Soil Throughfall SP3",
+                "name":"CFGLOC102795",
+                "site":"OSBS"
+            },
+            "VER":"000"
+        }
+    ],
+    "type":"FeatureCollection"
+}
