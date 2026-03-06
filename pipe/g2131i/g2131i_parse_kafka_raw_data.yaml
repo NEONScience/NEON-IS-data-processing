@@ -17,6 +17,7 @@ transform:
     FIELD_START_INDEX: "4" # skip instrument_status for parsing
     UPDATE_TRIGGER_TABLE: "True"
     ERR_PATH: /pfs/out/errored_datums
+    # DEDUP_METHOD: "readout_time" # For compact-bucket-copy
   secrets:
   - name: l0-bucket
     env_var: BUCKET_NAME
@@ -94,8 +95,8 @@ transform:
       
         # Upload to bucket, compacting with any existing file 
         linkdir2=$(mktemp -d)
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset
-        ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}"
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset --dedupmethod "readout_time"
+        ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}" --dedupmethod "readout_time"
       fi
 
       # set +x # Uncomment for debugging
