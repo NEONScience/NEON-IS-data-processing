@@ -32,16 +32,16 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 1.5
 resource_limits:
-  memory: 1.5G
+  memory: 2.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 4G
   cpu: 1
 datum_set_spec:
-  number: 5
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
