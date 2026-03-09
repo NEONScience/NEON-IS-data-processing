@@ -31,7 +31,7 @@
 #' 
 #' @examples
 #' # Not run
-# FileIn <- "~/pfs/sunav2_logjam_load_files/20349/logjam_prod_20349_0b05a4c0da3bb05af840fece674fe34c.csv"
+# FileIn <- "~/pfs/sunav2_logjam_load_files/20349/0b05a4c0da3bb05af840fece674fe34c.csv"
 # DirOut="~/pfs/sunav2_logs_output"
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
@@ -61,7 +61,7 @@ wrap.sunav2.logfiles <- function(FileIn,
     base::try(read.table(paste0(FileIn), header = FALSE, sep = ",", 
                          col.names = paste0("V",seq_len(286)),encoding = 'utf-8',
                          stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
-  logFileUID <- sub(".*_(\\w{6})\\w+\\.csv$", "_\\1", basename(FileIn))
+  logFileUID <- sub(".*(.{6})\\.csv$", "\\1", basename(FileIn))
   if (base::any(base::class(logFile) == 'try-error')) {
     # Generate error and stop execution
     log$error(base::paste0('File ', FileIn, ' is unreadable. Likely not a data file.'))
