@@ -43,6 +43,7 @@
 #' @changelog
 #' Nora Catolico (2024-01-09) original creation
 #' Bobby Hensley (2025-04-09) adapted for SUNA 
+#' Nora Catolico (2025-03-09) vectorize for loops, add UID
 ##############################################################################################
 wrap.sunav2.logfiles <- function(FileIn,
                              DirOut,
@@ -60,6 +61,7 @@ wrap.sunav2.logfiles <- function(FileIn,
     base::try(read.table(paste0(FileIn), header = FALSE, sep = ",", 
                          col.names = paste0("V",seq_len(286)),encoding = 'utf-8',
                          stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
+  logFileUID <- sub(".*_(\\w{6})\\w+\\.csv$", "_\\1", basename(FileIn))
   if (base::any(base::class(logFile) == 'try-error')) {
     # Generate error and stop execution
     log$error(base::paste0('File ', FileIn, ' is unreadable. Likely not a data file.'))
@@ -181,7 +183,7 @@ wrap.sunav2.logfiles <- function(FileIn,
       day <- substr(logData$readout_time[1],9,10)
       DirOutLogFile <- paste0(DirOut,'/sunav2/',year,'/',month,'/',day,'/',asset,'/data/')
       base::dir.create(DirOutLogFile,recursive=TRUE)
-      csv_name <-paste0('sunav2_',asset,'_',year,'-',month,'-',day,'_log')
+      csv_name <-paste0('sunav2_',asset,'_',year,'-',month,'-',day,'_log',logFileUID)
     #' Writes parquet file to output directory
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = logData,
                                                    NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),

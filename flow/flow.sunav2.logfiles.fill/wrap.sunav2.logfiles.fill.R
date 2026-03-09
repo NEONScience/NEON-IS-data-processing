@@ -54,7 +54,7 @@
 #' @changelog
 #' Nora Catolico (2024-01-30) original creation
 #' Bobby Hensley (2025-05-30) adapted for suna
-#' 
+#' Nora Catolico (2025-03-09) add ability to read multiple files and remove dupes
 ##############################################################################################
 wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
                              DirInStream=NULL,
@@ -107,8 +107,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   logFile <- fileDataLogs[grepl('_log',fileDataLogs)]
   if(length(logFile)>=1){
     logData  <-
-      base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirInDataLogs, '/', logFile),
-                                               log = log),silent = FALSE)
+      base::try(NEONprocIS.base::def.read.parq.ds(fileIn=logFile,VarTime='readout_time',RmvDupl=TRUE,Df=TRUE),silent = FALSE)
     if (base::any(base::class(logData) == 'try-error')) {
       # Generate error and stop execution
       log$error(base::paste0('File ', dirInDataLogs, '/', logFile, ' is unreadable.'))
