@@ -1,0 +1,68 @@
+{
+   "thresholds":[
+      {
+         "context":[
+"precipitation",
+"tipping"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CFGLOC102822",
+         "number_value":         0.075,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"BaseHeater"
+      },
+      {
+         "context":[
+"precipitation",
+"tipping"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CFGLOC102822",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"ExtremePrecipMax"
+      },
+      {
+         "context":[
+"precipitation",
+"tipping"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CFGLOC102822",
+         "number_value":         0.28,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"FunnelHeater"
+      },
+      {
+         "context":[
+"precipitation",
+"tipping"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CFGLOC102822",
+         "number_value":         0.01,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"InactiveHeater"
+      }
+   ]
+}

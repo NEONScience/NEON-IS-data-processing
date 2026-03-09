@@ -24,20 +24,20 @@ input:
   pfs:
     name: IN_PATH
     repo: sunav2_logjam_list_files
-    glob: /*/*/*/logjam_prod/sunav2/
+    glob: /*/*/*/logjam_prod/sunav2/*
     empty_files: true
 parallelism_spec:
-  constant: 10
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.5
-resource_limits:
   memory: 1G
-  cpu: 1.5
-sidecar_resource_requests:
+  cpu: 0.6
+resource_limits:
   memory: 2G
-  cpu: 0.2
+  cpu: 2
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 2
 datum_set_spec:
   number: 1
 scheduling_spec:

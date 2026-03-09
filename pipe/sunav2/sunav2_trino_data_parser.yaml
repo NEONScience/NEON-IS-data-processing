@@ -1,7 +1,7 @@
 pipeline:
   name: sunav2_trino_data_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v5.1.7
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -66,11 +66,22 @@ transform:
         
       done
 
-      # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
-
-      # set +x # Uncomment for debugging
+      echo "Syncing files to bucket"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        --metadata-set "content-type=application/vnd.apache.parquet" \
+        copy \
+        "${linkdir}" \
+        ":gcs://${BUCKET_NAME}"
+        
+      echo "Removing temporary files"
       rm -rf $linkdir
+      
+      # set +x # Uncomment for debugging
+
     fi
 
     EOF
