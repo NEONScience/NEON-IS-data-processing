@@ -70,7 +70,7 @@ transform:
       done
       
       # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --dedupmethod "readout_time" --nolog
 
       # set +x # Uncomment for debugging
       rm -rf $linkdir
