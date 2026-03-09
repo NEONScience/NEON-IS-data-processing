@@ -2,7 +2,7 @@
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-sunav2-logjam-load-clean-assign -f ./modules_combined/sunav2_logs_group_and_fill/Dockerfile .
 
-FROM registry.access.redhat.com/ubi9/ubi-minimal
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
@@ -43,8 +43,6 @@ RUN update-ca-trust && \
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
 
-#base R for R module
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
 
 # Build in the module
 ARG FLOW_DIR="flow"
