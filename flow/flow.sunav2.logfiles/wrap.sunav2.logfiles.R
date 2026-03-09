@@ -114,8 +114,7 @@ wrap.sunav2.logfiles <- function(FileIn,
   
 #' Checks that each data burst is complete (Right now only checks whether last column is a value or not)
   logData$error_missing_data<-NA
-  for(i in 1:nrow(logData)){if(is.na(logData[i,which(colnames(logData)=="check_sum")])){logData[i,which(colnames(logData)=="error_missing_data")]=TRUE}
-    else{logData[i,which(colnames(logData)=="error_missing_data")]=FALSE}}
+  logData[["error_missing_data"]] <- is.na(logData[["check_sum"]])
   
 #' Combines all 256 spectrum channels into single array
   logData$spectrum_channels<-paste(logData$channel_1,logData$channel_2,logData$channel_3,logData$channel_4,logData$channel_5,logData$channel_6,logData$channel_7,logData$channel_8,logData$channel_9,logData$channel_10,
@@ -159,8 +158,7 @@ wrap.sunav2.logfiles <- function(FileIn,
   logData$header_manufacturer<-"SATS"
   logData$header_serial_number<-serial_number[2,1]
   logData$header_light_frame<-NA
-  for(i in 1:nrow(logData)){if(logData[i,which(colnames(logData)=="dark_value_used_for_fit")]==0){logData[i,which(colnames(logData)=="header_light_frame")]=0}
-    else{logData[i,which(colnames(logData)=="header_light_frame")]=1}}
+  logData[["header_light_frame"]] <- as.integer(logData[["dark_value_used_for_fit"]] != 0)
   
 #' Re-orders columns so they match the avro schema
   logData<-logData[,c("source_id","site_id","readout_time","header_manufacturer","header_serial_number","header_light_frame","year_and_day","time","nitrate_concentration",
