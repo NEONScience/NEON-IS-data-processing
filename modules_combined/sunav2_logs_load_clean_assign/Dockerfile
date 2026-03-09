@@ -18,9 +18,9 @@ ENV LOGJAM_INGEST_BUCKET="neon-nonprod-is-logjam-ingest"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt
-
+    
 RUN apt update && \
     apt-get install -y --no-install-recommends \
         software-properties-common \
@@ -36,7 +36,6 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
     pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
     apt-get autoremove -y && \
     apt-get autoclean -y && \
     groupadd -g 9999 appuser && \
