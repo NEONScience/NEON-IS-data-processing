@@ -47,7 +47,7 @@ COPY ${MODULE_DIR}/${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
 ARG FLOW_DIR="flow"
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./flow/flow.sunav2.logfiles.fill/renv.lock .
+COPY ./flow/flow.sunav2.logfiles/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
 # Copy in sunav2 log file workflow
