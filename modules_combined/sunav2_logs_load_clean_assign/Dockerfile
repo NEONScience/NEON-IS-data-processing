@@ -9,32 +9,40 @@ FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-bas
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
 
 # Add in the python-based filter-joiner module
-ARG MODULE_DIR="modules"
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="logjam_loader"
-ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
+ARG DATA_ACCESS_DIR="data_access"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
+ENV LOGJAM_INGEST_BUCKET="neon-nonprod-is-logjam-ingest"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt
+COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt
 
-
-RUN apt update && \
-    apt-get install -y --no-install-recommends \
-        python3.8 && \
-    apt install -y python3-pip && \
+RUN update-ca-trust && \
+    microdnf update -y --disableplugin=subscription-manager && \
+    microdnf install -y --disableplugin=subscription-manager \
+            shadow-utils \
+            findutils \
+            gcc \
+            libzstd  \
+            python3 \
+            python3-pip \
+            python3-wheel \
+            python3-devel \
+            python3-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-   apt-get autoremove -y && \
-	 apt-get autoclean -y && \
-	 rm -rf /var/lib/apt/lists/* && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt && \
+    microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
+    microdnf clean all --disableplugin=subscription-manager && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
 
 # Build in the module
 ARG FLOW_DIR="flow"
