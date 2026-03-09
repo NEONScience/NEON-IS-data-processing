@@ -2,8 +2,7 @@
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-sunav2-logjam-load-clean-assign -f ./modules_combined/sunav2_logs_group_and_fill/Dockerfile .
 
-# Start with the base R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
+FROM registry.access.redhat.com/ubi9/ubi-minimal
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
