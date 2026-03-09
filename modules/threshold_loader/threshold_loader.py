@@ -33,9 +33,9 @@ def load_thresholds(get_thresholds: Callable[[str], Iterator[Threshold]], out_pa
             for threshold in all_db_thresholds:
                 threshold_contexts = threshold.context if threshold.context else []
                 
-                # Exact context match: threshold must have exactly these contexts (no more, no less)
-                # If no context filter (empty list), only match thresholds with no contexts
-                if set(context_l) == set(threshold_contexts):
+                # If context is 'none' (context_l is empty), match all thresholds regardless of context.
+                # Otherwise require an exact context match (no more, no less).
+                if not context_l or set(context_l) == set(threshold_contexts):
                     # Create unique key including dates to avoid losing seasonal thresholds
                     unique_key = (
                         threshold.threshold_name,
