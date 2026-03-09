@@ -8,7 +8,7 @@ UNIT TESTS (run by default with pytest):
 - test_write_file: Basic threshold loading and JSON serialization
 - test_exact_context_matching: Validates exact context matching (excludes partial/superset matches)
 - test_multiple_contexts_filtering: Tests filtering with multiple context sets
-- test_empty_context_handling: Tests 'none' context (empty context list)
+- test_empty_context_handling: Tests 'none' context (wildcard — matches all thresholds regardless of context)
 - test_duplicate_threshold_handling: Verifies duplicate thresholds are deduplicated
 
 INTEGRATION TESTS (skipped by default, require database access):
@@ -215,7 +215,7 @@ class ThresholdLoaderTest(DatabaseBackedTest):
             self.assertNotIn('no_match', threshold_names)
 
     def test_empty_context_handling(self):
-        """Test handling of empty contexts (none)."""
+        """Test handling of 'none' context — acts as a wildcard matching all thresholds regardless of context."""
         
         def get_thresholds(term) -> Iterator[Threshold]:
             # No context
@@ -233,7 +233,7 @@ class ThresholdLoaderTest(DatabaseBackedTest):
                 string_value=None
             )
             
-            # Has context (should be excluded)
+            # Has context (should also be included — 'none' is a wildcard)
             yield Threshold(
                 threshold_name='has_context',
                 term_name=term,
@@ -255,10 +255,11 @@ class ThresholdLoaderTest(DatabaseBackedTest):
             json_data = json.load(threshold_file)
             thresholds = json_data['thresholds']
             
-            # Should have exactly 1 threshold with no context
-            self.assertEqual(len(thresholds), 1)
-            self.assertEqual(thresholds[0]['threshold_name'], 'no_context')
-            self.assertEqual(thresholds[0]['context'], [])
+            # 'none' is a wildcard — should match all thresholds regardless of context
+            self.assertEqual(len(thresholds), 2)
+            threshold_names = [t['threshold_name'] for t in thresholds]
+            self.assertIn('no_context', threshold_names)
+            self.assertIn('has_context', threshold_names)
 
     def test_duplicate_threshold_handling(self):
         """Test that duplicate thresholds are handled correctly."""
