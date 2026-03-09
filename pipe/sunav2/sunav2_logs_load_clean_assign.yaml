@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_logs_load_clean_assign
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-load-clean-assign:sha-a0f58ea
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-load-clean-assign:sha-bd2942e
   cmd:
   - sh
   - "-c"
@@ -17,9 +17,6 @@ transform:
     mkdir -p /tmp/pfs/interim
     
     # Run first module - logjam loader (using environment variables below as input parameters)
-    python3 --version
-    python3 -c "import environs; print(environs.__version__)"
-    python3 -c "import marshmallow; print(marshmallow.__version__)"
     python3 -m logjam_loader.load_all_logjam_files
         
     #run cleaning script
@@ -33,7 +30,6 @@ transform:
   env:
     # Environment variables for logjam loader
     LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
-    IN_PATH: $IN_PATH
     OUT_PATH: /tmp/pfs/interim
     LOG_LEVEL: DEBUG
     STARTING_PATH_INDEX: "7"
@@ -45,7 +41,7 @@ input:
   - pfs:
       name: IN_PATH
       repo: sunav2_logjam_list_files
-      glob: /*/*/*/logjam_prod/sunav2/*
+      glob: /2025/07/14/logjam_dev/sunav2/45090/*
       empty_files: true
   - pfs:
       name: FILE_SCHEMA_DATA

@@ -183,7 +183,7 @@ wrap.sunav2.logfiles <- function(FileIn,
       day <- substr(logData$readout_time[1],9,10)
       DirOutLogFile <- paste0(DirOut,'/sunav2/',year,'/',month,'/',day,'/',asset,'/data/')
       base::dir.create(DirOutLogFile,recursive=TRUE)
-      csv_name <-paste0('sunav2_',asset,'_',year,'-',month,'-',day,'_log',logFileUID)
+      csv_name <-paste0('sunav2_',asset,'_',year,'-',month,'-',day,'_',logFileUID,'_log')
     #' Writes parquet file to output directory
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = logData,
                                                    NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),
