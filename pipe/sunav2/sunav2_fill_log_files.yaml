@@ -164,7 +164,7 @@ input:
         outer_join: true
     - pfs:
         name: DATA_PATH_LOG
-        repo: sunav2_logjam_assign_clean_files
+        repo: sunav2_logs_load_clean_assign
         glob: /(sunav2/*/*/*) #sunav2/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
