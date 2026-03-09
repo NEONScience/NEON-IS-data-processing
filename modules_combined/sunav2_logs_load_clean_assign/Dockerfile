@@ -12,6 +12,7 @@ ARG MODULE_DIR="./modules"
 ARG APP_DIR="logjam_loader"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ARG DATA_ACCESS_DIR="data_access"
+ARG COMMON_DIR="common"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 ENV LOGJAM_INGEST_BUCKET="neon-nonprod-is-logjam-ingest"
 
@@ -20,22 +21,24 @@ WORKDIR ${CONTAINER_APP_DIR}
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt
 
-RUN update-ca-trust && \
-    microdnf update -y --disableplugin=subscription-manager && \
-    microdnf install -y --disableplugin=subscription-manager \
-            shadow-utils \
-            findutils \
-            gcc \
-            libzstd  \
-            python3 \
-            python3-pip \
-            python3-wheel \
-            python3-devel \
-            python3-setuptools && \
-    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt && \
-    microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
-    microdnf clean all --disableplugin=subscription-manager && \
+RUN apt update && \
+    apt-get install -y --no-install-recommends \
+        software-properties-common \
+        gnupg && \
+    rm -rf /var/lib/apt/lists/* 
+    
+RUN add-apt-repository ppa:deadsnakes/ppa -y
+RUN apt update
+RUN apt-get install -y python3.9 python3.9-venv python3-pip
+RUN python3.9 -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
+    apt-get autoremove -y && \
+    apt-get autoclean -y && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
