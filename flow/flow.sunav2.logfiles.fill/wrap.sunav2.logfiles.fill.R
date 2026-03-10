@@ -107,7 +107,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   logFile <- fileDataLogs[grepl('_log',fileDataLogs)]
   if(length(logFile)>=1){
     logData  <-
-      base::try(NEONprocIS.base::def.read.parq.ds(fileIn=logFile,VarTime='readout_time',RmvDupl=TRUE,Df=TRUE),silent = FALSE)
+      base::try(NEONprocIS.base::def.read.parq.ds(fileIn=base::paste0(dirInDataLogs, '/', logFile),VarTime='readout_time',RmvDupl=TRUE,Df=TRUE),silent = FALSE)
     if (base::any(base::class(logData) == 'try-error')) {
       # Generate error and stop execution
       log$error(base::paste0('File ', dirInDataLogs, '/', logFile, ' is unreadable.'))
