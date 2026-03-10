@@ -12,7 +12,6 @@ ARG MODULE_DIR="./modules"
 ARG APP_DIR="logjam_loader"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ARG DATA_ACCESS_DIR="data_access"
-ARG COMMON_DIR="common"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 ENV LOGJAM_INGEST_BUCKET="neon-nonprod-is-logjam-ingest"
 
