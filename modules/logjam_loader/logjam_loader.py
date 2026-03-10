@@ -12,9 +12,10 @@ def logjam_loader() -> None:
     env = environs.Env()
     ingest_bucket_name = env.str('LOGJAM_INGEST_BUCKET')
     output_directory: Path = env.path('OUT_PATH')
+    prefix: Str = env.str('PREFIX',None)
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
-    path_names = storage_client.list_blobs(ingest_bucket)
+    path_names = storage_client.list_blobs(ingest_bucket,prefix=prefix)
     for blob in path_names:
         
         file_name = os.path.splitext(blob.name)[0]
