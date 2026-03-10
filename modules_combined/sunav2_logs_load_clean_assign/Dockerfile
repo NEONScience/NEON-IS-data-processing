@@ -7,7 +7,7 @@ FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-bas
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
 
-# Add in the python-based filter-joiner module
+# Add in the python-based logjam loader module
 ARG MODULE_DIR="./modules"
 ARG APP_DIR="logjam_loader"
 ARG CONTAINER_APP_DIR="/usr/src/app"
