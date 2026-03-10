@@ -1,6 +1,6 @@
 # Dockerfile for NEON IS Data Processing - sunav2 logjam loader module combined with sunav2 logfiles clean/assignment module
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
-# docker build -t neon-is-sunav2-logjam-load-clean-assign -f ./modules_combined/sunav2_logs_group_and_fill/Dockerfile .
+# docker build -t neon-is-sunav2-logjam-load-clean-assign -f ./modules_combined/sunav2_logs_load_clean_assign/Dockerfile .
 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
 
