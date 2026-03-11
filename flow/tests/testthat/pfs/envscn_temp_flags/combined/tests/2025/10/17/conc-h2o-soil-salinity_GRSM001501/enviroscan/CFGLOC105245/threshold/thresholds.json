@@ -1,0 +1,132 @@
+{
+  "thresholds": [
+    {
+      "context": [
+        "soil",
+        "ion-content"
+      ],
+      "end_date": null,
+      "end_day_of_year": null,
+      "is_date_constrained": "N",
+      "location_name": "GRSM",
+      "number_value": 1,
+      "start_date": "2000-01-01T00:00:00Z",
+      "start_day_of_year": null,
+      "string_value": null,
+      "term_name": "VSICDepth02",
+      "threshold_name": "Range Threshold Soft Min"
+    },
+    {
+      "context": [
+        "soil",
+        "ion-content"
+      ],
+      "end_date": null,
+      "end_day_of_year": null,
+      "is_date_constrained": "N",
+      "location_name": "GRSM",
+      "number_value": 1,
+      "start_date": "2000-01-01T00:00:00Z",
+      "start_day_of_year": null,
+      "string_value": null,
+      "term_name": "VSICDepth03",
+      "threshold_name": "Range Threshold Soft Min"
+    },
+    {
+      "context": [
+        "soil",
+        "ion-content"
+      ],
+      "end_date": null,
+      "end_day_of_year": null,
+      "is_date_constrained": "N",
+      "location_name": "GRSM",
+      "number_value": 0,
+      "start_date": "2000-01-01T00:00:00Z",
+      "start_day_of_year": null,
+      "string_value": null,
+      "term_name": "VSICDepth04",
+      "threshold_name": "Range Threshold Soft Min"
+    },
+    {
+      "context": [
+        "soil",
+        "ion-content"
+      ],
+      "end_date": null,
+      "end_day_of_year": null,
+      "is_date_constrained": "N",
+      "location_name": "GRSM",
+      "number_value": 0,
+      "start_date": "2000-01-01T00:00:00Z",
+      "start_day_of_year": null,
+      "string_value": null,
+      "term_name": "VSICDepth05",
+      "threshold_name": "Range Threshold Soft Min"
+    },
+    {
+      "context": [
+        "soil",
+        "ion-content"
+      ],
+      "end_date": null,
+      "end_day_of_year": null,
+      "is_date_constrained": "N",
+      "location_name": "GRSM",
+      "number_value": 0,
+      "start_date": "2000-01-01T00:00:00Z",
+      "start_day_of_year": null,
+      "string_value": null,
+      "term_name": "VSICDepth06",
+      "threshold_name": "Range Threshold Soft Min"
+    },
+    {
+      "context": [
+        "soil",
+        "ion-content"
+      ],
+      "end_date": null,
+      "end_day_of_year": null,
+      "is_date_constrained": "N",
+      "location_name": "GRSM",
+      "number_value": 0,
+      "start_date": "2000-01-01T00:00:00Z",
+      "start_day_of_year": null,
+      "string_value": null,
+      "term_name": "VSICDepth07",
+      "threshold_name": "Range Threshold Soft Min"
+    },
+    {
+      "context": [
+        "soil",
+        "ion-content"
+      ],
+      "end_date": null,
+      "end_day_of_year": null,
+      "is_date_constrained": "N",
+      "location_name": "GRSM",
+      "number_value": 1,
+      "start_date": "2000-01-01T00:00:00Z",
+      "start_day_of_year": null,
+      "string_value": null,
+      "term_name": "VSICDepth08",
+      "threshold_name": "Range Threshold Soft Min"
+    },
+    {
+      "context": [
+        "soil",
+        "ion-content"
+      ],
+      "end_date": null,
+      "end_day_of_year": null,
+      "is_date_constrained": "N",
+      "location_name": "GRSM",
+      "number_value": 1,
+      "start_date": "2000-01-01T00:00:00Z",
+      "start_day_of_year": null,
+      "string_value": null,
+      "term_name": "VSICDepth01",
+      "threshold_name": "Range Threshold Soft Min"
+    }
+  ]
+}
