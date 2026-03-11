@@ -4,7 +4,6 @@ from pathlib import Path
 import environs
 import os
 import sys
-from google.cloud import storage
 
 
 def logjam_loader() -> None:

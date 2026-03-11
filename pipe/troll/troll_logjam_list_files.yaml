@@ -2,10 +2,11 @@
 pipeline:
   name: troll_logjam_list_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:sha-f6ba94c
   cmd: ["/bin/bash"]
   env:
     LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
+    PREFIXES: logjam_prod/leveltroll500,logjam_prod/aquatroll200 # Filter for these path prefixes in the bucket. Separate multiple with commas (no spaces)
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   stdin:
