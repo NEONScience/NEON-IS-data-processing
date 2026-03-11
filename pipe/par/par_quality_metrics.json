@@ -17,7 +17,7 @@
       "GrpQfBeta1=PAR:nullQF|gapQF|rangeQF|stepQF|persistenceQF",
       "GrpQfBetaIgnr1=PAR:nullQF|gapQF"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm:v1.2.1",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm:v1.2.2",
     "env": {
       "LOG_LEVEL": "INFO"
     }

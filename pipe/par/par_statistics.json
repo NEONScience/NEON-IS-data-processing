@@ -13,7 +13,7 @@
       "WndwAgr=001|030",
       "TermStat1=par:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc:v1.1.2",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc:v1.1.3",
     "env": {
       "LOG_LEVEL": "INFO"
     }
