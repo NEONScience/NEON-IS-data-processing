@@ -127,7 +127,7 @@ foreach::foreach(idxFileIn = fileData) %dopar% {
         NEONprocIS.base::def.err.datm(
           err=err,
           call.stack=call.stack,
-          DirDatm=base::dirname(idxFileIn),
+          DirDatm=idxFileIn,
           DirErrBase=Para$DirErr,
           RmvDatmOut=TRUE,
           DirOutBase=Para$DirOut,
