@@ -38,6 +38,7 @@ jobs:
             dplyr
             fastmatch
             ff
+            suncalc
             testthat
           extra-packages: |
               any::xml2
