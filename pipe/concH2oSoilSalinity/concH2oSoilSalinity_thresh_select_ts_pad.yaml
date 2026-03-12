@@ -81,8 +81,6 @@ transform:
       input_paths:
         - path:
             name: REPO_LOCATIONS
-            # Filter validated output from qaqc 
-            ##NOTE: Filter joiner came after qaqc, so no /pfs/ in glob to keep indices in line
             glob_pattern: /pfs/REPO_LOCATIONS/*/*/*/*/enviroscan/**
             # Join on Y/M/D/group
             join_indices: [3,4,5,6]
