@@ -71,13 +71,13 @@ transform:
     EOF
   env:
     # Environment variables for padded timeseries analyzer
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     ERR_PATH: /pfs/out/errored_datums
     LINK_TYPE: COPY
     # Environment variables for filter-joiner
     CONFIG: |
       ---
-      # Join validated padded data with temperature data
+      # filter group path to only be enviroscan data
       input_paths:
         - path:
             name: REPO_LOCATIONS
