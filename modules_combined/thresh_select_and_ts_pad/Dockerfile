@@ -28,7 +28,8 @@ RUN apt update && \
     apt install -y python3-pip && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
+    sed '/^pyfakefs[<=> ]*/d' "${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt" > /tmp/filter_joiner.requirements.runtime.txt && \
+    python3 -mpip install --no-cache-dir -r /tmp/filter_joiner.requirements.runtime.txt && \
    apt-get autoremove -y && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* 
