@@ -70,7 +70,7 @@ transform:
     python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
     EOF
   env:
-    # Environment variables for padded timeseries analyzer
+    # Environment variables for filter_joiner, flow.thsh.slct.R, and timeseries_padder
     LOG_LEVEL: INFO
     ERR_PATH: /pfs/out/errored_datums
     LINK_TYPE: COPY
