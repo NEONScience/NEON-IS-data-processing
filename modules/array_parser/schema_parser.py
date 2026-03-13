@@ -6,6 +6,7 @@ from typing import NamedTuple, List
 
 class SchemaData(NamedTuple):
     schema: str
+    name: str
     source_type: str
     field_names: List[str]
     parse_field_names: List[str]
@@ -24,6 +25,7 @@ def parse_schema_file(path: Path) -> SchemaData:
     field_exclusions = ['source_id', 'site_id', 'readout_time'] # Assumes all other fields are fields to be parsed. 
     with open(str(path), 'r') as file:
         json_data = json.load(file)
+        schema_name = json_data['name']
         source_type = json_data['source']
         fields = json_data['fields']
         calibration_mapping = {}
@@ -43,4 +45,4 @@ def parse_schema_file(path: Path) -> SchemaData:
                 except KeyError:
                     continue
         schema = json.dumps(json_data)
-    return SchemaData(schema=schema, source_type=source_type, field_names=field_names, parse_field_names=parse_field_names, calibration_mapping=calibration_mapping,data_mapping=data_mapping)
+    return SchemaData(schema=schema, name=schema_name, source_type=source_type, field_names=field_names, parse_field_names=parse_field_names, calibration_mapping=calibration_mapping,data_mapping=data_mapping)
