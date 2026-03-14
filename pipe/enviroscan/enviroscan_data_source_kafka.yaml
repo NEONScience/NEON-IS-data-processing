@@ -34,6 +34,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_LOG_TOPIC
     key: KAFKA_LOG_TOPIC
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_COMPACT_TOPIC
+    key: KAFKA_COMPACT_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -139,10 +142,13 @@ transform:
         done
 
         # Upload to bucket, compacting with any existing file
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
+        linkdir2=$(mktemp -d)
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset
+        ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}"
 
         # set +x # Uncomment for debugging
         rm -rf $linkdir
+        rm -rf "${linkdir2}"
       fi
       
       # run data parser
@@ -184,15 +190,19 @@ transform:
         done
         
         # Upload to bucket, compacting with any existing file 
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
+        linkdir2=$(mktemp -d)
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset --dedupmethod "readout_time" --nolog
+        ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}" --dedupmethod "readout_time" --nolog
 
         # Update the airflow triggering table
         echo "Updating airflow trigger table for ${site} ${date_str}"
-        ./update-trigger-table.py -s "${site}" -S "${SOURCE_TYPE}" -D "${siteoutpath}/${SOURCE_TYPE}"
+        ./update-trigger-table.py -s "${site}" -S "${SOURCE_TYPE}" -D "${linkdir2}"
         
         # set +x # Uncomment for debugging
         
         rm -rf "${linkdir}"
+        rm -rf "${linkdir2}"
+        
         # Move the per site files to the structure expected by pachyderm
         cd "${siteoutpath}/${SOURCE_TYPE}_raw/"
         dest="${OUT_PATH}/${SOURCE_TYPE}_raw/"

@@ -2,7 +2,7 @@
 pipeline:
   name: li7200_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v5.1.10
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -32,6 +32,21 @@ transform:
   - name: pdr-secret
     env_var: PDR_PASSWORD
     key: password
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_USER
+    key: KAFKA_USER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_PASSWORD
+    key: KAFKA_PASSWORD
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_BROKER
+    key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_COMPACT_TOPIC
+    key: KAFKA_COMPACT_TOPIC
   cmd: 
   - sh
   - "-c"
@@ -76,11 +91,15 @@ transform:
         done
 
         # Upload to bucket, compacting with any existing file
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+        linkdir2=$(mktemp -d)
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset --dedupmethod "readout_time" --nolog
+        ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}" --dedupmethod "readout_time" --nolog
       fi
 
       # set +x # Uncomment for debugging
       rm -rf $linkdir
+      rm -rf "${linkdir2}"
+      
     fi
 
     EOF
