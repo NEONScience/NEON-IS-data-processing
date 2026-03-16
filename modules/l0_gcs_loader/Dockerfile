@@ -5,7 +5,7 @@
 ###
 FROM registry.access.redhat.com/ubi9/ubi-minimal
 
-ARG MODULE_DIR="modules"
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="l0_gcs_loader"
 ARG CONTAINER_APP_DIR="/usr/src"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
@@ -28,7 +28,7 @@ RUN update-ca-trust && \
             python3-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-\    microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
+    microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
     microdnf clean all --disableplugin=subscription-manager && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
