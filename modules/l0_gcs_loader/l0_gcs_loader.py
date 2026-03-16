@@ -16,6 +16,7 @@ def l0_gcs_loader() -> None:
     bucket_version_path = env.str('BUCKET_VERSION_PATH') # The root path of the bucket, indicative of the version (e.g. v2)
     source_type_index = env.int('SOURCE_TYPE_INDEX',None) # One of SOURCE_TYPE_INDEX or SOURCE TYPE is required. SOURCE_TYPE_INDEX supercedes if both are input
     source_type = env.str('SOURCE_TYPE',None)
+    source_type_out = env.str('SOURCE_TYPE_OUT',None) # Optional directory name replacement for source type
     year_index = env.int('YEAR_INDEX')
     month_index = env.int('MONTH_INDEX')
     day_index = env.int('DAY_INDEX')
@@ -34,6 +35,9 @@ def l0_gcs_loader() -> None:
     elif source_type_index is not None:
         source_type = import_path[source_type_index]
         
+    if (source_type_out is None):
+        source_type_out=source_type
+    
     download_year = import_path[year_index]
     download_month = import_path[month_index]
     download_day = import_path[day_index]
@@ -52,7 +56,7 @@ def l0_gcs_loader() -> None:
         bucket_file_date = datetime(int(re.split('-', file_date)[0]), int(re.split('-', file_date)[1]), int(re.split('-', file_date)[2]))
         if(trigger_date == bucket_file_date):
             file_name = file_name_bucket + ".parquet"
-            file_path = Path(output_directory, source_type,download_year, download_month, download_day,source_id, "data",file_name )         
+            file_path = Path(output_directory, source_type_out,download_year, download_month, download_day,source_id, "data",file_name )         
             print("File path is:  ", file_path)
             with blob.open("r") as f:
                 file_path.parent.mkdir(parents=True, exist_ok=True)
