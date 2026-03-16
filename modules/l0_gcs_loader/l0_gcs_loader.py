@@ -6,7 +6,6 @@ import os
 import sys
 import re
 from datetime import datetime
-from google.cloud import storage
 
 
 def l0_gcs_loader() -> None:
