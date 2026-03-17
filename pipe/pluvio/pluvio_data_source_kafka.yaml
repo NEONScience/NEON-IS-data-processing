@@ -17,7 +17,7 @@ transform:
     KAFKA_RETENTION_DAYS: "15"
     # environment variables for the parser
     PARSE_FIELD: serial_output
-    RELATIVE_PATH_INDEX: "4"
+    RELATIVE_PATH_INDEX_PARSER: "4" # Can't straight name this RELATIVE_PATH_INDEX bc it's used in the compact-bucket-copy
     PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/pluvio/pluvio_parsed.avsc 
     SOURCE_TYPE: 'pluvio_raw'
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
@@ -136,7 +136,9 @@ transform:
     
     # run data parser
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+      export RELATIVE_PATH_INDEX=$RELATIVE_PATH_INDEX_PARSER
       python3 -m raw_data_parsers.raw_data_parser.data_parser_main
+      unset RELATIVE_PATH_INDEX
     
     # save parsed data to gcs 
       export SOURCE_TYPE=pluvio
