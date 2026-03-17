@@ -2,7 +2,7 @@ name: DEV-cmp22-site-list
 on:
   push:
     branches:
-      - 'cmp22'
+      - 'master'
     paths:
       - 'pipe/cmp22/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface

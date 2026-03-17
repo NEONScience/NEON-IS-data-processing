@@ -62,7 +62,7 @@ test_that("when NameFileSchm exists, write the file",
 test_that("use arrow schema",
           {
                   # Successful case - pass in arrow schema 
-                  data <- NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet'))
                   NameFile <- 'out.parquet'
                   Sys.setenv(LOG_LEVEL='debug')
                   # Create a parquet schema that changes a field name
@@ -70,7 +70,7 @@ test_that("use arrow schema",
                   # Write it out
                   rpt <- NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile,Schm=SchmNew) 
                   # Read it back in
-                  dataNew <- NEONprocIS.base::def.read.parq(NameFile)
+                  dataNew <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile))
                   
                   testthat::expect_true(names(dataNew)[4] == 'newFieldName')
                   
@@ -83,7 +83,7 @@ test_that("use arrow schema",
                   # Write it out
                   rpt <- NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile) 
                   # Read it back in
-                  dataNew <- NEONprocIS.base::def.read.parq(NameFile)
+                  dataNew <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile))
                   
                   testthat::expect_true(names(dataNew)[4] == 'newFieldName')
                   
@@ -91,7 +91,7 @@ test_that("use arrow schema",
                   
                   
                   # Failure case: number of vars in the schema don't match that of data frame
-                  data <- NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/flags/prt_14491_2019-01-01_flagsCal.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/flags/prt_14491_2019-01-01_flagsCal.parquet'))
                   # Write it out
                   rpt <- base::try(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile,Schm=SchmNew),silent=FALSE)
                   testthat::expect_true('try-error' %in% base::class(rpt))
@@ -110,11 +110,11 @@ test_that("use arrow schema",
                   
                   # Successful case - arrow schema attached as attribute to the data frame when none is input
                   # Arrow Class: dictionary<values=string, indices=int32>
-                  data <- NEONprocIS.base::def.read.parq(NameFile='def.wrte.parq/L0_data_resistance.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='def.wrte.parq/L0_data_resistance.parquet'))
                   # Write it out
                   rpt <- NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile) 
                   # Read it back in
-                  dataNew <- NEONprocIS.base::def.read.parq(NameFile)
+                  dataNew <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile))
                   
                   testthat::expect_true(class(dataNew[[3]]) == 'factor')
                   
@@ -128,7 +128,7 @@ test_that("use arrow schema",
 test_that("use schema input as arrow schema object",
           {
                   # Successful case
-                  data <- NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet'))
                   NameFile <- 'out.parquet'
                   Sys.setenv(LOG_LEVEL='debug')
                   # Create and attach parquet schema that changes a field name
@@ -137,14 +137,14 @@ test_that("use schema input as arrow schema object",
                   # Write it out
                   rpt <- NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile) 
                   # Read it back in
-                  dataNew <- NEONprocIS.base::def.read.parq(NameFile)
+                  dataNew <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile))
                   
                   testthat::expect_true(names(dataNew)[4] == 'newFieldName')
                   
                   if (file.exists(NameFile)) { file.remove(NameFile)}
                   
                   # Failure case: number of vars in the schema don't match that of data frame
-                  data <- NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/flags/prt_14491_2019-01-01_flagsCal.parquet')
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile='pfs/proc_group/prt/2019/01/01/27134/flags/prt_14491_2019-01-01_flagsCal.parquet'))
                   attr(data,'schema') <- SchmNew # Attach calibrated data schema to flags data
                   # Write it out
                   rpt <- base::try(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile),silent=FALSE)
@@ -155,3 +155,19 @@ test_that("use schema input as arrow schema object",
                   
           })
           
+test_that("write from arrow_dplyr_query_object",
+          {
+                  # Successful case
+                  data <- suppressWarnings(NEONprocIS.base::def.read.parq.ds(fileIn='pfs/proc_group/prt/2019/01/01/27134/data/prt_14491_2019-01-01.parquet',Df=FALSE))
+                  NameFile <- 'out.parquet'
+                  Sys.setenv(LOG_LEVEL='debug')
+                  # Write it out
+                  rpt <- suppressWarnings(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile))
+                  # Read it back in
+                  dataNew <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile))
+                  
+                  testthat::expect_true("POSIXt" %in% class(dataNew$readout_time))
+                  
+                  if (file.exists(NameFile)) { file.remove(NameFile)}
+                  
+          })

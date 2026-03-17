@@ -14,7 +14,7 @@
 #'    1. higher ID & date of interest within valid date range
 #'    2. lower ID & date of interest within valid date range
 #'    3. expired cal with nearest valid end date to beginning date of interest
-#'    4. lower ID if expiration dates equal for multipe cals in #3
+#'    4. lower ID if expiration dates equal for multiple cals in #3
 #' Note that calibrations with a valid date range beginning after the date range of interest and
 #' calibrations that are expired more than their max allowable days since expiration are treated
 #' as if they don't exist. These time periods in the output will be filled with NA values for the 
@@ -48,7 +48,7 @@
 #' # TimeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
 #' # TimeEnd <- base::as.POSIXct('2019-01-02',tz='GMT')
 #' # TimeExpiMax <- base::as.difftime(30,units='days') # allow cals to be used up to 30 days after expiration
-#' # NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=timeBgn,TimeEnd=timeEnd)
+#' # NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd)
 
 #' @seealso \link[NEONprocIS.cal]{def.cal.meta}
 #'
@@ -73,7 +73,7 @@ def.cal.slct <-
       log <- NEONprocIS.base::def.log.init()
     }
     
-# Initialize the output data frame
+    # Initialize the output data frame
     dmmyTime <-
       base::as.POSIXct(x = numeric(0), origin = as.POSIXct('1970-01-01', tz = 'GMT'))
     base::attr(dmmyTime, 'tzone') <- 'GMT'
@@ -105,8 +105,7 @@ def.cal.slct <-
     
     NameList = c('path', 'file', 'timeValiBgn', 'timeValiEnd', 'id')
     
-    if (!base::is.null(metaCal) && !(all(NameList %in% colnames(metaCal))))
-    {
+    if (!base::is.null(metaCal) && !(all(NameList %in% colnames(metaCal)))){
       stop("In def.cal.slct::::: Check input metaCal - data frame has columns missing")
     }
     
@@ -120,7 +119,7 @@ def.cal.slct <-
                                   stringsAsFactors=FALSE)
     }
     
-    # Sort the calibration IDs. Higher calibration ID (more recently generated) is always preferrable unless it is expired.
+    # Sort the calibration IDs. Higher calibration ID (more recently generated) is always preferable unless it is expired.
     metaCal <- metaCal[base::order(metaCal$id, decreasing = TRUE),]
     
     # Do initial filtering of calibrations to those that fulfill minimum requirements
@@ -133,7 +132,7 @@ def.cal.slct <-
     
     
     # Run through the calibrations, filling in valid periods. 
-    # Start with highest ID, which is the most prefereable for a given date-time
+    # Start with highest ID, which is the most preferable for a given date-time
     for (idxRow in base::seq_len(base::nrow(metaCal))) {
       # Get an inventory of the remaining time periods without a valid cal 
       timeMiss <-
@@ -155,7 +154,7 @@ def.cal.slct <-
           base::min(metaCal$timeValiEnd[idxRow], timeMiss$timeEnd[idxTimeMiss])
         
         # Place in the output if there is a valid calibration for this period
-        if (timeBgnIdx <= timeEndIdx && timeBgnIdx < timeMiss$timeEnd) {
+        if (timeBgnIdx <= timeEndIdx && timeBgnIdx < timeMiss$timeEnd[idxTimeMiss]) {
           rpt <-
             base::rbind(
               rpt,
@@ -193,6 +192,7 @@ def.cal.slct <-
       timeDiffExpi <-
         timeMiss$timeBgn[idxTimeMiss] - metaCal$timeValiEnd
       base::names(timeDiffExpi) <- metaCal$id
+      
       # Must be expired (since we filled valid cal periods already) & within allowance period
       if (base::is.null(TimeExpiMax)) {
         # no limit on time past expiration

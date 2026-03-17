@@ -2,7 +2,7 @@ name: DEV-level1-pipeline-list
 on:
   push:
     branches:
-      - 'none'
+      - 'master'
     paths:
       - 'pipe/processed_datums_reader/level1_pipeline_list.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface

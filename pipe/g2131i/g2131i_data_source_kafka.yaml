@@ -160,7 +160,7 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/g2131i/*/*/*"
 parallelism_spec:
-  constant: 10
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 600M

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+import datetime
+import json
 import os
 import sys
 from pathlib import Path
-import datetime
-from typing import Dict, Union
+from typing import Dict, Union, Optional, Any, List
 
 from structlog import get_logger
 
@@ -31,6 +32,9 @@ class VariablePad:
     def pad(self) -> None:
         """Pad the data with the calculated window size."""
         try:
+            # date_path should be based on year/month/day
+            active_periods = self.check_active_periods_flag()
+
             date_and_location_max_window_size: Dict[str, Union[int, float]] = {}
             date_and_location_min_data_rate: Dict[str, float] = {}
             for path in self.data_path.rglob('*'):
@@ -47,7 +51,7 @@ class VariablePad:
                                             if f.endswith(Config.location_file_extension)]
                             location_file = Path(location_path, location_files[0])
                             date_and_location_min_data_rate[date_location_key] = \
-                                pad_calculator.get_data_rate(location_file)
+                                pad_calculator.get_data_rate(str(location_file))
                         data_rate = date_and_location_min_data_rate[date_location_key]
                         # get max of all window sizes
                         if date_location_key not in date_and_location_max_window_size:
@@ -57,7 +61,7 @@ class VariablePad:
                             threshold_file = Path(threshold_path, threshold_files[0])
                             log.debug(f'threshold file: {threshold_file}')
                             date_and_location_max_window_size[date_location_key] = \
-                                pad_calculator.get_max_window_size(threshold_file, data_rate)
+                                pad_calculator.get_max_window_size(str(threshold_file), data_rate)
                         window_size = date_and_location_max_window_size[date_location_key]
                         data_date = datetime.date(int(year), int(month), int(day))
                         # calculate pad size
@@ -82,6 +86,7 @@ class VariablePad:
                                 # link thresholds
                                 file_writer.link_thresholds(config_location_path, link_path)
                                 manifest_path = Path(link_path.parent, Config.manifest_filename)
+                                padded_dates = self.recheck_padded_dates(padded_dates, active_periods)
                                 file_writer.write_manifest(padded_dates, manifest_path)
                     elif data_type in self.copy_dirs:
                         link_path = Path(self.out_path, *parts[self.relative_path_index:])
@@ -92,3 +97,55 @@ class VariablePad:
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             log.error("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
+
+    def check_active_periods_flag(self) -> Optional[Dict[str, Any]]:
+        for root, dirs, files in os.walk(self.data_path):
+            if Path(root).parts[-1] != Config.location_dir:
+                continue
+
+            for fname in files:
+                if not fname.lower().startswith("cfgloc") or not fname.lower().endswith("json"):
+                    continue
+
+                loc_json = Path(root) / fname
+                try:
+                    with loc_json.open("r", encoding="utf-8") as f:
+                        doc = json.load(f)
+                except Exception as e:
+                    log.warning(f"Skipping {loc_json}: {e}")
+                    continue
+
+                features = doc.get("features", [])
+                if not isinstance(features, list):
+                    continue
+
+                for feature in features:
+                    props = feature.get("properties", {})
+                    periods = props.get("active_periods", [])
+                    if not isinstance(periods, list):
+                        continue
+                    for period in periods:
+                        if isinstance(period, dict) and period.get("active_periods_flag"):
+                            return period
+
+        return None
+
+    @staticmethod
+    def recheck_padded_dates(padded_dates: List[datetime.datetime], active_periods: Optional[Dict[str, Any]]) -> List[datetime.datetime]:
+        if not active_periods:
+            return padded_dates
+
+        date_str = active_periods.get("start_date")
+        pivot = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
+
+        flag = active_periods.get("active_periods_flag".lower())
+        if flag == "both":
+            return [dt for dt in padded_dates if dt == pivot]
+        elif flag == "start":
+            return [dt for dt in padded_dates if dt >= pivot]
+        elif flag == "end":
+            date_str = active_periods.get("end_date")
+            pivot = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
+            return [dt for dt in padded_dates if dt <= pivot]
+        else:
+            return padded_dates

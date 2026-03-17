@@ -1,0 +1,63 @@
+{
+    "type": "record",
+    "name": "nitrate_specific_flags",
+    "namespace": "org.neonscience.schema.device",
+    "doc": "Flags nitrate in surfacewater",
+    "__version": "1.0",
+    "__neon_parts": [
+        "0329950000",
+        "0329950100",
+        "0329950005"
+    ],
+    "fields": [
+        {
+            "name": "readout_time",
+            "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+            },
+            "doc": "Timestamp of readout expressed in milliseconds since epoch",
+            "__neon_units": "millisecond"
+        },
+        {
+          "name": "nitrateHumidityQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna internal humidity (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateLampTempQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna lamp temperature (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateLightDarkRatioQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna light to dark spectral ratio (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+	{
+          "name": "nitrateLampStabilizeQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the suna number of light measurments for the lamp to stabilize (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        }
+    ]
+}

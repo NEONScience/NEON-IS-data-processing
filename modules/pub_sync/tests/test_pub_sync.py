@@ -32,6 +32,7 @@ class PubSyncTest(TestCase):
         date_path_min_index = int(min(date_path_indices))
         date_path_max_index = int(max(date_path_indices))
         change_by = 'pachyderm1'
+        out_path_mdp = '/pfs/out/mdp'
 
         def get_sync_pubs(pub_dates: List[Dict],dp_ids: List[str],sites: List[str],psmp_pachy: List[Dict],
                           change_by: str) -> List[DpPub]:
@@ -59,6 +60,7 @@ class PubSyncTest(TestCase):
                            data_path_site_index=data_path_site_index,
                            data_path_date_index=data_path_date_index,
                            data_path_package_index=data_path_package_index,
+                           out_path_mdp=out_path_mdp,
                            dp_ids=dp_ids,
                            sites=sites,
                            change_by=change_by)

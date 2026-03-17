@@ -25,7 +25,9 @@
 #' some properties may limit the downstream modules that are able to be run (such as regularization if 
 #' 'Data Rate' is not retained)
 
-#' @return A list of location information with truncated active dates. If NameFileOut is specified, 
+#' @return A list of location information with truncated active dates. If the TimeBgn or TimeEnd
+#' is the start or end (or both) of the active period, a property is added to the active period
+#' entry that indicates its status as such. If NameFileOut is specified, 
 #' the truncated location information will also be writted to file in the same json format of NameFileIn
 
 #' @references
@@ -54,6 +56,9 @@
 #     remove error checking (see Description for rationale)
 #   Cove Sturtevant (2023-11-16)
 #      add option to filter for select properties
+#   Liangying Zhang (2025-12-18)
+#      create parameter in active periods that indicates the day is the 
+#         start or end (or both) of the active period
 ##############################################################################################
 def.loc.trnc.actv <-
   function(NameFileIn,
@@ -108,6 +113,16 @@ def.loc.trnc.actv <-
                                      timeEndIdx <- idxList$end_date
                                    }
                                    
+                                   if(!base::is.null(idxList$start_date) && substr(TimeBgnFmt,1,10) == substr(idxList$start_date,1,10)){
+                                     if(!base::is.null(idxList$end_date) && substr(idxList$end_date,1,10) == substr(idxList$start_date,1,10)){
+                                       return(list(start_date=timeBgnIdx,end_date=timeEndIdx,active_periods_flag="both"))
+                                     } else {
+                                      return(list(start_date=timeBgnIdx,end_date=timeEndIdx,active_periods_flag="start"))
+                                     }
+                                   }
+                                   if(!base::is.null(idxList$end_date) && substr(TimeBgnFmt,1,10) == substr(idxList$end_date,1,10)){
+                                     return(list(start_date=timeBgnIdx,end_date=timeEndIdx,active_periods_flag="end"))
+                                   }
                                    return(list(start_date=timeBgnIdx,end_date=timeEndIdx))
                                  } else {
                                    return(NULL)

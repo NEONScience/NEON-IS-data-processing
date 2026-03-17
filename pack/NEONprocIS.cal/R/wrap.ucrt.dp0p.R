@@ -5,47 +5,55 @@
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description 
-#' Wrapper function. Compute individual measurement uncertainty for calibrated data at native
-#' frequency (NEON L0' data).   
+#' Wrapper function. Compute individual measurement and/or FDAS uncertainty for 
+#' calibrated data at native frequency (NEON L0' data).   
 
 #' @param data Data frame of L0 data. Must include POSIXct time variable readout_time.  
-#' @param FuncUcrt A data frame of the variables for which individual measurement uncertainty is
-#' to be calculated. Columns include:\cr
-#' \code{var} Character. The variable in data for which to compute uncertainty \cr
-#' \code{FuncUcrtMeas} A character string indicating the individual measurement (calibration) uncertainty 
-#' function within the NEONprocIS.cal package that should be used. Note that this does not include 
-#' FDAS uncertainty. For most NEON data products, this will be "def.ucrt.meas.cnst". Note that any 
-#' alternative function must accept the same arguments as def.ucrt.meas.cnst, even if they are unused, and 
-#' return the same 
-#' See that function for details. \cr
-#' \code{FuncUcrtFdas} A character string indicating the FDAS uncertainty function within the NEONprocIS.cal 
-#' package that should be used, if FDAS uncertainty applies. This field may be NA, which indicates that
-#' FDAS uncertainty does not apply and will not be calculated (e.g. digital L0 output).
-#' @param ucrtCoefFdas A data frame of FDAS uncertainty coefficients, as read by 
-#' NEONprocIS.cal::def.read.ucrt.coef.fdas. Columns include:\cr
-#' \code{Name} Character. Name of the coefficient.\cr
-#' \code{Value} Character. Value of the coefficient.\cr
-#' \code{.attrs} Character. Relevant attribute (i.e. units)\cr
-#' Defaults to NULL, in which case no variables in FuncUcrt may indicate that FDAS uncertainty 
-#' applies.
-#' @param calSlct A named list of data frames, list element corresponding to the variables in
-#' FuncUcrt. The data frame in each list element holds information about the calibration files and 
+#' 
+#' @param FuncUcrt A data frame of the functions and variables for which individual measurement 
+#' and/or FDAS uncertainty is to be calculated. Columns include:\cr
+#' \code{FuncUcrt} A character string indicating the individual measurement (calibration) or FDAS 
+#' uncertainty function within the NEONprocIS.cal package. For most NEON data products, 
+#' this will be "def.ucrt.meas.cnst" or "def.ucrt.meas.mult" for measurement/calibration 
+#' uncertainty, and "def.ucrt.fdas.rstc.poly" or "def.ucrt.fdas.volt.poly" for FDAS 
+#' (data acquisition system) uncertainty. Note that any alternative function must accept 
+#' the same arguments as these functions, even if they are unused, and return the same 
+#' output format. See one of those functions for details. \cr
+#' \code{var} Character. The variable(s) in input data frame 'data' that will be used in the 
+#' uncertainty function specified in FuncUcrt. In most cases, this will be a single L0 
+#' variable for which to compute uncertainty, but it can be any character string so long 
+#' as the specified (custom) uncertainty function knows what to do with it. Note that the 
+#' uncertainty function is responsible for naming the output list containing 
+#' uncertainty data frames for each variable, and that any overlap in the names across 
+#' the output list will cause the uncertainty data frames to be combined (intentionally -
+#' see return information). Thus, ensure that the column names of data frames for the 
+#' same variable (list name) are unique. In the standard measurement and FDAS uncertainty functions, 
+#' the output list names will match the name of the L0 variable specified in \code{var}.\cr
+#' 
+#' @param calSlct A named list of data frames, list elements typically corresponding to the variables in
+#' FuncUcrt$var. The data frame in each list element holds information about the calibration files and 
 #' time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
 #' See documentation for that function. Assign NULL to list elements (variables) for which calibration
-#' information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
-#' uncertainty).
-#' @param mappNameVar A data frame with in/out variable name mapping as produced by 
-#' NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is NULL),
-#' output variable names will be appended as prefixes to the column names in each output data frame. 
+#' information is not applicable.
+#' 
+#' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
+#' calibration and uncertainty functions. This can contain whatever information might be needed in the
+#' calibration and/or uncertainty functions in addition to calibration and uncertainty information. 
+#' Note that the standard fdas uncertainty functions require fdas uncertainty coefficients to be 
+#' provided in Meta$ucrtCoefFdas.
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
-#' @return A named list, each element corresponding to those in FuncUcrt$var and holding a data
-#' frame of uncertainty data. Note that each row in each data frame corresponds to the times in 
-#' data$readout_time, but the variable readout_time is not included in the output. One column
-#' in each data frame is labeled ucrtComb, corresponding to the combined measurement uncertainty
-#' of the individual measurements and FDAS (if applicable). If FDAS uncertainty does not apply, 
-#' ucrtComb is simply a copy of ucrtMeas. \cr
+#' @return A named list, each list element containing a data frame of uncertainty data for a single
+#' variable matching the name of the list element. 
+#' Note that each row in each uncertainty data frame corresponds to the times in 
+#' data$readout_time, but the variable readout_time is and should not be included in the output. 
+#' The data frames for list elements with the same name will be combined, all columns
+#' beginning with either ucrtMeas or ucrtFdas across the data frames for that variable
+#' will be combined in quadrature and placed into a column labeled ucrtComb.
+#' Each output uncertainty data frame will also includes a column named ucrtExpn,
+#' which is the expanded (95%) uncertainty of ucrtComb (currently just multiplied by 2).
 
 #' @references Currently none
 
@@ -55,7 +63,10 @@
 
 #' @seealso \link[NEONprocIS.cal]{def.cal.slct}
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
-#' @seealso \link[NEONprocIS.base]{def.var.mapp.in.out}
+#' @seealso \link[NEONprocIS.cal]{def.ucrt.meas.cnst}
+#' @seealso \link[NEONprocIS.cal]{def.ucrt.meas.mult}
+#' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.rstc.poly}
+#' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.volt.poly}
 
 #' @export
 
@@ -73,137 +84,102 @@
 #     Changed input argument ParaUcrt to FuncUcrt, and changed input column names to support above changes
 #   Cove Sturtevant (2020-12-09)
 #     removed DirCal from inputs since the calibration path is now included in calSlct
+#   Cove Sturtevant (2025-06-23)
+#     accept Meta object for passing additional metadata to uncertainty functions
+#   Cove Sturtevant (2025-09-16)
+#     Refactor to specify measurement and fdas uncertainty functions in 
+#        separate rows of the input parameter FuncUcrt, and allow more flexibility
+#        in how uncertainty is computed
+#     Shift looping through applicable calibration files within individual ucrt funcs
+#     Shift variable naming to each function in order to remove reliance on mappNameVar
 ##############################################################################################
 wrap.ucrt.dp0p <- function(data,
-                           FuncUcrt,
-                           ucrtCoefFdas=NULL,
+                           FuncUcrt, 
                            calSlct,
-                           mappNameVar=NULL,
+                           Meta=list(),
                            log=NULL){
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Basic starting info
-  timeMeas <- data$readout_time
+  numFunc <- base::nrow(FuncUcrt)
+  if(base::is.null(numFunc) || numFunc == 0){
+    return(list())
+  }
   
-  # Initialize
-  ucrtData <- base::vector(mode = "list", length = base::length(FuncUcrt$var))
-  base::names(ucrtData) <- FuncUcrt$var
-
-  # Loop through the variables
-  for(idxVar in FuncUcrt$var){
+  # Loop through the uncertainty functions
+  ucrt <- base::lapply(base::seq_len(base::nrow(FuncUcrt)),FUN=function(idxFunc){
     
     # Determine the individual measurement uncertainty function to use
-    FuncUcrtMeasIdx <- base::get(FuncUcrt$FuncUcrtMeas[FuncUcrt$var == idxVar], base::asNamespace("NEONprocIS.cal"))
+    FuncUcrtIdx <- base::get(FuncUcrt$FuncUcrt[idxFunc], base::asNamespace("NEONprocIS.cal"))
     
-    # Get output variable name
-    nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==idxVar]
+    # Pass the the uncertainty information to the uncertainty function. 
+    # ucrtMeasIdx should be a named list, each list element named for a variable for which the 
+    #   uncertainty estimates correspond
+    varUcrtIdx <- base::unique(base::unlist(base::strsplit(FuncUcrt$var[idxFunc],"|",fixed=TRUE)))
+    ucrtMeasIdx <- base::do.call(FuncUcrtIdx,args=base::list(data=data,
+                                                             varUcrt=varUcrtIdx,
+                                                             calSlct=calSlct,
+                                                             Meta=Meta,
+                                                             log=log)
+    )
+    return(ucrtMeasIdx)
+  })  
+  
+  # Un-nest the list of lists
+  ucrt <- unlist(ucrt,recursive=FALSE)
     
-    # Determine whether FDAS uncertainty applies to this variable, and what function
-    FuncUcrtFdasIdx <- NULL
-    if(!base::is.na(FuncUcrt$FuncUcrtFdas[FuncUcrt$var == idxVar])){
-      FuncUcrtFdasIdx <- base::get(FuncUcrt$FuncUcrtFdas[FuncUcrt$var == idxVar], base::asNamespace("NEONprocIS.cal"))
+  # Compute combined & expanded uncertainty for each variable. 
+  #   This will combine (in quadrature) any and all outputs from the measurement 
+  #   and fdas uncertainty functions that begin with ucrtMeas or ucrtFdas, 
+  #   then expand to 95% confidence
+  varAll <-base::unique(base::names(ucrt))
+  ucrtData <- base::lapply(varAll,FUN=function(varIdx){
+    
+    # Error-check that the column names across data frames for this var are unique
+    nameColVar <- base::unlist(base::lapply(ucrt[base::names(ucrt) == varIdx],base::names))
+    if(base::length(nameColVar) != base::unique(base::length(nameColVar))){
+      log$warn(base::paste0("Uncertainty data column names for variable: "),
+               varIdx,
+               " are not unique. Output columns names will not conform to expectations.")
     }
+    ucrtDataIdx <- base::do.call(base::cbind,ucrt[base::names(ucrt) == varIdx])
+    base::names(ucrtDataIdx) <- nameColVar 
 
-    # Run through each selected calibration and apply the uncertainty function for the applicable time period
-    calSlctIdx <- calSlct[[idxVar]]
-    for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
-      
-      # What points in the output correspond to this row?
-      setCal <- timeMeas >= calSlctIdx$timeBgn[idxRow] & timeMeas < calSlctIdx$timeEnd[idxRow]
-      
-      # If a calibration file is available for this period, open it and get calibration information
-      if(!base::is.na(calSlctIdx$file[idxRow])){
-        fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
-        infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
-      } else {
-        infoCal <- NULL
-      }
-      
-      # Pass all calibration information and the data to the calibration uncertainty function
-      ucrtMeas <- base::do.call(FuncUcrtMeasIdx,args=base::list(data=base::subset(data,subset=setCal,drop=FALSE),
-                                                                infoCal=infoCal,
-                                                                varUcrt=idxVar,
-                                                                calSlct=calSlct,
-                                                                log=log))
-      
-      
-      # Compute FDAS uncertainty, if applicable
-      if(!base::is.null(FuncUcrtFdasIdx)){
-        
-        # Add the FDAS uncertainty coefs to those from the cal file
-        infoCal$ucrt <- base::rbind(infoCal$ucrt,ucrtCoefFdas,stringsAsFactors=FALSE)
-        
-        # Get applicable FDAS uncertainty
-        ucrtFdas <- base::do.call(FuncUcrtFdasIdx,args=base::list(data=base::subset(data,subset=setCal,drop=FALSE),
-                                                                  infoCal=infoCal,
-                                                                  varUcrt=idxVar,
-                                                                  calSlct=calSlct,
-                                                                  log=log))
-        
-        # Combine with ucrtMeas
-        if(base::nrow(ucrtMeas) != base::nrow(ucrtFdas)){
-          log$error('Number of rows returned from measurement calibration uncertainty function do not equal that from FDAS uncertainty function. Something is wrong in the code.')
-          stop()
-        }
-        ucrtMeas <- base::cbind(ucrtMeas,ucrtFdas)
-      }
-      
-      # Put in overall output for this variable
-      if(idxRow == 1){
-        # Initialize the output with our known columns names
-        ucrtDataIdx <-
-          base::as.data.frame(
-            base::matrix(
-              data=as.numeric(NA),
-              nrow = base::length(timeMeas),
-              ncol = base::ncol(ucrtMeas),
-              dimnames = base::list(NULL, base::names(ucrtMeas))
-            ),
-            stringsAsFactors = FALSE
-          )
-      }
-      # Place this round of uncertainty data in the output
-      ucrtDataIdx[setCal,] <- ucrtMeas
-      
-    } # End loop around selected calibrations
-    
-    # Compute combined uncertainty for this variable. This will combine (in quadrature) any and all outputs from the 
-    # measurement and fdas uncertainty functions that begin with ucrtMeas or ucrtFdas.
+    # Compute combined uncertainty for each variable. 
     nameVarUcrtIdx <- base::names(ucrtDataIdx)
     nameVarUcrtComb <- nameVarUcrtIdx[base::substr(nameVarUcrtIdx,1,8) %in% c('ucrtMeas','ucrtFdas')]
     
     # Error check
     if(base::length(nameVarUcrtComb) == 0){
-      log$warn(base::paste0('No variables output from the measurement uncertainty function ',
-                            FuncUcrt$FuncUcrtMeas[FuncUcrt$var == idxVar], 
-                            ' or the FDAS uncertainty function ', 
-                            FuncUcrt$FuncUcrtFdas[FuncUcrt$var == idxVar],
-                            ' begin with ucrtMeas or ucrtFdas. Combined uncertainty for variable ',
-                            FuncUcrt$var, ' will be NA')
+      log$warn(base::paste0('No columns in the uncertainty output for ',
+                            varIdx,
+                            ' begin with ucrtMeas or ucrtFdas. Combined uncertainty for ',
+                            varIdx, 
+                            ' will be NA')
       )
       ucrtDataIdx$ucrtComb <- NA 
     } else {
       
       # Compute combined uncertainty (ucrtMeas and ucrtFdas)
-      ucrtDataIdx <- base::cbind(ucrtDataIdx,NEONprocIS.cal::def.ucrt.comb(ucrt=base::subset(ucrtDataIdx,select=nameVarUcrtComb),log=log))
+      ucrtDataIdx <- base::cbind(ucrtDataIdx,
+                                 NEONprocIS.cal::def.ucrt.comb(ucrt=ucrtDataIdx[,nameVarUcrtComb,drop=FALSE],log=log)
+      )
       
     }
-
+    
     # Compute expanded uncertainty
-    ucrtDataIdx <- base::cbind(ucrtDataIdx,NEONprocIS.cal::def.ucrt.expn(ucrtComb=ucrtDataIdx[['ucrtComb']],log=log))
+    ucrtDataIdx <- base::cbind(ucrtDataIdx,
+                               NEONprocIS.cal::def.ucrt.expn(ucrtComb=ucrtDataIdx[['ucrtComb']],log=log)
+                               )
     
-    # Append the output variable name as a prefix to each column
-    if(!base::is.null(nameVarUcrtOut)){
-      base::names(ucrtDataIdx) <- base::paste0(nameVarUcrtOut,'_',base::names(ucrtDataIdx))
-    }
-    
-    # Place uncertainty for this variable in overall output
-    ucrtData[[idxVar]] <- ucrtDataIdx
-    
-  } # End loop around variables for which to compute individual combined measurement uncertainty 
+    return(ucrtDataIdx)
+
+  })
+  
+  # Assign variable names to output list elements
+  base::names(ucrtData) <- varAll
   
   return(ucrtData)
   

@@ -1,0 +1,30 @@
+[
+	{
+	"site" : "BARC",
+	"kafka_start_date" : "2024-08-11"
+	},
+	{
+	"site" : "CRAM",
+	"kafka_start_date" : "2024-07-20"
+	},
+	{
+	"site" : "LIRO",
+	"kafka_start_date" : "2024-08-10"
+	},
+	{
+	"site" : "PRLA",
+	"kafka_start_date" : "2024-08-10"
+	},
+	{
+	"site" : "PRPO",
+	"kafka_start_date" : "2024-08-10"
+	},
+	{
+	"site" : "SUGG",
+	"kafka_start_date" : "2024-08-11"
+	},
+	{
+	"site" : "TOOK",
+	"kafka_start_date" : "2024-08-10"
+	}
+]

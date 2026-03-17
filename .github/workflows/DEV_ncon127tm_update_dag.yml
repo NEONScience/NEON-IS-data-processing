@@ -2,7 +2,7 @@ name: DEV-ncon127tm-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/ncon127tm/*.yaml'
       - 'pipe/ncon127tm/pipe_list_ncon127tm.txt'

@@ -6,30 +6,42 @@
 #' Edward Ayres \email{eayres@battelleecology.org}
 
 #' @description
-#' Definition function. Alternative calibration uncertainty function. Create file (dataframe) with
-#' uncertainty information based off of the L0 temperature, relative humidity, and dew/frost point data values from 
+#' Definition function. Alternative calibration uncertainty function. Compute  
+#' measurement uncertainty based off of the L0 temperature, relative humidity, and dew/frost point data values from 
 #' the relative humidity sensor according to NEON.DOC.000851 - NEON Algorithm Theoretical Basis   
 #' Document (ATBD): Humidity and Temperature Sensor.
-#' 
-#' Accepts L0 data and NEON uncertainty information as produced
-#' by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measurement
-#' uncertainties for each data value. 
-#' 
 #'
-#' @param data Temperature, relative humidity, and dew/frost point data from the relative humidity sensor 
-#' @param infoCal Not used in this function \cr
+#' @param data Numeric data frame of raw measurements of Temperature, relative humidity, 
+#' and dew/frost point from the relative humidity sensor. Must include POSIXt variable readout_time.
+#' 
 #' @param varUcrt A character string of the target variable (column) in the data frame \code{data} for 
-#' which uncertainty data will be computed (dew_point in this function).
-#' @param calSlct Defaults to NULL. See the inputs to NEONprocIS.cal::wrap.ucrt.dp0p for what this input is. 
+#' which uncertainty output will be computed (all other columns will be ignored). Defaults to "dew_point"
+#' 
+#' @param calSlct A named list of data frames, list element corresponding to the variables in
+#' needed in this function (temperature, relative_humidity). The data frame in each list 
+#' element holds information about the calibration files and 
+#' time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
+#' See documentation for that function. Assign NULL to list elements (variables) for which calibration
+#' information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
+#' uncertainty).
+#' 
+#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
+#' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.
+#'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
-
-#' @return A data frame with the following variables:\cr
-#' \code{ucrtMeas_dew_point} - combined measurement uncertainty for an individual dew/frost point reading. Includes the
+#' 
+#' @return A named list containing a data frame, the list element named for the variable for which uncertainty 
+#' estimates are computed (matching varUcrt). The uncertainty data frame contains the following variables:\cr
+#' \code{ucrtMeas} - combined measurement uncertainty for an individual dew/frost point reading. Includes the
 #' repeatability and reproducibility of the sensor and the lab DAS and uncertainty of the
 #' calibration procedures and coefficients including uncertainty in the standard (truth).
-
+#' \code{ucrt_dfpt_t_L1} - partial uncertainty (degrees C) of individual dew/frost point
+#' temperature measurements with respect to ambient temperature
+#' \code{ucrt_dfpt_rh_L1} - partial uncertainty (degrees C) of individual dew/frost point temperature 
+#' measurements with respect to ambient relative humidity for Level 1 Mean uncertainty calculations
+#' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 #' NEON.DOC.000785 TIS Level 1 Data products Uncertainty Budget Estimation Plan
@@ -71,11 +83,15 @@
 #     temperature and relative humidity for Level 1 Mean uncertainty calculations
 #   Cove Sturtevant (2022-08-24)
 #     Corrected virtual temperature equation when above freezing (missing exponents)
+#   Cove Sturtevant (2025-06-23)
+#    Add unused Meta input to accommodate changes in upstream calibration & uncertainty module
+#   Cove Sturtevant (2025-09-17)
+#     Return a list with the uncertainty data frame, with list element named for the variable specified in varUcrt
 ##############################################################################################
 def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)),
-                                         infoCal = NULL,
                                          varUcrt = "dew_point",
                                          calSlct=NULL,
+                                         Meta=list(),
                                          log = NULL) {
   # Initialize logging if necessary
   if (base::is.null(log)) {
@@ -83,7 +99,11 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   }
   
   # Ensure input is data frame with the target variable in it
-  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c('readout_time',varUcrt),TestEmpty=FALSE, log = log)
+  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c('readout_time',
+                                                                         varUcrt,
+                                                                         'temperature',
+                                                                         'relative_humidity'),
+                                                 TestEmpty=FALSE, log = log)
   if (!chk) {
     stop()
   }
@@ -95,6 +115,11 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   
   # Basic starting info
   timeMeas <- data$readout_time
+  
+  if(!("POSIXt" %in% base::class(timeMeas))){
+    log$error('Variable readout_time must be of class POSIXt')
+    stop()
+  }
   
   # Initialize output data frame
   dataUcrt <- data[[varUcrt]] # Target variable to compute uncertainty for
@@ -207,6 +232,12 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   
   # Roll through the temperature and RH calibration files, applying the computations for the applicable time period(s)
   calSlctTemp <- calSlct$temperature
+  if(is.null(calSlctTemp)){
+    log$warn(base::paste0('No applicable calibration files available for temperature. Returning NA for calibrated output.'))
+    ucrtList <- list()
+    ucrtList[[varUcrt]] <- ucrt
+    return(ucrtList)
+  }
   for(idxRowTemp in base::seq_len(base::nrow(calSlctTemp))){
     
     # What points in the output correspond to this row?
@@ -218,7 +249,6 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     }
     
     # If a calibration file is available for this period, open it and get calibration information
-    
     fileCal <- base::paste0(calSlctTemp$path[idxRowTemp],calSlctTemp$file[idxRowTemp])
     fileCal_Chk <- try(NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE),silent = TRUE)
     
@@ -231,13 +261,22 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     
     
     # Check format of infoCalTemp
-    if (!NEONprocIS.cal::def.validate.info.cal(infoCalTemp,CoefUcrt='U_CVALA1',log=log)){
+    if (!NEONprocIS.cal::def.validate.info.cal(infoCalTemp,
+                                               CoefUcrt=c('U_CVALA1','U_CVALA3'),
+                                               log=log)){
       stop()
     }
     
     
     # Now roll through the relative humidity calibrations, applying the computations for the applicable time period(s)
     calSlctRh <- calSlct$relative_humidity
+    if(is.null(calSlctRh)){
+      log$warn(base::paste0('No applicable calibration files available for relative_humidity Returning NA for calibrated output.'))
+      ucrtList <- list()
+      ucrtList[[varUcrt]] <- ucrt
+      return(ucrtList)
+    }
+    
     for(idxRowRh in base::seq_len(base::nrow(calSlctRh))){
       
       # What points in the output correspond to this row?
@@ -263,7 +302,9 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       }
   
       # Check format of infoCalRh
-      if (!NEONprocIS.cal::def.validate.info.cal(infoCal = infoCalRh,CoefUcrt='U_CVALA1',log=log)){
+      if (!NEONprocIS.cal::def.validate.info.cal(infoCal = infoCalRh,
+                                                 CoefUcrt=c('U_CVALA1','U_CVALA3'),
+                                                 log=log)){
         stop()
       }
       
@@ -278,7 +319,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       # Issue warning if more than one matching uncertainty coefficient was found
       if(base::nrow(ucrtCoefTemp) > 1){
         log$warn("More than one matching uncertainty coefficient was found for temperature U_CVALA1. Using the first.")
-      }
+      } 
       if(base::nrow(ucrtCoefRh) > 1){
         log$warn("More than one matching uncertainty coefficient was found for relative humidity U_CVALA1. Using the first.")
       }
@@ -302,10 +343,10 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       # Issue warning if more than one matching uncertainty coefficient was found
       if(base::nrow(ucrtCoefTempUa3) > 1){
         log$warn("More than one matching uncertainty coefficient was found for temperature U_CVALA3. Using the first.")
-      }
+      } 
       if(base::nrow(ucrtCoefRhUa3) > 1){
         log$warn("More than one matching uncertainty coefficient was found for relative humidity U_CVALA3. Using the first.")
-      }
+      } 
       
       # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient temperature for Level 1 Mean uncertainty calculations
       ucrt$ucrt_dfpt_t_L1[setCal] <- abs(data$derivative_dfpt_t[setCal])*base::as.numeric(ucrtCoefTempUa3$Value[1])
@@ -318,7 +359,9 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     
   } # End loop around Temperature calibration files
   
+  ucrtList <- list()
+  ucrtList[[varUcrt]] <- ucrt
   
-  return(ucrt)
+  return(ucrtList)
   
 }

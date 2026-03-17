@@ -1,0 +1,54 @@
+---
+pipeline:
+  name: lt400_hu24_calibration_loader
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v3.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    export SOURCE_TYPE=$SOURCE_TYPE_1
+    python3 -m calval_loader.load_all_calval_files
+    
+    export SOURCE_TYPE=$SOURCE_TYPE_2
+    python3 -m calval_loader.load_all_calval_files
+    
+    EOF
+  env:
+    CVAL_INGEST_BUCKET: neon-cval
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    SOURCE_TYPE_1: leveltroll400
+    SOURCE_TYPE_2: hobou24
+    STARTING_PATH_INDEX: "5"
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    name: IN_PATH
+    repo: lt400_hu24_calibration_list_files
+    glob: /*/*/*/*
+    empty_files: true
+parallelism_spec:
+  constant: 10
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

@@ -1,3 +1,2 @@
 ncon127tm_cron_daily_and_date_control.yaml
 ncon127tm_data_source_kafka.yaml
-ncon127tm_data_source_trino.yaml 

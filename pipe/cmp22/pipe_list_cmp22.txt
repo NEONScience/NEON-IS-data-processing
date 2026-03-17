@@ -1,2 +1,13 @@
 cmp22_cron_daily_and_date_control.yaml
 cmp22_data_source_kafka.yaml
+cmp22_data_source_gcs.yaml
+cmp22_calibration_list_files.yaml
+cmp22_calibration_loader.yaml
+cmp22_location_asset.yaml
+cmp22_location_loader.yaml
+cmp22_calibration_assignment.yaml
+cmp22_location_asset_assignment.yaml
+cmp22_location_active_dates_assignment.yaml
+cmp22_calibration_group_and_convert.yaml
+cmp22_location_group_and_restructure.yaml
+cmp22_fill_date_gaps_and_regularize.yaml

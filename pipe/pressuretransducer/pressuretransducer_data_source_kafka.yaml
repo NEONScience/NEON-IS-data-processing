@@ -160,7 +160,7 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/pressuretransducer/*/*/*/*"
 parallelism_spec:
-  constant: 8
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 1.4G

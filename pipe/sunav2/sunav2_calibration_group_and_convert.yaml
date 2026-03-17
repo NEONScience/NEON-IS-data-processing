@@ -1,0 +1,103 @@
+---
+pipeline:
+  name: sunav2_calibration_group_and_convert
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.1.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    rm -rf $OUT_PATH
+    mkdir -p /tmp/pfs/filter_joined
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    
+    # Run filter-joiner for data (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # Run calibration conversion module
+    Rscript ./flow.cal.conv.R \
+        DirIn=/tmp/pfs/filter_joined \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        TermQf=nitrate \
+        FileSchmData=$FILE_SCHEMA_DATA \
+        FileSchmQf=$FILE_SCHEMA_FLAGS \
+        DirSubCopy=flags
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH/sunav2/*/*/*/*/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/sunav2/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_calibration_flags.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_logfilled.avsc
+  # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: sunav2_calibration_assignment
+        glob: /sunav2/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH
+        repo: sunav2_fill_log_files
+        glob: /sunav2/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

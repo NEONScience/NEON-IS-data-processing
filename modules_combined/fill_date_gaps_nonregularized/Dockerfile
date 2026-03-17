@@ -1,0 +1,57 @@
+# Dockerfile for NEON IS Data Processing - Combined date gap filler and nonregularized gap filler
+# This image combines the two modules: date_gap_filler and flow.gap.fill.nonrglr
+
+# Start with the base R image. 
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
+
+# maintainer handle
+MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
+
+# Build in the filter-joiner python module
+ARG MODULE_DIR="modules"
+ARG APP_DIR="date_gap_filler"
+ARG COMMON_DIR="common"
+ARG CONTAINER_APP_DIR="/usr/src/app"
+ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
+
+WORKDIR ${CONTAINER_APP_DIR}
+
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+
+ 
+RUN apt update && \
+    apt-get install -y --no-install-recommends \
+        python3.8 && \
+    apt install -y python3-pip && \
+    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+   apt-get autoremove -y && \
+	 apt-get autoclean -y && \
+	 rm -rf /var/lib/apt/lists/* 
+
+
+# Copy in python code
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+
+# Build in the module
+ARG MODULE_DIR="flow"
+
+# Copy the lockfile and restore known working versions of R dependency packages
+# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
+COPY ./${MODULE_DIR}/flow.gap.fill.nonrglr/renv.lock ./renv.lock
+RUN R -e 'renv::restore(lockfile="./renv.lock")' 
+#RUN git clone -b deve https://github.com/NEONScience/eddy4R.git 
+#RUN R -e 'renv::install("./eddy4R/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
+
+# Create app user
+RUN groupadd appuser && \
+    useradd appuser -g appuser
+WORKDIR /usr/src/app
+
+# Copy in application code
+COPY ./${MODULE_DIR}/flow.gap.fill.nonrglr/wrap.gap.fill.nonrglr.R .
+COPY ./${MODULE_DIR}/flow.gap.fill.nonrglr/flow.gap.fill.nonrglr.R .
+
+# Run as app user
+USER appuser

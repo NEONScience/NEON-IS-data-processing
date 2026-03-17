@@ -2,7 +2,7 @@ name: CERT-metone370380-precipBucket-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/metone370380/*.yaml'
       - 'pipe/metone370380/pipe_list_metone370380.txt'

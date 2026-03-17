@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>46911</MxAssetID>
+    
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID>21000000000084</CalFixtureID>
+      <ActivityLocation>10000000100349</ActivityLocation>
+      <SWVersion>1.0.0</SWVersion>
+      <ProcedureVersion>1.0.0</ProcedureVersion>
+      <Station>1</Station>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>32.40</Min>
+        <Max>33.80</Max>
+        <Mean>33.19</Mean>
+        <StdDev>0.29</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>995.20</Min>
+        <Max>996.30</Max>
+        <Mean>995.84</Mean>
+        <StdDev>0.26</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>41.30</Min>
+        <Max>48.60</Max>
+        <Mean>45.12</Mean>
+        <StdDev>1.68</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient> 
+		<Name>CVALF0</Name>
+		<Value>1206</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALA2</Name>
+		<Value>0.000019521488346</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALA1</Name>
+		<Value>0.039271274525622</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALP0</Name>
+		<Value>1079.45</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="">
+    <Metadata>
+        <Entry>
+            <Name> </Name>
+            <Value> </Value>
+        </Entry> 
+    </Metadata>
+	<Row index="">
+    <Independent name=""> </Independent>
+    <Column index="">
+        <Dependent name=""> </Dependent>
+    </Column>
+	</Row>
+	</CalibrationTable>
+    <CalibrationStandards CertNumber="">10000000005791</CalibrationStandards>
+    <StreamID>4</StreamID>
+    <Uncertainty units=""> 
+		<Name>U_CVALD3</Name>
+		<Value>132</Value>
+	</Uncertainty><Uncertainty units=""> 
+		<Name>U_CVALD2</Name>
+		<Value>130</Value>
+	</Uncertainty><Uncertainty units=""> 
+		<Name>U_CVALD1</Name>
+		<Value>140</Value>
+	</Uncertainty><Uncertainty units=""> 
+		<Name>U_CVALA3</Name>
+		<Value>0.0048</Value>
+	</Uncertainty><Uncertainty units=""> 
+		<Name>U_CVALA2</Name>
+		<Value>0.0008</Value>
+	</Uncertainty><Uncertainty units=""> 
+		<Name>U_CVALA1</Name>
+		<Value>0.0049</Value>
+	</Uncertainty>
+    <Trueness units="">0.000000</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2023-11-29T15:44:05.0000</StartTime>
+      <EndTime>2023-11-29T17:13:14.0000</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>355534</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2023-11-29T17:13:14.0000</StartTime>
+    <EndTime>2024-11-27T17:13:14.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment>0,229,230,231,232,233,234,235,236,237,238,239,240</Equipment>
+			<Operator>ortizrosa</Operator>
+			<WorkOrder>WO46890</WorkOrder>
+			<MaximoID>46911</MaximoID>
+			<AssetID>30000000022312</AssetID>
+			<Reference/>
+			<Fixture>L1P100</Fixture>
+			<NEONPN>AB09230000</NEONPN>
+			<SN header=""/>
+			<FW header="">Unit serial number: 169
+Firmware version: Mega-VWRG 5.5b( 6/ 2/14)
+Sensor 1: S/N 0786, firmware version: 4.02
+Sensor 2: S/N 0787, firmware version: 4.02
+Sensor 3: S/N 0788, firmware version: 4.02
+</FW>
+			<SOH header="build info"/>
+			<UncertaintyCtl>L1P100_S2</UncertaintyCtl>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header="Avg Frequency,Grams,Weight,Depth">3241.065824,0.000000,3.705321,0.000000
+3612.643719,5.037000,4.704603,0.000000
+3946.559715,10.063500,5.703412,34.597200
+4255.093370,15.120500,6.711179,85.208200
+4538.962531,20.145000,7.710261,135.383100
+4805.336823,25.158500,8.710494,185.615600
+5054.345951,30.122200,9.700344,235.327000
+5298.397202,35.198200,10.722181,286.644500
+5528.013859,40.263200,11.730015,337.259000
+5746.308804,45.274700,12.730089,387.483700
+5958.266053,50.339700,13.740059,438.205200
+6159.802532,55.324550,14.736048,488.224800
+6356.927181,60.373050,15.743920,538.841200
+
+-----
+
+[R]: PPP,33.488708,34.589171,35.772767,1079.472065,1084.981918,1076.713324,1079.472065,1084.981918,1076.713324,1.230617,1.249916,1.225044,3.705577,0.000,0.000
+[R]: PPP,33.171661,33.764527,36.833129,2098.881960,2136.341810,2121.714592,2098.881960,2136.341810,2121.714592,5.130654,5.348605,5.264720,15.743978,538.844,100.656
+
+-----
+
+0,229,230,231,232,233,234,235,236,237,238,239,240
+
+-----
+3784117444.379512,33.300000,42.400000,996.300000
+3784122794.135807,33.100000,47.600000,995.200000</CALDATA>
+		<ValidationDATA header=""/>
+		<QCStatic header="K,U_Constant,U_QA,R2_Check,U_Drift,Drift_Total,Revision,Unit">0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,3,</QCStatic>
+		<QCDynamic header="Pass/Fail,Gain,Offset,R2,Uqa,Trueness,Urepeat,Udrift,DaysSince">PASS,0.999908,0.003884,1.000000,0.000000,0.001020,0.000341,-1.000000,203.000000</QCDynamic>
+		<Precision header=""/>
+		<AsLeftCFG header=""/>
+		<AsReceived>
+			<ReceivedCFG header="">Serial number . . . . . . . . . . . . . . . . . . . . . . 169
+Baud rate . . . . . . . . . . . . . . . . . . . . . . . . 9600
+Calibration weight at zero (kgs)  . . . . . . . . . . . . 5.014512
+</ReceivedCFG>
+			<ReceivedCoefficient> 
+				<Name>S3Z</Name>
+				<Value>1233</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S3A2</Name>
+				<Value>0.000018932000019</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S3A1</Name>
+				<Value>0.036983101190960</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S3A0</Name>
+				<Value>1084.72</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S2Z</Name>
+				<Value>1245</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S2A2</Name>
+				<Value>0.000018961754263</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S2A1</Name>
+				<Value>0.038541625596695</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S2A0</Name>
+				<Value>1080.12</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S1Z</Name>
+				<Value>1240</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S1A2</Name>
+				<Value>0.000019402756458</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S1A1</Name>
+				<Value>0.039340097535994</Value>
+			</ReceivedCoefficient><ReceivedCoefficient> 
+				<Name>S1A0</Name>
+				<Value>1076.44</Value>
+			</ReceivedCoefficient>
+			<ReceivedDATA header="">Unit serial number: 169
+Firmware version: Mega-VWRG 5.5b( 6/ 2/14)
+Sensor 1: S/N 0786, firmware version: 4.02
+Sensor 2: S/N 0787, firmware version: 4.02
+Sensor 3: S/N 0788, firmware version: 4.02
+
+Serial number . . . . . . . . . . . . . . . . . . . . . . 169
+
+</ReceivedDATA>
+		</AsReceived>
+  </DATA>
+  </CalVal>

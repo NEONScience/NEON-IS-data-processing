@@ -1,3 +1,2 @@
 solenoid_cron_daily_and_date_control.yaml
 solenoid_data_source_kafka.yaml
-solenoid_data_source_trino.yaml

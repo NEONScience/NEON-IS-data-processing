@@ -11,7 +11,7 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be 2 days previous. 
     OUT_PATH: /pfs/out
-    START_DATE: "2025-08-25" # Inclusive
+    START_DATE: "2026-01-06" # Inclusive
     #END_DATE: "2025-03-05" # Inclusive
     SOURCE_TYPE: "l2130i"
   stdin:
@@ -22,7 +22,8 @@ input:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   - cron:
       name: tick
-      spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      spec: "@never"
+      #spec: "30 0 * * *" # Run at 00:30 GMT
       overwrite: true
   - pfs:
       name: SITE_FILE

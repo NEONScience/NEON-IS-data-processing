@@ -37,7 +37,10 @@
     },
     {
       "name": "resistance",
-      "type": "float",
+      "type": [
+        "null",
+        "float"
+        ],
       "doc": "Measured resistance of the platinum resistance thermometer",
       "__neon_units": "ohm",
       "__neon_stream_id": "0"

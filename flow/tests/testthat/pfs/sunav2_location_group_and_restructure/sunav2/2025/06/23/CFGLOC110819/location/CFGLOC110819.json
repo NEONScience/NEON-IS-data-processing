@@ -1,0 +1,22 @@
+{
+    "features":[
+        {
+            "Data Rate":"0.0033333333333",
+            "geometry":null,
+            "HOR":"103",
+            "properties":{
+                "active_periods":[
+                    {
+                        "start_date":"2025-06-23T00:00:00Z",
+                        "end_date":"2025-06-24T00:00:00Z"
+                    }
+                ],
+                "description":"Suggs Lake Nitrate Analyzer Buoy",
+                "name":"CFGLOC110819",
+                "site":"SUGG"
+            },
+            "VER":"100"
+        }
+    ],
+    "type":"FeatureCollection"
+}

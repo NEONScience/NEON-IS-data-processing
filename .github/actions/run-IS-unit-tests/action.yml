@@ -3,41 +3,7 @@ description: "Run R unit tests on IS package"
 
 runs:
    using: "composite"
-   steps: 
-      - id: "auth"
-        uses: "google-github-actions/auth@v2"
-        with:
-            workload_identity_provider: ${{ env.GCP_PROVIDER }}
-            service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
-      # 
-      - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v2"
-      # 
-      - name: "Docker auth"
-        shell: bash
-        run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_HOST }} --quiet
-      # 
-      # setup-buildx-action for Docker
-      - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v3
-      # 
-      # Login to github registry
-      - name: Log into github registry ${{ env.GHCR_REGISTRY }}
-        uses: docker/login-action@v3
-        with:
-            registry: ${{ env.GHCR_REGISTRY }}
-            username: ${{ github.actor }}
-            password: ${{ env.GITHUB_TOKEN }}
-      # 
-      # Build and push Docker image with Buildx (don't push on PR) with multiple tags
-      # https://github.com/docker/build-push-action
-      - name: Build Docker image
-        id: build
-        uses: docker/build-push-action@v5
-        with:
-            context: ./
-            file: ${{ env.MODULE_PATH }}/Dockerfile
- 
+   steps:  
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
@@ -47,14 +13,15 @@ runs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-              fs
-              devtools
-              rapportools
               arrow@19.0.1.1
+              covr@3.6.5
+              devtools@2.4.6
               dplyr@1.1.3
+              fs@1.6.6
               jsonlite@1.8.7
+              rapportools@1.1
+              testthat@3.2.3
           extra-packages: |
-              any::covr
               any::xml2
           needs: coverage
           cache: always
@@ -64,13 +31,6 @@ runs:
         run: |
           LIBR_DIR=$(dirname $(find /opt -name "libR.so" | head -n 1))
           echo "LD_LIBRARY_PATH=$LIBR_DIR:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-
-      - name: Install Avro
-        shell: bash
-        run: sudo apt install libavro23
-
-      - name: check out repository
-        uses: actions/checkout@v3
 
       - name: Run ${{ env.MODULE_NAME }} unit test coverage using covr package
         shell: Rscript {0}
@@ -84,6 +44,8 @@ runs:
           library("NEONprocIS.cal")
           }
           #
+          library(testthat)
+          library(covr)
           library(dplyr)
           library(arrow)
           library(jsonlite)
@@ -101,7 +63,7 @@ runs:
           covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
           # Generates a Cobertura XML file 
           covr::to_cobertura(cov, filename = "test-summary.xml")
-      # 
+
       # Generate Markdown Summary
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.3.0
@@ -111,46 +73,20 @@ runs:
           hide_complexity: false
           format: markdown
           output: both
-      #     
-      # # Display in Job Summary
+
+      # Display in Job Summary
       - name: Add coverage summary to job summary
         shell: bash
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
-        
-      # Upload Coverage Report  
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./test-summary.xml
-          flags: unittests
-          name: codecov-umbrella
-      #          
-      # Uploads the coverage.html file as a workflow artifact
+  
+      # Uploads the HTML report as a workflow artifact
       # Find the r-coverage-report artifact on the workflow run details page. 
       # Download the artifact and open the coverage.html file in your browser 
       # to explore the detailed test coverage report, including line-by-line coverage information.
-
       - name: Upload coverage.html artifact
         uses: actions/upload-artifact@v4
         with:
           name: r-coverage-report
-          path: ${{ env.MODULE_NAME }}-coverage.html
-          retention-days: 1 # Adjust retention days as needed
-          
-      - name: Add/update the test coverage.html to ./pack/test_coverage/
-        shell: bash
-        run: |
-          set -euo pipefail
-          IFS=$'\n\t'
-          git config --local user.email "actions@github.com"
-          git config --local user.name "gitHub Actions"
-          git config push.default current
-          git pull
-          git add "${{ env.MODULE_NAME }}-coverage.html"
-          echo "Attempting to create a test_coverage directory"
-          mkdir -p pack/test_coverage
-          echo "Directory creation successful (or already existed)."
-          git mv "${{ env.MODULE_NAME }}-coverage.html" ./pack/test_coverage/
-          git commit -m "Add the test coverage.html to test_coverage directory"  || echo "No coveage added"
-          git push origin  || echo "No changes to commit"
-
+          path: |
+            ${{ env.MODULE_NAME }}-coverage.html
+            lib/

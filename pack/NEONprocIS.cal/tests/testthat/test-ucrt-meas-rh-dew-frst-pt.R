@@ -1,191 +1,228 @@
 ##############################################################################################
-#' @title Unit test of def.ucrt.meas.rh.dew.frst.pt.R, uncertainty for dew/frost point from the relative humidity sensor as part of the relative
-#' humidity transition
-#'
-#' Accepts L0 data and NEON uncertainty information as produced
-#' by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measurement
-#' uncertainties for each data value.
-#'
+#' @title Unit test of NEON uncertainty quantification (def.ucrt.meas.rh.dew.frst.pt)
+
 #' @author
-#' Mija Choi \email{choim@battelleecology.org}
-#'
+#' Robert Markel \email{rmarkel@BattelleEcology.org}
+#' Mija Choi \email{choim@batelleEcology.org}
+#' Cove Sturtevant \email{csturtevant@batelleEcology.org}
+
 #' @description
-#' Run unit tests for def.ucrt.meas.rh.dew.frst.pt.R.
-#' The tests include positive and negative scenarios.
+#' Run unit tests for uncertainty quantification function. The unit tests include positive and negative scenarios.
 #' The positive test is for a case when all the params to the function are valid
-#' The negative tests are when a param(s) is empty or does not have valid values
-#'
-#' data <- data.frame(relative_humidity=c(1,6,7,0,10), temperature=c(2,3,6,8,5), dew_point=c(1,-1,5,4,4.5))
-#' calSlct=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
-#' timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
-#' "relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
-#' timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157554.xml",id = 157554, expi= FALSE),
-#' "dew_point"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),timeEnd=as.POSIXct("2019-01-02",tz="GMT"),
-#' file = "30000000000080_WO29705_157556.xml",id = 157556, expi= FALSE))
-#'
-#' def.ucrt.meas.rh.dew.frst.pt(data=data,calSlct=calSlct)
-#'
+#' The negative tests are when a param(s) is empty or does not have invalid values
+
+#' @param data Data frame of raw, ununcertainty measurements. This data frame must have a column
+#' called "readout_time" with POSIXct timestamps
+#' @param varUcrt A character array of the target variables (columns) in the data frame \code{data} for 
+#' which uncertainty output will be computed (all other columns will be ignored). Defaults to the first
+#' column in \code{data}.
+#' @param calSlct A named list of data frames, each list element corresponding to a 
+#' variable (column) to calibrate. The data frame in each list element holds 
+#' information about the calibration files and time periods that apply to the variable, 
+#' as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
+#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
+#' NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.
+
+#' @return TRUE when a test passes. Log errors when fails and moves on to the next test. \cr
+
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
-#' NEON.DOC.000785 TIS Level 1 Data products Uncertainty Budget Estimation Plan
-#' NEON.DOC.000746 Calibration Fixture and Sensor Uncertainty Analysis: CVAL 2014 Uncertainty Manual
-#'
-#' @keywords calibration, uncertainty, fdas L1, average
-#'
-#' data <- data.frame(dew_point=c(1,-1,5,4,4.5),temperature=c(2,3,6,8,5),relative_humidity=c(1,6,7,0,10),
-#' readout_time=as.POSIXct(c('2019-01-01 02:00','2019-01-01 04:01','2019-01-01 06:02','2019-01-01 08:01','2019-01-01 10:02'),tz='GMT'))
-#' ucrtCoef <- list(list(term='temp',start_date=as.POSIXct('2019-01-01',tz='GMT'),end_date=as.POSIXct('2019-01-02',tz='GMT'),Name='U_CVALA3',Value='0.0141'))
-#' ucrtData <- data.frame(readout_time=as.POSIXct(c('2019-01-01 00:00','2019-01-01 00:01','2019-01-01 00:02'),tz='GMT'),
-#'                        temp=c(100.187,100.195,100.203))
-#' ucrt <- NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(data=data,VarUcrt='temp',ucrtCoef=ucrtCoef)
-#'
-#' def.ucrt.meas.rh.dew.frst.pt(data=data,calSlct=calSlct)
-#'
-#' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
-#' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.rstc.poly}
-#' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.volt.poly}
-#' @seealso \link[NEONprocIS.base]{def.log.init}
-#' @seealso \link[NEONprocIS.cal]{wrap.ucrt.dp0p}
-#'
+#' NEON.DOC.000785 TIS uncertainty Measurements and Level 1 Data Products Uncertainty Budget Plan
+
+#' @keywords Currently none
+
 #' @examples
 #' To run with testthat:
 #' devtools::test(pkg="<path>/NEON-IS-data-processing/pack/NEONprocIS.cal")
 #' an example, devtools::test(pkg="C:/projects/NEON-IS-data-processing/pack/NEONprocIS.cal")
 
+#' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
+#'
+#' @export
+
 # changelog and author contributions / copyrights
 #   Mija Choi (2021-02-12)
 #     Original Creation
+#   Cove Sturtevant (2025-11-17)
+#     Revise unit test for changed inputs/outputs
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of def.ucrt.meas.rh.dew.frst.pt.R\n")
+context("\n                       uncertainty quantification\n")
 
-# Unit test of def.ucrt.meas.rh.dew.frst.pt.R
-test_that("Unit test of def.ucrt.meas.rh.dew.frst.pt.R", {
-  log <- NEONprocIS.base::def.log.init()
+# Test calibration conversion
+test_that("testing uncertainty quantification (def.ucrt.meas.rh.dew.frst.pt", {
   
-  data <- data.frame(
-      dew_point = c(1, -1, 5, 4, 4.5),
-      temperature = c(2, -3, 6, 8, 5),
-      relative_humidity = c(1, 6, 7, 0, 10),
-      readout_time = as.POSIXct(
-        c(
-          '2019-01-01 02:00',
-          '2019-01-01 04:01',
-          '2019-01-01 06:02',
-          '2019-01-01 08:01',
-          '2019-01-01 10:02'
-        ),tz = 'GMT'
-      )
-    )
-  
+  TimeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
+  TimeEnd <- base::as.POSIXct('2019-01-03',tz='GMT')
+
   calSlct = list(
     "temperature" = data.frame(
-      timeBgn = as.POSIXct("2019-01-01", tz = "GMT"),
-      timeEnd = as.POSIXct("2019-01-02", tz = "GMT"),
-      file = "testdata/temperature/30000000000080_WO29705_157555.xml",
-      id = 157555,
-      expi = FALSE
+      timeBgn = as.POSIXct(c("2019-01-01","2019-01-02"), tz = "GMT"),
+      timeEnd = as.POSIXct(c("2019-01-02","2019-01-03"), tz = "GMT"),
+      file = c("testdata/temperature/30000000000080_WO29705_157555.xml",
+               "testdata/temperature/30000000000080_WO29705_157555_validAfter.xml"),
+      id = c(157555,157555),
+      expi = c(FALSE,FALSE)
     ),
     "relative_humidity" = data.frame(
-      timeBgn = as.POSIXct("2019-01-01", tz = "GMT"),
-      timeEnd = as.POSIXct("2019-01-02", tz = "GMT"),
-      file = "testdata/relHumidity/30000000000080_WO29705_157554.xml",
-      id = 157554,
-      expi = FALSE
-    ),
-    "dew_point" = data.frame(
-      timeBgn = as.POSIXct("2019-01-01", tz = "GMT"),
-      timeEnd = as.POSIXct("2019-01-02", tz = "GMT"),
-      file = "testdata/dewPoint/30000000000080_WO29705_157556.xml",
-      id = 157556,
-      expi = FALSE
+      timeBgn = as.POSIXct(c("2019-01-01","2019-01-02"), tz = "GMT"),
+      timeEnd = as.POSIXct(c("2019-01-02","2019-01-03"), tz = "GMT"),
+      file = c("testdata/relHumidity/30000000000080_WO29705_157554.xml",
+               "testdata/relHumidity/30000000000080_WO29705_157554_validAfter.xml"),
+      id = c(157554,157554),
+      expi = c(FALSE,FALSE)
     )
   )
   
-  ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct)
-  testthat::expect_true(is.data.frame(ucrt) && is.numeric(ucrt$ucrtMeas))
-  #
-  # Sad Path 1, data is not data frame
-
-  data_list <- list (data=data)
-  ucrt <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data_list, calSlct = calSlct), silent = TRUE)
-  testthat::expect_true((class(ucrt)[1] == "try-error"))
-
-  # Sad Path 2, data is not numeric
-
-  data_notNumeric <- data
-  data_notNumeric[1] <- c("1", "-1", "5", "4", "4.5")
-
-  ucrt <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data_notNumeric, calSlct = calSlct), silent = TRUE)
-  testthat::expect_true((class(ucrt)[1] == "try-error"))
-
-  # Sad Path 3,  Identify rows with temperature above 0 degrees C
-  #
-  data_tempAbove0 <- data
-  data_tempAbove0[2] <- c(32, 33, 36, 38, 35)
-
-  ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data_tempAbove0, calSlct = calSlct)
-  expect_true(is.data.frame(ucrt) && is.numeric(ucrt$ucrtMeas))
-  # 
-  #  Sad Path 4-a,  Move on if readout_time is out of range for temperature$timeBgn or temperature$timeEnd
-  #
-  calSlct_out <- calSlct
-  calSlct_out$temperature$timeBgn <- as.POSIXct("2019-05-01", tz = "GMT")
-  calSlct_out$temperature$timeEnd <- as.POSIXct("2019-05-02", tz = "GMT")
-
-  ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct_out)
-  expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
-  #
-  #  Sad Path 4-b,  Move on if readout_time is out of range for relative_humidity$timeBgn or relative_humidity$timeEnd
-  #
-  calSlct_out <- calSlct
+  # Create data to calibrate
+  data <- data.frame(
+    dew_point = c(1, -1, 5, 4, 4.5),
+    temperature = c(2, -3, 6, 8, 5),
+    relative_humidity = c(1, 6, 7, 0, 10),
+    readout_time = as.POSIXct(
+      c(
+        '2019-01-01 00:00',
+        '2019-01-01 04:01',
+        '2019-01-01 06:02',
+        '2019-01-01 08:01',
+        '2019-01-02 00:00'
+      ),tz = 'GMT'
+    )
+  )
   
-  calSlct_out$relative_humidity$timeBgn <- as.POSIXct("2019-05-01", tz = "GMT")
-  calSlct_out$relative_humidity$timeEnd <- as.POSIXct("2019-05-02", tz = "GMT")
+  ##########
+  ##########  Happy paths:::: data and ucrt not empty and have valid values
+  ##########
   
-  ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct_out)
-  expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
-  
-  #   Sad Path 5, Issue warning if more than one matching uncertainty coefficient was found
-  #
-  calSlct_two <- calSlct
-  calSlct_two$temperature$file <- "testdata/temperature/temp_two_U_CVALA1s.xml"
-  calSlct_two$relative_humidity$file <- "testdata/temperature/temp_two_U_CVALA1s.xml"
+  cat("\n       |====== Positive test::                         ==========|\n")
+  cat("\n       |------ data and cal are not empty and have valid values for temp > 0    |\n")
 
-  ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct_two)
-  testthat::expect_true(is.data.frame(ucrt) && is.na(all(ucrt$ucrtMeas)))
-  #
-  #   Sad Path 6-a,  Check format, exist(U_CVALA1), of infoCalTemp and infoCalRh
-  #
-  calSlct_no <- calSlct
-  calSlct_no$temperature$file <- "testdata/temperature/temp_no_U_CVALA1.xml"
-  calSlct_no$relative_humidity$file <- "testdata/relHumidity/rh_no_U_CVALA1.xml"
-    
-  ucrt <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct_no), silent = TRUE)
-  testthat::expect_true((class(ucrt)[1] == "try-error"))
+  uncertainty <-
+    NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct=calSlct)
+
+  # Check the data inside the valid date range are uncertainty correctly
+  ucrtExpc <- c(5.8635613,0.03618669,5.8634497)
+  names(ucrtExpc) <- c('ucrtMeas','ucrt_dfpt_t_L1','ucrt_dfpt_rh_L1')
+  testthat::expect_equal(ucrtExpc, unlist(uncertainty$dew_point[1,]),tolerance=1E-6)
   
-  #   Sad Path 6-b,  Check format, exist(U_CVALA1), of infoCalRh only
-  #
-  calSlct_no <- calSlct
-  calSlct_no$temperature$file <- "testdata/temperature/30000000000080_WO29705_157555.xml"
-  calSlct_no$relative_humidity$file <- "testdata/relHumidity/rh_no_U_CVALA1.xml"
+  cat("\n       |====== Positive test::                         ==========|\n")
+  cat("\n       |------ data and cal are not empty and have valid values for temp < 0    |\n")
   
-  ucrt <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct_no), silent = TRUE)
-  testthat::expect_true((class(ucrt)[1] == "try-error"))
+  # Check the data inside the valid date range are uncertainty correctly
+  ucrtExpc <- c(1.0193368,0.04443399,1.0183679)
+  names(ucrtExpc) <- c('ucrtMeas','ucrt_dfpt_t_L1','ucrt_dfpt_rh_L1')
+  testthat::expect_equal(ucrtExpc, unlist(uncertainty$dew_point[2,]),tolerance=1E-6)
   
-  #   Sad Path 7-a, If a calibration file is available for this period, open it and get calibration information
-  #
-  calSlct_no <- calSlct
-  calSlct_no$temperature$file <- "testdata/noFiles"
-  ucrt <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct_no), silent = TRUE)
-  expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
+  cat("\n       |====== Positive test::                         ==========|\n")
+  cat("\n       |------ data and cal are not empty and return NaN values for rh=0    |\n")
   
-  #   Sad Path 7-b, If a calibration file is available for this period, open it and get calibration information
+  # Check the data inside the valid date range are uncertainty correctly
+  ucrtExpc <- c(NaN,0,NaN)
+  names(ucrtExpc) <- c('ucrtMeas','ucrt_dfpt_t_L1','ucrt_dfpt_rh_L1')
+  testthat::expect_equal(ucrtExpc, unlist(uncertainty$dew_point[4,]),tolerance=1E-6)
+
+  cat("\n       |====== Positive test::                         ==========|\n")
+  cat("\n       |------ valid calibration date range inclusive of start date, exclusive of end date    |\n")
+  
+
+  # Check the last date, which falls on the boundary of the valid cal periods
+  # Last date should get the second cal
+  ucrtExpc <- c(1.2068974,0.03805616,1.2062972)
+  names(ucrtExpc) <- c('ucrtMeas','ucrt_dfpt_t_L1','ucrt_dfpt_rh_L1')
+  testthat::expect_equal(ucrtExpc, unlist(uncertainty$dew_point[5,]),tolerance=1E-6)
+  
+  
+
+  
+  cat("\n       |======= Positive test::                      ============|\n")
+  cat("\n       |------ data is before the valid date range of the cal. Return NA values. |\n\n")
+  
+  data2 <- data
+  data2$readout_time <- as.POSIXct(c('2018-06-13','2018-06-14','2018-06-15','2018-06-16','2018-06-17'),tz='GMT')
+  
+  uncertainty <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data2, calSlct=calSlct)
+  
+  testthat::expect_true(all(is.na(unlist(uncertainty$dew_point))))
+  
+  
+  cat("\n       |======= Positive test::                      ============|\n")
+  cat("\n       |------ No cals specified for 'data'. Returns NA |\n\n")
+  calSlctNoVar <- calSlct
+  names(calSlctNoVar) <- c('temperature','voltage')
+  uncertainty <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, 
+                                                              calSlct=calSlctNoVar)
+  testthat::expect_true(all(is.na(unlist(uncertainty$dew_point))))
+  
+  calSlctNoVar <- calSlct
+  names(calSlctNoVar) <- c('voltage','relative_humidity')
+  uncertainty <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, 
+                                                              calSlct=calSlctNoVar)
+  testthat::expect_true(all(is.na(unlist(uncertainty$dew_point))))
+  
   #
-  calSlct_no <- calSlct
-  calSlct_no$relative_humidity$file <- "testdata/noFiles"
-  # 
-  ucrt <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct_no), silent = TRUE)
-  expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
+  cat("\n       |======= Positive test::                      ============|\n")
+  cat("\n       |------ No cal available for a period of data. return NA.              |\n\n")
+  #
+  
+  calSlctNoFile <- calSlct
+  calSlctNoFile$temperature$file[1] = NA
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct=calSlctNoFile), silent = TRUE)
+  
+  testthat::expect_true(all(is.na(unlist(uncertainty$dew_point[1:4,]))))
+  
+  calSlctNoFile <- calSlct
+  calSlctNoFile$relative_humidity$file[1] = NA
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct=calSlctNoFile), silent = TRUE)
+  
+  testthat::expect_true(all(is.na(unlist(uncertainty$dew_point[1:4,]))))
+  
+  
+  
+  #
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ Cannot compute uncertainty for character variable   |\n\n")
+  #
+
+
+  data$dew_point_char <- as.character(data$dew_point)
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, varUcrt='dew_point_char', calSlct=calSlct), silent = TRUE)
+  testthat::expect_true((class(uncertainty)[1] == "try-error"))
+  
+  #
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ cal is has no applicable uncertainty coefficients.              |\n\n")
+  #
+  
+  calSlctBadTemp <- calSlct
+  calSlctBadTemp$temperature$file[1] = "calibrations/voltage/calibration44.xml"
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct=calSlctBadTemp), silent = TRUE)
+  
+  testthat::expect_true((class(uncertainty)[1] == "try-error"))
+  
+  calSlctBadRh <- calSlct
+  calSlctBadRh$relative_humidity$file[1] = "calibrations/voltage/calibration44.xml"
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct=calSlctBadRh), silent = TRUE)
+  
+  testthat::expect_true((class(uncertainty)[1] == "try-error"))
+
+  #
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ data missing readout_time variable    |\n\n")
+  
+  data2 <- data[,setdiff(names(data),'readout_time')]
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data2, calSlct=calSlct), silent = TRUE)
+  
+  testthat::expect_true((class(uncertainty)[1] == "try-error"))
+  
+  #
+  cat("\n       |======= Negative test::                      ============|\n")
+  cat("\n       |------ readout_time not POSIXt    |\n\n")
+  data$readout_time <- as.character(data$readout_time)
+  uncertainty <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt (data = data, 
+                                                       calSlct=calSlct),
+                    silent=TRUE)
+  testthat::expect_true ("try-error" %in% class(uncertainty))
+  
+  
   
 })
