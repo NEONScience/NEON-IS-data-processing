@@ -34,7 +34,8 @@
 #   Cove Sturtevant (2026-02-20)
 #     First try to let arrow infer the schema. Better handles rarer data types.
 #   Cove Sturtevant (2026-03-16)
-#     Default Infer argument to FALSE. Results in larger data types than desired and mismatch with schema data was commonly written with.
+#     Default Infer argument to FALSE. Results in larger data types than desired and 
+#        a mismatch with the schema that the data was commonly written with.
 #     Add explicit support for lists when Infer = FALSE
 ##############################################################################################
 def.schm.parq.from.df <- function(df,
@@ -45,14 +46,6 @@ def.schm.parq.from.df <- function(df,
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
-  
-  # Parse 
-  typeVar <- base::lapply(df,base::class)
-  numVar <- base::length(typeVar)
-  nameVar <- base::names(df)
-  
-  # Create each field in the schema
-  fldSchm <- base::vector(numVar,mode='list') # Initialize list of schema fields
   
   # First try letting arrow derive the schema (if selected)
   if(Infer == TRUE){
@@ -66,6 +59,14 @@ def.schm.parq.from.df <- function(df,
       log$debug("Arrow could not infer the schema from the data frame. Attempting manual derivation.")
     }
   }
+  
+  # Parse 
+  typeVar <- base::lapply(df,base::class)
+  numVar <- base::length(typeVar)
+  nameVar <- base::names(df)
+  
+  # Create each field in the schema
+  fldSchm <- base::vector(numVar,mode='list') # Initialize list of schema fields
   
   for(idx in base::seq_len(numVar)){
       
