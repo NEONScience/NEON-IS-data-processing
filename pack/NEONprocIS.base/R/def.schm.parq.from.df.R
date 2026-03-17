@@ -10,7 +10,7 @@
 #' schema is inferred and constructed from the R data types.
 
 #' @param df Data frame
-#' @param Infer TRUE/FALSE. TRUE first let's arrow attempt to infer the schema. Returned if successful.
+#' @param Infer TRUE/FALSE. TRUE first let arrow attempt to infer the schema. Returned if successful.
 #' @param log Optional. A logger object as produced by NEONprocIS.base::def.log.init to produce structured log 
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be 
 #' created for use within this function. 
@@ -33,15 +33,26 @@
 #     original creation
 #   Cove Sturtevant (2026-02-20)
 #     First try to let arrow infer the schema. Better handles rarer data types.
+#   Cove Sturtevant (2026-03-16)
+#     Default Infer argument to FALSE. Results in larger data types than desired and mismatch with schema data was commonly written with.
+#     Add explicit support for lists when Infer = FALSE
 ##############################################################################################
 def.schm.parq.from.df <- function(df,
-                                  Infer=TRUE,
+                                  Infer=FALSE,
                                   log=NULL
 ){
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
+  
+  # Parse 
+  typeVar <- base::lapply(df,base::class)
+  numVar <- base::length(typeVar)
+  nameVar <- base::names(df)
+  
+  # Create each field in the schema
+  fldSchm <- base::vector(numVar,mode='list') # Initialize list of schema fields
   
   # First try letting arrow derive the schema (if selected)
   if(Infer == TRUE){
@@ -56,21 +67,22 @@ def.schm.parq.from.df <- function(df,
     }
   }
   
-  # Parse 
-  typeVar <- base::lapply(df,base::class)
-  numVar <- base::length(typeVar)
-  nameVar <- base::names(df)
-  
-  # Create each field in the schema
-  #Arrow timestamps are stored as a 64-bit integer with column metadata to associate a time unit (e.g. milliseconds, microseconds, or nanoseconds), and an optional time zone.
-  fldSchm <- base::vector(numVar,mode='list') # Initialize list of schema fields
   for(idx in base::seq_len(numVar)){
       
     nameField <- nameVar[idx]
-    typeData <- typeVar[idx]
-
+    typeData <- typeVar[[idx]]
+    listType <- FALSE
+    
+    # First check to see if this variable is a list
+    if((base::any(typeData == 'list'))){
+      listType <- TRUE
+      typeCol <- arrow::infer_type(df[[idx]])
+      typeData <-  base::class(NEONprocIS.base::def.r.type.from.arrow.type(typeCol$value_type))
+    }
+    
     # See documentation on arrow::data-type
     if (base::any(base::grepl('POSIX', typeData) | grepl('Date',typeData))) {
+      #Arrow timestamps are stored as a 64-bit integer with column metadata to associate a time unit (e.g. milliseconds, microseconds, or nanoseconds), and an optional time zone.
       tz <- base::attr(df[[nameField]],'tzone')
       if(is.null(tz)){
         tz=""
@@ -94,12 +106,13 @@ def.schm.parq.from.df <- function(df,
       log$warn(base::paste0('Data type(s) [',base::paste0(typeData,collapse=','),'] not recognized for field name [',nameField,']. Setting parquet schema type to null, which will likely result in NA data.'))
     }
     
+    # Put in a listType if detected
+    if(listType == TRUE){
+      typeArrw <- arrow::list_of(typeArrw)
+    }
+    
     # Place in the list
-    # if (base::any(typeData == 'null')){
     nullable = TRUE
-    # } else {
-      # nullable = FALSE
-    # }
     fldSchm[[idx]] <- arrow::field(nameField, typeArrw, nullable = nullable)
   }
     
