@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v5.1.10
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.0.5
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out #also used for parser
