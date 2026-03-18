@@ -31,7 +31,7 @@
 #' 
 #' @examples
 #' # Not run
-# FileIn <- "~/pfs/sunav2_logjam_load_files/20349/logjam_prod_20349_0b05a4c0da3bb05af840fece674fe34c.csv"
+# FileIn <- "~/pfs/sunav2_logjam_load_files/20349/0b05a4c0da3bb05af840fece674fe34c.csv"
 # DirOut="~/pfs/sunav2_logs_output"
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
@@ -43,6 +43,7 @@
 #' @changelog
 #' Nora Catolico (2024-01-09) original creation
 #' Bobby Hensley (2025-04-09) adapted for SUNA 
+#' Nora Catolico (2025-03-09) vectorize for loops, add UID
 ##############################################################################################
 wrap.sunav2.logfiles <- function(FileIn,
                              DirOut,
@@ -60,6 +61,7 @@ wrap.sunav2.logfiles <- function(FileIn,
     base::try(read.table(paste0(FileIn), header = FALSE, sep = ",", 
                          col.names = paste0("V",seq_len(286)),encoding = 'utf-8',
                          stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
+  logFileUID <- sub(".*(.{6})\\.csv$", "\\1", basename(FileIn))
   if (base::any(base::class(logFile) == 'try-error')) {
     # Generate error and stop execution
     log$error(base::paste0('File ', FileIn, ' is unreadable. Likely not a data file.'))
@@ -114,8 +116,7 @@ wrap.sunav2.logfiles <- function(FileIn,
   
 #' Checks that each data burst is complete (Right now only checks whether last column is a value or not)
   logData$error_missing_data<-NA
-  for(i in 1:nrow(logData)){if(is.na(logData[i,which(colnames(logData)=="check_sum")])){logData[i,which(colnames(logData)=="error_missing_data")]=TRUE}
-    else{logData[i,which(colnames(logData)=="error_missing_data")]=FALSE}}
+  logData[["error_missing_data"]] <- is.na(logData[["check_sum"]])
   
 #' Combines all 256 spectrum channels into single array
   logData$spectrum_channels<-paste(logData$channel_1,logData$channel_2,logData$channel_3,logData$channel_4,logData$channel_5,logData$channel_6,logData$channel_7,logData$channel_8,logData$channel_9,logData$channel_10,
@@ -159,8 +160,7 @@ wrap.sunav2.logfiles <- function(FileIn,
   logData$header_manufacturer<-"SATS"
   logData$header_serial_number<-serial_number[2,1]
   logData$header_light_frame<-NA
-  for(i in 1:nrow(logData)){if(logData[i,which(colnames(logData)=="dark_value_used_for_fit")]==0){logData[i,which(colnames(logData)=="header_light_frame")]=0}
-    else{logData[i,which(colnames(logData)=="header_light_frame")]=1}}
+  logData[["header_light_frame"]] <- as.integer(logData[["dark_value_used_for_fit"]] != 0)
   
 #' Re-orders columns so they match the avro schema
   logData<-logData[,c("source_id","site_id","readout_time","header_manufacturer","header_serial_number","header_light_frame","year_and_day","time","nitrate_concentration",
@@ -183,7 +183,7 @@ wrap.sunav2.logfiles <- function(FileIn,
       day <- substr(logData$readout_time[1],9,10)
       DirOutLogFile <- paste0(DirOut,'/sunav2/',year,'/',month,'/',day,'/',asset,'/data/')
       base::dir.create(DirOutLogFile,recursive=TRUE)
-      csv_name <-paste0('sunav2_',asset,'_',year,'-',month,'-',day,'_log')
+      csv_name <-paste0('sunav2_',asset,'_',year,'-',month,'-',day,'_',logFileUID,'_log')
     #' Writes parquet file to output directory
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = logData,
                                                    NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),

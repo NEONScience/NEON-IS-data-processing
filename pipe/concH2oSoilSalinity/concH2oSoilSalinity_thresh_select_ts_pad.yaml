@@ -1,0 +1,118 @@
+---
+pipeline:
+  name: concH2oSoilSalinity_thresh_select_ts_pad
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.3.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/joined_data
+    rm -rf /tmp/pfs/joined_dataCopy
+    mkdir -p /tmp/pfs/joined_data
+    
+    rm -rf /tmp/threshold_select
+    rm -rf /tmp/threshold_selectCopy
+    mkdir -p /tmp/threshold_select
+    
+    # Run first module - filter joiner so we are only getting the enviroscan data from group_path.
+    export DATA_PATH=$REPO_LOCATIONS
+    export OUT_PATH=/tmp/pfs/joined_data
+    python3 -m filter_joiner.filter_joiner_main
+    
+    cp -rL /tmp/pfs/joined_data /tmp/pfs/joined_dataCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/pfs/joined_data
+    
+    #Run second module - threshold_select
+    Rscript ./flow.thsh.slct.R \
+      DirIn=/tmp/pfs/joined_dataCopy \
+      DirOut=/tmp/threshold_select \
+      DirErr=/pfs/out/errored_datums \
+      FileThsh=$FILE_THRESHOLDS \
+      "TermCtxt1=VSICDepth02|soil|ion-content" \
+      "TermCtxt2=VSICDepth03|soil|ion-content" \
+      "TermCtxt3=VSICDepth04|soil|ion-content" \
+      "TermCtxt4=VSICDepth05|soil|ion-content" \
+      "TermCtxt5=VSICDepth06|soil|ion-content" \
+      "TermCtxt6=VSICDepth07|soil|ion-content" \
+      "TermCtxt7=VSICDepth08|soil|ion-content" \
+      "TermCtxt8=VSICDepth01|soil|ion-content" \
+      "TermCtxt9=VSWCfactoryDepth02|soil|water-content|factory" \
+      "TermCtxt10=VSWCfactoryDepth03|soil|water-content|factory" \
+      "TermCtxt11=VSWCfactoryDepth04|soil|water-content|factory" \
+      "TermCtxt12=VSWCfactoryDepth05|soil|water-content|factory" \
+      "TermCtxt13=VSWCfactoryDepth06|soil|water-content|factory" \
+      "TermCtxt14=VSWCfactoryDepth07|soil|water-content|factory" \
+      "TermCtxt15=VSWCfactoryDepth08|soil|water-content|factory" \
+      "TermCtxt16=VSWCfactoryDepth01|soil|water-content|factory" \
+      "TermCtxt17=VSWCsoilSpecificDepth02|soil|water-content|soil-specific" \
+      "TermCtxt18=VSWCsoilSpecificDepth03|soil|water-content|soil-specific" \
+      "TermCtxt19=VSWCsoilSpecificDepth04|soil|water-content|soil-specific" \
+      "TermCtxt20=VSWCsoilSpecificDepth05|soil|water-content|soil-specific" \
+      "TermCtxt21=VSWCsoilSpecificDepth06|soil|water-content|soil-specific" \
+      "TermCtxt22=VSWCsoilSpecificDepth07|soil|water-content|soil-specific" \
+      "TermCtxt23=VSWCsoilSpecificDepth08|soil|water-content|soil-specific" \
+      "TermCtxt24=VSWCsoilSpecificDepth01|soil|water-content|soil-specific" \
+      "DirSubCopy=data|location|uncertainty_coef|uncertainty_data"
+      
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/threshold_select 
+    
+    # Run last  module - timeseries_padder
+    export DATA_PATH=/tmp/threshold_selectCopy
+    export OUT_PATH=/pfs/out
+    python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+    EOF
+  env:
+    # Environment variables for filter_joiner, flow.thsh.slct.R, and timeseries_padder
+    LOG_LEVEL: INFO
+    ERR_PATH: /pfs/out/errored_datums
+    LINK_TYPE: COPY
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # filter group path to only be enviroscan data
+      input_paths:
+        - path:
+            name: REPO_LOCATIONS
+            glob_pattern: /pfs/REPO_LOCATIONS/*/*/*/*/enviroscan/**
+            # Join on Y/M/D/group
+            join_indices: [3,4,5,6]
+    PAD_DIR: data
+    COPY_DIR: location,uncertainty_coef,uncertainty_data # Can be multiple, separated by commas without spaces. Directories other than the pad directory to copy to the output
+    RELATIVE_PATH_INDEX: '3'
+    PARALLELIZATION_INTERNAL: '5' # For threshold select module
+output_branch: master
+input:
+  cross:
+  - pfs:
+      name: REPO_LOCATIONS
+      repo: concH2oSoilSalinity_group_path
+      glob: /(*/*/*)
+  - pfs:
+      name: FILE_THRESHOLDS
+      repo: concH2oSoilSalinity_threshold
+      glob: /thresholds.json
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 5.5
+resource_limits:
+  memory: 3G
+  cpu: 6.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
