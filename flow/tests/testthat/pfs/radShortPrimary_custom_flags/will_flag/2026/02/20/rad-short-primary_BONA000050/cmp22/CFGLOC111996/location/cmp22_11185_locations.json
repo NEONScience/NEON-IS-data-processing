@@ -1,0 +1,92 @@
+{
+    "features":[
+        {
+            "Data Rate":"1",
+            "geometry":null,
+            "HOR":"000",
+            "properties":{
+                "install_date":"2026-02-20T00:00:00Z",
+                "locations":{
+                    "features":[
+                        {
+                            "geometry":{
+                                "coordinates":[
+                                                                        -147.502561,
+                                                                        65.154044,
+                                                                        232.0192
+                                ],
+                                "type":"Point"
+                            },
+                            "properties":{
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "end_date":"2026-02-21T00:00:00Z",
+                                "gamma":                                0,
+                                "location_properties":[
+
+                                ],
+                                "reference_location":{
+                                    "geometry":null,
+                                    "properties":{
+                                        "locations":{
+                                            "features":[
+                                                {
+                                                    "geometry":{
+                                                        "coordinates":[
+                                                                                                                        -147.502561,
+                                                                                                                        65.154044,
+                                                                                                                        230.496
+                                                        ],
+                                                        "type":"Point"
+                                                    },
+                                                    "properties":{
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "end_date":"2026-02-21T00:00:00Z",
+                                                        "gamma":                                                        0,
+                                                        "location_properties":[
+                                                            [
+                                                                "LatTow",
+                                                                "33.154044"
+                                                            ],
+                                                            [
+                                                                "LonTow",
+                                                                "-147.502561"
+                                                            ]
+                                                        ],
+                                                        "reference_location":null,
+                                                        "start_date":"2026-02-20T00:00:00Z",
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0,
+                                                        "z_offset":                                                        0
+                                                    },
+                                                    "type":"Feature"
+                                                }
+                                            ],
+                                            "type":"FeatureCollection"
+                                        },
+                                        "name":"TOWER111958"
+                                    },
+                                    "type":"Feature"
+                                },
+                                "start_date":"2026-02-20T00:00:00Z",
+                                "x_offset":                                2.48,
+                                "y_offset":                                1.3,
+                                "z_offset":                                19.87
+                            },
+                            "type":"Feature"
+                        }
+                    ],
+                    "type":"FeatureCollection"
+                },
+                "name":"CFGLOC111996",
+                "remove_date":"2026-02-21T00:00:00Z",
+                "site":"BONA"
+            },
+            "VER":"050"
+        }
+    ],
+    "source_id":    11185,
+    "source_type":"cmp22",
+    "type":"FeatureCollection"
+}
