@@ -1,17 +1,17 @@
 ---
 pipeline:
-  name: tchain_array_parser
+  name: enviroscan_array_parser
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:sha-71e8bad
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "tchain" 
+    SOURCE_TYPE: "enviroscan" 
     LOG_LEVEL: INFO
     PARSE_CALIBRATION: 'False' 
     TEST_MODE: 'False'
     SOURCE_TYPE_INDEX: '3'
-    SOURCE_TYPE_OUT: "tchain"
+    SOURCE_TYPE_OUT: "enviroscan"
     REPLACE_SCHEMA_NAME: "True"
     YEAR_INDEX: '4'
     MONTH_INDEX: '5'
@@ -66,14 +66,14 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/${SOURCE_TYPE_OUT}/**/*.parquet"
-      # /pfs/out/tchain/2023/01/01/12345/data/file.parquet
+      # /pfs/out/enviroscan/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       # set -x
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
         #fsourcetype="${BASH_REMATCH[1]}"
-        fsourcetype="tchain_parsed"
+        fsourcetype="enviroscan_parsed"
         fyear="${BASH_REMATCH[2]}"
         fmonth="${BASH_REMATCH[3]}"
         fday="${BASH_REMATCH[4]}"
@@ -98,12 +98,12 @@ input:
   cross:
   - pfs:
       name: SCHEMA_PATH
-      repo: tchain_avro_schemas
-      glob: "/tchain/tchain_parsed.avsc"
+      repo: enviroscan_avro_schemas
+      glob: "/enviroscan/enviroscan_parsed.avsc"
   - pfs:
       name: DATA_PATH
-      repo: tchain_data_source_kafka
-      glob: "/tchain/*/*/*"
+      repo: enviroscan_data_source_kafka
+      glob: "/enviroscan/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
