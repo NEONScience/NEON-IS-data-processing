@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-qaqc-plau-envscn -f ./modules_combined/analyze_pad_qaqc_envscn/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.10
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.12
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR_1="padded_timeseries_analyzer"
