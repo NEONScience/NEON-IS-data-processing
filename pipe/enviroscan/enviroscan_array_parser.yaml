@@ -11,8 +11,8 @@ transform:
     PARSE_CALIBRATION: 'False' 
     TEST_MODE: 'False'
     SOURCE_TYPE_INDEX: '3'
-    SOURCE_TYPE_OUT: "enviroscan"
-    REPLACE_SCHEMA_NAME: "True"
+    SOURCE_TYPE_OUT: "enviroscan" # output directory name for source type
+    REPLACE_SCHEMA_NAME: "True" # Replace the source type name with the "name" field of the parsed schema?
     YEAR_INDEX: '4'
     MONTH_INDEX: '5'
     DAY_INDEX: '6'
