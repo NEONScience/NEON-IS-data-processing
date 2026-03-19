@@ -164,25 +164,25 @@ transform:
         # Update the airflow triggering table
         echo "Updating airflow trigger table for $site and $date_str"
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_1}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_1 -D "${siteoutpath}/${SOURCE_TYPE_1}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_1 -D "${linkdir2}/v2/${SOURCE_TYPE_1}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_2}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_2 -D "${siteoutpath}/${SOURCE_TYPE_2}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_2 -D "${linkdir2}/v2/${SOURCE_TYPE_2}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_3}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_3 -D "${siteoutpath}/${SOURCE_TYPE_3}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_3 -D "${linkdir2}/v2/${SOURCE_TYPE_3}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_4}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_4 -D "${siteoutpath}/${SOURCE_TYPE_4}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_4 -D "${linkdir2}/v2/${SOURCE_TYPE_4}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_5}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_5 -D "${siteoutpath}/${SOURCE_TYPE_5}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_5 -D "${linkdir2}/v2/${SOURCE_TYPE_5}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_6}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_6 -D "${siteoutpath}/${SOURCE_TYPE_6}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_6 -D "${linkdir2}/v2/${SOURCE_TYPE_6}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_7}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_7 -D "${siteoutpath}/${SOURCE_TYPE_7}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_7 -D "${linkdir2}/v2/${SOURCE_TYPE_7}" 
         fi
 
         # set +x # Uncomment for debugging
