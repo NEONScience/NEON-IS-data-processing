@@ -1,7 +1,7 @@
 enviroscan_cron_daily_and_date_control.yaml
 enviroscan_data_source_kafka.yaml
 enviroscan_array_parser.yaml
-enviroscan_data_source_trino.yaml
+enviroscan_data_source_gcs.yaml
 enviroscan_calibration_list_files.yaml
 enviroscan_calibration_loader.yaml
 enviroscan_calibration_assignment.yaml
