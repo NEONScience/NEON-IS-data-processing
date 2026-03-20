@@ -32,7 +32,6 @@ RUN update-ca-trust && \
             python3-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    microdnf install wget && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
     microdnf clean all --disableplugin=subscription-manager && \
     groupadd -g 9999 appuser && \
@@ -42,11 +41,8 @@ RUN update-ca-trust && \
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm-v7; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=arm64; \
-    else ARCHITECTURE=amd64; fi && \
-    TEMP_DEB="$(mktemp)" && \
-    wget -O "$TEMP_DEB" "https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-${ARCHITECTURE}.deb" &&\
-    dpkg -i "$TEMP_DEB" &&\
-    rm -f "$TEMP_DEB"
+    else ARCHITECTURE=amd64; fi &&\
+    rpm -Uvh "https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-${ARCHITECTURE}.rpm"
 
     
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
