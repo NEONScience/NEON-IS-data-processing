@@ -4,12 +4,12 @@
 \alias{def.schm.parq.from.df}
 \title{Create Parquet schema auto-detected from data frame}
 \usage{
-def.schm.parq.from.df(df, Infer = TRUE, log = NULL)
+def.schm.parq.from.df(df, Infer = FALSE, log = NULL)
 }
 \arguments{
 \item{df}{Data frame}
 
-\item{Infer}{TRUE/FALSE. TRUE first let's arrow attempt to infer the schema. Returned if successful.}
+\item{Infer}{TRUE/FALSE. TRUE first let arrow attempt to infer the schema. Returned if successful.}
 
 \item{log}{Optional. A logger object as produced by NEONprocIS.base::def.log.init to produce structured log 
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be 

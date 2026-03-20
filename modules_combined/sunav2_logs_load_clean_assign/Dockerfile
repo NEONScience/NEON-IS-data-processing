@@ -2,7 +2,7 @@
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-sunav2-logs-load-clean-assign -f ./modules_combined/sunav2_logs_load_clean_assign/Dockerfile .
 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.2
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
