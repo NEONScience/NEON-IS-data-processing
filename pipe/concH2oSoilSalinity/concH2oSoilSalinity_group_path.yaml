@@ -38,19 +38,19 @@ input:
       # remove hard coded glob pattern before going to productions. This is just to limit the scope for testing.
       name: GROUP_ASSIGNMENT_PATH
       repo: concH2oSoilSalinity_group_assignment
-      glob: /conc-h2o-soil-salinity/(2026/03/(10|11|12))
+      glob: /conc-h2o-soil-salinity/(2025/10/(16|17|18))
       joinOn: $1
       outer_join: True
   - pfs:
       name: LOCATION_FOCUS_PATH
       repo: enviroscan_fill_date_gaps_and_regularize
-      glob: /*/(2026/03/(10|11|12))
+      glob: /*/(2025/10/(16|17|18))
       joinOn: $1
       outer_join: True
   - pfs:
       name: GROUP_FOCUS_PATH
       repo: tempSoil_level1_group_consolidate_srf
-      glob: /(2026/03/(10|11|12))
+      glob: /(2025/10/(16|17|18))
       joinOn: $1
       outer_join: True
 parallelism_spec:
