@@ -121,7 +121,7 @@ sidecar_resource_requests:
   memory: 3G
   cpu: 1
 datum_set_spec:
-  number: 1
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
