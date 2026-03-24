@@ -4,6 +4,8 @@ import pyarrow as pa
 from pathlib import Path
 import structlog
 from typing import List
+import re
+import json
 
 import array_parser.schema_parser as schema_parser
 from array_parser.schema_parser import SchemaData
@@ -53,7 +55,7 @@ def populate_columns(table: pa.Table, field_names: List[str],
             new_columns[field_name_index].append(value)
 
 
-def write_restructured_file(path: Path, out_path: Path, schema: Path) -> None:
+def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_schema_name) -> None:
     """
     Reorder the data value array to columns labelled with the appropriate schema field names
     and write the new file.
@@ -61,6 +63,7 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path) -> None:
     :param path: The data file path.
     :param out_path: The path to write the new file.
     :param schema: The new schema for the reordered file.
+    :param replace_schema_name: Boolean. Replace the schema name in the file name with the new schema name?
     :return: None
     """
     
@@ -97,8 +100,18 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path) -> None:
     table = table.replace_schema_metadata(metadata)
     log.debug(f'modified_table:\n{table}')
     
+    # If selected, replace the non-parsed schema name in the file name with the parsed schema name
+    if replace_schema_name is True:
+        f = pq.ParquetFile(path)
+        old_schema = f.metadata.metadata.get(b'parquet.avro.schema')
+        old_schema_data = json.loads(old_schema)
+        old_schema_name = old_schema_data["name"]
+        file_name = path.name.replace(old_schema_name,schema_data.name)
+    else:
+        file_name = path.name
+        
     # Output
-    file_path = Path(out_path, path.name)
+    file_path = Path(out_path, file_name)
     file_path.parent.mkdir(parents=True, exist_ok=True)
     file_path.touch()
     pq.write_table(table, file_path)
