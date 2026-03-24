@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_array_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:sha-71e8bad
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:v2.1.0
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out
