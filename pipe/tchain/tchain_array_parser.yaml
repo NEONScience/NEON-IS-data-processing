@@ -1,0 +1,123 @@
+---
+pipeline:
+  name: tchain_array_parser
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:sha-71e8bad
+  env:
+    # environment variables for kafka loader
+    OUT_PATH: /pfs/out
+    SOURCE_TYPE: "tchain" 
+    LOG_LEVEL: INFO
+    PARSE_CALIBRATION: 'False' 
+    TEST_MODE: 'False'
+    SOURCE_TYPE_INDEX: '3'
+    SOURCE_TYPE_OUT: "tchain" # output directory name for source type
+    REPLACE_SCHEMA_NAME: "True" # Replace the source type name with the "name" field of the parsed schema?
+    YEAR_INDEX: '4'
+    MONTH_INDEX: '5'
+    DAY_INDEX: '6'
+    SOURCE_ID_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
+  secrets:
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_USER
+    key: KAFKA_USER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_PASSWORD
+    key: KAFKA_PASSWORD
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_BROKER
+    key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
+  - name: pdr-secret
+    env_var: PDR_HOST
+    key: hostname
+  - name: pdr-secret
+    env_var: PDR_DBNAME
+    key: database
+  - name: pdr-secret
+    env_var: PDR_USER
+    key: username
+  - name: pdr-secret
+    env_var: PDR_PASSWORD
+    key: password
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Run array parser 
+    echo "Running array parser"
+    python3 -m array_parser.array_parser_main
+
+    # save parsed data to gcs 
+    cd app
+    if [[ -d "$OUT_PATH/${SOURCE_TYPE_OUT}" ]]; then
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/${SOURCE_TYPE_OUT}/**/*.parquet"
+      # /pfs/out/tchain/2023/01/01/12345/data/file.parquet
+      echo "Linking output files to ${linkdir}"
+      # set -x
+      for f in $out_parquet_glob; do
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
+        #fsourcetype="${BASH_REMATCH[1]}"
+        fsourcetype="tchain_parsed"
+        fyear="${BASH_REMATCH[2]}"
+        fmonth="${BASH_REMATCH[3]}"
+        fday="${BASH_REMATCH[4]}"
+        fsourceid="${BASH_REMATCH[5]}"
+        fname="${BASH_REMATCH[7]}"
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname}"
+        
+      done
+      
+      # Upload to bucket, compacting with any existing file 
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset --dedupmethod="readout_time" --nolog
+      
+      # set +x # Uncomment for debugging
+      rm -rf $linkdir
+
+    fi
+
+    EOF
+input:
+  cross:
+  - pfs:
+      name: SCHEMA_PATH
+      repo: tchain_avro_schemas
+      glob: "/tchain/tchain_parsed.avsc"
+  - pfs:
+      name: DATA_PATH
+      repo: tchain_data_source_kafka
+      glob: "/tchain/*/*/*"
+parallelism_spec:
+  constant: 3
+autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 1.6
+resource_limits:
+  memory: 1.5G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
