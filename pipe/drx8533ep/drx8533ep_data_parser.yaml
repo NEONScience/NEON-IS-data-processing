@@ -1,7 +1,7 @@
 pipeline:
   name: drx8533ep_data_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.0.5
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.1.1
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -10,7 +10,7 @@ transform:
     OUT_PATH: /pfs/out 
     PARSE_FIELD: ethenet_output
     RELATIVE_PATH_INDEX: "4"
-    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/drx8533ep/drx8533ep_parsed.avsc 
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/drx8533ep/drx8533ep.avsc 
     SOURCE_TYPE: 'drx8533ep_raw'
     UPDATE_TRIGGER_TABLE: "True"
   secrets:
