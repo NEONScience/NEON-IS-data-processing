@@ -6,7 +6,7 @@
 # The data is loaded to a local volume.
 # The calibration group and convert module processes whatever is in the volume.
 # The final output is copied to a specified repo in the specified output bucket
-# The next workflow in the series is spawned
+# The next workflow in the series is spawned, as read from a configmap
 
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
@@ -107,7 +107,7 @@ spec:
             
         containers:
           - name: load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-b7a7a33
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-8c2e27f
             # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
             # Note that the image might set the user and group as something else, but this doesn't matter because we don't need write priveleges in the container
             securityContext:
@@ -318,7 +318,7 @@ spec:
           - name: main
             dependencies:
               - calibration-group-and-convert
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-b7a7a33
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-8c2e27f
             # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
             # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
             securityContext:
@@ -386,17 +386,42 @@ spec:
 
     - name: chain-next
       steps:
-      - - name: if-succeeded
+      - - name: read-next-wfs
+          template: parse-next-wfs
+          when: "{{workflow.status}} == Succeeded"
+      - - name: spawn-next-wf
           template: create-wf
           arguments:
             parameters:
             - name: wft-name
-              value: cmp22-loc-strc
+              value: "{{item}}"
             - name: datum-manifests
               value: "{{workflow.parameters.datum-manifests}}"
             - name: log-level
               value: "{{workflow.parameters.log-level}}"
-          when: "{{workflow.status}} == Succeeded"
+          withParam: "{{steps.read-next-wfs.outputs.result}}"
+
+    # This template parses the configmap yaml of workflow names and turns it into a json input Argo can read to loop over 
+    - name: parse-next-wfs
+      volumes:
+        - name: tmp-vol
+          emptyDir: { }
+      script:
+        image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-8c2e27f
+        volumeMounts:
+          - name: tmp-vol
+            mountPath: /tmp
+        command: [sh, -c]
+        env:
+        - name: NEXT_WF_CM
+          valueFrom:
+            configMapKeyRef:
+              name: cmp22-next-workflows
+              key: next-wfs-cal-conv
+        source: |
+          echo "$NEXT_WF_CM" | yq -o=json '.workflows' | jq .
+
+
 
     # Resource template that creates the workflow 
     - name: create-wf
