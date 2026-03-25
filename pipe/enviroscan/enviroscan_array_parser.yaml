@@ -86,7 +86,18 @@ transform:
       done
       
       # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset --dedupmethod="readout_time" --nolog
+      linkdir2=$(mktemp -d)
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset --dedupmethod "readout_time" --nolog
+      ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}" --dedupmethod "readout_time" --nolog
+      
+      # Update the trigger table for the site
+      out_site_glob="${OUT_PATH}/${SOURCE_TYPE_OUT}/**/site/*"
+      for s in $out_site_glob; do
+        [[ "$s" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/site/(.*)$ ]]
+        site="${BASH_REMATCH[6]}"
+        echo "Updating trigger table for $site"
+        ./update-trigger-table.py -s "${site}" -S "${fsourcetype}" -D "${linkdir2}"
+      done
       
       # set +x # Uncomment for debugging
       rm -rf $linkdir
