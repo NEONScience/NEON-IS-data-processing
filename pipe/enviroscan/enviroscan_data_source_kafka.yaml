@@ -129,6 +129,10 @@ transform:
           outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
           mkdir -p "${outdir}"
           ln -s "${f}" "${outdir}/${fname}"
+            
+          # Make a zero-byte site files to run the trigger table in the parser
+          mkdir -p ${siteoutpath}/${fsourcetype}/${fyear}/${fmonth}/${fday}/${fsourceid}/site
+          touch ${siteoutpath}/${fsourcetype}/${fyear}/${fmonth}/${fday}/${fsourceid}/site/${site}
 
         done
 
