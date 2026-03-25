@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.13.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.1.1
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out #also used for parser
@@ -15,8 +15,8 @@ transform:
     
     # environment variables for the parser
     PARSE_FIELD: serial_output
-    RELATIVE_PATH_INDEX: "4"
-    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/sunav2/sunav2_parsed.avsc 
+    RELATIVE_PATH_INDEX_PARSER: "4" # Can't straight name this RELATIVE_PATH_INDEX bc it's used in the compact-bucket-copy
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/sunav2/sunav2.avsc 
     SOURCE_TYPE: 'sunav2_raw'
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
     UPDATE_TRIGGER_TABLE: "False"
@@ -34,6 +34,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_LOG_TOPIC
     key: KAFKA_LOG_TOPIC
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_COMPACT_TOPIC
+    key: KAFKA_COMPACT_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -138,14 +141,18 @@ transform:
 
         # Upload to bucket, compacting with any existing file
         echo "Uploading and compacting for ${site} ${date_str}"
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
+        linkdir2=$(mktemp -d)
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset
+        ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}"
 
         # Update the airflow triggering table
         echo "Updating airflow trigger table for ${site} ${date_str}"
-        ./update-trigger-table.py -s "${site}" -S "${SOURCE_TYPE}" -D "${siteoutpath}/${SOURCE_TYPE}"
+        ./update-trigger-table.py -s "${site}" -S "${SOURCE_TYPE}" -D "${linkdir2}"
 
         # set +x # Uncomment for debugging
         rm -rf "${linkdir}"
+        rm -rf "${linkdir2}"
+        
         # Move the per site files to the structure expected by pachyderm
         cd "${siteoutpath}/${SOURCE_TYPE}/"
         dest="${OUT_PATH}/${SOURCE_TYPE}/"
@@ -164,8 +171,10 @@ transform:
 
     # run data parser
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+      export RELATIVE_PATH_INDEX=$RELATIVE_PATH_INDEX_PARSER
       python3 -m raw_data_parsers.raw_data_parser.suna_data_parser_main
-    
+      unset RELATIVE_PATH_INDEX
+      
       # Upload L0 files to bucket, compacting with any existing file with the same name
       # when SOURCE_TYPE is sunav2_raw, OUT_SOURCE_TYPE is sunav2
       OUT_SOURCE_TYPE=${SOURCE_TYPE%%_raw} 
@@ -197,11 +206,14 @@ transform:
           done
   
           # Upload to bucket, compacting with any existing file
-          ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
+          linkdir2=$(mktemp -d)
+          ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset --dedupmethod "readout_time" --nolog
+          ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}" --dedupmethod "readout_time" --nolog
         fi
   
         # set +x # Uncomment for debugging
         rm -rf $linkdir
+        rm -rf "${linkdir2}"
       fi
 
     fi

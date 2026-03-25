@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -32,6 +32,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_LOG_TOPIC
     key: KAFKA_LOG_TOPIC
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_COMPACT_TOPIC
+    key: KAFKA_COMPACT_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -154,34 +157,38 @@ transform:
         done
         
         # Upload to bucket, compacting with any existing file 
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
+        linkdir2=$(mktemp -d)
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" -l "${linkdir2}" --stripoffset
+        ./compact-bucket-copy.py --sourcepath "${linkdir2}" --destbucket "${BUCKET_NAME}"
 
         # Update the airflow triggering table
         echo "Updating airflow trigger table for $site and $date_str"
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_1}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_1 -D "${siteoutpath}/${SOURCE_TYPE_1}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_1 -D "${linkdir2}/v2/${SOURCE_TYPE_1}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_2}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_2 -D "${siteoutpath}/${SOURCE_TYPE_2}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_2 -D "${linkdir2}/v2/${SOURCE_TYPE_2}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_3}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_3 -D "${siteoutpath}/${SOURCE_TYPE_3}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_3 -D "${linkdir2}/v2/${SOURCE_TYPE_3}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_4}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_4 -D "${siteoutpath}/${SOURCE_TYPE_4}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_4 -D "${linkdir2}/v2/${SOURCE_TYPE_4}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_5}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_5 -D "${siteoutpath}/${SOURCE_TYPE_5}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_5 -D "${linkdir2}/v2/${SOURCE_TYPE_5}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_6}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_6 -D "${siteoutpath}/${SOURCE_TYPE_6}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_6 -D "${linkdir2}/v2/${SOURCE_TYPE_6}" 
         fi
         if [[ -d "${siteoutpath}/${SOURCE_TYPE_7}" ]]; then
-          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_7 -D "${siteoutpath}/${SOURCE_TYPE_7}" 
+          ./update-trigger-table.py -s $site -S $SOURCE_TYPE_7 -D "${linkdir2}/v2/${SOURCE_TYPE_7}" 
         fi
 
         # set +x # Uncomment for debugging
         rm -rf "${linkdir}"
+        rm -rf "${linkdir2}"
+        
         # Move the per site files to the structure expected by pachyderm
         cd "${siteoutpath}/"
         dest="${OUT_PATH}/"

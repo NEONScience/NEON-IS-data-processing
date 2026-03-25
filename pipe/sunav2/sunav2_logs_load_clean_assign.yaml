@@ -1,0 +1,67 @@
+---
+pipeline:
+  name: sunav2_logs_load_clean_assign
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-load-clean-assign:v1.1.2
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/interim
+    mkdir -p /tmp/pfs/interim
+    
+    # Run first module - logjam loader (using environment variables below as input parameters)
+    python3 -m logjam_loader.load_all_logjam_files
+        
+    #run cleaning script
+    Rscript ./flow.sunav2.logfiles.R \
+      DirIn=/tmp/pfs/interim \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmData=$FILE_SCHEMA_DATA
+    
+    EOF
+  env:
+    # Environment variables for logjam loader
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
+    OUT_PATH: /tmp/pfs/interim
+    LOG_LEVEL: DEBUG
+    STARTING_PATH_INDEX: "7"
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  cross:
+  - pfs:
+      name: IN_PATH
+      repo: sunav2_logjam_list_files
+      glob: /*/*/*/logjam_prod/sunav2/*
+      empty_files: true
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: sunav2_avro_schemas
+      glob: /sunav2/sunav2_logfilled.avsc
+  
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:v1.1.1
   cmd:
   - sh
   - "-c"
@@ -142,7 +142,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_L0_PARSED
       repo: sunav2_avro_schemas
-      glob: /sunav2/sunav2_parsed.avsc
+      glob: /sunav2/sunav2.avsc
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: sunav2_avro_schemas
@@ -164,7 +164,7 @@ input:
         outer_join: true
     - pfs:
         name: DATA_PATH_LOG
-        repo: sunav2_logjam_assign_clean_files
+        repo: sunav2_logs_load_clean_assign
         glob: /(sunav2/*/*/*) #sunav2/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY

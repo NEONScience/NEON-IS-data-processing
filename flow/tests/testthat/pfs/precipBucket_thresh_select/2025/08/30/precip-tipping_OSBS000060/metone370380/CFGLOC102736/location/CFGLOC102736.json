@@ -1,0 +1,25 @@
+{
+    "features":[
+        {
+            "geometry":null,
+            "HOR":"000",
+            "properties":{
+                "active_periods":[
+                    {
+                        "start_date":"2025-08-30T00:00:00Z",
+                        "end_date":"2025-08-31T00:00:00Z"
+                    }
+                ],
+                "context":[
+                    "precipitation",
+                    "tipping"
+                ],
+                "description":"Ordway-Swisher Secondary Precipitation",
+                "name":"CFGLOC102736",
+                "site":"OSBS"
+            },
+            "VER":"060"
+        }
+    ],
+    "type":"FeatureCollection"
+}

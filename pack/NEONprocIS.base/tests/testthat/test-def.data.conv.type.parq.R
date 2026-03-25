@@ -102,6 +102,11 @@ test_that("bonus test of getting the schema from a parquet file",
             schm <- NEONprocIS.base::def.schm.parq.from.df(df=data,Infer=TRUE)
             testthat::expect_true(grepl("list",schm$fields[[17]]$type$ToString()))
             schm <- NEONprocIS.base::def.schm.parq.from.df(df=data,Infer=FALSE)
+            testthat::expect_true(grepl("string",schm$fields[[1]]$type$ToString()))
+            testthat::expect_true(schm$fields[[3]]$type$ToString()=="timestamp[ms, tz=GMT]")
+            testthat::expect_true(grepl("float",schm$fields[[9]]$type$ToString()))
+            testthat::expect_true(grepl("list",schm$fields[[17]]$type$ToString()))
+            testthat::expect_true(grepl("int32",schm$fields[[17]]$type$value_type$ToString()))
             testthat::expect_true(grepl("bool",schm$fields[[37]]$type$ToString()))
             
           })
