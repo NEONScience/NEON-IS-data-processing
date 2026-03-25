@@ -142,7 +142,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_L0_PARSED
       repo: sunav2_avro_schemas
-      glob: /sunav2/sunav2_parsed.avsc
+      glob: /sunav2/sunav2.avsc
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: sunav2_avro_schemas

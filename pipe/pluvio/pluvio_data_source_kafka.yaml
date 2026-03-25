@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.0.5
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.1.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -18,7 +18,7 @@ transform:
     # environment variables for the parser
     PARSE_FIELD: serial_output
     RELATIVE_PATH_INDEX_PARSER: "4" # Can't straight name this RELATIVE_PATH_INDEX bc it's used in the compact-bucket-copy
-    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/pluvio/pluvio_parsed.avsc 
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/pluvio/pluvio.avsc 
     SOURCE_TYPE: 'pluvio_raw'
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
     UPDATE_TRIGGER_TABLE: "False"
