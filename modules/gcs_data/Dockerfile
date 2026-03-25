@@ -17,6 +17,7 @@ ARG RCLONE_VERSION=v1.72.1
 # Install system dependencies
 RUN microdnf update -y --disableplugin=subscription-manager && \
     microdnf install -y --disableplugin=subscription-manager \
+            yq \
             jq \
             findutils \
             gzip \
