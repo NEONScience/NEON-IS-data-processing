@@ -11,3 +11,6 @@ data:
     workflows:
       - cmp22-loc-strc
       - test-input-artifact
+  upstream-wfs-loc-strc: |
+    cal-conv: ""
+    upstream2: ""
