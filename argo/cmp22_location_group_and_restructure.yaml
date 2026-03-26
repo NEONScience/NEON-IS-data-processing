@@ -88,7 +88,7 @@ spec:
             
         containers:
           - name: load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-b7a7a33
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-8c2e27f
             # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
             # Note that the image might set the user and group as something else, but this doesn't matter because we don't need write priveleges in the container
             securityContext:
@@ -279,7 +279,7 @@ spec:
           - name: main
             dependencies:
               - location-group-and-restructure
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-b7a7a33
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-8c2e27f
             # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
             # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
             securityContext:
