@@ -4,7 +4,7 @@ metadata:
   name: cmp22-next-workflows
   namespace: argo-workflows-dev
   labels:
-    # Note that this label is required for the informer to detect this ConfigMap.
+    # Note: This label is required for the informer to detect this ConfigMap.
     workflows.argoproj.io/configmap-type: Parameter
 data:
   next-wfs-cal-conv: |
