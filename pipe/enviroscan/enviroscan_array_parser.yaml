@@ -94,7 +94,8 @@ transform:
       out_site_glob="${OUT_PATH}/${SOURCE_TYPE_OUT}/**/site/*"
       for s in $out_site_glob; do
         [[ "$s" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/site/(.*)$ ]]
-        site="${BASH_REMATCH[6]}"
+        site_file="${BASH_REMATCH[6]}"
+        site="${site_file:0:4}"
         echo "Updating trigger table for $site"
         ./update-trigger-table.py -s "${site}" -S "${fsourcetype}" -D "${linkdir2}"
       done
