@@ -75,11 +75,9 @@ wrap.sunav2.logfiles <- function(FileIn,
     base::stop()
   }
   
-#' Find row where data actually starts
-  start<-which(grepl('Zeiss Coefficient',logFile$V2))+1
-  # Separate data and metadata
-  logData<-logFile[start:(nrow(logFile)),]
-  logMetadata<-logFile[1:(start-1),2:6]
+# Separate data and metadata
+  logData<-logFile[(logFile$V1!="SATFHR"),]
+  logMetadata<-logFile[(logFile$V1=="SATFHR"),]
   
 #' Update names of existing columns to match avro schema
   names(logData)<-c("header_serial_number","year_and_day","time","nitrate_concentration","nitrogen_in_nitrate","absorbance_254nm","absorbance_350nm",
