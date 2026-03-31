@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: test-input-artifact
+  name: test-input-artifact-a
 spec:
 
   # You can set sensible defaults here, can override in the workflow
