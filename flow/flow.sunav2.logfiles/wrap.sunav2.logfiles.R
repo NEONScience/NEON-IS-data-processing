@@ -150,6 +150,10 @@ wrap.sunav2.logfiles <- function(FileIn,
   op <- options(digits.secs=3)
   logData$readout_time<-lubridate::with_tz(logData$readout_time+(as.numeric(logData$time)*60*60),'UTC')
   logData<-logData[!is.na(logData$readout_time),]
+  if (base::nrow(logData) == 0) {
+    log$error(base::paste0('File ', FileIn, ' contains no valid data rows after filtering on readout_time.'))
+    base::stop()
+  }
   
 #' Create additional header columns needed to match avro schema
   asset_string <- regexpr("\\/[0-9]{5}\\/",FileIn) #' For SUNA asset info not included in log file header.  Need it from input file folder name.
