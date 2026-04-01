@@ -77,6 +77,7 @@ wrap.sunav2.logfiles <- function(FileIn,
   
 # Separate data and metadata
   logData<-logFile[(logFile$V1!="SATFHR"),]
+  logData<-logData[!(grepl("><", logData$V1)),]
   logMetadata<-logFile[(logFile$V1=="SATFHR"),]
   
 #' Update names of existing columns to match avro schema
