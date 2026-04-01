@@ -76,9 +76,9 @@ wrap.sunav2.logfiles <- function(FileIn,
   }
   
 # Separate data and metadata
-  logData<-logFile[(logFile$V1!="SATFHR"),]
-  logData<-logData[!(grepl("><", logData$V1)),]
-  logMetadata<-logFile[(logFile$V1=="SATFHR"),]
+  logData <- logFile[!is.na(logFile$V1) & logFile$V1 != "SATFHR", ]
+  logData <- logData[!is.na(logData$V1) & !grepl("><", logData$V1, fixed = TRUE), ]
+  logMetadata <- logFile[!is.na(logFile$V1) & logFile$V1 == "SATFHR", ]
   
 #' Update names of existing columns to match avro schema
   names(logData)<-c("header_serial_number","year_and_day","time","nitrate_concentration","nitrogen_in_nitrate","absorbance_254nm","absorbance_350nm",
