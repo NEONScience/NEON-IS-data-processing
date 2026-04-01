@@ -41,7 +41,7 @@
 #'                               SchmDataOut=NULL,
 #'                               log=log)
 #' Stepping through the code in R studio                               
-# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/sunav2_logjam_load_files/20349')
+# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/sunav2_logjam_load_files/17649')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmData=~/pfs/sunav2_avro_schemas/sunav2/sunav2_logfilled.avsc")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -110,6 +110,7 @@ log$debug(base::paste0('Files identified:', fileData))
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxFileIn = fileData) %dopar% {
+  #idxFileIn<-fileData[grepl('a952eee',fileData)]
   log$info(base::paste0('Processing path to file: ', idxFileIn))
   # Run the wrapper function for each datum, with error routing
   tryCatch(
