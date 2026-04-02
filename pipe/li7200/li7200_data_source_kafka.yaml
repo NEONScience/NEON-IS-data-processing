@@ -167,7 +167,7 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/li7200/*/*/*/*"
 parallelism_spec:
-  constant: 5
+  constant: 6
 autoscaling: true
 resource_requests:
   memory: 5G
