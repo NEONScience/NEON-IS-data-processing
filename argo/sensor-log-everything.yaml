@@ -1,0 +1,17 @@
+# Test sensor that logs everything
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: sensor-log-everything
+  namespace: argo
+spec:
+  dependencies:
+    - name: any-event
+      eventSourceName: transition-workflows-dev
+      eventName: workflows-succeeded
+  triggers:
+    - template:
+        name: log-event
+        log:
+          intervalSeconds: 0
+          
