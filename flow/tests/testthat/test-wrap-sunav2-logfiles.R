@@ -44,12 +44,14 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
   
   #setwd('~/R/NEON-IS-data-processing/flow/tests/testthat')
+  #data<-NEONprocIS.base::def.read.parq(NameFile='~/R/NEON-IS-data-processing/flow/tests/testthat/pfs/out/sunav2/2019/03/11/25866/data/sunav2_25866_2019-03-11__285ae_log.parquet')
   
   # Test 1: process a typical file and expect daily output directories created
   workingDirPath <- getwd()
-  testFileIn = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/20349/logjam_prod_20349a.csv')
+  testFileIn = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/25866/testfile.csv')
   testFileIn2 = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/20349/logjam_prod_20349c.csv')
-  Asset<-"20349"
+  Asset<-"25866"
+  Asset2<-"20349"
   fileName<-basename(testFileIn)
   testDirOut = 'pfs/out'
   
@@ -77,12 +79,13 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   }
   
   testDirOutDir<-paste(testDirOut,"sunav2",y,m,d,Asset,sep="/")
+  testDirOutDir2<-paste(testDirOut,"sunav2",y,m,d,Asset,sep="/")
   
   # Test 1: runs without error
   wrap.sunav2.logfiles(FileIn=testFileIn, DirOut=testDirOut, SchmDataOut=NULL, log=log)
   testthat::expect_true(file.exists(file.path(testDirOutDir, "data")))
-  wrap.sunav2.logfiles(FileIn=testFileIn2, DirOut=testDirOut, SchmDataOut=NULL, log=log)
-  testthat::expect_true(file.exists(file.path(testDirOutDir, "data")))
+  wrap.sunav2.logfiles(FileIn=testFileIn2, DirOut=testDirOutDir2, SchmDataOut=NULL, log=log)
+  testthat::expect_true(file.exists(file.path(testDirOutDir2, "data")))
 
   
   # Test 2: Not NULL Schema is passed in
@@ -93,8 +96,8 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   SchmDataOut <- base::paste0(base::readLines(schm),collapse='')
   wrap.sunav2.logfiles(FileIn=testFileIn, DirOut=testDirOut, SchmDataOut=SchmDataOut, log=log)
   testthat::expect_true(file.exists(file.path(testDirOutDir, "data")))
-  wrap.sunav2.logfiles(FileIn=testFileIn2, DirOut=testDirOut, SchmDataOut=SchmDataOut, log=log)
-  testthat::expect_true(file.exists(file.path(testDirOutDir, "data")))
+  wrap.sunav2.logfiles(FileIn=testFileIn2, DirOut=testDirOutDir2, SchmDataOut=SchmDataOut, log=log)
+  testthat::expect_true(file.exists(file.path(testDirOutDir2, "data")))
 
   # Additional negative/robustness tests could be added, e.g. missing column, corrupt file, etc
   
