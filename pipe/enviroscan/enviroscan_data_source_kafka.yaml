@@ -131,8 +131,9 @@ transform:
           ln -s "${f}" "${outdir}/${fname}"
             
           # Make a zero-byte site files to run the trigger table in the parser
+          #   Need to append the datum date to the file name to avoid Pachy duplicate file paths
           mkdir -p ${siteoutpath}/${fsourcetype}/${fyear}/${fmonth}/${fday}/${fsourceid}/site
-          touch ${siteoutpath}/${fsourcetype}/${fyear}/${fmonth}/${fday}/${fsourceid}/site/${site}
+          touch ${siteoutpath}/${fsourcetype}/${fyear}/${fmonth}/${fday}/${fsourceid}/site/${site}_${date_str}
 
         done
 
