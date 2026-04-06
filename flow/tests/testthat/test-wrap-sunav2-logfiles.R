@@ -81,7 +81,7 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   }
   
   testDirOutDir<-paste(testDirOut,"sunav2",y,m,d,Asset,sep="/")
-  testDirOutDir2<-paste(testDirOut,"sunav2",y,m,d,Asset,sep="/")
+  testDirOutDir2<-paste(testDirOut,"sunav2",y,m,d,Asset2,sep="/")
   
   # Test 1: runs without error
   wrap.sunav2.logfiles(FileIn=testFileIn, DirOut=testDirOut, SchmDataOut=NULL, log=log)
