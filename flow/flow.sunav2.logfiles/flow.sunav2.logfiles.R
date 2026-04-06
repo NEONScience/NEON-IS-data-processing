@@ -41,7 +41,7 @@
 #'                               SchmDataOut=NULL,
 #'                               log=log)
 #' Stepping through the code in R studio                               
-# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/sunav2_logjam_load_files/20349')
+# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/sunav2_logjam_load_files/17649')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmData=~/pfs/sunav2_avro_schemas/sunav2/sunav2_logfilled.avsc")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -53,7 +53,6 @@
 #' Bobby Hensley (2025-04-09) adapted for SUNA 
 # 
 ##############################################################################################
-options(digits.secs = 3)
 library(foreach)
 library(doParallel)
 library(lubridate)
