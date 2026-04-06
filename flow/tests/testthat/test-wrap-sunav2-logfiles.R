@@ -49,7 +49,7 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   # Test 1: process a typical file and expect daily output directories created
   workingDirPath <- getwd()
   testFileIn = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/20349/logjam_prod_20349c.csv')
-  testFileIn2 = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/20349/logjam_prod_20349c.csv')
+  testFileIn2 = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/25866/testfile.csv')
   Asset<-"20349"
   Asset2<-"25866"
   fileName<-basename(testFileIn)
