@@ -43,8 +43,13 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   library(lubridate)
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
   
-  #setwd('~/R/NEON-IS-data-processing/flow/tests/testthat')
-  #data<-NEONprocIS.base::def.read.parq(NameFile='~/R/NEON-IS-data-processing/flow/tests/testthat/pfs/out/sunav2/2019/03/11/25866/data/sunav2_25866_2019-03-11__285ae_log.parquet')
+  # Example debug read using the current test working directory:
+  # data <- NEONprocIS.base::def.read.parq(
+  #   NameFile = file.path(
+  #     workingDirPath,
+  #     'pfs/out/sunav2/2019/03/11/25866/data/sunav2_25866_2019-03-11__285ae_log.parquet'
+  #   )
+  # )
   
   # Test 1: process a typical file and expect daily output directories created
   workingDirPath <- getwd()
