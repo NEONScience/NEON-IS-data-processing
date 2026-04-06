@@ -51,7 +51,7 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   testFileIn = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/20349/logjam_prod_20349c.csv')
   testFileIn2 = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/20349/logjam_prod_20349c.csv')
   Asset<-"20349"
-  Asset2<-"20349"
+  Asset2<-"25866"
   fileName<-basename(testFileIn)
   testDirOut = 'pfs/out'
   testDirOutDir = file.path(testDirOut, Asset)
