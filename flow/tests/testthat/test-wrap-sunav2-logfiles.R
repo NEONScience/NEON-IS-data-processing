@@ -54,6 +54,8 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   Asset2<-"20349"
   fileName<-basename(testFileIn)
   testDirOut = 'pfs/out'
+  testDirOutDir = file.path(testDirOut, Asset)
+  testDirOutDir2 = file.path(testDirOut, Asset2)
   
   
   # Read in file
