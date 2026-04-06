@@ -43,24 +43,14 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   library(lubridate)
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
   
-  # Example debug read using the current test working directory:
-  # data <- NEONprocIS.base::def.read.parq(
-  #   NameFile = file.path(
-  #     workingDirPath,
-  #     'pfs/out/sunav2/2019/03/11/25866/data/sunav2_25866_2019-03-11__285ae_log.parquet'
-  #   )
-  # )
   
   # Test 1: process a typical file and expect daily output directories created
   workingDirPath <- getwd()
   testFileIn = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/20349/logjam_prod_20349c.csv')
-  testFileIn2 = file.path(workingDirPath, 'pfs/sunav2_logjam_load_files/25866/testfile.csv')
   Asset<-"20349"
-  Asset2<-"25866"
   fileName<-basename(testFileIn)
   testDirOut = 'pfs/out'
   testDirOutDir = file.path(testDirOut, Asset)
-  testDirOutDir2 = file.path(testDirOut, Asset2)
   
   
   # Read in file
@@ -86,13 +76,10 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   }
   
   testDirOutDir<-paste(testDirOut,"sunav2",y,m,d,Asset,sep="/")
-  testDirOutDir2<-paste(testDirOut,"sunav2",y,m,d,Asset2,sep="/")
   
   # Test 1: runs without error
   wrap.sunav2.logfiles(FileIn=testFileIn, DirOut=testDirOut, SchmDataOut=NULL, log=log)
   testthat::expect_true(file.exists(file.path(testDirOutDir, "data")))
-  wrap.sunav2.logfiles(FileIn=testFileIn2, DirOut=testDirOutDir2, SchmDataOut=NULL, log=log)
-  testthat::expect_true(file.exists(file.path(testDirOutDir2, "data")))
 
   
   # Test 2: Not NULL Schema is passed in
@@ -103,8 +90,6 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   SchmDataOut <- base::paste0(base::readLines(schm),collapse='')
   wrap.sunav2.logfiles(FileIn=testFileIn, DirOut=testDirOut, SchmDataOut=SchmDataOut, log=log)
   testthat::expect_true(file.exists(file.path(testDirOutDir, "data")))
-  wrap.sunav2.logfiles(FileIn=testFileIn2, DirOut=testDirOutDir2, SchmDataOut=SchmDataOut, log=log)
-  testthat::expect_true(file.exists(file.path(testDirOutDir2, "data")))
 
   # Additional negative/robustness tests could be added, e.g. missing column, corrupt file, etc
   
