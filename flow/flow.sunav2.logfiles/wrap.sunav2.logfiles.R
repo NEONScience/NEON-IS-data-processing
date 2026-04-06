@@ -151,8 +151,9 @@ wrap.sunav2.logfiles <- function(FileIn,
   logData$readout_time<-lubridate::with_tz(logData$readout_time+(as.numeric(logData$time)*60*60),'UTC')
   logData<-logData[!is.na(logData$readout_time),]
   if (base::nrow(logData) == 0) {
-    log$error(base::paste0('File ', FileIn, ' contains no valid data rows after filtering on readout_time.'))
-    base::stop()
+    empty_data_msg <- base::paste0('File ', FileIn, ' contains no valid data rows after filtering on readout_time.')
+    log$error(empty_data_msg)
+    base::stop(empty_data_msg)
   }
   
 #' Create additional header columns needed to match avro schema
