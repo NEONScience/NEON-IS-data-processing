@@ -53,7 +53,6 @@
 #' Bobby Hensley (2025-04-09) adapted for SUNA 
 # 
 ##############################################################################################
-options(digits.secs = 3)
 library(foreach)
 library(doParallel)
 library(lubridate)
