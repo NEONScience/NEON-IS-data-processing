@@ -110,7 +110,6 @@ log$debug(base::paste0('Files identified:', fileData))
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxFileIn = fileData) %dopar% {
-  #idxFileIn<-fileData[grepl('a952eee',fileData)]
   log$info(base::paste0('Processing path to file: ', idxFileIn))
   # Run the wrapper function for each datum, with error routing
   tryCatch(
