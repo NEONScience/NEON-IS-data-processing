@@ -1,5 +1,5 @@
+aepg600m_ingest_days.yaml
 aepg600m_cron_daily_and_date_control.yaml
-aepg600m_data_source_kafka.yaml
 aepg600m_data_source_gcs.yaml
 aepg600m_calibration_list_files.yaml
 aepg600m_calibration_loader.yaml
