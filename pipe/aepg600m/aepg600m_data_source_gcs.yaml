@@ -14,6 +14,10 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
+    # Get today's date for evaluating kafka data retention period
+    date_today=$(date -u +%Y-%m-%d)
+    kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    
     # Get data from GCS bucket
     echo "Processing $import_trigger"
     p=${import_trigger#/pfs}
@@ -22,14 +26,19 @@ transform:
     year=${arr[4]}
     month=${arr[5]}
     day=${arr[6]}
-    
-    echo "Extracting $year-$month-$day for $source_type from GCS"
-    python3 -m l0_gcs_loader.l0_gcs_loader
+    if [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]
+    then
+      echo "Extracting $year-$month-$day for $source_type from GCS"
+      python3 -m l0_gcs_loader.l0_gcs_loader
+    else
+      echo "$year/$month/$day is within the Kafka retention period and should be loaded from Kafka. Skipping..."
+    fi
 
     EOF
   env:
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
+    KAFKA_RETENTION_DAYS: "15"
     BUCKET_VERSION_PATH: "v2"  # The root path of the bucket, indicative of the version (e.g. v2)
     SOURCE_TYPE_INDEX: "4"
     YEAR_INDEX: "5"
@@ -41,22 +50,11 @@ transform:
   #   env_var: BUCKET_NAME
   #   key: LO_BUCKET
 input:
-  join:
-  - pfs:
-      name: import_trigger
-      repo: aepg600m_cron_daily_and_date_control
-      # Glob must be daily
-      glob: "/trino/(*/*/*/*)"
-      joinOn: $1
-      # Need outer join so that days loaded prior to starting argo ingest will stay in the system
-      outer_join: true
-  - pfs:
-      name: ingest_trigger
-      repo: aepg600m_ingest_days
-      # Glob must be daily
-      glob: "/(*/*/*/*)"
-      joinOn: $1
-      branch: master
+  pfs:
+    name: import_trigger
+    repo: aepg600m_cron_daily_and_date_control
+    # Glob must be daily
+    glob: "/trino/*/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
