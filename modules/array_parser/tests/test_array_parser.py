@@ -80,8 +80,6 @@ class ArrayParserTest(TestCase):
         self.source_id_index = 7
         self.data_type_index = 8
         self.source_type_out = 'tchain'
-        self.replace_schema_name = False
-        self.test_mode = True
 
     def test_calibration_parser(self) -> None:
         target_path = Path(self.in_path, self.calibration_metadata_path, '30000000016555_WO12477_87280.xml')
@@ -103,13 +101,12 @@ class ArrayParserTest(TestCase):
                         parse_calibration=True,
                         source_type_index=self.source_type_index,
                         source_type_out=self.source_type_out,
-                        replace_schema_name=self.replace_schema_name,
                         year_index=self.year_index,
                         month_index=self.month_index,
                         day_index=self.day_index,
                         source_id_index=self.source_id_index,
                         data_type_index=self.data_type_index,
-                        test_mode=self.test_mode)
+                        test_mode=True)
         array_parser.parse(config)
         self.check_output()
 
@@ -126,7 +123,6 @@ class ArrayParserTest(TestCase):
         os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
         os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
         os.environ['TEST_MODE'] = str(True)
-        os.environ['REPLACE_SCHEMA_NAME'] = str(False)
         array_parser_main.main()
         self.check_output()
 

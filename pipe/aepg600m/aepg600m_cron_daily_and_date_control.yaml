@@ -10,8 +10,8 @@ transform:
     # NOTE that the aepg600m needs to handle both heated and unheated source types, and have different site-dates for kafka and trino loaders.
     # This is because some kafka topics start with <site>dfir instead of simply <site>, which the trino loader cannot handle
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
-    START_DATE: "2026-03-23"
-    # END_DATE: "2026-03-27"
+    START_DATE: "2025-07-29"
+    END_DATE: "2025-09-01"
     OUT_PATH_KAFKA: /pfs/out/kafka
     OUT_PATH_TRINO: /pfs/out/trino
     SOURCE_TYPE_NONHEATED: "aepg600m"
@@ -53,19 +53,11 @@ transform:
 input:
   cross:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
-  # It merges the staging branch of the ingest_trigger into the master branch. There is a cron tick 
-  #   in that repo that this pipeline and the metadata loaders will use to trigger daily updates.
-  # The key functionality with merging the staging branch into master branch is that multiple commits
-  #   can be made to the ingest trigger(s) but processing is triggered only once per day.
-  - pfs:
-      name: ingest_trigger
-      repo: aepg600m_ingest_days
-      glob: "/"
-      empty_files: True
-      branch: master
-      trigger: 
-        cronSpec: "0 3 * * *" # Run at 03:00 GMT
-        branch: "staging"
+  - cron:
+      name: tick
+      spec: "@never"
+      # spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      overwrite: true
   - pfs:
       name: SITE_FILE_HEATED_KAFKA
       repo: aepg600m_site_list
