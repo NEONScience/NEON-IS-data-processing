@@ -75,11 +75,10 @@ wrap.sunav2.logfiles <- function(FileIn,
     base::stop()
   }
   
-#' Find row where data actually starts
-  start<-which(grepl('Zeiss Coefficient',logFile$V2))+1
-  # Separate data and metadata
-  logData<-logFile[start:(nrow(logFile)),]
-  logMetadata<-logFile[1:(start-1),2:6]
+# Separate data and metadata
+  logData <- logFile[!is.na(logFile$V1) & logFile$V1 != "SATFHR", ]
+  logData <- logData[!is.na(logData$V1) & !grepl("><", logData$V1, fixed = TRUE), ]
+  logMetadata <- logFile[!is.na(logFile$V1) & logFile$V1 == "SATFHR", ]
   
 #' Update names of existing columns to match avro schema
   names(logData)<-c("header_serial_number","year_and_day","time","nitrate_concentration","nitrogen_in_nitrate","absorbance_254nm","absorbance_350nm",
@@ -150,6 +149,12 @@ wrap.sunav2.logfiles <- function(FileIn,
   logData$readout_time<-lubridate::parse_date_time(as.character(logData$year_and_day),order="yj") 
   op <- options(digits.secs=3)
   logData$readout_time<-lubridate::with_tz(logData$readout_time+(as.numeric(logData$time)*60*60),'UTC')
+  logData<-logData[!is.na(logData$readout_time),]
+  if (base::nrow(logData) == 0) {
+    empty_data_msg <- base::paste0('File ', FileIn, ' contains no valid data rows after filtering on readout_time.')
+    log$error(empty_data_msg)
+    base::stop(empty_data_msg)
+  }
   
 #' Create additional header columns needed to match avro schema
   asset_string <- regexpr("\\/[0-9]{5}\\/",FileIn) #' For SUNA asset info not included in log file header.  Need it from input file folder name.
