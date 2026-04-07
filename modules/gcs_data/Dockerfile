@@ -1,6 +1,6 @@
 ####
 #
-# This dockerfile will build an image to run the data_source_gcs module (developed for Argo)
+# This dockerfile will build an image to run the gcs_data module (developed for Argo)
 # Example command (run from modules/ directory in Docker context):
 # docker build -t neon-is-gcs-data -f ./modules/gcs_data/Dockerfile .
 #
