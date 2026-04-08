@@ -66,6 +66,8 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-07-21)
 #     Initial creation
+#   Teresa Burlingame  (2025-04-08)
+#     change sum logic to be NA when all 30 mins are NA. 
 ##############################################################################################
 wrap.precip.pluvio.stats <- function(DirIn,
                                DirOutBase,
@@ -272,7 +274,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
   stats_30min <- stats_01min[, .(
     startDateTime = min(startDateTime),
     endDateTime = max(endDateTime),
-    precipBulk = sum(precipBulk, na.rm = TRUE),
+    precipBulk =  ifelse(all(is.na(precipBulk)), NA_real_, sum(precipBulk, na.rm = TRUE)),
     precipBulkExpUncert = sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2, # Quadrature sum with 2x multiplier
     precipNumPts = sum(precipNumPts, na.rm = TRUE), # Sum the counts from 1-minute intervals
     nullQF = as.integer(ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, 

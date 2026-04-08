@@ -67,6 +67,8 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-04-15)
 #     Initial creation
+#   Teresa Burlingame  (2026-04-08)
+#     removing unnecessary block and adding in schema to report write
 ##############################################################################################
 wrap.precip.pluvio.flags<- function(DirIn,
                                     DirOutBase,
@@ -117,15 +119,6 @@ wrap.precip.pluvio.flags<- function(DirIn,
                                                  RmvDupl=TRUE,
                                                  Df=TRUE,
                                                  log=log)
-  
-  ## wipe preexisting schema TODO check with Cove
-  # Remove the "schema" attribute
-  #remove existing schema from plau so we can add more cols. 
-  if (is.null(SchmQf)){
-    base::attr(qfPlau, "schema") <- NULL
-  } else {
-    base::attr(qfPlau, "schema") <- SchmQf
-  }
   
   # if there are no heater streams add them in as NA
   if(!('heater_status' %in% names(data))){
@@ -185,39 +178,6 @@ wrap.precip.pluvio.flags<- function(DirIn,
       }
     }
   }
-
-  # "pass through" of data
-  # TODO ask Cove if this is necessary? 
-  # qfs added to list of flags to process through qm module. 
-      # 
-      # #get file name based on date of data in directory
-      # nameFileOut <- fileData
-      # 
-      # # Write out the time shifted dataset to file
-      # fileOut <- fs::path(dirOutData,nameFileOut)
-      # 
-      # rptWrte <-
-      #   base::try(NEONprocIS.base::def.wrte.parq(
-      #     data = data,
-      #     NameFile = fileOut,
-      #     log=log
-      #   ),
-      #   silent = TRUE)
-      # 
-      # if ('try-error' %in% base::class(rptWrte)) {
-      #   log$error(base::paste0(
-      #     'Cannot write output to ',
-      #     fileOut,
-      #     '. ',
-      #     attr(rptWrte, "condition")
-      #   ))
-      #   stop()
-      # } else {
-      #   log$info(base::paste0(
-      #     'Data file written to file ',
-      #     fileOut
-      #   ))
-      # }
     
       nameFileQfOutFlag <- fileQfPlau
 
@@ -227,6 +187,7 @@ wrap.precip.pluvio.flags<- function(DirIn,
         base::try(NEONprocIS.base::def.wrte.parq(
           data = qfPlau,
           NameFile = nameFileQfOutFlag,
+          Schm=SchmQf,
           log=log
         ),
         silent = TRUE)
