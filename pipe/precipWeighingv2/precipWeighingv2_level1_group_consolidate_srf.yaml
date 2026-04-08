@@ -170,7 +170,7 @@ transform:
     PARALLELIZATION_INTERNAL: '2'
 
 # Environment variables for the L1 archiver
-    GROUP_PREFIX: par-quantum-line # no ending "_"
+    GROUP_PREFIX: precip-weighing-v2 # no ending "_"
 
   secrets:
   - name: pdr-secret
@@ -183,7 +183,7 @@ input:
   join:
   - pfs:
       name: STATISTICS_PATH
-      repo: precipWeighingv2_stats_group_and_compute
+      repo: precipWeighingv2_qm_stats_group_and_compute
       glob: /(*/*/*)
       joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
