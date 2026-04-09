@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: exo2_calibration_loader
+  name: exo2turbidity_calibration_loader
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v3.0.0
   cmd:
@@ -12,7 +12,7 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: exo2
+    SOURCE_TYPE: exo2turbidity
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
