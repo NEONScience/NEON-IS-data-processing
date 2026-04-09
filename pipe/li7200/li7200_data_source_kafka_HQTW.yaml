@@ -170,16 +170,7 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
-    set -x
-    
-    # For some reason this does not work, but the datum is listed as recovered and thus findable and reprocesses every job
-    err_datum=$(echo $import_trigger | cut -d "/" -f 8)
-    err_path="/pfs/out/errored_datums/${import_trigger}"
-    mkdir -p $err_path
-    touch ${err_path}/error.txt
-    $(echo "${import_trigger}" > ${err_path}/${err_datum})
-    
-    set +x
+    echo "Processing errored datum"
     
     EOF
     
