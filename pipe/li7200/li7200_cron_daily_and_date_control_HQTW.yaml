@@ -26,7 +26,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: li7200_site_list_HQTW
+      repo: li7200_site_list
       glob: /site-list-HQTW.json
 resource_requests:
   memory: 100M
