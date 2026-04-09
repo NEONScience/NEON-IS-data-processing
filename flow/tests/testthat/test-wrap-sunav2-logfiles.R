@@ -43,7 +43,6 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   library(lubridate)
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
   
-  #setwd('~/R/NEON-IS-data-processing/flow/tests/testthat')
   
   # Test 1: process a typical file and expect daily output directories created
   workingDirPath <- getwd()
@@ -51,6 +50,7 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
   Asset<-"20349"
   fileName<-basename(testFileIn)
   testDirOut = 'pfs/out'
+  testDirOutDir = file.path(testDirOut, Asset)
   
   
   # Read in file
@@ -60,8 +60,10 @@ test_that("Unit test of wrap.sunav2.logfiles.R", {
                          stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
   # Separate data and metadata
   logData<-log_file[(log_file$V1!="SATFHR"),]
+  logData<-logData[!(grepl("><", logData$V1)),]
   #' Calculates the readout date and time in POSIXct format 
   logData$readout_time<-lubridate::parse_date_time(as.character(logData[,2]),order="yj") 
+  logData<-logData[!is.na(logData$readout_time),]
   startDate <- min(logData$readout_time)
   endDate <- max(logData$readout_time)
   date_obj <- as.POSIXct(startDate, format = "%Y-%m-%d", tz = "UTC")
