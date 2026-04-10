@@ -30,7 +30,7 @@ parallelism_spec:
   constant: 6
 autoscaling: true
 resource_requests:
-  memory: 1G
+  memory: 1.5G
   cpu: 1.2
 resource_limits:
   memory: 2G
