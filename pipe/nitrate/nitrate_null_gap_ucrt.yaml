@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: nitrate_null_gap_ucrt
+  name: nitrate_null_gap_ucrt_test
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-ucrt-group:sha-fa9c658
   cmd:
   - sh
   - "-c"
@@ -15,8 +15,10 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
     rm -rf /tmp/pfs/interimUcrt
+    rm -rf /tmp/pfs/interimConfig
     mkdir -p /tmp/pfs/filter_joined
     mkdir /tmp/pfs/interimUcrt
+    mkdir /tmp/pfs/interimConfig
     
 
     # Run first module - filter-joiner (using environment variables below as input parameters)
@@ -30,9 +32,17 @@ transform:
       SchmStats=$FILE_SCHEMA_UCRT \
       "DirSubCopy=group|location|quality_metrics"
     
+    # Run third module - configuration flag
+    Rscript ./flow.sunav2.config.qf.R \
+      DirIn=/tmp/pfs/interimUcrt \
+      DirOutBase=/tmp/pfs/interimConfig \
+      DirErr=/pfs/out/errored_datums \
+      SchmQMs=$FILE_SCHEMA_CONFIG \
+      "DirSubCopy=location"
+      
     # Run third module - insufficient data
     Rscript ./flow.qf.insuff.data.R \
-      DirIn=/tmp/pfs/interimUcrt \
+      DirIn=/tmp/pfs/interimConfig \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       "insuffInfo1=term:nitrate|wndw:015|minPoints:5" \
@@ -90,6 +100,10 @@ input:
       name: FILE_SCHEMA_UCRT
       repo: nitrate_avro_schemas
       glob: /nitrate/nitrate_ucrt.avsc
+  - pfs:
+      name: FILE_SCHEMA_CONFIG
+      repo: nitrate_avro_schemas
+      glob: /nitrate/nitrate_config_qf.avsc
   - pfs:
       name: FILE_SCHEMA_INSUF
       repo: nitrate_avro_schemas
