@@ -116,7 +116,7 @@ wrap.sunav2.config.qf <- function(DirIn,
   #' Write out stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = sunaStats,
                     NameFile = base::paste0(DirOutStats,'/',statsFileName),
-                    Schm = NULL),silent=TRUE)
+                    Schm = SchmStats),silent=TRUE)
     if(class(rptOutStats)[1] == 'try-error'){
       log$error(base::paste0('Cannot write updated stats to ',base::paste0(DirOutStats,'/',statsFileName),'. ',attr(rptOutStats, "condition")))
       stop()
@@ -127,7 +127,7 @@ wrap.sunav2.config.qf <- function(DirIn,
   #' Write out QMs file.  
   rptOutQMs <- try(NEONprocIS.base::def.wrte.parq(data = sunaQMs,
                   NameFile = base::paste0(DirOutQMs,'/',qmFileName),
-                  Schm = NULL),silent=TRUE)
+                  Schm = SchmQMs),silent=TRUE)
     if(class(rptOutQMs)[1] == 'try-error'){
       log$error(base::paste0('Cannot write updated QMs to ',base::paste0(DirOutQMs,'/',qmFileName),'. ',attr(rptOutQMs, "condition")))
       stop()
