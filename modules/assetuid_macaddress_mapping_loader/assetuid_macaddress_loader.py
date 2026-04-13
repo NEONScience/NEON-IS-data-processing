@@ -29,6 +29,7 @@ def load() -> None:
         log.debug("successfully fetched the data")
         assets = response.json()['assets']
         log.debug('asset details are:')
+        log.debug(asset)
         for asset in assets:
             try:
                 asset_uid = asset.get("assetUid")
