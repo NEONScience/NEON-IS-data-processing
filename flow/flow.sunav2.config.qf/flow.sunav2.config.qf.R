@@ -45,8 +45,9 @@
 #' Stepping through the code in R studio                               
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt_test/2025/06/24/nitrate-surfacewater_HOPB112100/sunav2/CFGLOC113620",
-#          "DirOutBase=~/pfs/out", "DirSubCopy=location",
-#          "DirErr=~/pfs/out/errored_datums",collapse=''))
+#          "DirOutBase=~/pfs/out",
+#          "DirSubCopy=location",
+#          "DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
