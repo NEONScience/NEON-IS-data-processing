@@ -11,7 +11,7 @@
 #'
 #' The arguments are: 
 #' 
-#' 1. "DirInBase=value", The base file path to the input stats and qm files. 
+#' 1. "DirIn=value", The base file path to the input stats and qm files. 
 #' 
 #' 2. "DirOutBase=value", The base file path for the output stats and qm files.
 #' 
@@ -21,6 +21,9 @@
 #' 4. "SchmStats=value" (optional), The avro schema for the stats file.
 #' 
 #' 5. "SchmQMs=value" (optional), The avro schema for the QM file.   
+#' 
+#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' pipes, that are to be copied with a symbolic link to the output path. 
 #' 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -34,18 +37,16 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.suna.config.qf <- function(DirInBase="~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620",                        
+#' flow.sunav2.config.qf <- function(DirIn="~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620",                        
 #'                               DirOutBase="~/pfs/out", 
 #'                               SchmStats=base::paste0(base::readLines('~/pfs/nitrate_avro_schemas/sunav2_stats.avsc'),collapse=''),
 #'                               SchmQMs=base::paste0(base::readLines('~/pfs/nitrate_avro_schemas/sunav2_config.avsc'),collapse=''),
 #'                               log=log)
 #' Stepping through the code in R studio                               
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirInBase=~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620",
-#          "DirOutBase=~/pfs/out",
-#          "DirErr=~/pfs/out/errored_datums",
-#          "SchmStats=~/pfs/nitrate_avro_schemas/sunav2_stats.avsc",
-#          "SchmQMs=~/pfs/nitrate_avro_schemas/sunav2_config.avsc")
+# arg <- c("DirIn=~/pfs/nitrate_null_gap_ucrt_test/2025/06/24/nitrate-surfacewater_HOPB112100/sunav2/CFGLOC113620",
+#          "DirOutBase=~/pfs/out", "DirSubCopy=location",
+#          "DirErr=~/pfs/out/errored_datums",collapse=''))
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -53,6 +54,8 @@
 # changelog and author contributions / copyrights
 #' Bobby Hensley (2026-04-13)
 #' Initial creation.
+#' Nora Catolico (2026-04-13)
+#' vectorize for loops, add in dirsubcopy
 
 ##############################################################################################
 options(digits.secs = 3)
@@ -62,7 +65,7 @@ library(lubridate)
 library(dplyr)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.suna.config.qf.R")
+source("./wrap.sunav2.config.qf.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -82,15 +85,16 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirInBase","DirOutBase","DirErr"),
-                                      NameParaOptn = c("SchmStats","SchmQMs"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOutBase","DirErr"),
+                                      NameParaOptn = c("SchmStats","SchmQMs","DirSubCopy"),log = log)
 
 # Echo arguments
-log$debug(base::paste0('Input data directory: ', Para$DirInBase))
+log$debug(base::paste0('Input data directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOutBase))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for stats: ', Para$SchmStats))
 log$debug(base::paste0('Schema for QMs: ', Para$SchmQMs))
+log$debug(base::paste0('Director to copy: ', Para$DirSubCopy))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$SchmStats) || Para$SchmStats == 'NA'){
@@ -104,10 +108,14 @@ if(base::is.null(Para$SchmQMs) || Para$SchmQMs == 'NA'){
   SchmQMs <- base::paste0(base::readLines(Para$SchmQMs),collapse='')
 }
 
+# Retrieve optional subdirectories to copy over
+DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'stats'))
+log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
+
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
-  NEONprocIS.base::def.dir.in(DirBgn = Para$DirInBase,
+  NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
                               nameDirSub = c('stats','quality_metrics'),
                               log = log)
 
@@ -118,11 +126,12 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.suna.config.qf(
-        DirInBase=Para$DirInBase,
+      wrap.sunav2.config.qf(
+        DirIn=idxFileIn,
         DirOutBase=Para$DirOutBase,
         SchmStats=SchmStats,
         SchmQMs=SchmQMs,
+        DirSubCopy=DirSubCopy,
         log=log
       ),
       error = function(err) {
@@ -132,7 +141,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
         NEONprocIS.base::def.err.datm(
           err=err,
           call.stack=call.stack,
-          DirDatm=Para$DirInBase,
+          DirDatm=Para$DirIn,
           DirErrBase=Para$DirErr,
           RmvDatmOut=TRUE,
           DirOutBase=Para$DirOutBase,

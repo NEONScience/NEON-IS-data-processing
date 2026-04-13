@@ -11,13 +11,17 @@
 #'
 #' @param DirIn Character value. The base file path to the averaged stats and quality metrics.
 #' 
-#' @param DirOut Character value. The base file path for the output data. 
+#' @param DirOutBase Character value. The base file path for the output data. 
 #' 
 #' @param SchmStats (optional), A json-formatted character string containing the schema for the output averaged stats parquet.
 #' Should be the same as the input. 
 #' 
 #' @param SchmQMs (optional), A json-formatted character string containing the schema for the output quality metrics parquet 
 #' with continuous mode data quality flag added. 
+#' 
+#' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
+#' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
+#' output path (i.e. not combined but carried through as-is).
 #' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
@@ -32,7 +36,7 @@
 #' 
 #' @examples
 #' # Not run
-# DirInBase<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620"
+# DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620"
 # DirOutBase<-"~/pfs/out" 
 # SchmStats<-"~/pfs/nitrate_avro_schemas/sunav2_stats.avsc"
 # SchmQMs<-"~/pfs/nitrate_avro_schemas/sunav2_config.avsc"
@@ -44,10 +48,11 @@
 #' Initial creation.
 #' 
 ##############################################################################################
-wrap.suna.config.qf <- function(DirInBase,
+wrap.sunav2.config.qf <- function(DirIn,
                                 DirOutBase,
                                 SchmStats=NULL,
                                 SchmQMs=NULL,
+                                DirSubCopy=NULL,
                                 log=NULL
 ){
   
@@ -57,14 +62,22 @@ wrap.suna.config.qf <- function(DirInBase,
   } 
   
   # Input and output sub-directories
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInBase)
-  DirInStats <- paste0(DirInBase,"/stats")
-  DirInQMs <- paste0(DirInBase,"/quality_metrics")
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  DirInStats <- paste0(DirIn,"/stats")
+  DirInQMs <- paste0(DirIn,"/quality_metrics")
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutStats <- base::paste0(DirOut,"/stats")
   base::dir.create(DirOutStats,recursive=TRUE)
   DirOutQMs <- base::paste0(DirOut,"/quality_metrics")
   base::dir.create(DirOutQMs,recursive=TRUE)
+  
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirSubCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,'/',DirSubCopy),
+                                       DirDest=DirOut,
+                                       LnkSubObj=TRUE,
+                                       log=log)
+  }
   
   # Read in parquet file of SUNA stats.
   statsFileName<-base::list.files(DirInStats,full.names=FALSE)
@@ -91,21 +104,14 @@ wrap.suna.config.qf <- function(DirInBase,
   # Sets nitrateConfigQF=1 in QM file if numPoints > maxPts in Data file 
   maxPts= 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
   sunaQMs$nitrateConfigQF=-1
-  for(i in 1:nrow(sunaStats)){
-    if(sunaStats[i,which(colnames(sunaStats)=="nitrateNumPts")]>0)
-      (sunaQMs[i,which(colnames(sunaQMs)=="nitrateConfigQF")]=0)
-    if(sunaStats[i,which(colnames(sunaStats)=="nitrateNumPts")]>maxPts)
-      (sunaQMs[i,which(colnames(sunaQMs)=="nitrateConfigQF")]=1)
-  }
+  pts <- sunaStats[["nitrateNumPts"]]
+  qf  <- sunaQMs[["nitrateConfigQF"]]
+  qf[pts > 0]      <- 0
+  qf[pts > maxPts] <- 1
+  sunaQMs[["nitrateConfigQF"]] <- qf
 
   # If nitrateConfigQF=1 set nitrateFinalQF=1
-  for(i in 1:nrow(sunaQMs)){
-    if(sunaQMs[i,which(colnames(sunaQMs)=="nitrateConfigQF")]==1)
-      (sunaQMs[i,which(colnames(sunaQMs)=="nitrateFinalQF")]=1)
-  }
-  
-  # Arranges columns to match schema
-  sunaQMs <- sunaQMs[, c(1:38, 39, 40)]
+  sunaQMs[sunaQMs[["nitrateConfigQF"]] == 1, "nitrateFinalQF"] <- 1
    
   #' Write out stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = sunaStats,
