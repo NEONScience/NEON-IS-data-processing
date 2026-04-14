@@ -36,7 +36,7 @@
 #' 
 #' @examples
 #' # Not run
-# DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate_HOPB112100/sunav2/CFGLOC113620"
+# DirIn<-"~/pfs/nitrate_null_gap_ucrt/2025/06/24/nitrate-surfacewater_HOPB112100/sunav2/CFGLOC113620"
 # DirOutBase<-"~/pfs/out" 
 # SchmStats<-"~/pfs/nitrate_avro_schemas/sunav2_stats.avsc"
 # SchmQMs<-"~/pfs/nitrate_avro_schemas/sunav2_config.avsc"
@@ -82,7 +82,7 @@ wrap.sunav2.config.qf <- function(DirIn,
   # Read in parquet file of SUNA stats.
   statsFileName<-base::list.files(DirInStats,full.names=FALSE)
   if(length(statsFileName)==0){
-    log$error(base::paste0('Data file not found in ', DirInData)) 
+    log$error(base::paste0('Data file not found in ', DirInStats)) 
     stop()
   } else {
     sunaStats<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInStats, '/', statsFileName),
@@ -104,7 +104,7 @@ wrap.sunav2.config.qf <- function(DirIn,
   # Sets nitrateConfigQF=1 in QM file if numPoints > maxPts in Data file 
   maxPts= 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
   sunaQMs$nitrateConfigQF=-1
-  pts <- sunaStats[["nitrateNumPts"]]
+  pts <- sunaStats[["surfWaterNitrateNumPts"]]
   qf  <- sunaQMs[["nitrateConfigQF"]]
   qf[pts > 0]      <- 0
   qf[pts > maxPts] <- 1
