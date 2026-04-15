@@ -18,6 +18,7 @@ def parse(config: Config) -> None:
     schema_path: Path = config.schema_path
     out_path: Path = config.out_path
     source_type_out: str = config.source_type_out
+    replace_schema_name: str = config.replace_schema_name
     parse_calibration: bool = config.parse_calibration
     test_mode: bool = config.test_mode
     schema_data: SchemaData = schema_parser.parse_schema_file(schema_path)
@@ -35,7 +36,7 @@ def parse(config: Config) -> None:
                     link_data_file(path, Path(common_path, data_type))
                 else:
                     log.debug(f'Parsing file: {path}')
-                    data_file_parser.write_restructured_file(path, Path(common_path, data_type), schema_path)
+                    data_file_parser.write_restructured_file(path, Path(common_path, data_type), schema_path, replace_schema_name)
             elif parse_calibration and data_type == 'calibration':
                 log.debug(f'Parsing calibration file: {path}')
                 link_calibration_file(path, Path(common_path, data_type), schema_data)
