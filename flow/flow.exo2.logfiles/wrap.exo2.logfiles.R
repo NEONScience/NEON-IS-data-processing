@@ -1,0 +1,286 @@
+##############################################################################################
+#' @title Wrapper for EXO2 Multisonde Log File Formatting and Parsing
+
+#' @author
+#' Bobby Hensley \email{hensley@battelleecology.org}
+#' 
+#' @description Wrapper function. Parses combined sonde log files into individual sensors.
+#'
+#' @param FileIn Character value. The input path to the data from a single input source ID, structured as follows: 
+#' #/pfs/BASE_REPO/source-id/file. The input source-id is the unique identifier of the sonde body.  
+#' 
+#' @param DirOutBase Character value. The base output path.  Each sensor will get its own subfolders in this directory. 
+#' 
+#' @param SchmExo2Depth (optional), Schema for the output data from the sonde body.
+#' 
+#' @param SchmExo2Conductivity (optional), Schema for the output data from the conductivity and temperature probe.
+#' 
+#' @param SchmExo2DissolvedOxygen (optional), Schema for the output data from the dissolved oxygen probe.
+#' 
+#' @param SchmExo2Ph (optional), Schema for the output data from the pH probe.
+#' 
+#' @param SchmExo2Turbidity (optional), Schema for the output data from the turbidity probe.
+#' 
+#' @param SchmExo2Fdom (optional), Schema for the output data from the fdom probe.
+#' 
+#' @param SchmExo2Chlorophyll (optional), Schema for the output data from the chlorophyll probe.
+#'                                                                 
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output. Defaults to NULL, in which the logger will be created and used within the function.
+#' 
+#' @return Data from EXO2 multisonde log files in daily parquets.
+#' 
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+#' 
+#' @keywords Currently none
+#' 
+#' @examples
+# FileIn <- "~/pfs/exo2_logjam_files/26235/0673b21ba265fb08227567cf634bfaf7.csv"
+# DirOutBase="~/pfs/exo2_logfile_output"
+# SchmDepth <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/body.avsc'),collapse='')
+# SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_conductivity.avsc'),collapse='')
+# SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_dissolvedOxygen.avsc'),collapse='')
+# SchmPh <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_ph.avsc'),collapse='')
+# SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_turbidity.avsc'),collapse='')
+# SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_fdom.avsc'),collapse='')
+# SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_chloropyhll.avsc'),collapse='')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#'                               
+#' @changelog
+#' Bobby Hensley (2026-04-14)
+#'   Initial creation
+##############################################################################################
+wrap.exo2.logfiles <- function(FileIn,
+                             DirOutBase,
+                             SchmDepth=NULL,
+                             SchmCond=NULL,
+                             SchmDO=NULL,
+                             SchmPh=NULL,
+                             SchmTurb=NULL,
+                             SchmFdom=NULL,
+                             SchmChl=NULL,
+                             log=NULL
+){
+  
+# Start logging if not already
+  if(base::is.null(log)){
+    log <- NEONprocIS.base::def.log.init()
+  } 
+
+# Load in the csv log file(s) 
+  logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = "UTF-16", header = FALSE, sep = ",", 
+                              blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
+                              stringsAsFactors = FALSE,na.strings=c(-1,'')))
+  
+  if (base::any(base::class(logFile) == 'try-error')) {
+    # Generate error and stop execution
+    log$error(base::paste0('File ', FileIn, ' is unreadable. Likely not a sonde data file.'))
+    base::stop()
+  }
+  if(any(grepl('TROLL',logFile))){
+    log$debug(base::paste0('skipping troll file: ', FileIn))
+    base::stop()
+  }else if(any(grepl('SATS',logFile))){
+    log$debug(base::paste0('skipping suna file: ', FileIn))
+    base::stop()
+  }
+
+# Create generic table of data streams, to later be populated with sensor serial numbers
+# Note doesn't have to be exhaustive, just needs one data stream per possible sensor (+ wiper and body)  
+  dataStreams<-data.frame(dataStream = c("sensorDepth","sensorVoltage","wiperPosition","conductance",
+                                         "dissolvedOxygen","pH","turbidity","fDOM","chlorophyll"))
+  
+    
+# Removes rows in log file header(s) that are not needed
+  logFile <- logFile[!grepl("sep=",logFile$V1), ]
+  logFile <- logFile[!grepl("Kor MEASUREMENT DATA FILE EXPORT",logFile$V1), ]
+  logFile <- logFile[!grepl("FILE CREATED:",logFile$V1), ]
+  logFile <- logFile[!grepl("MEAN VALUE:",logFile$V4), ]
+  logFile <- logFile[!grepl("STANDARD DEVIATION:",logFile$V4), ]
+  
+# Identify if multiple headers are present in the file. (Multiple headers may signify probe serial numbers were swapped)  
+  header_ids <- which(logFile[[4]] == "SENSOR SERIAL NUMBER:")
+
+# Split into list of multiple data tables for each new header  
+  list_of_tables <- split(logFile, cumsum(seq_len(nrow(logFile)) %in% (header_ids)))
+  names(list_of_tables) <- paste0("dataTable_", seq_along(list_of_tables))
+  
+# Outer loop: Format data tables and determine serial numbers for each table in list of tables   
+  for(i in 1:length(list_of_tables)) {
+    dataTable<-data.frame(list_of_tables[i])
+    
+    # Change header names to match NEON terms
+    dataTable[] <- lapply(dataTable, function(x) gsub("Cable Pwr V", "sensorVoltage", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Battery V", "batteryVoltage", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Wiper Position volt", "wiperPosition", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Depth m", "sensorDepth", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Pressure psi a", "sondeSurfaceWaterPressure", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Vertical Position m", "verticalPosition", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("SpCond µS/cm", "specificConductance", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Cond µS/cm", "conductance", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Temp °C", "surfaceWaterTemperature", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("ODO mg/L", "dissolvedOxygen", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("ODO % sat", "dissolvedOxygenSaturation", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("ODO % CB", "localDissolvedOxygenSat", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("pH", "pH", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("pH mV", "pHvoltage", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Turbidity FNU", "turbidity", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("fDOM QSU", "fDOM", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Chlorophyll ug/L", "chlorophyll", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Chlorophyll RFU", "chlaRelativeFluorescence", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("TAL PC ug/L", "blueGreenAlgaePhycocyanin", x))
+    colnames(dataTable)<-apply(dataTable[2, ], 2, paste0) # Apply this header to data table(s)
+    
+    # Extract sensor serial numbers
+    serialNumbers<-na.omit(t(dataTable[1:2,]))
+    colnames(serialNumbers)<-c("serialNumber","dataStream")
+    serialNumbers<-merge(dataStreams,serialNumbers,by.x="dataStream",by.y="dataStream",all.x=T,all.y=F)
+    SNbody<-serialNumbers[serialNumbers$dataStream == "sensorVoltage", "serialNumber"]
+    SNdepth<-serialNumbers[serialNumbers$dataStream == "sensorDepth", "serialNumber"]
+    SNwipe<-serialNumbers[serialNumbers$dataStream == "wiperPosition", "serialNumber"]
+    SNcond<-serialNumbers[serialNumbers$dataStream == "conductance", "serialNumber"]
+    SNdo<-serialNumbers[serialNumbers$dataStream == "dissolvedOxygen", "serialNumber"]
+    SNph<-serialNumbers[serialNumbers$dataStream == "pH", "serialNumber"]
+    SNturb<-serialNumbers[serialNumbers$dataStream == "turbidity", "serialNumber"]
+    SNfdom<-serialNumbers[serialNumbers$dataStream == "fDOM", "serialNumber"]
+    SNchl<-serialNumbers[serialNumbers$dataStream == "chlorophyll", "serialNumber"]
+    
+    # Keep only columns and rows to be used
+    keep_cols <- c("Date (MM/DD/YYYY)", "Time (HH:mm:ss)","sensorVoltage","batteryVoltage",
+                   "wiperPosition","sensorDepth","sondeSurfaceWaterPressure","verticalPosition",
+                   "specificConductance","conductance","surfaceWaterTemperature","dissolvedOxygen",
+                   "dissolvedOxygenSaturation","localDissolvedOxygenSat","pH","pHvoltage","turbidity",
+                   "fDOM","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")
+    dataTable <- dataTable[, names(dataTable) %in% keep_cols]
+    dataTable <- dataTable[-(1:2), ] #Removes header info from data field
+    
+    # Calculate readout date and time
+    dataTable$readout_time<-lubridate::with_tz(as.Date(dataTable$`Date (MM/DD/YYYY)`,format = "%m/%d/%Y") 
+                                               + lubridate::hms(dataTable$`Time (HH:mm:ss)`),'UTC')
+    dataTable[, c("Date (MM/DD/YYYY)","Time (HH:mm:ss)")] <- list(NULL)
+    #' Check that there are no dates prior to when NEON began collecting IS data
+    if(any(dataTable$readout_time<"2014-01-01 00:00:00 UTC")){
+      log$debug(base::paste0("Data contains dates prior to when NEON began collecting IS data"))}
+    #' Check that there are no future dates after the current date
+    if(any(dataTable$readout_time>Sys.time())){
+      log$debug(base::paste0("Data contains future dates after the current date"))}
+    # Determine file start year, month and day (for output directory)
+    startYear<-substr(min(dataTable$readout_time[1]),1,4)
+    startMonth<-substr(min(dataTable$readout_time[1]),6,7)
+    startDay<-substr(min(dataTable$readout_time[1]),9,10)  
+
+      # Loop for depth
+      if(!is.na(SNdepth)){
+      depthTable<-dataTable[,names(dataTable) %in% c("readout_time","sondeSurfaceWaterPressure","sensorDepth","verticalPosition")]
+      if(!"sondeSurfaceWaterPressure" %in% names(depthTable)){depthTable$specificConductance <- NA}
+      if(!"sensorDepth" %in% names(depthTable)){depthTable$sensorDepth <- NA}
+      if(!"verticalPosition" %in% names(depthTable)){depthTable$verticalPosition <- NA}
+      depthTable <- depthTable[, c("readout_time","sondeSurfaceWaterPressure","sensorDepth","verticalPosition")]
+      # Create directory and write out file
+      DirOut <- paste0(DirOutBase,'/exo2depth/',SNdepth,"/")
+      base::dir.create(DirOut,recursive=TRUE)
+      csv_name <-paste0(SNdepth,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = depthTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
+      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+        stop()
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } #End depth loop
+    
+      # Loop for conductance
+      if(!is.na(SNcond)){
+      condTable<-dataTable[,names(dataTable) %in% c("readout_time","conductance","specificConductance","surfaceWaterTemperature")]
+      if(!"conductance" %in% names(condTable)){condTable$conductance <- NA}
+      if(!"specificConductance" %in% names(condTable)){condTable$specificConductance <- NA}
+      if(!"surfaceWaterTemperature" %in% names(condTable)){condTable$surfaceWaterTemperature <- NA}
+      condTable <- condTable[, c("readout_time","conductance","specificConductance","surfaceWaterTemperature")]
+      # Create directory and write out file
+      DirOut <- paste0(DirOutBase,'/exo2conductance/',SNcond,"/")
+      base::dir.create(DirOut,recursive=TRUE)
+      csv_name <-paste0(SNcond,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = condTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
+      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+        stop()
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } #End conductance loop   
+    
+      # Loop for dissolved oxygen
+      if(!is.na(SNdo)){
+      doTable<-dataTable[,names(dataTable) %in% c("readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat")]
+      if(!"dissolvedOxygen" %in% names(doTable)){doTable$dissolvedOxygen <- NA}
+      if(!"dissolvedOxygenSaturation" %in% names(doTable)){doTable$dissolvedOxygenSaturation <- NA}
+      if(!"localDissolvedOxygenSat" %in% names(doTable)){doTable$localDissolvedOxygenSat <- NA}
+      doTable <- doTable[, c("readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat")]
+      # Create directory and write out file
+      DirOut <- paste0(DirOutBase,'/exo2dissolvedOxygen/',SNdo,"/")
+      base::dir.create(DirOut,recursive=TRUE)
+      csv_name <-paste0(SNdo,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = doTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
+      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+        stop()
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } #End dissolvedoxygen loop 
+    
+      # Loop for pH
+      if(!is.na(SNph)){
+      phTable<-dataTable[,names(dataTable) %in% c("readout_time","pH","pHvoltage")]
+      if(!"pH" %in% names(phTable)){phTable$dissolvedOxygen <- NA}
+      if(!"pHvoltage" %in% names(phTable)){phTable$dissolvedOxygenSaturation <- NA}
+      phTable <- phTable[, c("readout_time","pH","pHvoltage")]
+      # Create directory and write out file
+      DirOut <- paste0(DirOutBase,'/exo2ph/',SNph,"/")
+      base::dir.create(DirOut,recursive=TRUE)
+      csv_name <-paste0(SNph,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = phTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
+      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+        stop()
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } #End pH loop
+    
+      # Loop for turbidity
+      if(!is.na(SNturb)){
+      turbTable <- dataTable[, c("readout_time","turbidity")]
+      # Create directory and write out file
+      DirOut <- paste0(DirOutBase,'/exo2turbidity/',SNturb,"/")
+      base::dir.create(DirOut,recursive=TRUE)
+      csv_name <-paste0(SNturb,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = turbTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
+      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+        stop()
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } #End turbidity loop
+    
+      # Loop for fDOM
+      if(!is.na(SNfdom)){
+      fdomTable <- dataTable[, c("readout_time","fDOM")]
+      # Create directory and write out file
+      DirOut <- paste0(DirOutBase,'/exo2fdom/',SNfdom,"/")
+      base::dir.create(DirOut,recursive=TRUE)
+      csv_name <-paste0(SNfdom,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = fdomTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
+      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+        stop()
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } #End fDOM loop
+    
+      # Loop for chlorophyll
+      if(!is.na(SNchl)){
+      chlTable<-dataTable[,names(dataTable) %in% c("readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
+      if(!"chlorophyll" %in% names(chlTable)){chlTable$chlorophyll <- NA}
+      if(!"chlaRelativeFluorescence" %in% names(chlTable)){chlTable$chlaRelativeFluorescence <- NA}
+      if(!"blueGreenAlgaePhycocyanin" %in% names(chlTable)){chlTable$blueGreenAlgaePhycocyanin <- NA}
+      chlTable <- chlTable[, c("readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
+      # Create directory and write out file
+      DirOut <- paste0(DirOutBase,'/exo2chlorophyll/',SNchl,"/")
+      base::dir.create(DirOut,recursive=TRUE)
+      csv_name <-paste0(SNchl,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = chlTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
+      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+        stop()
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } #End chlorophyll loop     
+    
+    } #End outer loop
+ 
+} # End of function
+
