@@ -214,12 +214,11 @@ wrap.sunav2.quality.flags <- function(DirIn,
   allFlags<-allFlags[,-which(colnames(allFlags)=='burstNumber')] 
   
   #' Removes measurements where lamp has not stabilized from data and flag files.
-  #lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
-  #sunaData<-base::merge(sunaData,lampStabilizeFlagsOnly) #' Adds lamp stabilize QF to data file
-  #sunaData<-sunaData[(sunaData$nitrateLampStabilizeQF==0),]
-  #allFlags<-allFlags[(allFlags$nitrateLampStabilizeQF==0),]
-  #sunaData<-sunaData[,-which(colnames(sunaData)=='nitrateLampStabilizeQF')]
-  #sunaData<-sunaData[,c(2,3,1,4:37)]  
+  lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
+  sunaData<-base::merge(sunaData,lampStabilizeFlagsOnly) #' Adds lamp stabilize QF to data file
+  sunaData<-sunaData[(sunaData$nitrateLampStabilizeQF==0),]
+  allFlags<-allFlags[(allFlags$nitrateLampStabilizeQF==0),]
+  sunaData<-sunaData[,c(2,3,1,4:37)]  
   
   #' Checks that data file and flag file have same number of measurements
   if(nrow(sunaData) != nrow(allFlags)){
@@ -235,7 +234,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   dataOut$nitrate[dataOut$nitrateHumidityQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLampTempQF==1]<-NA
   dataOut$nitrate[dataOut$nitrateLightDarkRatioQF==1]<-NA
-  dataOut$nitrate[dataOut$nitrateLampStabilizeQF==1]<-NA
+  dataOut$nitrate[dataOut$nitrateLampStabilizeQF==1]<-NA  #' These should have been removed (but just in case)
   dataOut<-dataOut[,which(colnames(dataOut)%in%colnames(sunaData))]
   
   #' Write out data file.  
