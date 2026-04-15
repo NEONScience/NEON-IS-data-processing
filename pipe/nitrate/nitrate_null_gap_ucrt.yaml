@@ -15,10 +15,10 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
     rm -rf /tmp/pfs/interimUcrt
-    rm -rf /tmp/pfs/interimConfig
+    rm -rf /tmp/pfs/interimInsuff
     mkdir -p /tmp/pfs/filter_joined
     mkdir /tmp/pfs/interimUcrt
-    mkdir /tmp/pfs/interimConfig
+    mkdir /tmp/pfs/interimInsuff
     
 
     # Run first module - filter-joiner (using environment variables below as input parameters)
@@ -31,22 +31,22 @@ transform:
       DirErr=/pfs/out/errored_datums \
       SchmStats=$FILE_SCHEMA_UCRT \
       "DirSubCopy=group|location|quality_metrics"
-    
-    # Run third module - configuration flag
-    Rscript ./flow.sunav2.config.qf.R \
-      DirIn=/tmp/pfs/interimUcrt \
-      DirOutBase=/tmp/pfs/interimConfig \
-      DirErr=/pfs/out/errored_datums \
-      SchmQMs=$FILE_SCHEMA_CONFIG \
-      "DirSubCopy=location"
       
     # Run third module - insufficient data
     Rscript ./flow.qf.insuff.data.R \
-      DirIn=/tmp/pfs/interimConfig \
-      DirOut=/pfs/out \
+      DirIn=/tmp/pfs/interimUcrt \
+      DirOut=/tmp/pfs/interimInsuff \
       DirErr=/pfs/out/errored_datums \
       "insuffInfo1=term:nitrate|wndw:015|minPoints:5" \
       SchmQMs=$FILE_SCHEMA_INSUF \
+      "DirSubCopy=location"
+      
+    # Run fourth module - configuration flag
+    Rscript ./flow.sunav2.config.qf.R \
+      DirIn=/tmp/pfs/interimInsuff \
+      DirOutBase=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      SchmQMs=$FILE_SCHEMA_CONFIG \
       "DirSubCopy=location"
     
     EOF
