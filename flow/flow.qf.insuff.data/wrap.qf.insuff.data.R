@@ -56,6 +56,8 @@
 #' Updated so that finalQF is solely determined by insufficientDataQF.
 #' Nora Catolico (2026-02-06)
 #' Updated for data frame input of multiple variables. 
+#' Nora Catolico (2026-04-15)
+#' fix bug in final qf application
 ##############################################################################################
 wrap.qf.insuff.data <- function(DirIn,
                                 insuffParam,
@@ -164,10 +166,13 @@ wrap.qf.insuff.data <- function(DirIn,
     #add it in if it doesn't exist
     if(length(finalQFcolumn)==0){
       finalQFcolumn <- "finalQF"
+      qmData$finalQF <- 0
+    }else{
+      colnames(qmData)[colnames(qmData) == finalQFcolumn] <- "finalQF"
     }
     
     #' If insufficient data QF is applied, apply final QF.
-    qmData[[finalQFcolumn]] <- ifelse(qmData[[insuffQFColumn]] == 1, 1, 0) 
+    qmData$finalQF[qmData$insufficientDataQF==1]<-1
     
     #' Write out stats file.  
     rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = statsData,
