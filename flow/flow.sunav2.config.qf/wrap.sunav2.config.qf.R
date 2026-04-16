@@ -93,7 +93,7 @@ wrap.sunav2.config.qf <- function(DirIn,
   # Read in parquet file of SUNA QM's.
   qmFileName<-base::list.files(DirInQMs,full.names=FALSE)
   if(length(qmFileName)==0){
-    log$error(base::paste0('Plausibility flags not found in ', DirInQMs)) 
+    log$error(base::paste0('Quality metrics (QM) file not found in ', DirInQMs)) 
     stop()
   } else {
     sunaQMs<-NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInQMs, '/', qmFileName),
