@@ -95,7 +95,7 @@ log$debug(base::paste0('Output directory: ', Para$DirOutBase))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for stats: ', Para$SchmStats))
 log$debug(base::paste0('Schema for QMs: ', Para$SchmQMs))
-log$debug(base::paste0('Director to copy: ', Para$DirSubCopy))
+log$debug(base::paste0('Directory to copy: ', Para$DirSubCopy))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$SchmStats) || Para$SchmStats == 'NA'){
