@@ -111,7 +111,7 @@ wrap.sunav2.config.qf <- function(DirIn,
   sunaQMs[["nitrateConfigQF"]] <- qf
 
   # If nitrateConfigQF=1 set nitrateFinalQF=1
-  sunaQMs[sunaQMs[["nitrateConfigQF"]] == 1, "nitrateFinalQF"] <- 1
+  sunaQMs[sunaQMs[["nitrateConfigQF"]] == 1, "finalQF"] <- 1
    
   #' Write out stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = sunaStats,
