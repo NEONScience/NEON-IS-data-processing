@@ -85,8 +85,8 @@ wrap.sunav2.config.qf <- function(DirIn,
     log$error(base::paste0('Data file not found in ', DirInStats)) 
     stop()
   } else {
-    sunaStats<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInStats, '/', statsFileName),
-                                                       log = log),silent = FALSE)
+    sunaStats<-NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInStats, '/', statsFileName),
+                                                       log = log)
     log$debug(base::paste0('Successfully read in file: ',statsFileName))
   }
   
@@ -96,8 +96,8 @@ wrap.sunav2.config.qf <- function(DirIn,
     log$error(base::paste0('Plausibility flags not found in ', DirInQMs)) 
     stop()
   } else {
-    sunaQMs<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInQMs, '/', qmFileName),
-                                                         log = log),silent = FALSE)
+    sunaQMs<-NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInQMs, '/', qmFileName),
+                                                         log = log)
     log$debug(base::paste0('Successfully read in file: ',qmFileName))
   }
   
