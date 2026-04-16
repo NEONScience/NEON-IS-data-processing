@@ -1,0 +1,90 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: cmp22-loc-strc-upstream-sensor
+  namespace: argo
+spec:
+  template:
+    serviceAccountName: argo-events-workflow-creator
+    container:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      env:
+        - name: LOG_LEVEL
+          value: info
+    nodeSelector:
+      cloud.google.com/machine-family: n2d
+      cloud.google.com/requested-min-cpu-platform: AMD_Milan
+      gke.neoninternal.org/workload: common
+      kubernetes.io/os: linux
+    tolerations:
+      - key: gke.neoninternal.org/workload
+        operator: Equal
+        value: common
+        effect: NoSchedule
+
+  dependencies:
+    - name: wf-a-done
+      eventSourceName: all-workflows
+      eventName: completed-workflows
+      filters:
+        data:
+          - path: "body.metadata.generateName"
+            type: string
+            value: ["test-input-artifact-a-"]        # EXACT workflow name
+          - path: "body.status.phase"
+            type: string
+            value: ["Succeeded"]
+
+    - name: wf-b-done
+      eventSourceName: all-workflows
+      eventName: completed-workflows
+      filters:
+        data:
+          - path: "body.metadata.generateName"
+            type: string
+            value: ["cmp22-cal-conv-spawn-next-"]        # EXACT workflow name
+          - path: "body.status.phase"
+            type: string
+            value: ["Succeeded"]
+
+  triggers:
+    - template:
+        name: start-cmp22-loc-strc
+        argoWorkflow:
+          operation: submit
+
+          parameters:
+            # Extract log-level from workflow-a
+            - src:
+                dependencyName: wf-a-done
+                dataKey: "body.spec.arguments.parameters.0.value" # Log-level is the first value
+              dest: "spec.arguments.parameters.0.value" # send it as the 1st input parameter
+
+            # Extract run_date from workflow-b
+            - src:
+                dependencyName: wf-b-done
+                dataKey: "body.spec.arguments.parameters.1.value" # datum-manifests is the second input parameter of cmp22-cal-conv
+              dest: "spec.arguments.parameters.1.value" # send it as the second input parameter
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: cmp22-loc-strc-
+                namespace: argo-workflows-dev
+              spec:
+                workflowTemplateRef:
+                  name: cmp22-loc-strc
+                arguments:
+                  parameters:
+                    - name: log-level
+                      value: ""
+                    - name: datum-manifests
+                      value: ""
