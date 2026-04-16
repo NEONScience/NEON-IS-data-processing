@@ -71,12 +71,19 @@ test_that("Unit test of wrap.sunav2.config.qf.R", {
   testthat::expect_true(file.exists(testDirOutPath))
   
   
-  ## Additional checks:
   # Check that the output files (QM & stats) exist in their expected locations
   DirOutStats  <- file.path(testDirOutPath, 'stats')
   DirOutQM <- file.path(testDirOutPath, 'quality_metrics')
   testthat::expect_true(dir.exists(DirOutStats))
   testthat::expect_true(dir.exists(DirOutQM))
+  
+  #check that finalQF is 1 where nitrate configQF is 1
+  qmFileName<-base::list.files(DirOutQM,full.names=FALSE)
+  sunaQMs<-try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirOutQM, '/', qmFileName),
+                                              log = log),silent=FALSE)
+  if(length(sunaQMs)!=0){
+    testthat::expect_true(all(sunaQMs$finalQF[sunaQMs$nitrateConfigQF==1]==1))
+  }
   
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
