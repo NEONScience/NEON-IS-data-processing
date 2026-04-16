@@ -6,7 +6,7 @@
 #' 
 #' @description Wrapper function. Adds a quality flag to SUNA data when more than the
 #' expected number of points are present, indicating that the sensor was configured in
-#' continuous rather than periodic mode). The main purpose is to flag field cleaning and 
+#' continuous rather than periodic mode. The main purpose is to flag field cleaning and 
 #' calibration measurements taken in DI.  This flag will also trigger the final QF.    
 #'
 #' @param DirIn Character value. The base file path to the averaged stats and quality metrics.
