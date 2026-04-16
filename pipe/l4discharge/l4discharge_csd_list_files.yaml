@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_csd_list_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-64a2eab
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-d759f56
   cmd: ["/bin/bash"]
   env:
     INGEST_BUCKET: neon-int-l4-discharge-proc
@@ -19,16 +19,20 @@ input:
       empty_files: true
       joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
       outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
+parallelism_spec:
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 1G
-  cpu: 1
-resource_limits:
   memory: 1.5G
-  cpu: 1.5
+  cpu: 2
+resource_limits:
+  memory: 3G
+  cpu: 3.5
 sidecar_resource_requests:
-  memory: 1G
-  cpu: 0.4
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
