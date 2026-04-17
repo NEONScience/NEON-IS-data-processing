@@ -1,0 +1,107 @@
+---
+pipeline:
+  name: concH2oSoilSalinity_stats_group_and_compute
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.4
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    # Run second module - basic stats
+
+    Rscript ./flow.stat.basc.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "WndwAgr=001|030" \
+      "TermStat1=VSWCsoilSpecificDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat2=VSWCsoilSpecificDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat3=VSWCsoilSpecificDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat4=VSWCsoilSpecificDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat5=VSWCsoilSpecificDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat6=VSWCsoilSpecificDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat7=VSWCsoilSpecificDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat8=VSWCsoilSpecificDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat9=VSWCfactoryDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat10=VSWCfactoryDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat11=VSWCfactoryDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat12=VSWCfactoryDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat13=VSWCfactoryDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat14=VSWCfactoryDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat15=VSWCfactoryDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat16=VSWCfactoryDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat17=VSICDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat18=VSICDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat19=VSICDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat20=VSICDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat21=VSICDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat22=VSICDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat23=VSICDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat24=VSICDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)"
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: QAQC_PATH
+            # Filter for data & uncertainty_data directories
+            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/*/*/data/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: UNCERTAINTY_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/enviroscan/*/uncertainty*/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '5' # Option for stats module
+input:
+  join:
+  - pfs:
+      name: QAQC_PATH
+      repo: concH2oSoilSalinity_analyze_pad_qaqc_join_custom
+      glob: /(*/*/*)
+      joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: UNCERTAINTY_PATH
+      repo: concH2oSoilSalinity_group_path
+      glob: /(*/*/*)
+      joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+resource_requests: 
+  memory: 1.8G
+  cpu: 6
+resource_limits:
+  memory: 3G
+  cpu: 7
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+autoscaling: true
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
