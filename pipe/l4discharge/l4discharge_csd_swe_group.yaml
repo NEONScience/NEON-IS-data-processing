@@ -48,14 +48,14 @@ input:
   - pfs:
       name: CSD_DATA
       repo: l4discharge_csd_load_files
-      glob: /2024/03/20
+      glob: /2025/*/*
       joinOn: $1/$2/$3
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: SWE_DATA
       repo: l4discharge_group_path
-      glob: /2024/03/20
+      glob: /2025/*/*
       joinOn: $1/$2/$3
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
