@@ -4,3 +4,9 @@ concH2oSalinity_group_path.yaml
 concH2oSalinity_threshold.yaml
 concH2oSalinity_thresh_select_ts_pad.yaml
 concH2oSalinity_analyze_pad_qaqc_join_custom.yaml
+concH2oSoilSalinity_group_loader_split.yaml
+concH2oSalinity_group_assignment_split.yaml
+concH2oSoilSalinity_stats_group_and_compute.yaml
+concH2oSoilSalinity_qm_join_stats.yaml
+concH2oSalinity_group_split.yaml
+
