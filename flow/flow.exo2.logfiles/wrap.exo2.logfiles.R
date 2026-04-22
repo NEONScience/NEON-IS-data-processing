@@ -36,7 +36,7 @@
 #' @keywords Currently none
 #' 
 #' @examples
-FileIn <- "~/pfs/exo2_logjam_files/26235/0673b21ba265fb08227567cf634bfaf7.csv"
+FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
 DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
 # SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
@@ -230,7 +230,7 @@ wrap.exo2.logfiles <- function(FileIn,
     if(!is.na(SNph)){
       phTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","pH","pHvoltage")]
       if(!"pH" %in% names(phTable)){phTable$dissolvedOxygen <- NA}
-      if(!"pHvoltage" %in% names(phTable)){phTable$dissolvedOxygenSaturation <- NA}
+      if(!"pHvoltage" %in% names(phTable)){phTable$pHvoltage <- NA}
       phTable <- phTable[, c("source_id","site_id","readout_time","pH","pHvoltage")]
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2ph/',SNph,"/")
