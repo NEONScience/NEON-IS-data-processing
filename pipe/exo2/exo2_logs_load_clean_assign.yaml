@@ -1,0 +1,61 @@
+---
+pipeline:
+  name: exo2_logs_load_clean_assign
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/interim
+    mkdir -p /tmp/pfs/interim
+    
+    # Run first module - logjam loader (using environment variables below as input parameters)
+    python3 -m logjam_loader.load_all_logjam_files
+        
+    #run cleaning script
+    Rscript ./flow.exo2.logfiles.R \
+      DirIn=/tmp/pfs/interim \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums
+    
+    EOF
+  env:
+    # Environment variables for logjam loader
+    LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
+    OUT_PATH: /tmp/pfs/interim
+    LOG_LEVEL: DEBUG
+    STARTING_PATH_INDEX: "7"
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  cross:
+  - pfs:
+      name: IN_PATH
+      repo: exo2_logjam_list_files
+      glob: /*/*/*/logjam_dev/exo2/
+      empty_files: true
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

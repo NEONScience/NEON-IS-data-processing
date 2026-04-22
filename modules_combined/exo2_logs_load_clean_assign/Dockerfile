@@ -56,5 +56,13 @@ RUN R -e 'renv::restore(lockfile="./renv.lock")'
 COPY ./${FLOW_DIR}/flow.exo2.logfiles/flow.exo2.logfiles.R .
 COPY ./${FLOW_DIR}/flow.exo2.logfiles/wrap.exo2.logfiles.R .
 
+# Copy the lockfile and restore known working versions of R dependency packages
+COPY ./flow/flow.exo2.logfiles.parse/renv.lock .
+RUN R -e 'renv::restore(lockfile="./renv.lock")'
+
+# Copy in exo2 log file workflow
+COPY ./${FLOW_DIR}/flow.exo2.logfiles.parse/flow.exo2.logfiles.parse.R .
+COPY ./${FLOW_DIR}/flow.exo2.logfiles.parse/wrap.exo2.logfiles.parse.R .
+
 # Run as app user
 USER appuser
