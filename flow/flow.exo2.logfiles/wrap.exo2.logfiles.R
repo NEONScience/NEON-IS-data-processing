@@ -36,9 +36,9 @@
 #' @keywords Currently none
 #' 
 #' @examples
-FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
-FileIn <- "~/pfs/exo2_logjam_load_files/26239/8aa609e9456820f423fcb07a0ea23364.csv"
-DirOutBase="~/pfs/out/exo2_logfile_output"
+# FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
+# FileIn <- "~/pfs/exo2_logjam_load_files/26239/8aa609e9456820f423fcb07a0ea23364.csv"
+# DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
 # SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
 # SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exodissolvedoxygen_calibrated.avsc'),collapse='')
@@ -46,7 +46,7 @@ DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoturbidity_calibrated.avsc'),collapse='')
 # SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exofdom_calibrated.avsc'),collapse='')
 # SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exototalalgae_calibrated.avsc'),collapse='')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'                               
 #' @changelog
 #' Bobby Hensley (2026-04-14)
