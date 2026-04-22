@@ -38,17 +38,10 @@
 #' @keywords Currently none
 
 #' @examples
- arg <- c("DirIn=~/pfs/exo2_logjam_files/26235",
-           "DirOutBase=~/pfs/out",
-           "DirErr=~/pfs/out/errored_datums",
-           "SchmExo2=NULL",
-           "SchmCond=NULL",
-           "SchmDO=NULL",
-           "SchmPh=NULL",
-           "SchmTurb=NULL",
-           "SchmFdom=NULL",
-           "SchmChl=NULL")
- log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+ # arg <- c("DirIn=~/pfs/exo2_logjam_load_files",
+ #           "DirOutBase=~/pfs/out",
+ #           "DirErr=~/pfs/out/errored_datums")
+ # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -102,7 +95,7 @@ log$debug(base::paste0('Schema for total algae: ', Para$SchmChl))
 
 # Read in the schemas.
 if(base::is.null(Para$SchmExo2) || Para$SchmExo2 == 'NA'){SchmExo2 <- NULL} else {SchmExo2 <- base::paste0(base::readLines(Para$SchmExo2),collapse='')}
-if(base::is.null(Para$SchmCond) || Para$SchmCond == 'NA'){SchmExo2 <- NULL} else {SchmCond <- base::paste0(base::readLines(Para$SchmCond),collapse='')}
+if(base::is.null(Para$SchmCond) || Para$SchmCond == 'NA'){SchmCond <- NULL} else {SchmCond <- base::paste0(base::readLines(Para$SchmCond),collapse='')}
 if(base::is.null(Para$SchmDO) || Para$SchmDO == 'NA'){SchmDO <- NULL} else {SchmDO <- base::paste0(base::readLines(Para$SchmDO),collapse='')}
 if(base::is.null(Para$SchmPh) || Para$SchmPh == 'NA'){SchmPh <- NULL} else {SchmPh <- base::paste0(base::readLines(Para$SchmPh),collapse='')}
 if(base::is.null(Para$SchmTurb) || Para$SchmTurb == 'NA'){SchmTurb <- NULL} else {SchmTurb <- base::paste0(base::readLines(Para$SchmTurb),collapse='')}

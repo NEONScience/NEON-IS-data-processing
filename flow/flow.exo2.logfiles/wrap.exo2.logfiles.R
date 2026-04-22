@@ -173,8 +173,8 @@ wrap.exo2.logfiles <- function(FileIn,
     startMonth<-substr(min(dataTable$readout_time[1]),6,7)
     startDay<-substr(min(dataTable$readout_time[1]),9,10)  
 
-      # Loop for exo body data streams
-      if(!is.na(SNdepth)){
+    # Loop for exo body data streams
+    if(!is.na(SNdepth)){
       bodyTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage")]
       if(!"sensorDepth" %in% names(bodyTable)){bodyTable$sensorDepth <- NA}
       if(!"sondeSurfaceWaterPressure" %in% names(bodyTable)){bodyTable$specificConductance <- NA}
@@ -190,10 +190,10 @@ wrap.exo2.logfiles <- function(FileIn,
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
       } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
-      } #End exo body loop
+    } #End exo body loop
     
-      # Loop for conductance
-      if(!is.na(SNcond)){
+    # Loop for conductance
+    if(!is.na(SNcond)){
       condTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature")]
       if(!"conductance" %in% names(condTable)){condTable$conductance <- NA}
       if(!"specificConductance" %in% names(condTable)){condTable$specificConductance <- NA}
@@ -207,10 +207,10 @@ wrap.exo2.logfiles <- function(FileIn,
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
       } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
-      } #End conductance loop   
+    } #End conductance loop   
     
-      # Loop for dissolved oxygen
-      if(!is.na(SNdo)){
+    # Loop for dissolved oxygen
+    if(!is.na(SNdo)){
       doTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat")]
       if(!"dissolvedOxygen" %in% names(doTable)){doTable$dissolvedOxygen <- NA}
       if(!"dissolvedOxygenSaturation" %in% names(doTable)){doTable$dissolvedOxygenSaturation <- NA}
@@ -224,10 +224,10 @@ wrap.exo2.logfiles <- function(FileIn,
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
       } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
-      } #End dissolvedoxygen loop 
+    } #End dissolvedoxygen loop 
     
-      # Loop for pH
-      if(!is.na(SNph)){
+    # Loop for pH
+    if(!is.na(SNph)){
       phTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","pH","pHvoltage")]
       if(!"pH" %in% names(phTable)){phTable$dissolvedOxygen <- NA}
       if(!"pHvoltage" %in% names(phTable)){phTable$dissolvedOxygenSaturation <- NA}
@@ -240,10 +240,10 @@ wrap.exo2.logfiles <- function(FileIn,
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
       } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
-      } #End pH loop
+    } #End pH loop
     
-      # Loop for turbidity
-      if(!is.na(SNturb)){
+    # Loop for turbidity
+    if(!is.na(SNturb)){
       turbTable <- dataTable[, c("source_id","site_id","readout_time","turbidity")]
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2turbidity/',SNturb,"/")
@@ -253,10 +253,10 @@ wrap.exo2.logfiles <- function(FileIn,
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
       } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
-      } #End turbidity loop
+    } #End turbidity loop
     
-      # Loop for fDOM
-      if(!is.na(SNfdom)){
+    # Loop for fDOM
+    if(!is.na(SNfdom)){
       fdomTable <- dataTable[, c("source_id","site_id","readout_time","fDOM")]
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2fdom/',SNfdom,"/")
@@ -266,10 +266,10 @@ wrap.exo2.logfiles <- function(FileIn,
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
       } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
-      } #End fDOM loop
+    } #End fDOM loop
     
-      # Loop for chlorophyll
-      if(!is.na(SNchl)){
+    # Loop for chlorophyll
+    if(!is.na(SNchl)){
       chlTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
       if(!"chlorophyll" %in% names(chlTable)){chlTable$chlorophyll <- NA}
       if(!"chlaRelativeFluorescence" %in% names(chlTable)){chlTable$chlaRelativeFluorescence <- NA}
@@ -283,9 +283,9 @@ wrap.exo2.logfiles <- function(FileIn,
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
       } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
-      } #End chlorophyll loop     
+    } #End chlorophyll loop     
     
-    } #End outer loop
+  } #End outer loop
  
 } # End of function
 
