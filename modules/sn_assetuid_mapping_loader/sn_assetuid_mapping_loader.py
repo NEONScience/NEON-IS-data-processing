@@ -15,14 +15,13 @@ def load() -> None:
     log_level: str = os.environ['LOG_LEVEL']
     log_config.configure(log_level)
     source_type: str = os.environ['SOURCE_TYPE']
-    sn: str = os.environ['SERIAL_NUMBER']
     log.debug(f'out_path: {out_path}')
     
 
     mount_path= Path('/var/cds_secret')
     cds_hostname_file = Path(mount_path, "hostname")
     cds_url_path = cds_hostname_file.read_text()
-    url_path = f"{cds_url_path}/assets?serial-number={sn}&include-installs=true"
+    url_path = f"{cds_url_path}/assets?sensor-type-name={source_type}"
 
     log.debug(f"url_path is {url_path}")
     response = requests.get(url_path, headers={'Accept': 'application/json'})
@@ -34,12 +33,13 @@ def load() -> None:
         for asset in assets:
             try:
                 asset_uid = asset.get("assetUid")
-                if sn is None:
+                serial_number = asset.get("serialNumber")
+                if serial_number is None:
                     log.debug(f'Empty serialNumber for asset_uid {asset.get("assetUid")}')
                     continue
 
-                file_name = f'{source_type}_{assetUid}.txt'
-                file_path = Path(out_path, source_type, assetUid, file_name)
+                file_name = f'{source_type}_{serialNumber}_{assetUid}.txt'
+                file_path = Path(out_path, source_type, serialNumber, file_name)
                 # print(f"filePath to write is: {file_path}")
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(file_path, 'w') as asset_file:
