@@ -36,8 +36,8 @@
 #' @keywords Currently none
 #' 
 #' @examples
-FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
-DirOutBase="~/pfs/out/exo2_logfile_output"
+# FileIn <- "~/pfs/exo2_logjam_load_files/49377/84e3a302a53277405ffac78064faf403.csv"
+# DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
 # SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
 # SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exodissolvedoxygen_calibrated.avsc'),collapse='')
@@ -45,7 +45,7 @@ DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoturbidity_calibrated.avsc'),collapse='')
 # SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exofdom_calibrated.avsc'),collapse='')
 # SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exototalalgae_calibrated.avsc'),collapse='')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'                               
 #' @changelog
 #' Bobby Hensley (2026-04-14)
@@ -69,13 +69,15 @@ wrap.exo2.logfiles <- function(FileIn,
   } 
 
 # Load in the csv log file(s) 
-  logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = "UTF-16", header = FALSE, sep = ",", 
-                              blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
-                              stringsAsFactors = FALSE,na.strings=c(-1,'')))
+  encoding<-guess_encoding(FileIn)
+  encoding<-encoding$encoding[1]
+  logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
+                                    blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
+                                    stringsAsFactors = FALSE,na.strings=c(-1,'')))
   
   if (base::any(base::class(logFile) == 'try-error')) {
     # Generate error and stop execution
-    log$error(base::paste0('File ', FileIn, ' is unreadable. Likely not a sonde data file.'))
+    log$error(base::paste0('File ', FileIn, ' is unreadable. Either not a sonde data file or bad encoding.'))
     base::stop()
   }
   if(any(grepl('TROLL',logFile))){
