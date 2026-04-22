@@ -1,0 +1,198 @@
+---
+# TEST pipeline - combines qm_group_and_compute + stats_qm_join into a single step.
+# Output is equivalent to concH2oSoilSalinity_stats_qm_join:
+#   /pfs/out/YEAR/MONTH/DAY/original_group/enviroscan/CFGLOC/{quality_metrics,stats}/...
+# Intended to be replaced by a proper combined module image once validated.
+pipeline:
+  name: concH2oSoilSalinity_qm_stats_comb_test
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.3
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+
+    rm -r -f /tmp/qm_output
+    rm -r -f /tmp/qm_outputCopy
+    mkdir -p /tmp/qm_output
+
+    # ---- Step 1: filter-joiner - join QAQC plausibility flags + regularized flags ----
+    # Uses CONFIG env variable defined below
+    python3 -m filter_joiner.filter_joiner_main
+
+    # ---- Step 2: quality metrics ----
+    # Write to /tmp/qm_output (not /pfs/out) so we can join with stats in step 4
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/tmp/qm_output \
+      DirErr=/pfs/out/errored_datums \
+      "WndwAgr=001|030" \
+      "WghtAlphBeta=1|1" \
+      Thsh=0.3 \
+      "GrpQfAlph1=VSWCsoilSpecificDepth01:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth01QF" \
+      "GrpQfBeta1=VSWCsoilSpecificDepth01:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth01QF" \
+      "GrpQfBetaIgnr1=VSWCsoilSpecificDepth01:nullQF|gapQF" \
+      "GrpQfAlph2=VSWCsoilSpecificDepth02:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth02QF" \
+      "GrpQfBeta2=VSWCsoilSpecificDepth02:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth02QF" \
+      "GrpQfBetaIgnr2=VSWCsoilSpecificDepth02:nullQF|gapQF" \
+      "GrpQfAlph3=VSWCsoilSpecificDepth03:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth03QF" \
+      "GrpQfBeta3=VSWCsoilSpecificDepth03:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth03QF" \
+      "GrpQfBetaIgnr3=VSWCsoilSpecificDepth03:nullQF|gapQF" \
+      "GrpQfAlph4=VSWCsoilSpecificDepth04:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth04QF" \
+      "GrpQfBeta4=VSWCsoilSpecificDepth04:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth04QF" \
+      "GrpQfBetaIgnr4=VSWCsoilSpecificDepth04:nullQF|gapQF" \
+      "GrpQfAlph5=VSWCsoilSpecificDepth05:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth05QF" \
+      "GrpQfBeta5=VSWCsoilSpecificDepth05:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth05QF" \
+      "GrpQfBetaIgnr5=VSWCsoilSpecificDepth05:nullQF|gapQF" \
+      "GrpQfAlph6=VSWCsoilSpecificDepth06:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth06QF" \
+      "GrpQfBeta6=VSWCsoilSpecificDepth06:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth06QF" \
+      "GrpQfBetaIgnr6=VSWCsoilSpecificDepth06:nullQF|gapQF" \
+      "GrpQfAlph7=VSWCsoilSpecificDepth07:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth07QF" \
+      "GrpQfBeta7=VSWCsoilSpecificDepth07:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth07QF" \
+      "GrpQfBetaIgnr7=VSWCsoilSpecificDepth07:nullQF|gapQF" \
+      "GrpQfAlph8=VSWCsoilSpecificDepth08:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth08QF" \
+      "GrpQfBeta8=VSWCsoilSpecificDepth08:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth08QF" \
+      "GrpQfBetaIgnr8=VSWCsoilSpecificDepth08:nullQF|gapQF" \
+      "GrpQfAlph9=VSWCfactoryDepth01:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth01QF" \
+      "GrpQfBeta9=VSWCfactoryDepth01:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth01QF" \
+      "GrpQfBetaIgnr9=VSWCfactoryDepth01:nullQF|gapQF" \
+      "GrpQfAlph10=VSWCfactoryDepth02:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth02QF" \
+      "GrpQfBeta10=VSWCfactoryDepth02:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth02QF" \
+      "GrpQfBetaIgnr10=VSWCfactoryDepth02:nullQF|gapQF" \
+      "GrpQfAlph11=VSWCfactoryDepth03:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth03QF" \
+      "GrpQfBeta11=VSWCfactoryDepth03:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth03QF" \
+      "GrpQfBetaIgnr11=VSWCfactoryDepth03:nullQF|gapQF" \
+      "GrpQfAlph12=VSWCfactoryDepth04:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth04QF" \
+      "GrpQfBeta12=VSWCfactoryDepth04:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth04QF" \
+      "GrpQfBetaIgnr12=VSWCfactoryDepth04:nullQF|gapQF" \
+      "GrpQfAlph13=VSWCfactoryDepth05:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth05QF" \
+      "GrpQfBeta13=VSWCfactoryDepth05:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth05QF" \
+      "GrpQfBetaIgnr13=VSWCfactoryDepth05:nullQF|gapQF" \
+      "GrpQfAlph14=VSWCfactoryDepth06:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth06QF" \
+      "GrpQfBeta14=VSWCfactoryDepth06:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth06QF" \
+      "GrpQfBetaIgnr14=VSWCfactoryDepth06:nullQF|gapQF" \
+      "GrpQfAlph15=VSWCfactoryDepth07:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth07QF" \
+      "GrpQfBeta15=VSWCfactoryDepth07:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth07QF" \
+      "GrpQfBetaIgnr15=VSWCfactoryDepth07:nullQF|gapQF" \
+      "GrpQfAlph16=VSWCfactoryDepth08:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth08QF" \
+      "GrpQfBeta16=VSWCfactoryDepth08:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth08QF" \
+      "GrpQfBetaIgnr16=VSWCfactoryDepth08:nullQF|gapQF" \
+      "GrpQfAlph17=VSICDepth01:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth01QF" \
+      "GrpQfBeta17=VSICDepth01:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth01QF" \
+      "GrpQfBetaIgnr17=VSICDepth01:nullQF|gapQF" \
+      "GrpQfAlph18=VSICDepth02:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth02QF" \
+      "GrpQfBeta18=VSICDepth02:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth02QF" \
+      "GrpQfBetaIgnr18=VSICDepth02:nullQF|gapQF" \
+      "GrpQfAlph19=VSICDepth03:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth03QF" \
+      "GrpQfBeta19=VSICDepth03:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth03QF" \
+      "GrpQfBetaIgnr19=VSICDepth03:nullQF|gapQF" \
+      "GrpQfAlph20=VSICDepth04:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth04QF" \
+      "GrpQfBeta20=VSICDepth04:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth04QF" \
+      "GrpQfBetaIgnr20=VSICDepth04:nullQF|gapQF" \
+      "GrpQfAlph21=VSICDepth05:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth05QF" \
+      "GrpQfBeta21=VSICDepth05:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth05QF" \
+      "GrpQfBetaIgnr21=VSICDepth05:nullQF|gapQF" \
+      "GrpQfAlph22=VSICDepth06:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth06QF" \
+      "GrpQfBeta22=VSICDepth06:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth06QF" \
+      "GrpQfBetaIgnr22=VSICDepth06:nullQF|gapQF" \
+      "GrpQfAlph23=VSICDepth07:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth07QF" \
+      "GrpQfBeta23=VSICDepth07:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth07QF" \
+      "GrpQfBetaIgnr23=VSICDepth07:nullQF|gapQF" \
+      "GrpQfAlph24=VSICDepth08:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth08QF" \
+      "GrpQfBeta24=VSICDepth08:nullQF|gapQF|rangeQF|stepQF|persistenceQF|tempTestDepth08QF" \
+      "GrpQfBetaIgnr24=VSICDepth08:nullQF|gapQF"
+
+    # ---- Step 3: copy QM output to break symlinks before joining with stats ----
+    cp -rL /tmp/qm_output /tmp/qm_outputCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/qm_output
+
+    # ---- Step 4: filter-joiner - join QM output + stats ----
+    # Override CONFIG, OUT_PATH for second filter_joiner call.
+    # /tmp/qm_outputCopy path: ('/', 'tmp', 'qm_outputCopy', Y, M, D, group, ...) -> RELATIVE_PATH_INDEX=3 -> Y/M/D/group/...
+    # /pfs/STATS_PATH path:    ('/', 'pfs', 'STATS_PATH',    Y, M, D, group, ...) -> RELATIVE_PATH_INDEX=3 -> Y/M/D/group/...
+    # join_indices [3,4,5,6] = Y+M+D+group for both paths -> keys match
+    export CONFIG='---
+    input_paths:
+      - path:
+          name: QM_OUTPUT
+          glob_pattern: /tmp/qm_outputCopy/*/*/*/*/**
+          join_indices: [3,4,5,6]
+      - path:
+          name: STATS_PATH
+          glob_pattern: /pfs/STATS_PATH/*/*/*/*/**
+          join_indices: [3,4,5,6]'
+    export OUT_PATH=/pfs/out
+    export RELATIVE_PATH_INDEX=3
+    export LINK_TYPE=COPY
+    python3 -m filter_joiner.filter_joiner_main
+
+    EOF
+  env:
+    # Environment variables for step 1 filter-joiner (joins QAQC plausibility + regularized flags)
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: REGULARIZED_FLAGS_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/enviroscan/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY
+    PARALLELIZATION_INTERNAL: '3'
+input:
+  join:
+  - pfs:
+      name: QAQC_PLAUSIBILITY_PATH
+      repo: concH2oSoilSalinity_analyze_pad_qaqc_join_custom
+      glob: /(*/*/*)
+      joinOn: $1
+      empty_files: false
+  - pfs:
+      name: REGULARIZED_FLAGS_PATH
+      repo: concH2oSoilSalinity_group_path
+      glob: /(*/*/*)
+      joinOn: $1
+      empty_files: false
+  - pfs:
+      name: STATS_PATH
+      repo: concH2oSoilSalinity_stats_group_and_compute
+      glob: /(*/*/*)
+      joinOn: $1
+      empty_files: false
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 900M
+  cpu: 3.5
+resource_limits:
+  memory: 2G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
