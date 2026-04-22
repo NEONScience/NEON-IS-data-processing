@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/group_split_concH2o**'
+      - 'modules_combined/group_split_concH2o/**'
       - 'modules/group_path/**'
       - 'modules/common/**'
       - 'flow/flow.concH2oSalinity.grp.split/**'
