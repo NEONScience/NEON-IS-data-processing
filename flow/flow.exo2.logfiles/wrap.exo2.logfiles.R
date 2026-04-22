@@ -36,8 +36,9 @@
 #' @keywords Currently none
 #' 
 #' @examples
-# FileIn <- "~/pfs/exo2_logjam_load_files/49377/84e3a302a53277405ffac78064faf403.csv"
-# DirOutBase="~/pfs/out/exo2_logfile_output"
+FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
+FileIn <- "~/pfs/exo2_logjam_load_files/26239/8aa609e9456820f423fcb07a0ea23364.csv"
+DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
 # SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
 # SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exodissolvedoxygen_calibrated.avsc'),collapse='')
@@ -45,7 +46,7 @@
 # SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoturbidity_calibrated.avsc'),collapse='')
 # SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exofdom_calibrated.avsc'),collapse='')
 # SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exototalalgae_calibrated.avsc'),collapse='')
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'                               
 #' @changelog
 #' Bobby Hensley (2026-04-14)
@@ -95,15 +96,16 @@ wrap.exo2.logfiles <- function(FileIn,
   
     
 # Removes rows in log file header(s) that are not needed
-  logFile <- logFile[!grepl("sep=",logFile$V1), ]
-  logFile <- logFile[!grepl("Kor MEASUREMENT DATA FILE EXPORT",logFile$V1), ]
-  logFile <- logFile[!grepl("FILE CREATED:",logFile$V1), ]
-  logFile <- logFile[!grepl("MEAN VALUE:",logFile$V4), ]
-  logFile <- logFile[!grepl("STANDARD DEVIATION:",logFile$V4), ]
+  logFile <- logFile[rowSums(is.na(logFile)) != ncol(logFile), ]
+  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("sep=", row))), ]
+  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("Kor MEASUREMENT DATA FILE EXPORT", row))), ]
+  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("FILE CREATED:", row))), ]
+  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("MEAN VALUE:", row))), ]
+  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("STANDARD DEVIATION:", row))), ]
   
 # Identify if multiple headers are present in the file. (Multiple headers may signify probe serial numbers were swapped)  
-  header_ids <- which(logFile[[4]] == "SENSOR SERIAL NUMBER:")
-
+  header_ids <- which(apply(logFile, 1, function(x) any(grepl("SENSOR SERIAL NUMBER:", x))))
+  
 # Split into list of multiple data tables for each new header  
   list_of_tables <- split(logFile, cumsum(seq_len(nrow(logFile)) %in% (header_ids)))
   names(list_of_tables) <- paste0("dataTable_", seq_along(list_of_tables))
@@ -113,25 +115,48 @@ wrap.exo2.logfiles <- function(FileIn,
     dataTable<-data.frame(list_of_tables[i])
     
     # Change header names to match NEON terms in schemas
+    dataTable[] <- lapply(dataTable, function(x) gsub("Time \\(HH:mm:ss\\)", "time", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("TIME \\(HH:MM:SS\\)", "time", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Date \\(MM/DD/YYYY\\)", "date", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("DATE \\(MM/DD/YYYY\\)", "date", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Cable Pwr V", "sensorVoltage", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("CABLE PWR V", "sensorVoltage", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Battery V", "batteryVoltage", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("BATTERY V", "batteryVoltage", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Wiper Position volt", "wiperPosition", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("WIPER POSITION VOLT", "wiperPosition", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Depth m", "sensorDepth", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("DEPTH M", "sensorDepth", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Pressure psi a", "sondeSurfaceWaterPressure", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("PRESSURE PSI A", "sondeSurfaceWaterPressure", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Vertical Position m", "verticalPosition", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("VERTICAL POSITION M", "verticalPosition", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("SpCond µS/cm", "specificConductance", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("SPCOND µS/CM", "specificConductance", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Cond µS/cm", "conductance", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("COND µS/CM", "conductance", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Temp °C", "surfaceWaterTemperature", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("TEMP °C", "surfaceWaterTemperature", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("ODO mg/L", "dissolvedOxygen", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("ODO MG/L", "dissolvedOxygen", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("ODO % sat", "dissolvedOxygenSaturation", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("ODO % SAT", "dissolvedOxygenSaturation", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("ODO % CB", "localDissolvedOxygenSat", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("ODO % CB", "localDissolvedOxygenSat", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("pH", "pH", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("PH", "pH", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("pH mV", "pHvoltage", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("PH MV", "pHvoltage", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Turbidity FNU", "turbidity", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("TURBIDITY FNU", "turbidity", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("fDOM QSU", "fDOM", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("FDOM QSU", "fDOM", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Chlorophyll ug/L", "chlorophyll", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("CHLOROPHYLL ug/L", "chlorophyll", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Chlorophyll RFU", "chlaRelativeFluorescence", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("CHLOROPHYLL RFU", "chlaRelativeFluorescence", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("TAL PC ug/L", "blueGreenAlgaePhycocyanin", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("TAL PC uG/L", "blueGreenAlgaePhycocyanin", x))
     colnames(dataTable)<-apply(dataTable[2, ], 2, paste0) # Apply this header to data table(s)
     
     # Extract sensor serial numbers
@@ -149,7 +174,7 @@ wrap.exo2.logfiles <- function(FileIn,
     SNchl<-serialNumbers[serialNumbers$dataStream == "chlorophyll", "serialNumber"]
     
     # Keep only columns and rows to be used
-    keep_cols <- c("Date (MM/DD/YYYY)", "Time (HH:mm:ss)","sensorVoltage","batteryVoltage",
+    keep_cols <- c("date", "time","sensorVoltage","batteryVoltage",
                    "wiperPosition","sensorDepth","sondeSurfaceWaterPressure","verticalPosition",
                    "specificConductance","conductance","surfaceWaterTemperature","dissolvedOxygen",
                    "dissolvedOxygenSaturation","localDissolvedOxygenSat","pH","pHvoltage","turbidity",
@@ -161,9 +186,9 @@ wrap.exo2.logfiles <- function(FileIn,
     dataTable$site_id<-NA
     
     # Calculate readout date and time
-    dataTable$readout_time<-lubridate::with_tz(as.Date(dataTable$`Date (MM/DD/YYYY)`,format = "%m/%d/%Y") 
-                                               + lubridate::hms(dataTable$`Time (HH:mm:ss)`),'UTC')
-    dataTable[, c("Date (MM/DD/YYYY)","Time (HH:mm:ss)")] <- list(NULL)
+    dataTable$readout_time<-lubridate::with_tz(as.Date(dataTable$date,format = "%m/%d/%Y") 
+                                               + lubridate::hms(dataTable$time),'UTC')
+    dataTable[, c("date","time")] <- list(NULL)
     #' Check that there are no dates prior to when NEON began collecting IS data
     if(any(dataTable$readout_time<"2014-01-01 00:00:00 UTC")){
       log$debug(base::paste0("Data contains dates prior to when NEON began collecting IS data"))}
@@ -179,7 +204,7 @@ wrap.exo2.logfiles <- function(FileIn,
     if(!is.na(SNdepth)){
       bodyTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage")]
       if(!"sensorDepth" %in% names(bodyTable)){bodyTable$sensorDepth <- NA}
-      if(!"sondeSurfaceWaterPressure" %in% names(bodyTable)){bodyTable$specificConductance <- NA}
+      if(!"sondeSurfaceWaterPressure" %in% names(bodyTable)){bodyTable$sondeSurfaceWaterPressure <- NA}
       if(!"wiperPosition" %in% names(bodyTable)){bodyTable$wiperPosition <- NA}
       if(!"batteryVoltage" %in% names(bodyTable)){bodyTable$batteryVoltage <- NA}
       if(!"sensorVoltage" %in% names(bodyTable)){bodyTable$sensorVoltage <- NA}
@@ -231,7 +256,7 @@ wrap.exo2.logfiles <- function(FileIn,
     # Loop for pH
     if(!is.na(SNph)){
       phTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","pH","pHvoltage")]
-      if(!"pH" %in% names(phTable)){phTable$dissolvedOxygen <- NA}
+      if(!"pH" %in% names(phTable)){phTable$pH <- NA}
       if(!"pHvoltage" %in% names(phTable)){phTable$pHvoltage <- NA}
       phTable <- phTable[, c("source_id","site_id","readout_time","pH","pHvoltage")]
       # Create directory and write out file
