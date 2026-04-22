@@ -204,6 +204,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
           call.stack = call.stack,
           DirDatm = idxDirIn,
           DirErrBase = Para$DirErr,
+          RmvDatmOut = TRUE,
+          DirOutBase = Para$DirOut,
           log = log
         )
       }
