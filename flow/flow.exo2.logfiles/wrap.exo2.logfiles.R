@@ -36,11 +36,11 @@
 #' @keywords Currently none
 #' 
 #' @examples
-FileIn <- "~/pfs/exo2_logjam_load_files/43749/602db056666dc42e9f37a9e60057baa5.csv"
-FileIn <- "~/pfs/exo2_logjam_files/43749/602db056666dc42e9f37a9e60057baa5.csv"
+# FileIn <- "~/pfs/exo2_logjam_load_files/43749/602db056666dc42e9f37a9e60057baa5.csv"
+# FileIn <- "~/pfs/exo2_logjam_files/43749/602db056666dc42e9f37a9e60057baa5.csv"
 # FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
 # FileIn <- "~/pfs/exo2_logjam_load_files/26239/8aa609e9456820f423fcb07a0ea23364.csv"
-DirOutBase="~/pfs/out/exo2_logfile_output"
+# DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
 # SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
 # SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exodissolvedoxygen_calibrated.avsc'),collapse='')
@@ -48,13 +48,13 @@ DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoturbidity_calibrated.avsc'),collapse='')
 # SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exofdom_calibrated.avsc'),collapse='')
 # SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exototalalgae_calibrated.avsc'),collapse='')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'                               
 #' @changelog
 #' Bobby Hensley (2026-04-14)
 #'   Initial creation
 #' Bobby Hensley (2026-04-23)   
-#'   Updates to allow for older file formats
+#'   Updates for error handling and to allow for older file formats
 ##############################################################################################
 wrap.exo2.logfiles <- function(FileIn,
                              DirOutBase,
@@ -80,16 +80,21 @@ wrap.exo2.logfiles <- function(FileIn,
                                     blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
                                     stringsAsFactors = FALSE,na.strings=c(-1,'')))
   
+# File error checking  
   if (base::any(base::class(logFile) == 'try-error')) {
     # Generate error and stop execution
-    log$error(base::paste0('File ', FileIn, ' is unreadable. Either not a sonde data file or bad encoding.'))
+    log$error(base::paste0('File ', FileIn, ' is unreadable.'))
+    base::stop()
+  }
+  if (any(sapply(logFile, function(x) grepl("[\u4e00-\u9fa5]", as.character(x))))=="TRUE"){
+    log$error(base::paste0('File ', FileIn, ' contains non standard characters.'))
     base::stop()
   }
   if(any(grepl('TROLL',logFile))){
-    log$debug(base::paste0('skipping troll file: ', FileIn))
+    log$debug(base::paste0('Skipping troll file: ', FileIn))
     base::stop()
   }else if(any(grepl('SATS',logFile))){
-    log$debug(base::paste0('skipping suna file: ', FileIn))
+    log$debug(base::paste0('Skipping suna file: ', FileIn))
     base::stop()
   }
 
