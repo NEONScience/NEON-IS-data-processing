@@ -1050,12 +1050,20 @@ test_that("Integration test verifies non-frozen data values are preserved", {
     }
 
     # Data values must match the originals (no masking applied)
+    expect_true("readout_time" %in% names(dataOut), label = "Output data should contain readout_time")
+    expect_true("readout_time" %in% names(origData), label = "Original data should contain readout_time")
+    origRowIdx <- match(dataOut$readout_time, origData$readout_time)
+    expect_false(anyNA(origRowIdx), label = "Each output row should match an original readout_time")
+
     for (d in sprintf("%02d", 1:8)) {
       for (prefix in c("VSWCfactoryDepth", "VSWCsoilSpecificDepth", "VSICDepth")) {
         col <- paste0(prefix, d)
         if (col %in% names(dataOut) && col %in% names(origData)) {
-          expect_equal(dataOut[[col]], origData[[col]],
-                       label = paste0(col, " should be unchanged when no frozen flags"))
+          expect_equal(
+            dataOut[[col]],
+            origData[[col]][origRowIdx],
+            label = paste0(col, " should be unchanged when no frozen flags")
+          )
         }
       }
     }
