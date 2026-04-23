@@ -980,18 +980,24 @@ test_that("Integration test verifies frozen depths have NA in output data", {
     dataOut  <- arrow::read_parquet(file.path(dataDir,  dataFiles[1]))
 
     # For every depth with tempTestQF == 1, corresponding data columns must be NA
+    expect_true("readout_time" %in% names(flagData))
+    expect_true("readout_time" %in% names(dataOut))
     for (d in sprintf("%02d", 1:8)) {
       qfCol <- paste0("tempTestDepth", d, "QF")
       if (qfCol %in% names(flagData)) {
-        frozenRows <- which(flagData[[qfCol]] == 1L)
-        if (length(frozenRows) > 0) {
-          for (prefix in c("VSWCfactoryDepth", "VSWCsoilSpecificDepth", "VSICDepth")) {
-            dataCol <- paste0(prefix, d)
-            if (dataCol %in% names(dataOut)) {
-              expect_true(
-                all(is.na(dataOut[[dataCol]][frozenRows])),
-                label = paste0(dataCol, " rows flagged frozen should be NA")
-              )
+        frozenTimes <- unique(flagData$readout_time[flagData[[qfCol]] == 1L])
+        frozenTimes <- frozenTimes[!is.na(frozenTimes)]
+        if (length(frozenTimes) > 0) {
+          matchingRows <- which(dataOut$readout_time %in% frozenTimes)
+          if (length(matchingRows) > 0) {
+            for (prefix in c("VSWCfactoryDepth", "VSWCsoilSpecificDepth", "VSICDepth")) {
+              dataCol <- paste0(prefix, d)
+              if (dataCol %in% names(dataOut)) {
+                expect_true(
+                  all(is.na(dataOut[[dataCol]][matchingRows])),
+                  label = paste0(dataCol, " rows flagged frozen should be NA")
+                )
+              }
             }
           }
         }
