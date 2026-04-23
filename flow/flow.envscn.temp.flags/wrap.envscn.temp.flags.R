@@ -47,12 +47,10 @@
 #' for more details.
 #'
 #' @return A repository in DirOutBase containing:
-#' \itemize{
-#'   \item \strong{flags/}: Combined plausibility and temperature test quality flags for VSIC, VSWCFactory,
+#'   flags/: Combined plausibility and temperature test quality flags for VSIC, VSWCFactory,
 #'     and VSWCSoilSpecific data streams.
-#'   \item \strong{data/}: Sensor data with NA applied to VSWCfactoryDepthXX, VSWCsoilSpecificDepthXX,
+#'   data/: Sensor data with NA applied to VSWCfactoryDepthXX, VSWCsoilSpecificDepthXX,
 #'     and VSICDepthXX values for any depth where the temperature flag was raised (tempTestDepthXXQF == 1).
-#' }
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -73,6 +71,8 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-02-16)
 #     Initial creation
+#   Teresa Burlingame  (2025-04-23)
+#     Null out data when Temp flag == 1 (frozen soil) and write out modified data file to output data directory.
 ##############################################################################################
 wrap.envscn.temp.flags <- function(DirIn,
                                    DirOutBase,
