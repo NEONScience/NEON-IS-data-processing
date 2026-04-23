@@ -36,9 +36,10 @@
 #' @keywords Currently none
 #' 
 #' @examples
+FileIn <- "~/pfs/exo2_logjam_load_files/43749/602db056666dc42e9f37a9e60057baa5.csv"
+FileIn <- "~/pfs/exo2_logjam_files/43749/602db056666dc42e9f37a9e60057baa5.csv"
 # FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
 # FileIn <- "~/pfs/exo2_logjam_load_files/26239/8aa609e9456820f423fcb07a0ea23364.csv"
-FileIn <- "~/pfs/exo2_logjam_files/99999/D15_REDB_20201016_16B101590.csv"
 DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
 # SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
@@ -120,7 +121,7 @@ wrap.exo2.logfiles <- function(FileIn,
     serialNumbers<-merge(dataStreams,serialNumbers,by.x="dataStream",by.y="dataStream",all.x=T,all.y=F)}
   
 # Removes parts of file header(s) that are not used
-  logFile <- logFile[rowSums(is.na(logFile)) < 5, ]
+  logFile <- logFile[rowSums(!is.na(logFile)) > 5, ]
   logFile <- logFile[rowSums(sapply(logFile, function(x) grepl("MEAN VALUE:", x))) == 0,]
   logFile <- logFile[rowSums(sapply(logFile, function(x) grepl("STANDARD DEVIATION:", x))) == 0,]
   
@@ -135,7 +136,7 @@ wrap.exo2.logfiles <- function(FileIn,
   for(i in 1:length(list_of_tables)) {
     dataTable<-data.frame(list_of_tables[i])
     
-    # Change differnt possible header names to match NEON terms in schemas
+    # Change different possible header names to match NEON terms in schemas
     dataTable[] <- lapply(dataTable, function(x) gsub("Time \\(HH:mm:ss\\)", "time", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Time \\(HH:MM:SS\\)", "time", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("TIME \\(HH:MM:SS\\)", "time", x))
@@ -211,10 +212,10 @@ wrap.exo2.logfiles <- function(FileIn,
     dataTable$site_id<-NA
     
     # Calculate readout date and time
-    if(formatType=="OLD"){
+    if(all(grepl(":", dataTable$time)==FALSE)){
     dataTable$readout_time<-lubridate::with_tz(as.Date(dataTable$date,format = "%m/%d/%Y") 
                                               + (as.numeric(dataTable$time)),'UTC')}
-    if(formatType=="NEW"){
+    if(all(grepl(":", dataTable$time)==TRUE)){
     dataTable$readout_time<-lubridate::with_tz(as.Date(dataTable$date,format = "%m/%d/%Y") 
                                               + lubridate::hms(dataTable$time),'UTC')}
     dataTable[, c("date","time")] <- list(NULL)
