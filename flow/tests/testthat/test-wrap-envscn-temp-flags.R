@@ -917,6 +917,153 @@ test_that("Integration test with temp directory - required for tests", {
   
 })
 
+########################################################################################################
+# Test 7: Data masking - verify frozen depths have NAs in output data and data file is written
+########################################################################################################
+
+test_that("Integration test verifies data directory and file are created in output", {
+  DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/")
+  DirTemp <- file.path(getwd(), "pfs/envscn_temp_flags/temp/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501")
+  DirOutBase <- file.path(tempdir(), "test_output_data_created")
+
+  if (dir.exists(DirIn) && dir.exists(DirTemp)) {
+    if (dir.exists(DirOutBase)) unlink(DirOutBase, recursive = TRUE)
+
+    wrap.envscn.temp.flags(
+      DirIn = DirIn,
+      DirOutBase = DirOutBase,
+      DirTemp = DirTemp,
+      DirSubCopy = c("location", "threshold"),
+      log = NULL
+    )
+
+    dataDir <- file.path(DirOutBase, "enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/data")
+    expect_true(dir.exists(dataDir))
+
+    dataFiles <- list.files(dataDir, pattern = ".parquet")
+    expect_equal(length(dataFiles), 1)
+
+    unlink(DirOutBase, recursive = TRUE)
+  } else {
+    skip("Test data not available")
+  }
+})
+
+test_that("Integration test verifies frozen depths have NA in output data", {
+  DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/")
+  DirTemp <- file.path(getwd(), "pfs/envscn_temp_flags/temp/tests/all_freezing/2025/10/17/conc-h2o-soil-salinity_GRSM005501/")
+  DirOutBase <- file.path(tempdir(), "test_output_frozen_data")
+
+  if (dir.exists(DirIn) && dir.exists(DirTemp)) {
+    if (dir.exists(DirOutBase)) unlink(DirOutBase, recursive = TRUE)
+
+    wrap.envscn.temp.flags(
+      DirIn = DirIn,
+      DirOutBase = DirOutBase,
+      DirTemp = DirTemp,
+      DirSubCopy = c("location", "threshold"),
+      log = NULL
+    )
+
+    flagsDir <- file.path(DirOutBase, "enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/flags")
+    dataDir  <- file.path(DirOutBase, "enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/data")
+
+    expect_true(dir.exists(flagsDir))
+    expect_true(dir.exists(dataDir))
+
+    flagFiles <- list.files(flagsDir, pattern = "flagsPlausibility.parquet")
+    dataFiles <- list.files(dataDir, pattern = ".parquet")
+    expect_equal(length(flagFiles), 1)
+    expect_equal(length(dataFiles), 1)
+
+    flagData <- arrow::read_parquet(file.path(flagsDir, flagFiles[1]))
+    dataOut  <- arrow::read_parquet(file.path(dataDir,  dataFiles[1]))
+
+    # For every depth with tempTestQF == 1, corresponding data columns must be NA
+    for (d in sprintf("%02d", 1:8)) {
+      qfCol <- paste0("tempTestDepth", d, "QF")
+      if (qfCol %in% names(flagData)) {
+        frozenRows <- which(flagData[[qfCol]] == 1L)
+        if (length(frozenRows) > 0) {
+          for (prefix in c("VSWCfactoryDepth", "VSWCsoilSpecificDepth", "VSICDepth")) {
+            dataCol <- paste0(prefix, d)
+            if (dataCol %in% names(dataOut)) {
+              expect_true(
+                all(is.na(dataOut[[dataCol]][frozenRows])),
+                label = paste0(dataCol, " rows flagged frozen should be NA")
+              )
+            }
+          }
+        }
+      }
+    }
+
+    # Verify the all_freezing test data actually produced some frozen flags
+    tempTestCols <- names(flagData)[grepl("tempTestDepth", names(flagData))]
+    totalFrozen <- sum(sapply(tempTestCols, function(col) sum(flagData[[col]] == 1L, na.rm = TRUE)))
+    expect_true(totalFrozen > 0, label = "all_freezing test data should produce at least one frozen flag")
+
+    unlink(DirOutBase, recursive = TRUE)
+  } else {
+    skip("Test data not available")
+  }
+})
+
+test_that("Integration test verifies non-frozen data values are preserved", {
+  DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/")
+  DirTemp <- file.path(getwd(), "pfs/envscn_temp_flags/temp/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501")
+  DirOutBase <- file.path(tempdir(), "test_output_preserved")
+
+  if (dir.exists(DirIn) && dir.exists(DirTemp)) {
+    if (dir.exists(DirOutBase)) unlink(DirOutBase, recursive = TRUE)
+
+    # Read original data before running wrap
+    origFile <- list.files(file.path(DirIn, "data"), pattern = ".parquet", full.names = TRUE)[1]
+    origData <- arrow::read_parquet(origFile)
+
+    wrap.envscn.temp.flags(
+      DirIn = DirIn,
+      DirOutBase = DirOutBase,
+      DirTemp = DirTemp,
+      DirSubCopy = c("location", "threshold"),
+      log = NULL
+    )
+
+    dataDir   <- file.path(DirOutBase, "enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/data")
+    flagsDir  <- file.path(DirOutBase, "enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/flags")
+    dataFiles <- list.files(dataDir,  pattern = ".parquet")
+    flagFiles <- list.files(flagsDir, pattern = "flagsPlausibility.parquet")
+
+    dataOut  <- arrow::read_parquet(file.path(dataDir,  dataFiles[1]))
+    flagData <- arrow::read_parquet(file.path(flagsDir, flagFiles[1]))
+
+    # In good_data no tempTest flags should be 1
+    tempTestCols <- names(flagData)[grepl("tempTestDepth", names(flagData))]
+    for (col in tempTestCols) {
+      expect_true(all(flagData[[col]] %in% c(-1L, 0L)), label = paste0(col, " should not have any frozen flags"))
+    }
+
+    # Data values must match the originals (no masking applied)
+    for (d in sprintf("%02d", 1:8)) {
+      for (prefix in c("VSWCfactoryDepth", "VSWCsoilSpecificDepth", "VSICDepth")) {
+        col <- paste0(prefix, d)
+        if (col %in% names(dataOut) && col %in% names(origData)) {
+          expect_equal(dataOut[[col]], origData[[col]],
+                       label = paste0(col, " should be unchanged when no frozen flags"))
+        }
+      }
+    }
+
+    unlink(DirOutBase, recursive = TRUE)
+  } else {
+    skip("Test data not available")
+  }
+})
+
+########################################################################################################
+# Test 8: Integration test with combined DirIn and DirTemp (existing, kept intact)
+########################################################################################################
+
 test_that("Integration test with combined DirIn and DirTemp", {
   # Use actual test data paths
   DirIn <- file.path(getwd(), "pfs/envscn_temp_flags/combined/tests/2025/10/17/conc-h2o-soil-salinity_GRSM001501/enviroscan/CFGLOC105245/")
