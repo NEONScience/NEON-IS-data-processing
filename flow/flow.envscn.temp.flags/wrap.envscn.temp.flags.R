@@ -338,6 +338,12 @@ wrap.envscn.temp.flags <- function(DirIn,
   
   # Remove temp QF columns from data output (they belong in flags, not data)
   dataOut <- dataOut[, base::setdiff(base::names(dataOut), qfCols), drop = FALSE]
+  
+  # Restore the original Arrow schema after merge/subsetting so the rewritten
+  # data file keeps the same schema as the input data.
+  if (!base::is.null(base::attr(data, "schema"))) {
+    base::attr(dataOut, "schema") <- base::attr(data, "schema")
+  }
 
   # ===== Write output =====
   nameFileQfOut <- fs::path(dirOutQf, fileQfPlau)
