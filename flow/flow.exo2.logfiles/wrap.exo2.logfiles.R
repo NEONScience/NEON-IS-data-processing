@@ -38,7 +38,8 @@
 #' @examples
 # FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
 # FileIn <- "~/pfs/exo2_logjam_load_files/26239/8aa609e9456820f423fcb07a0ea23364.csv"
-# DirOutBase="~/pfs/out/exo2_logfile_output"
+FileIn <- "~/pfs/exo2_logjam_files/99999/D15_REDB_20201016_16B101590.csv"
+DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
 # SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
 # SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exodissolvedoxygen_calibrated.avsc'),collapse='')
@@ -46,11 +47,13 @@
 # SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoturbidity_calibrated.avsc'),collapse='')
 # SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exofdom_calibrated.avsc'),collapse='')
 # SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exototalalgae_calibrated.avsc'),collapse='')
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'                               
 #' @changelog
 #' Bobby Hensley (2026-04-14)
 #'   Initial creation
+#' Bobby Hensley (2026-04-23)   
+#'   Updates to allow for older file formats
 ##############################################################################################
 wrap.exo2.logfiles <- function(FileIn,
                              DirOutBase,
@@ -89,22 +92,40 @@ wrap.exo2.logfiles <- function(FileIn,
     base::stop()
   }
 
-# Create generic table of data streams, to later be populated with sensor serial numbers
-# Note doesn't have to be exhaustive, just needs one data stream per possible sensor (+ wiper and body)  
+# Determine whether file is old format or new format
+  if(any(sapply(logFile, function(x) any(x %in% "Devices List:")))==TRUE){formatType="OLD"
+  }else{formatType="NEW"}
+  
+# Create generic table of all possible data streams, to be populated with sensor serial numbers.
+# (Needed to make sure missing probes still get populated with an NA serial number).  
   dataStreams<-data.frame(dataStream = c("sensorDepth","sensorVoltage","wiperPosition","conductance",
                                          "dissolvedOxygen","pH","turbidity","fDOM","chlorophyll"))
   
-    
-# Removes rows in log file header(s) that are not needed
-  logFile <- logFile[rowSums(is.na(logFile)) != ncol(logFile), ]
-  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("sep=", row))), ]
-  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("Kor MEASUREMENT DATA FILE EXPORT", row))), ]
-  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("FILE CREATED:", row))), ]
-  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("MEAN VALUE:", row))), ]
-  logFile <- logFile[!apply(logFile, 1, function(row) any(grepl("STANDARD DEVIATION:", row))), ]
+# Create table of serial numbers for old format files (new format will be done later)
+  if(formatType=="OLD"){
+    serialStart_id<- which(apply(logFile, 1, function(x) any(grepl("Data Collection Device", x))))+1
+    serialEnd_id<- min(which(apply(logFile, 1, function(x) any(grepl("MM/DD/YYYY", x)))))-3
+    serialNumbers<-logFile[serialStart_id:serialEnd_id,1:2 ]
+    colnames(serialNumbers)<-c("dataStream","serialNumber")
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("Depth Non-Vented 0-10m", "sensorDepth", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("Depth Non-Vented 0-100m", "sensorDepth", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("EXO2 Sonde", "sensorVoltage", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("Wiper", "wiperPosition", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("Conductivity/Temp", "conductance", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("Optical DO", "dissolvedOxygen", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("pH/ORP", "pH", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("Turbidity", "turbidity", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("fDOM", "fDOM", x))
+    serialNumbers[] <- lapply(serialNumbers, function(x) gsub("Total Algae BGA-PC", "chlorophyll", x))
+    serialNumbers<-merge(dataStreams,serialNumbers,by.x="dataStream",by.y="dataStream",all.x=T,all.y=F)}
+  
+# Removes parts of file header(s) that are not used
+  logFile <- logFile[rowSums(is.na(logFile)) < 5, ]
+  logFile <- logFile[rowSums(sapply(logFile, function(x) grepl("MEAN VALUE:", x))) == 0,]
+  logFile <- logFile[rowSums(sapply(logFile, function(x) grepl("STANDARD DEVIATION:", x))) == 0,]
   
 # Identify if multiple headers are present in the file. (Multiple headers may signify probe serial numbers were swapped)  
-  header_ids <- which(apply(logFile, 1, function(x) any(grepl("SENSOR SERIAL NUMBER:", x))))
+  header_ids <- which(apply(logFile, 1, function(x) any(grepl("MM/DD/YYYY", x))))-1
   
 # Split into list of multiple data tables for each new header  
   list_of_tables <- split(logFile, cumsum(seq_len(nrow(logFile)) %in% (header_ids)))
@@ -114,8 +135,9 @@ wrap.exo2.logfiles <- function(FileIn,
   for(i in 1:length(list_of_tables)) {
     dataTable<-data.frame(list_of_tables[i])
     
-    # Change header names to match NEON terms in schemas
+    # Change differnt possible header names to match NEON terms in schemas
     dataTable[] <- lapply(dataTable, function(x) gsub("Time \\(HH:mm:ss\\)", "time", x))
+    dataTable[] <- lapply(dataTable, function(x) gsub("Time \\(HH:MM:SS\\)", "time", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("TIME \\(HH:MM:SS\\)", "time", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("Date \\(MM/DD/YYYY\\)", "date", x))
     dataTable[] <- lapply(dataTable, function(x) gsub("DATE \\(MM/DD/YYYY\\)", "date", x))
@@ -159,10 +181,13 @@ wrap.exo2.logfiles <- function(FileIn,
     dataTable[] <- lapply(dataTable, function(x) gsub("TAL PC uG/L", "blueGreenAlgaePhycocyanin", x))
     colnames(dataTable)<-apply(dataTable[2, ], 2, paste0) # Apply this header to data table(s)
     
-    # Extract sensor serial numbers
+    # Create table(s) of serial numbers from new format files
+    if(formatType=="NEW"){
     serialNumbers<-na.omit(t(dataTable[1:2,]))
     colnames(serialNumbers)<-c("serialNumber","dataStream")
-    serialNumbers<-merge(dataStreams,serialNumbers,by.x="dataStream",by.y="dataStream",all.x=T,all.y=F)
+    serialNumbers<-merge(dataStreams,serialNumbers,by.x="dataStream",by.y="dataStream",all.x=T,all.y=F)}
+    
+    # Extract sensor serial numbers
     SNbody<-serialNumbers[serialNumbers$dataStream == "sensorVoltage", "serialNumber"]
     SNdepth<-serialNumbers[serialNumbers$dataStream == "sensorDepth", "serialNumber"]
     SNwipe<-serialNumbers[serialNumbers$dataStream == "wiperPosition", "serialNumber"]
@@ -186,9 +211,14 @@ wrap.exo2.logfiles <- function(FileIn,
     dataTable$site_id<-NA
     
     # Calculate readout date and time
+    if(formatType=="OLD"){
     dataTable$readout_time<-lubridate::with_tz(as.Date(dataTable$date,format = "%m/%d/%Y") 
-                                               + lubridate::hms(dataTable$time),'UTC')
+                                              + (as.numeric(dataTable$time)),'UTC')}
+    if(formatType=="NEW"){
+    dataTable$readout_time<-lubridate::with_tz(as.Date(dataTable$date,format = "%m/%d/%Y") 
+                                              + lubridate::hms(dataTable$time),'UTC')}
     dataTable[, c("date","time")] <- list(NULL)
+    
     #' Check that there are no dates prior to when NEON began collecting IS data
     if(any(dataTable$readout_time<"2014-01-01 00:00:00 UTC")){
       log$debug(base::paste0("Data contains dates prior to when NEON began collecting IS data"))}
