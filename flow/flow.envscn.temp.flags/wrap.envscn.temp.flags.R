@@ -369,6 +369,14 @@ wrap.envscn.temp.flags <- function(DirIn,
   
 
   # ===== Write temperature-masked data =====
+  if (base::length(fileData) != 1) {
+    log$error(base::paste0(
+      'Expected exactly one input data parquet file when writing temperature-masked data, found ',
+      base::length(fileData), '.'
+    ))
+    stop()
+  }
+  
   nameFileDataOut <- fs::path(dirOutData, fileData[1])
   
   rptWriteData <- base::try(
