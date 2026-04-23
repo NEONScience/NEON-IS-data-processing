@@ -38,8 +38,8 @@
 #' @keywords Currently none
 
 #' @examples
- # arg <- c("DirIn=~/pfs/exo2_logjam_load_files",
- #           "DirOutBase=~/pfs/out",
+ # arg <- c("DirIn=~/pfs/exo2_logjam_load_files_testprod",
+ #           "DirOutBase=~/pfs/out/exo2_test",
  #           "DirErr=~/pfs/out/errored_datums")
  # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -56,6 +56,7 @@ options(digits.secs = 3)
 library(foreach)
 library(doParallel)
 library(lubridate)
+library(re)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.exo2.logfiles.R")
@@ -141,7 +142,7 @@ foreach::foreach(idxFileIn = fileData) %dopar% {
         NEONprocIS.base::def.err.datm(
           err=err,
           call.stack=call.stack,
-          DirDatm=idxDirIn,
+          DirDatm=idxFileIn,
           DirErrBase=Para$DirErr,
           RmvDatmOut=TRUE,
           DirOutBase=Para$DirOutBase,
