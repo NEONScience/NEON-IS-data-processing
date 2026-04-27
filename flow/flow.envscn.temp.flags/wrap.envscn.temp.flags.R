@@ -176,6 +176,9 @@ wrap.envscn.temp.flags <- function(DirIn,
                                             Df=TRUE, 
                                             log=log)
   
+  # Capture schema before any merges drop it
+  SchmDataIn <- base::attr(data, 'schema')
+  
   # Filter to soil moisture columns and essential metadata
   soilCols <- base::names(data)[base::grepl("SoilMoisture", base::names(data))]
   
@@ -346,6 +349,7 @@ wrap.envscn.temp.flags <- function(DirIn,
     NEONprocIS.base::def.wrte.parq(
       data = qfAll,
       NameFile = nameFileQfOut,
+      Schm = SchmQf,
       log = log
     ),
     silent = TRUE
@@ -377,6 +381,7 @@ wrap.envscn.temp.flags <- function(DirIn,
     NEONprocIS.base::def.wrte.parq(
       data = dataOut,
       NameFile = nameFileDataOut,
+      Schm = SchmDataIn,
       log = log
     ),
     silent = TRUE
