@@ -341,6 +341,10 @@ wrap.envscn.temp.flags <- function(DirIn,
   
   # Remove temp QF columns from data output (they belong in flags, not data)
   dataOut <- dataOut[, base::setdiff(base::names(dataOut), qfCols), drop = FALSE]
+  
+  # Restore original column order: merge() moves the by-column (readout_time) to front,
+  # but SchmDataIn expects the original field order. def.wrte.parq renames by position.
+  dataOut <- dataOut[, base::names(data), drop = FALSE]
 
   # ===== Write output =====
   nameFileQfOut <- fs::path(dirOutQf, fileQfPlau)
