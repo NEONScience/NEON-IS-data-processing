@@ -940,7 +940,7 @@ test_that("Integration test verifies data directory and file are created in outp
     dataDir <- file.path(DirOutBase, "enviroscan/tests/good_data/2025/10/17/conc-h2o-soil-salinity_GRSM005501/enviroscan/CFGLOC105360/data")
     expect_true(dir.exists(dataDir))
 
-    dataFiles <- list.files(dataDir, pattern = ".parquet")
+    dataFiles <- list.files(dataDir, pattern = "\\.parquet$")
     expect_equal(length(dataFiles), 1)
 
     unlink(DirOutBase, recursive = TRUE)
