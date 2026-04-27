@@ -347,6 +347,14 @@ wrap.envscn.temp.flags <- function(DirIn,
   dataOut <- dataOut[, base::names(data), drop = FALSE]
 
   # ===== Write output =====
+  if (base::length(fileQfPlau) != 1) {
+    log$error(base::paste0(
+      'Expected exactly one plausibility flag file in ', dirInQf, ', found ',
+      base::length(fileQfPlau), '.'
+    ))
+    stop()
+  }
+  
   nameFileQfOut <- fs::path(dirOutQf, fileQfPlau)
   
   rptWrite <- base::try(
