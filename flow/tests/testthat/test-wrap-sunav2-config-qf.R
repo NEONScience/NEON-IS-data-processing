@@ -77,13 +77,14 @@ test_that("Unit test of wrap.sunav2.config.qf.R", {
   testthat::expect_true(dir.exists(DirOutStats))
   testthat::expect_true(dir.exists(DirOutQM))
   
-  #check that finalQF is 1 where nitrate configQF is 1
+  # check that finalQF is 1 where nitrateConfigQF is 1
   qmFileName<-base::list.files(DirOutQM,full.names=FALSE)
   sunaQMs<-try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirOutQM, '/', qmFileName),
                                               log = log),silent=FALSE)
-  if(length(sunaQMs)!=0){
-    testthat::expect_true(all(sunaQMs$finalQF[sunaQMs$nitrateConfigQF==1]==1))
-  }
+  testthat::expect_true(length(sunaQMs) != 0)
+  testthat::expect_true('nitrateConfigQF' %in% names(sunaQMs))
+  testthat::expect_true(any(sunaQMs$nitrateConfigQF == 1, na.rm = TRUE))
+  testthat::expect_true(all(sunaQMs$finalQF[sunaQMs$nitrateConfigQF == 1] == 1))
   
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
