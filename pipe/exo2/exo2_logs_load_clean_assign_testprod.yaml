@@ -1,0 +1,38 @@
+---
+pipeline:
+  name: exo2_logs_load_clean_assign_testprod
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-ef9f2d9
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - Rscript ./flow.exo2.logfiles.R \
+      DirIn=$DIR_IN
+      DirOutBase=/pfs/out
+      DirErr=/pfs/out/errored_datums
+  env:
+    LOG_LEVEL: DEBUG
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: exo2_logjam_load_files_testprod
+      glob: /45253
+      empty_files: true
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
