@@ -42,8 +42,9 @@ transform:
     Rscript flow.concH2oSalinity.grp.split.R \
       DirIn=/tmp/pfs/group_path_outCopy \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums 
-
+      DirErr=/pfs/out/errored_datums \
+      FileSchmStats=$FILE_SCHEMA_STATS \
+      FileSchmQm=$FILE_SCHEMA_QM
 
     echo "=== flow.concH2oSalinity.grp.split complete ==="
 
@@ -66,7 +67,16 @@ transform:
     GROUP_FOCUS_DAY_INDEX: '5'
     GROUP_FOCUS_GROUP_INDEX: '8'
 input:
-  join:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_STATS
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_stats_split.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_quality_metrics_split.avsc
+  - join:
     - pfs:
         # name must be GROUP_ASSIGNMENT_PATH
         name: GROUP_ASSIGNMENT_PATH

@@ -22,6 +22,7 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmStat=$FILE_SCHEMA_STATS \
       "WndwAgr=001|030" \
       "TermStat1=VSWCsoilSpecificDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
       "TermStat2=VSWCsoilSpecificDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
@@ -75,19 +76,24 @@ transform:
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '5' # Option for stats module
 input:
-  join:
+  cross:
   - pfs:
-      name: QAQC_PATH
-      repo: concH2oSoilSalinity_analyze_pad_qaqc_join_custom
-      glob: /(*/*/*)
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: UNCERTAINTY_PATH
-      repo: concH2oSoilSalinity_group_path
-      glob: /(*/*/*)
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      name: FILE_SCHEMA_STATS
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_stats.avsc
+  - join:
+    - pfs:
+        name: QAQC_PATH
+        repo: concH2oSoilSalinity_analyze_pad_qaqc_join_custom
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: UNCERTAINTY_PATH
+        repo: concH2oSoilSalinity_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
 resource_requests: 

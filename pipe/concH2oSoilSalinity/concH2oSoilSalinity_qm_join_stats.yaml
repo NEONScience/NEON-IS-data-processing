@@ -1,8 +1,5 @@
 ---
-# TEST pipeline - combines qm_group_and_compute + stats_qm_join into a single step.
-# Output is equivalent to concH2oSoilSalinity_stats_qm_join:
-#   /pfs/out/YEAR/MONTH/DAY/original_group/enviroscan/CFGLOC/{quality_metrics,stats}/...
-# Intended to be replaced by a proper combined module image once validated.
+# combines qm_group_and_compute a joiner to pull stats into repo. 
 pipeline:
   name: concH2oSoilSalinity_qm_join_stats
 transform:
@@ -34,6 +31,7 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/tmp/qm_output \
       DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM \
       "WndwAgr=001|030" \
       "WghtAlphBeta=1|1" \
       Thsh=0.3 \
@@ -160,25 +158,30 @@ transform:
     LINK_TYPE: COPY
     PARALLELIZATION_INTERNAL: '3'
 input:
-  join:
+  cross:
   - pfs:
-      name: QAQC_PLAUSIBILITY_PATH
-      repo: concH2oSoilSalinity_analyze_pad_qaqc_join_custom
-      glob: /(*/*/*)
-      joinOn: $1
-      empty_files: false
-  - pfs:
-      name: REGULARIZED_FLAGS_PATH
-      repo: concH2oSoilSalinity_group_path
-      glob: /(*/*/*)
-      joinOn: $1
-      empty_files: false
-  - pfs:
-      name: STATS_PATH
-      repo: concH2oSoilSalinity_stats_group_and_compute
-      glob: /(*/*/*)
-      joinOn: $1
-      empty_files: false
+      name: FILE_SCHEMA_QM
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_quality_metrics.avsc
+  - join:
+    - pfs:
+        name: QAQC_PLAUSIBILITY_PATH
+        repo: concH2oSoilSalinity_analyze_pad_qaqc_join_custom
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false
+    - pfs:
+        name: REGULARIZED_FLAGS_PATH
+        repo: concH2oSoilSalinity_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false
+    - pfs:
+        name: STATS_PATH
+        repo: concH2oSoilSalinity_stats_group_and_compute
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false
 parallelism_spec:
   constant: 5
 autoscaling: true
