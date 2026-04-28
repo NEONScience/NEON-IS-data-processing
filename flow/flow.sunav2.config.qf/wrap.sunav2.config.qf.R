@@ -131,11 +131,11 @@ wrap.sunav2.config.qf <- function(DirIn,
   }
   
   # Sets nitrateConfigQF=1 in QM file if numPoints > maxPts in Data file 
-  sunaQMs$nitrateConfigQF=-1L
+  sunaQMs$nitrateConfigQF <- NA_integer_
   pts <- sunaStats[["surfWaterNitrateNumPts"]]
   qf  <- sunaQMs[["nitrateConfigQF"]]
-  qf[pts > 0]      <- 0L
-  qf[pts > maxPts] <- 1L
+  qf[!base::is.na(pts) & pts > 0]      <- 0L
+  qf[!base::is.na(pts) & pts > maxPts] <- 1L
   sunaQMs[["nitrateConfigQF"]] <- qf
 
   # If nitrateConfigQF=1 set nitrateFinalQF=1
