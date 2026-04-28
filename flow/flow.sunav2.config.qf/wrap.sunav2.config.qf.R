@@ -46,7 +46,8 @@
 #' @changelog
 #' Bobby Hensley (2026-04-13)
 #' Initial creation.
-#' 
+#' Nora Catolico (2026-04-28)
+#' add in maxPts threshold option
 ##############################################################################################
 wrap.sunav2.config.qf <- function(DirIn,
                                 DirOutBase,
@@ -65,6 +66,7 @@ wrap.sunav2.config.qf <- function(DirIn,
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirInStats <- paste0(DirIn,"/stats")
   DirInQMs <- paste0(DirIn,"/quality_metrics")
+  DirInThresholds <- paste0(DirIn,"/threshold")
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutStats <- base::paste0(DirOut,"/stats")
   base::dir.create(DirOutStats,recursive=TRUE)
@@ -101,8 +103,23 @@ wrap.sunav2.config.qf <- function(DirIn,
     log$debug(base::paste0('Successfully read in file: ',qmFileName))
   }
   
+  #optional threshold
+  thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
+  if(length(thresholdFileName)==0){
+    #default to 41 if no threshold file 
+    maxPts <- 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
+  } else {
+    sunaThresholds<-base::try(NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = base::paste0(DirInThresholds, '/', thresholdFileName)),silent = FALSE)
+    if(class(sunaThresholds)[1] == 'try-error'){
+      maxPts <- 41
+    }else{
+      maxPtsThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="maxPts"),]
+      maxPts<-maxPtsThreshold$number_value
+      log$debug(base::paste0('Successfully read in file: ',thresholdFileName))
+    }
+  }
+  
   # Sets nitrateConfigQF=1 in QM file if numPoints > maxPts in Data file 
-  maxPts= 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
   sunaQMs$nitrateConfigQF=-1L
   pts <- sunaStats[["surfWaterNitrateNumPts"]]
   qf  <- sunaQMs[["nitrateConfigQF"]]
