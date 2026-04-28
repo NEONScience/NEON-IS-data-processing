@@ -307,7 +307,7 @@
 	},
 	{
 	"site" : "OKSR",
-	"kafka_start_date" : "2026-04-26"
+	"kafka_start_date" : "2026-05-18"
 	},
 	{
 	"site" : "POSE",
@@ -339,7 +339,7 @@
 	},
 	{
 	"site" : "TECR",
-	"kafka_start_date" : "2026-04-26"
+	"kafka_start_date" : "2026-05-15"
 	},
 	{
 	"site" : "TOMB",
