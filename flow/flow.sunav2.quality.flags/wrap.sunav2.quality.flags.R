@@ -215,10 +215,31 @@ wrap.sunav2.quality.flags <- function(DirIn,
   
   #' Removes measurements where lamp has not stabilized from data and flag files.
   lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
+  sunaDataColOrder<-colnames(sunaData)
+  preFilterSunaRows<-nrow(sunaData)
+  preFilterFlagRows<-nrow(allFlags)
   sunaData<-base::merge(sunaData,lampStabilizeFlagsOnly) #' Adds lamp stabilize QF to data file
-  sunaData<-sunaData[(sunaData$nitrateLampStabilizeQF==0),]
-  allFlags<-allFlags[(allFlags$nitrateLampStabilizeQF==0),]
-  sunaData<-sunaData[,c(2,3,1,4:37)]  
+  hasLampStabilizeFailuresInData<-base::any(sunaData$nitrateLampStabilizeQF==1,na.rm=TRUE)
+  hasLampStabilizeFailuresInFlags<-base::any(allFlags$nitrateLampStabilizeQF==1,na.rm=TRUE)
+  sunaData<-sunaData[!base::is.na(sunaData$nitrateLampStabilizeQF) & (sunaData$nitrateLampStabilizeQF==0),,drop=FALSE]
+  allFlags<-allFlags[!base::is.na(allFlags$nitrateLampStabilizeQF) & (allFlags$nitrateLampStabilizeQF==0),,drop=FALSE]
+  
+  if(base::any(sunaData$nitrateLampStabilizeQF==1,na.rm=TRUE) || base::any(allFlags$nitrateLampStabilizeQF==1,na.rm=TRUE)){
+    log$error(base::paste0('Error: Lamp stabilization filtering failed to remove measurements with nitrateLampStabilizeQF==1'))
+    stop()
+  }
+  
+  if(hasLampStabilizeFailuresInData && nrow(sunaData) >= preFilterSunaRows){
+    log$error(base::paste0('Error: Lamp stabilization filtering did not reduce data rows despite nitrateLampStabilizeQF==1 in input'))
+    stop()
+  }
+  
+  if(hasLampStabilizeFailuresInFlags && nrow(allFlags) >= preFilterFlagRows){
+    log$error(base::paste0('Error: Lamp stabilization filtering did not reduce flag rows despite nitrateLampStabilizeQF==1 in input'))
+    stop()
+  }
+  
+  sunaData<-sunaData[,sunaDataColOrder,drop=FALSE]
   
   #' Checks that data file and flag file have same number of measurements
   if(nrow(sunaData) != nrow(allFlags)){
