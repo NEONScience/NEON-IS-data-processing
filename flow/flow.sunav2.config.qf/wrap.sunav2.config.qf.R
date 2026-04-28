@@ -103,15 +103,15 @@ wrap.sunav2.config.qf <- function(DirIn,
   
   # Sets nitrateConfigQF=1 in QM file if numPoints > maxPts in Data file 
   maxPts= 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
-  sunaQMs$nitrateConfigQF=-1
+  sunaQMs$nitrateConfigQF=-1L
   pts <- sunaStats[["surfWaterNitrateNumPts"]]
   qf  <- sunaQMs[["nitrateConfigQF"]]
-  qf[pts > 0]      <- 0
-  qf[pts > maxPts] <- 1
+  qf[pts > 0]      <- 0L
+  qf[pts > maxPts] <- 1L
   sunaQMs[["nitrateConfigQF"]] <- qf
 
   # If nitrateConfigQF=1 set nitrateFinalQF=1
-  sunaQMs[sunaQMs[["nitrateConfigQF"]] == 1, "finalQF"] <- 1
+  sunaQMs[sunaQMs[["nitrateConfigQF"]] == 1L, "finalQF"] <- 1L
    
   #' Write out stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = sunaStats,
