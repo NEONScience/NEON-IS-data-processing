@@ -113,9 +113,20 @@ wrap.sunav2.config.qf <- function(DirIn,
     if(class(sunaThresholds)[1] == 'try-error'){
       maxPts <- 41
     }else{
-      maxPtsThreshold<-sunaThresholds[(sunaThresholds$threshold_name=="maxPts"),]
-      maxPts<-maxPtsThreshold$number_value
-      log$debug(base::paste0('Successfully read in file: ',thresholdFileName))
+      maxPtsThreshold <- sunaThresholds[(sunaThresholds$threshold_name=="maxPts"),]
+      if(nrow(maxPtsThreshold) == 1 &&
+         "number_value" %in% base::names(maxPtsThreshold) &&
+         base::is.numeric(maxPtsThreshold$number_value) &&
+         length(maxPtsThreshold$number_value) == 1 &&
+         !base::is.na(maxPtsThreshold$number_value)){
+        maxPts <- maxPtsThreshold$number_value
+        log$debug(base::paste0('Successfully read in file: ',thresholdFileName))
+      } else {
+        maxPts <- 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
+        log$warn(base::paste0('Invalid or ambiguous maxPts threshold in file: ',
+                              thresholdFileName,
+                              '. Using default value of 41.'))
+      }
     }
   }
   
