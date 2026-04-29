@@ -42,11 +42,6 @@ transform:
   #   key: LO_BUCKET
 
 input:
-  pfs:
-    name: import_trigger
-    repo: cmp22_cron_daily_and_date_control
-    # Glob must be daily
-    glob: "/cmp22/*/*/*"
   join:
   - pfs:
       name: import_trigger
