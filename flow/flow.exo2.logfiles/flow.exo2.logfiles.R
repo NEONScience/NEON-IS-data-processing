@@ -38,7 +38,7 @@
 #' @keywords Currently none
 
 #' @examples
- # arg <- c("DirIn=~/pfs/exo2_logjam_load_files_testprod",
+ # arg <- c("DirIn=~/pfs/exo2_logjam_load_files_testprod/45253",
  #           "DirOutBase=~/pfs/out/exo2_test",
  #           "DirErr=~/pfs/out/errored_datums")
  # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
@@ -57,6 +57,7 @@ library(foreach)
 library(doParallel)
 library(lubridate)
 library(readr)
+library(stringi)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.exo2.logfiles.R")
