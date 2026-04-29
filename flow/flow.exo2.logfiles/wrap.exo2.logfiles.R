@@ -74,34 +74,22 @@ wrap.exo2.logfiles <- function(FileIn,
   } 
 
 # Load in the csv log file(s) 
-  
-  if (is.character(FileIn)) {
-    #lines <- unlist(readr::read_lines_raw(FileIn, n_max = 10000))
-    lines <- readBin(FileIn, "raw", file.info(FileIn)$size)
-  }else if (is.raw(FileIn)) {
-    lines <- FileIn
-  }else if (is.list(FileIn)) {
-    lines <- unlist(FileIn)
-  }else {
-    log$error(base::paste0('Unknown input to ', FileIn))
-    base::stop()
-  }
-  log$debug(base::paste0("lines: ",lines))
-  #guess <- stringi::stri_enc_detect(lines)
-  guess <- stringi::stri_enc_detect(lines)
-  log$debug(base::paste0("guess: ",guess))
-  encoding <- tibble::as_tibble(guess[[1]])
-  log$debug(base::paste0("encoding: ",encoding))
-  names(encoding) <- tolower(names(encoding))
-  encoding[encoding$confidence > 0.2, c("encoding", "confidence")]
-  log$debug(base::paste0("encoding2: ",encoding))
-  
-  #encoding<-guess_encoding(FileIn)
-  encoding<-encoding$encoding[1]
-  log$debug(base::paste0("encoding3: ",encoding))
+  #try UTF-16
+  encoding<-"UTF-16LE"
   logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
                                     blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
-                                    stringsAsFactors = FALSE,na.strings=c(-1,'')))
+                                    stringsAsFactors = FALSE,na.strings=c(-1,'')),silent = TRUE)
+  if(class(logFile)[1] == 'try-error'){
+    #try UTF-8
+    encoding<-"UTF-8"
+    logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
+                                      blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
+                                      stringsAsFactors = FALSE,na.strings=c(-1,'')),silent = TRUE)
+    if(class(logFile)[1] == 'try-error'){
+      log$error(base::paste0(FileIn,' could not be read with UTF-16LE or UTF-8 encoding.'))
+      stop()
+    }
+  }
   
 # File error checking  
   if (base::any(base::class(logFile) == 'try-error')) {
