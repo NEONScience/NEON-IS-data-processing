@@ -2,7 +2,7 @@ name: DEV-ptb330a-pressureAir-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'argo.ingest.2'
     paths:
       - 'pipe/ptb330a/*.yaml'
       - 'pipe/ptb330a/pipe_list_ptb330a.txt'
