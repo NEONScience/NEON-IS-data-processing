@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: metone370380_ingest_days
+  name: ptb330a_ingest_days
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
   env:
@@ -74,8 +74,8 @@ input:
       overwrite: true
   - pfs:
       name: INGEST_MANIFEST
-      repo: metone370380_ingest_trigger
-      glob: /metone370380/*/*/*/manifest.json
+      repo: ptb330a_ingest_trigger
+      glob: /ptb330a/*/*/*/manifest.json
       branch: master
 output_branch: staging
 resource_requests:
