@@ -173,8 +173,7 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
 
     for (f in files) {
       fileIn  <- fs::path(dirIn, f)
-      # Rename output file: replace "enviroscan_parsed_" prefix with "concH2oSoilSalinity_"
-      fileOut <- fs::path(dirOut, base::sub('^enviroscan_parsed_', 'concH2oSoilSalinity_', f))
+      fileOut <- fs::path(dirOut, f)
 
       df <- base::tryCatch(
         arrow::read_parquet(fileIn, as_data_frame = TRUE),
