@@ -8,5 +8,5 @@ concH2oSoilSalinity_group_loader_split.yaml
 concH2oSalinity_group_assignment_split.yaml
 concH2oSoilSalinity_stats_group_and_compute.yaml
 concH2oSoilSalinity_qm_join_stats.yaml
-concH2oSalinity_group_split.yaml
+concH2oSoilSalinity_group_split.yaml
 
