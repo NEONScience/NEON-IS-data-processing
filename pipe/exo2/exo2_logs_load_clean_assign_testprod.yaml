@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_logs_load_clean_assign_testprod
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-ef9f2d9
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-af28e2d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -17,8 +17,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: exo2_logjam_load_files_testprod
-      glob: /45253
-      empty_files: true
+      glob: /*
 parallelism_spec:
   constant: 5
 autoscaling: true

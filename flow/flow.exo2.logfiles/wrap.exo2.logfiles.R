@@ -74,31 +74,17 @@ wrap.exo2.logfiles <- function(FileIn,
   } 
 
 # Load in the csv log file(s) 
-  #try UTF-16
   
-  if(file.exists(FileIn)){
-    log$debug(base::paste0(FileIn,' exists.'))
-    log$debug(base::paste0(FileIn,' file size: ',file.info(FileIn)$size))
-  }else{
-    log$error(base::paste0(FileIn,' DOES NOT EXIST.'))
-  }
+  log$debug(base::paste0(FileIn,' file size: ',file.info(FileIn)$size))
   
+  #determine encoding
+  encoding<-readr::guess_encoding(FileIn)
+  encoding_to_use<-encoding$encoding[1]
+  log$debug(base::paste0(FileIn,' encoding is: ',encoding_to_use))
   
-  encoding<-"UTF-16LE"
-  logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
+  logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding_to_use, header = FALSE, sep = ",", 
                                     blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
-                                    stringsAsFactors = FALSE,na.strings=c(-1,'')),silent = FALSE)
-  if(class(logFile)[1] == 'try-error'){
-    #try UTF-8
-    encoding<-"UTF-8"
-    logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
-                                      blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
-                                      stringsAsFactors = FALSE,na.strings=c(-1,'')),silent = FALSE)
-    if(class(logFile)[1] == 'try-error'){
-      log$error(base::paste0(FileIn,' could not be read with UTF-16LE or UTF-8 encoding.'))
-      stop()
-    }
-  }
+                                    stringsAsFactors = FALSE,na.strings=c(-1,'')))
   
 # File error checking  
   if (base::any(base::class(logFile) == 'try-error')) {
