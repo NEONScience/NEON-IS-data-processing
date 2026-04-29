@@ -38,7 +38,7 @@
 #' @keywords Currently none
 
 #' @examples
- # arg <- c("DirIn=~/pfs/exo2_logjam_load_files/25830",
+ # arg <- c("DirIn=~/pfs/exo2_logjam_load_files/25832",
  #           "DirOutBase=~/pfs/out/exo2_test",
  #           "DirErr=~/pfs/out/errored_datums")
  # log <- NEONprocIS.base::def.log.init(Lvl = "debug")

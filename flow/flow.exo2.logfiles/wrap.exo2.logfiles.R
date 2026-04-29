@@ -73,6 +73,10 @@ wrap.exo2.logfiles <- function(FileIn,
     log <- NEONprocIS.base::def.log.init()
   } 
 
+#get body asset info
+  bodyAsset <- basename(dirname(FileIn))
+  fname <- basename(FileIn)
+  
 # Load in the csv log file(s) 
   
   log$debug(base::paste0(FileIn,' file size: ',file.info(FileIn)$size))
@@ -254,11 +258,11 @@ wrap.exo2.logfiles <- function(FileIn,
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2/',SNdepth,"/")
       base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(SNdepth,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      csv_name <-paste0(bodyAsset,'_',SNdepth,'_',startYear,'-',startMonth,'-',startDay,'_log')
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = bodyTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
     } #End exo body loop
     
     # Loop for conductance
@@ -271,11 +275,11 @@ wrap.exo2.logfiles <- function(FileIn,
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2conductance/',SNcond,"/")
       base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(SNcond,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      csv_name <-paste0(bodyAsset,'_',SNcond,'_',startYear,'-',startMonth,'-',startDay,'_log')
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = condTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
     } #End conductance loop   
     
     # Loop for dissolved oxygen
@@ -288,11 +292,11 @@ wrap.exo2.logfiles <- function(FileIn,
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2dissolvedOxygen/',SNdo,"/")
       base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(SNdo,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      csv_name <-paste0(bodyAsset,'_',SNdo,'_',startYear,'-',startMonth,'-',startDay,'_log')
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = doTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
     } #End dissolvedoxygen loop 
     
     # Loop for pH
@@ -304,11 +308,11 @@ wrap.exo2.logfiles <- function(FileIn,
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2ph/',SNph,"/")
       base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(SNph,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      csv_name <-paste0(bodyAsset,'_',SNph,'_',startYear,'-',startMonth,'-',startDay,'_log')
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = phTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
     } #End pH loop
     
     # Loop for turbidity
@@ -317,11 +321,11 @@ wrap.exo2.logfiles <- function(FileIn,
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2turbidity/',SNturb,"/")
       base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(SNturb,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      csv_name <-paste0(bodyAsset,'_',SNturb,'_',startYear,'-',startMonth,'-',startDay,'_log')
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = turbTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
     } #End turbidity loop
     
     # Loop for fDOM
@@ -330,11 +334,11 @@ wrap.exo2.logfiles <- function(FileIn,
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2fdom/',SNfdom,"/")
       base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(SNfdom,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      csv_name <-paste0(bodyAsset,'_',SNfdom,'_',startYear,'-',startMonth,'-',startDay,'_log')
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = fdomTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
     } #End fDOM loop
     
     # Loop for chlorophyll
@@ -347,11 +351,11 @@ wrap.exo2.logfiles <- function(FileIn,
       # Create directory and write out file
       DirOut <- paste0(DirOutBase,'/exo2chlorophyll/',SNchl,"/")
       base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(SNchl,'_',startYear,'-',startMonth,'-',startDay,'_log')
+      csv_name <-paste0(bodyAsset,'_',SNchl,'_',startYear,'-',startMonth,'-',startDay,'_log')
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = chlTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
       if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
         stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet")))}
+      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
     } #End chlorophyll loop     
     
   } #End outer loop
