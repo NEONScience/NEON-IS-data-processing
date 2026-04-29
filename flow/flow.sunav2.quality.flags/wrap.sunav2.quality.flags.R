@@ -239,6 +239,16 @@ wrap.sunav2.quality.flags <- function(DirIn,
     stop()
   }
   
+  if(!hasLampStabilizeFailuresInData && nrow(sunaData) != preFilterSunaRows){
+    log$error(base::paste0('Error: Lamp stabilization filtering changed data rows despite no nitrateLampStabilizeQF==1 in input'))
+    stop()
+  }
+  
+  if(!hasLampStabilizeFailuresInFlags && nrow(allFlags) != preFilterFlagRows){
+    log$error(base::paste0('Error: Lamp stabilization filtering changed flag rows despite no nitrateLampStabilizeQF==1 in input'))
+    stop()
+  }
+  
   sunaData<-sunaData[,sunaDataColOrder,drop=FALSE]
   
   #' Checks that data file and flag file have same number of measurements
