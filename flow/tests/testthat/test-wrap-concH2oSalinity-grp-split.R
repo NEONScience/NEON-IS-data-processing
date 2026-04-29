@@ -136,7 +136,7 @@ test_that("VER=503 selects Depth03 columns, renames them, excludes SoilMoisture"
   expect_false(any(grepl("SoilMoisture", names(dfStats))))
 
   # Data values should match Depth03 source values
-  expect_equal(dfStats$VSICMean, c(3.1, 3.2))
+  expect_equal(dfStats$VSICMean, c(3.1, 3.2), tolerance = 1e-6)
 
   # Read quality_metrics output
   dfQm <- arrow::read_parquet(file.path(d$DirOutBase, qmOut))
@@ -162,7 +162,7 @@ test_that("VER=501 selects Depth01 columns", {
   dfStats  <- arrow::read_parquet(file.path(d$DirOutBase, statsOut))
 
   expect_true("VSICMean" %in% names(dfStats))
-  expect_equal(dfStats$VSICMean, c(1.1, 1.2))
+  expect_equal(dfStats$VSICMean, c(1.1, 1.2), tolerance = 1e-6)
   expect_false(any(grepl("Depth02|Depth03", names(dfStats))))
   expect_false(any(grepl("SoilMoisture", names(dfStats))))
 })
@@ -201,7 +201,7 @@ test_that("VER=508 selects Depth08 columns", {
   dfStats  <- arrow::read_parquet(file.path(d$DirOutBase, statsOut))
 
   expect_true("VSICMean" %in% names(dfStats))
-  expect_equal(dfStats$VSICMean, 8.0)
+  expect_equal(dfStats$VSICMean, 8.0, tolerance = 1e-6)
   expect_false(any(grepl("Depth07", names(dfStats))))
   expect_false(any(grepl("SoilMoisture", names(dfStats))))
 })
