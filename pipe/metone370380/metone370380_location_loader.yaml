@@ -21,8 +21,9 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: metone370380_cron_daily_and_date_control_tick
-    glob: /*
+    repo: metone370380_ingest_days
+    glob: /tick/
+    branch: master
     empty_files: true
 autoscaling: true
 resource_requests:
