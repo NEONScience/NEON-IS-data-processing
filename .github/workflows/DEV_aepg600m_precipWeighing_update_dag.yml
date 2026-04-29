@@ -2,7 +2,7 @@ name: DEV-aepg600m-precipWeighing-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'argo.ingest.2'
     paths:
       - 'pipe/aepg600m/*.yaml'
       - 'pipe/aepg600m/pipe_list_aepg600m.txt'

@@ -21,8 +21,9 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: li191r_cron_daily_and_date_control_tick
-    glob: /*
+    repo: li191r_ingest_days
+    glob: /tick/
+    branch: master
     empty_files: true
 autoscaling: true
 resource_requests:
