@@ -75,6 +75,15 @@ wrap.exo2.logfiles <- function(FileIn,
 
 # Load in the csv log file(s) 
   #try UTF-16
+  
+  if(file.exists(FileIn)){
+    log$debug(base::paste0(FileIn,' exists.'))
+    log$debug(base::paste0(FileIn,' file size: ',file.info(FileIn)$size))
+  }else{
+    log$error(base::paste0(FileIn,' DOES NOT EXIST.'))
+  }
+  
+  
   encoding<-"UTF-16LE"
   logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
                                     blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,

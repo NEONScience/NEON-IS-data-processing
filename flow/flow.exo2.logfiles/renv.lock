@@ -250,6 +250,14 @@
       "Hash": "34c0d101f4613098abc538b82e0d86c5",
       "Requirements": []
     },
+    "stringi": {
+      "Package": "stringi",
+      "Version": "1.7.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bba431031d30789535745a9627ac9271",
+      "Requirements": []
+    },
     "tibble": {
       "Package": "tibble",
       "Version": "3.3.1",
