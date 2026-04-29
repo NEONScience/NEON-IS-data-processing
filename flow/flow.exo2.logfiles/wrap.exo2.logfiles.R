@@ -78,13 +78,13 @@ wrap.exo2.logfiles <- function(FileIn,
   encoding<-"UTF-16LE"
   logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
                                     blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
-                                    stringsAsFactors = FALSE,na.strings=c(-1,'')),silent = TRUE)
+                                    stringsAsFactors = FALSE,na.strings=c(-1,'')),silent = FALSE)
   if(class(logFile)[1] == 'try-error'){
     #try UTF-8
     encoding<-"UTF-8"
     logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
                                       blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
-                                      stringsAsFactors = FALSE,na.strings=c(-1,'')),silent = TRUE)
+                                      stringsAsFactors = FALSE,na.strings=c(-1,'')),silent = FALSE)
     if(class(logFile)[1] == 'try-error'){
       log$error(base::paste0(FileIn,' could not be read with UTF-16LE or UTF-8 encoding.'))
       stop()
