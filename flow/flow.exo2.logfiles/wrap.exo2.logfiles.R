@@ -74,8 +74,29 @@ wrap.exo2.logfiles <- function(FileIn,
   } 
 
 # Load in the csv log file(s) 
-  encoding<-guess_encoding(FileIn)
+  
+  if (is.character(FileIn)) {
+    lines <- unlist(read_lines_raw(FileIn, n_max = 10000))
+  }else if (is.raw(FileIn)) {
+    lines <- FileIn
+  }else if (is.list(FileIn)) {
+    lines <- unlist(FileIn)
+  }else {
+    log$error(base::paste0('Unknown input to ', FileIn))
+    base::stop()
+  }
+  log$debug(base::paste0("lines: ",lines))
+  guess <- stringi::stri_enc_detect(lines)
+  log$debug(base::paste0("guess: ",guess))
+  encoding <- tibble::as_tibble(guess[[1]])
+  log$debug(base::paste0("encoding: ",encoding))
+  names(encoding) <- tolower(names(encoding))
+  encoding[encoding$confidence > 0.2, c("encoding", "confidence")]
+  log$debug(base::paste0("encoding2: ",encoding))
+  
+  #encoding<-guess_encoding(FileIn)
   encoding<-encoding$encoding[1]
+  log$debug(base::paste0("encoding3: ",encoding))
   logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding, header = FALSE, sep = ",", 
                                     blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
                                     stringsAsFactors = FALSE,na.strings=c(-1,'')))
