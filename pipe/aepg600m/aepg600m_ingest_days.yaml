@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_ingest_days
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-f2497a2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
   env:
     SOURCE_TYPE_INDEX: "3"
     YEAR_INDEX: "4"
