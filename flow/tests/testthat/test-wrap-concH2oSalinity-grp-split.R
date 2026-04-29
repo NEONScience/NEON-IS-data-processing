@@ -253,12 +253,11 @@ test_that("Empty stats directory warns but does not stop", {
   d <- makeTestDatum(baseDir = file.path(tempdir(), "t6"), VER = "503",
                      statsFile = NULL)  # no stats file written
 
-  expect_warning(
+  expect_no_error(
     wrap.concH2oSalinity.grp.split(
       DirIn      = d$DirIn,
       DirOutBase = d$DirOutBase
-    ),
-    regexp = NULL  # any warning is acceptable
+    )
   )
 })
 
@@ -281,3 +280,4 @@ test_that("Output file name matches input file name exactly", {
 
   expect_equal(basename(statsOut), fname)
 })
+
