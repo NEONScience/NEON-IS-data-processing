@@ -104,28 +104,40 @@ wrap.sunav2.config.qf <- function(DirIn,
   }
   
   #optional threshold
-  thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
-  if(length(thresholdFileName)==0){
-    #default to 41 if no threshold file 
+  if(!base::dir.exists(DirInThresholds)){
     maxPts <- 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
+    log$warn(base::paste0('Threshold directory not found: ',
+                          DirInThresholds,
+                          '. Using default maxPts value of 41.'))
   } else {
-    sunaThresholds<-base::try(NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = base::paste0(DirInThresholds, '/', thresholdFileName)),silent = FALSE)
-    if(class(sunaThresholds)[1] == 'try-error'){
-      maxPts <- 41
-    }else{
-      maxPtsThreshold <- sunaThresholds[(sunaThresholds$threshold_name=="maxPts"),]
-      if(nrow(maxPtsThreshold) == 1 &&
-         "number_value" %in% base::names(maxPtsThreshold) &&
-         base::is.numeric(maxPtsThreshold$number_value) &&
-         length(maxPtsThreshold$number_value) == 1 &&
-         !base::is.na(maxPtsThreshold$number_value)){
-        maxPts <- maxPtsThreshold$number_value
-        log$debug(base::paste0('Successfully read in file: ',thresholdFileName))
-      } else {
-        maxPts <- 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
-        log$warn(base::paste0('Invalid or ambiguous maxPts threshold in file: ',
+    thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
+    if(length(thresholdFileName)==0){
+      maxPts <- 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
+      log$warn(base::paste0('No threshold file found in ',
+                            DirInThresholds,
+                            '. Using default maxPts value of 41.'))
+    } else {
+      sunaThresholds<-base::try(NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = base::paste0(DirInThresholds, '/', thresholdFileName)),silent = FALSE)
+      if(class(sunaThresholds)[1] == 'try-error'){
+        maxPts <- 41
+        log$warn(base::paste0('Failed to read threshold file: ',
                               thresholdFileName,
-                              '. Using default value of 41.'))
+                              '. Using default maxPts value of 41.'))
+      }else{
+        maxPtsThreshold <- sunaThresholds[(sunaThresholds$threshold_name=="maxPts"),]
+        if(nrow(maxPtsThreshold) == 1 &&
+           "number_value" %in% base::names(maxPtsThreshold) &&
+           base::is.numeric(maxPtsThreshold$number_value) &&
+           length(maxPtsThreshold$number_value) == 1 &&
+           !base::is.na(maxPtsThreshold$number_value)){
+          maxPts <- maxPtsThreshold$number_value
+          log$debug(base::paste0('Successfully read in file: ',thresholdFileName))
+        } else {
+          maxPts <- 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
+          log$warn(base::paste0('Invalid or ambiguous maxPts threshold in file: ',
+                                thresholdFileName,
+                                '. Using default value of 41.'))
+        }
       }
     }
   }
