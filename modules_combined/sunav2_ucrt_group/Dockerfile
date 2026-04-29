@@ -1,4 +1,4 @@
-# Dockerfile for NEON IS Data Processing - sunav2 uncertainty module combined with filter-joiner and insufficient data
+# Dockerfile for NEON IS Data Processing - sunav2 uncertainty module combined with filter-joiner, insufficient data, and config qf
 
 # Start with the cal package image. 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.1.2
@@ -38,7 +38,8 @@ COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 # Build in the uncertainty module
 ARG MODULE_DIR="flow"
 ARG APP_DIR_1="flow.sunav2.exp.uncert"
-ARG APP_DIR_2="flow.qf.insuff.data"
+ARG APP_DIR_2="flow.sunav2.config.qf"
+ARG APP_DIR_3="flow.qf.insuff.data"
 
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ./flow/flow.sunav2.exp.uncert/renv.lock .
@@ -47,6 +48,14 @@ RUN R -e 'renv::restore(lockfile="./renv.lock")'
 # Copy in R code
 COPY ./flow/flow.sunav2.exp.uncert/flow.sunav2.exp.uncert.R .
 COPY ./flow/flow.sunav2.exp.uncert/wrap.sunav2.exp.uncert.R .
+
+# Copy the lockfile and restore known working versions of R dependency packages
+COPY ./flow/flow.sunav2.config.qf/renv.lock .
+RUN R -e 'renv::restore(lockfile="./renv.lock")'
+
+# Copy in R code
+COPY ./flow/flow.sunav2.config.qf/flow.sunav2.config.qf.R .
+COPY ./flow/flow.sunav2.config.qf/wrap.sunav2.config.qf.R .
 
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ./flow/flow.qf.insuff.data/renv.lock .
