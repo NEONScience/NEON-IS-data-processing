@@ -106,13 +106,13 @@ input:
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    - pfs:
-        name: KAFKA_UNMERGED_DATA
-        repo: ptb330a_data_source_kafka
-        glob: /ptb330a/(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    # - pfs:
+    #     name: KAFKA_UNMERGED_DATA
+    #     repo: ptb330a_data_source_kafka
+    #     glob: /ptb330a/(*)/(*)/(*)
+    #     joinOn: $1/$2/$3
+    #     outer_join: true
+    #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 5
 autoscaling: true
