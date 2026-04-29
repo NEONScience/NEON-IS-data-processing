@@ -76,7 +76,7 @@ wrap.exo2.logfiles <- function(FileIn,
 # Load in the csv log file(s) 
   
   if (is.character(FileIn)) {
-    lines <- unlist(read_lines_raw(FileIn, n_max = 10000))
+    lines <- unlist(readr::read_lines_raw(FileIn, n_max = 10000))
   }else if (is.raw(FileIn)) {
     lines <- FileIn
   }else if (is.list(FileIn)) {
@@ -86,6 +86,7 @@ wrap.exo2.logfiles <- function(FileIn,
     base::stop()
   }
   log$debug(base::paste0("lines: ",lines))
+  log$debug(base::paste0("type of lines: ",typeof(lines)))
   guess <- stringi::stri_enc_detect(lines)
   log$debug(base::paste0("guess: ",guess))
   encoding <- tibble::as_tibble(guess[[1]])
