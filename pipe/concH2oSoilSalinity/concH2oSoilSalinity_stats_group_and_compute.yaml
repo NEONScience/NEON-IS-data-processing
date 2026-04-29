@@ -23,7 +23,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmStat=$FILE_SCHEMA_STATS \
-      "WndwAgr=001|030" \
+      "WndwAgr=005|030" \
       "TermStat1=VSWCsoilSpecificDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
       "TermStat2=VSWCsoilSpecificDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
       "TermStat3=VSWCsoilSpecificDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
