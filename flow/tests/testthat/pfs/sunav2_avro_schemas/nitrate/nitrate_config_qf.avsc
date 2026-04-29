@@ -398,7 +398,7 @@
         "int8"
         ],
       "default": null,
-      "doc": "Quality flag that indicates whether the SUNA was configured correctly in periodic mode (1=fail, 0=pass)",
+      "doc": "Quality flag that indicates whether the SUNA was configured correctly in periodic mode (1=fail, 0=pass, -1=NA (i.e., could not be run))",
       "__neon_units": "NA"
     }
         ]

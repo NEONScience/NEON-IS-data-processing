@@ -106,7 +106,7 @@ wrap.sunav2.config.qf <- function(DirIn,
   #optional threshold
   if(!base::dir.exists(DirInThresholds)){
     maxPts <- 41  #Older SUNA data used this configuration (50 light measurements - 9 warmup)
-    log$warn(base::paste0('Threshold directory not found: ',
+    log$debug(base::paste0('Threshold directory not found: ',
                           DirInThresholds,
                           '. Using default maxPts value of 41.'))
   } else {
@@ -143,15 +143,15 @@ wrap.sunav2.config.qf <- function(DirIn,
   }
   
   # Sets nitrateConfigQF=1 in QM file if numPoints > maxPts in Data file 
-  sunaQMs$nitrateConfigQF <- NA_integer_
+  sunaQMs$nitrateConfigQF <- -1
   pts <- sunaStats[["surfWaterNitrateNumPts"]]
   qf  <- sunaQMs[["nitrateConfigQF"]]
-  qf[!base::is.na(pts) & pts > 0]      <- 0L
-  qf[!base::is.na(pts) & pts > maxPts] <- 1L
+  qf[!base::is.na(pts) & pts > 0]      <- 0
+  qf[!base::is.na(pts) & pts > maxPts] <- 1
   sunaQMs[["nitrateConfigQF"]] <- qf
 
   # If nitrateConfigQF=1 set nitrateFinalQF=1
-  sunaQMs[sunaQMs[["nitrateConfigQF"]] == 1L, "finalQF"] <- 1L
+  sunaQMs[sunaQMs[["nitrateConfigQF"]] == 1, "finalQF"] <- 1
    
   #' Write out stats file.  
   rptOutStats <- try(NEONprocIS.base::def.wrte.parq(data = sunaStats,
