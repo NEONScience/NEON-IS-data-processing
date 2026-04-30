@@ -26,15 +26,16 @@ def load() -> None:
     log.debug(f"url_path is {url_path}")
     response = requests.get(url_path, headers={'Accept': 'application/json'})
     if response.status_code == 200:
-        log.debug("successfully fetched the data")
+        log.debug(f'successfully fetched the data for {source_type}')
         assets = response.json()['assets']
-        log.debug('asset details are:')
-        log.debug(assets)
         for asset in assets:
+            log.debug(f'found asset data: {asset}')
             try:
                 asset_uid = asset.get("assetUid")
+                log.debug(f'asset_uid: {asset_uid}')
                 serial_number = asset.get("serialNumber")
                 serial_number = serial_number.split("/")[0]
+                log.debug(f'serial_number: {serial_number}')
                 if serial_number is None:
                     log.debug(f'Empty serialNumber for asset_uid {asset.get("assetUid")}')
                     continue
