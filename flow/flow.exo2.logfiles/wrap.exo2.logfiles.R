@@ -54,8 +54,9 @@
 #'   Initial creation
 #' Bobby Hensley (2026-04-23)   
 #'   Updates for error handling and to allow for older file formats
-#' Nora Catolico (2026-04-29)
+#' Nora Catolico (2026-04-30)
 #'   Updates for file encoding
+#     updated to write out daily parquets
 ##############################################################################################
 wrap.exo2.logfiles <- function(FileIn,
                              DirOutBase,
@@ -243,12 +244,9 @@ wrap.exo2.logfiles <- function(FileIn,
     #' Check that there are no future dates after the current date
     if(any(dataTable$readout_time>Sys.time())){
       log$debug(base::paste0("Data contains future dates after the current date"))}
-    # Determine file start year, month and day (for output directory)
-    startYear<-substr(min(dataTable$readout_time[1]),1,4)
-    startMonth<-substr(min(dataTable$readout_time[1]),6,7)
-    startDay<-substr(min(dataTable$readout_time[1]),9,10)  
 
     # Loop for exo body data streams
+    current_sensor<-"exo2"
     if(!is.na(SNdepth)){
       bodyTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage")]
       if(!"sensorDepth" %in% names(bodyTable)){bodyTable$sensorDepth <- NA}
@@ -256,109 +254,232 @@ wrap.exo2.logfiles <- function(FileIn,
       if(!"wiperPosition" %in% names(bodyTable)){bodyTable$wiperPosition <- NA}
       if(!"batteryVoltage" %in% names(bodyTable)){bodyTable$batteryVoltage <- NA}
       if(!"sensorVoltage" %in% names(bodyTable)){bodyTable$sensorVoltage <- NA}
-      bodyTable <- bodyTable[, c("source_id","site_id","readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage")]
-      # Create directory and write out file
-      DirOut <- paste0(DirOutBase,'/exo2/',SNdepth,"/")
-      base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(bodyAsset,'_',SNdepth,'_',startYear,'-',startMonth,'-',startDay,'_log')
-      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = bodyTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
-      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
-        stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
-    } #End exo body loop
+      currentTable <- bodyTable[, c("source_id","site_id","readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage")]
+      
+      ###subset into 1-day data files
+      all_days<-split(currentTable, as.Date(currentTable$readout_time))
+      for(j in 1:length(all_days)){
+        #create DF
+        out_file <- as.data.frame(all_days[j])
+        colnames(out_file) <- names(currentTable)
+        year <- substr(out_file$readout_time[1],1,4)
+        month <- substr(out_file$readout_time[1],6,7)
+        day <- substr(out_file$readout_time[1],9,10)
+        # Create directory and write out file
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        base::dir.create(DirOut,recursive=TRUE)
+        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmExo2),silent=TRUE)
+        if(class(rptOut)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+      }#end of days loop
+      currentTable <- NULL
+    }else{
+      log$debug(base::paste0('No ',current_sensor,' table for ', FileIn, 'table ', i))
+    }#End sensor loop
     
     # Loop for conductance
+    current_sensor<-"exo2conductance"
     if(!is.na(SNcond)){
       condTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature")]
       if(!"conductance" %in% names(condTable)){condTable$conductance <- NA}
       if(!"specificConductance" %in% names(condTable)){condTable$specificConductance <- NA}
       if(!"surfaceWaterTemperature" %in% names(condTable)){condTable$surfaceWaterTemperature <- NA}
-      condTable <- condTable[, c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature")]
-      # Create directory and write out file
-      DirOut <- paste0(DirOutBase,'/exo2conductance/',SNcond,"/")
-      base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(bodyAsset,'_',SNcond,'_',startYear,'-',startMonth,'-',startDay,'_log')
-      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = condTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
-      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
-        stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
-    } #End conductance loop   
+      currentTable <- condTable[, c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature")]
+      ###subset into 1-day data files
+      all_days<-split(currentTable, as.Date(currentTable$readout_time))
+      for(j in 1:length(all_days)){
+        #create DF
+        out_file <- as.data.frame(all_days[j])
+        colnames(out_file) <- names(currentTable)
+        year <- substr(out_file$readout_time[1],1,4)
+        month <- substr(out_file$readout_time[1],6,7)
+        day <- substr(out_file$readout_time[1],9,10)
+        # Create directory and write out file
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        base::dir.create(DirOut,recursive=TRUE)
+        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmCond),silent=TRUE)
+        if(class(rptOut)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+      }#end of days loop
+      currentTable <- NULL
+    }else{
+      log$debug(base::paste0('No ',current_sensor,' table for ', FileIn, 'table ', i))
+    }#End sensor loop
     
     # Loop for dissolved oxygen
+    current_sensor<-"exo2dissolvedOxygen"
     if(!is.na(SNdo)){
       doTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat")]
       if(!"dissolvedOxygen" %in% names(doTable)){doTable$dissolvedOxygen <- NA}
       if(!"dissolvedOxygenSaturation" %in% names(doTable)){doTable$dissolvedOxygenSaturation <- NA}
       if(!"localDissolvedOxygenSat" %in% names(doTable)){doTable$localDissolvedOxygenSat <- NA}
-      doTable <- doTable[, c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat")]
-      # Create directory and write out file
-      DirOut <- paste0(DirOutBase,'/exo2dissolvedOxygen/',SNdo,"/")
-      base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(bodyAsset,'_',SNdo,'_',startYear,'-',startMonth,'-',startDay,'_log')
-      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = doTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
-      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
-        stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
-    } #End dissolvedoxygen loop 
+      currentTable <- doTable[, c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat")]
+      ###subset into 1-day data files
+      all_days<-split(currentTable, as.Date(currentTable$readout_time))
+      for(j in 1:length(all_days)){
+        #create DF
+        out_file <- as.data.frame(all_days[j])
+        colnames(out_file) <- names(currentTable)
+        year <- substr(out_file$readout_time[1],1,4)
+        month <- substr(out_file$readout_time[1],6,7)
+        day <- substr(out_file$readout_time[1],9,10)
+        # Create directory and write out file
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        base::dir.create(DirOut,recursive=TRUE)
+        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmDO),silent=TRUE)
+        if(class(rptOut)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+      }#end of days loop
+      currentTable <- NULL
+    }else{
+      log$debug(base::paste0('No ',current_sensor,' table for ', FileIn, 'table ', i))
+    }#End sensorloop
     
     # Loop for pH
+    current_sensor<-"exo2ph"
     if(!is.na(SNph)){
       phTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","pH","pHvoltage")]
       if(!"pH" %in% names(phTable)){phTable$pH <- NA}
       if(!"pHvoltage" %in% names(phTable)){phTable$pHvoltage <- NA}
-      phTable <- phTable[, c("source_id","site_id","readout_time","pH","pHvoltage")]
-      # Create directory and write out file
-      DirOut <- paste0(DirOutBase,'/exo2ph/',SNph,"/")
-      base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(bodyAsset,'_',SNph,'_',startYear,'-',startMonth,'-',startDay,'_log')
-      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = phTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
-      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
-        stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
-    } #End pH loop
+      currentTable <- phTable[, c("source_id","site_id","readout_time","pH","pHvoltage")]
+      ###subset into 1-day data files
+      all_days<-split(currentTable, as.Date(currentTable$readout_time))
+      for(j in 1:length(all_days)){
+        #create DF
+        out_file <- as.data.frame(all_days[j])
+        colnames(out_file) <- names(currentTable)
+        year <- substr(out_file$readout_time[1],1,4)
+        month <- substr(out_file$readout_time[1],6,7)
+        day <- substr(out_file$readout_time[1],9,10)
+        # Create directory and write out file
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        base::dir.create(DirOut,recursive=TRUE)
+        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmPh),silent=TRUE)
+        if(class(rptOut)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+      }#end of days loop
+      currentTable <- NULL
+    }else{
+      log$debug(base::paste0('No ',current_sensor,' table for ', FileIn, 'table ', i))
+    }#End sensor loop
+    
     
     # Loop for turbidity
+    current_sensor<-"exo2turbidity"
     if(!is.na(SNturb)){
-      turbTable <- dataTable[, c("source_id","site_id","readout_time","turbidity")]
-      # Create directory and write out file
-      DirOut <- paste0(DirOutBase,'/exo2turbidity/',SNturb,"/")
-      base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(bodyAsset,'_',SNturb,'_',startYear,'-',startMonth,'-',startDay,'_log')
-      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = turbTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
-      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
-        stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
-    } #End turbidity loop
+      currentTable <- dataTable[, c("source_id","site_id","readout_time","turbidity")]
+      ###subset into 1-day data files
+      all_days<-split(currentTable, as.Date(currentTable$readout_time))
+      for(j in 1:length(all_days)){
+        #create DF
+        out_file <- as.data.frame(all_days[j])
+        colnames(out_file) <- names(currentTable)
+        year <- substr(out_file$readout_time[1],1,4)
+        month <- substr(out_file$readout_time[1],6,7)
+        day <- substr(out_file$readout_time[1],9,10)
+        # Create directory and write out file
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        base::dir.create(DirOut,recursive=TRUE)
+        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmTurb),silent=TRUE)
+        if(class(rptOut)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+      }#end of days loop
+      currentTable <- NULL
+    }else{
+      log$debug(base::paste0('No ',current_sensor,' table for ', FileIn, 'table ', i))
+    }#End sensor loop
+    
     
     # Loop for fDOM
+    current_sensor<-"exo2fdom"
     if(!is.na(SNfdom)){
-      fdomTable <- dataTable[, c("source_id","site_id","readout_time","fDOM")]
-      # Create directory and write out file
-      DirOut <- paste0(DirOutBase,'/exo2fdom/',SNfdom,"/")
-      base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(bodyAsset,'_',SNfdom,'_',startYear,'-',startMonth,'-',startDay,'_log')
-      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = fdomTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
-      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
-        stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
-    } #End fDOM loop
+      currentTable <- dataTable[, c("source_id","site_id","readout_time","fDOM")]
+      ###subset into 1-day data files
+      all_days<-split(currentTable, as.Date(currentTable$readout_time))
+      for(j in 1:length(all_days)){
+        #create DF
+        out_file <- as.data.frame(all_days[j])
+        colnames(out_file) <- names(currentTable)
+        year <- substr(out_file$readout_time[1],1,4)
+        month <- substr(out_file$readout_time[1],6,7)
+        day <- substr(out_file$readout_time[1],9,10)
+        # Create directory and write out file
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        base::dir.create(DirOut,recursive=TRUE)
+        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmFdom),silent=TRUE)
+        if(class(rptOut)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+      }#end of days loop
+      currentTable <- NULL
+    }else{
+      log$debug(base::paste0('No ',current_sensor,' table for ', FileIn, 'table ', i))
+    }#End sensor loop
+    
     
     # Loop for chlorophyll
+    current_sensor<-"exo2chlorophyll"
     if(!is.na(SNchl)){
       chlTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
       if(!"chlorophyll" %in% names(chlTable)){chlTable$chlorophyll <- NA}
       if(!"chlaRelativeFluorescence" %in% names(chlTable)){chlTable$chlaRelativeFluorescence <- NA}
       if(!"blueGreenAlgaePhycocyanin" %in% names(chlTable)){chlTable$blueGreenAlgaePhycocyanin <- NA}
-      chlTable <- chlTable[, c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
-      # Create directory and write out file
-      DirOut <- paste0(DirOutBase,'/exo2chlorophyll/',SNchl,"/")
-      base::dir.create(DirOut,recursive=TRUE)
-      csv_name <-paste0(bodyAsset,'_',SNchl,'_',startYear,'-',startMonth,'-',startDay,'_log')
-      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = chlTable, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = NULL),silent=TRUE)
-      if(class(rptOut)[1] == 'try-error'){log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
-        stop()
-      } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))}
-    } #End chlorophyll loop     
+      currentTable <- chlTable[, c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
+      ###subset into 1-day data files
+      all_days<-split(currentTable, as.Date(currentTable$readout_time))
+      for(j in 1:length(all_days)){
+        #create DF
+        out_file <- as.data.frame(all_days[j])
+        colnames(out_file) <- names(currentTable)
+        year <- substr(out_file$readout_time[1],1,4)
+        month <- substr(out_file$readout_time[1],6,7)
+        day <- substr(out_file$readout_time[1],9,10)
+        # Create directory and write out file
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        base::dir.create(DirOut,recursive=TRUE)
+        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmChl),silent=TRUE)
+        if(class(rptOut)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+      }#end of days loop
+      currentTable <- NULL
+    }else{
+      log$debug(base::paste0('No ',current_sensor,' table for ', FileIn, 'table ', i))
+    }#End sensor loop
+    
     
   } #End outer loop
  

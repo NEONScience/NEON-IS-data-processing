@@ -47,10 +47,10 @@
 #' @seealso None currently
 
 # changelog and author contributions / copyrights
-#   Bobby Hensley (2025-04-16) 
+#   Bobby Hensley (2026-04-16) 
 #     Original creation
-
-
+#   Nora Catolico (2026-04-30)
+#     updated to write out daily parquets
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
