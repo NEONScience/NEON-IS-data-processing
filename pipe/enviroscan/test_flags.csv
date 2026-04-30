@@ -1,0 +1,5 @@
+siteID,HOR,VER,startDateTime,endDateTime,flagCode,flagNote
+CPER,000,501,2024-01-01T00:00:00Z,2024-03-01T00:00:00Z,1,Sensor burial suspected - manual inspection needed
+CPER,000,502,2024-06-15T00:00:00Z,2024-07-01T00:00:00Z,1,Calibration drift detected
+JORN,000,503,2024-02-10T00:00:00Z,2024-02-20T00:00:00Z,1,Data gap due to power outage
+SRER,000,501,2024-05-01T00:00:00Z,,1,Ongoing - sensor replaced but data still suspect
