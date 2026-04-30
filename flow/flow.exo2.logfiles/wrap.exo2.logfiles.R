@@ -268,7 +268,7 @@ wrap.exo2.logfiles <- function(FileIn,
         # Create directory and write out file
         DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmExo2),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -302,7 +302,7 @@ wrap.exo2.logfiles <- function(FileIn,
         # Create directory and write out file
         DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmCond),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -336,7 +336,7 @@ wrap.exo2.logfiles <- function(FileIn,
         # Create directory and write out file
         DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmDO),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -369,7 +369,7 @@ wrap.exo2.logfiles <- function(FileIn,
         # Create directory and write out file
         DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmPh),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -400,7 +400,7 @@ wrap.exo2.logfiles <- function(FileIn,
         # Create directory and write out file
         DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmTurb),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -431,7 +431,7 @@ wrap.exo2.logfiles <- function(FileIn,
         # Create directory and write out file
         DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmFdom),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -466,7 +466,7 @@ wrap.exo2.logfiles <- function(FileIn,
         # Create directory and write out file
         DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',bodyAsset,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
+        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log')
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmChl),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
