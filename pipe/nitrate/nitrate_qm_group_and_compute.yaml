@@ -21,7 +21,7 @@ transform:
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       FileSchmQm=$FILE_SCHEMA_QM \
-      "GrpQfAlph1=nitrate:nitrateRangeQF|nitrateStepQF|nitrateSpikeQF|nitratePersistenceQF|nitrateHumidityQF|nitrateLampTempQF|nitrateLightDarkRatioQF|nitrateLampStabilizeQF" \
+      "GrpQfAlph1=nitrate:nitrateRangeQF|nitrateStepQF|nitrateSpikeQF|nitratePersistenceQF|nitrateHumidityQF|nitrateLampTempQF|nitrateLightDarkRatioQF" \
       "GrpQfBeta1=nitrate:nitrateRangeQF|nitrateStepQF|nitrateSpikeQF"
   env:
     LOG_LEVEL: DEBUG
