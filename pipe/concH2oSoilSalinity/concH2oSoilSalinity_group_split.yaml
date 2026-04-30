@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_group_split
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:sha-208b8a9
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:sha-d84cf6a
   cmd:
   - sh
   - "-c"
