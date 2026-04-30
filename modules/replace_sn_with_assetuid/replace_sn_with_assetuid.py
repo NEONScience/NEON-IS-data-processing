@@ -10,14 +10,18 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, relative_path
 
     sn_asset_map = {}
     for path in map_path.rglob('*'):
+        log.debug(f'map_path: {path}')
         if path.is_file():
             sn = path.parent.name
+            log.debug(f'sn: {sn}')
             with open(path, 'r') as f:
                 asset = f.read().split()[0]
+                log.debug(f'asset: {asset}')
             sn_asset_map[sn.upper()] = asset
 
     for path in data_path.rglob('*'):
         if path.is_file():
+            log.debug(f'data_path: {path}')
             serial_number = path.parent.parent.name
             serial_number = serial_number.upper()
             asset_uid = sn_asset_map.get(serial_number)
