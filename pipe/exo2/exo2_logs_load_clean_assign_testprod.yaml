@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_logs_load_clean_assign_testprod
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-af28e2d
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-6bbe961
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
