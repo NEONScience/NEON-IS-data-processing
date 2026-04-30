@@ -2,7 +2,7 @@ name: DEV-troll-SW-GW-update-dag
 on:
   push:
     branches:
-      - 'argo.ingest'
+      - 'argo.ingest.2'
     paths:
       - 'pipe/troll/*.yaml'
       - 'pipe/troll/pipe_list_troll.txt'
