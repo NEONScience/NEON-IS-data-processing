@@ -2,7 +2,7 @@ name: DEV-tchain-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'argo.ingest.2'
     paths:
       - 'pipe/tchain/*.yaml'
       - 'pipe/tchain/pipe_list_tchain.txt'
