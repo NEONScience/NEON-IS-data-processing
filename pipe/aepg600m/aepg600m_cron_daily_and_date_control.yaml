@@ -64,7 +64,7 @@ input:
       empty_files: True
       branch: master
       trigger: 
-        cronSpec: "0 3 * * *" # Run at 03:00 GMT
+        cronSpec: "0 12 * * *" # Run at most every 12 hours (12 hours after an ingest trigger)
         branch: "staging"
   - pfs:
       name: SITE_FILE_HEATED_KAFKA
