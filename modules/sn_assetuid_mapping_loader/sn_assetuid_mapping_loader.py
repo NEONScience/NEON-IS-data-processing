@@ -33,19 +33,19 @@ def load() -> None:
         for asset in assets:
             try:
                 asset_uid = asset.get("assetUid")
-                serial_number = asset.get("serialNumber")
+                serial_number = asset.get("electronicSerialNumber")
                 if serial_number is None:
-                    log.debug(f'Empty serialNumber for asset_uid {asset.get("assetUid")}')
+                    log.debug(f'Empty electronicSerialNumber for asset_uid {asset.get("assetUid")}')
                     continue
 
-                file_name = f'{source_type}_{serialNumber}_{assetUid}.txt'
-                file_path = Path(out_path, source_type, serialNumber, file_name)
+                file_name = f'{source_type}_{serial_number}_{asset_uid}.txt'
+                file_path = Path(out_path, source_type, serial_number, file_name)
                 # print(f"filePath to write is: {file_path}")
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(file_path, 'w') as asset_file:
                     asset_file.write(str(asset_uid))
             except BaseException as err:
-                log.error(f"Unexpected {asset_uid}, {sn}")
+                log.error(f"Unexpected {asset_uid}, {serial_number}")
                 raise err
     else:
         log.error(f"Asset call failed with error code: {response.status_code}.")
