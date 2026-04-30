@@ -4,9 +4,12 @@
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 
-#' @description Workflow. Determine if test is to be run based on thresholds, find closests temperature sensor, 
-#' read in data and check if it is below freezing. If the closest sensor is flagged, do an average of the one above and one below 
-#' and check to see if the average of the temperatures are less than 1 degree. If one or both are unavailable, flag NA
+#' @description Workflow. Determine if test is to be run based on thresholds, find the closest temperature sensor,
+#' read in data and check if it is below freezing. If the closest sensor is flagged, do an average of the one above and one below
+#' and check to see if the average of the temperatures are less than 1 degree. If one or both are unavailable, flag NA.
+#' When a temperature flag of 1 (frozen soil) is raised for a depth, the corresponding data values
+#' (VSWCfactoryDepthXX, VSWCsoilSpecificDepthXX, VSICDepthXX) for that depth are set to NA and the
+#' modified data file is written to the output data directory.
 #' 
 #' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/location-id, where # indicates any number of parent and child directories 
@@ -43,8 +46,11 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #'
-#' @return A repository in DirOutBase containing the quality flags of the three different enviroscan data streams:"
-#' VSIC, VSWCFactory and VSWCSoilSpecific. Standard flags are read in, then a test for frozen soil is performed. 
+#' @return A repository in DirOutBase containing:
+#'   flags/: Combined plausibility and temperature test quality flags for VSIC, VSWCFactory,
+#'     and VSWCSoilSpecific data streams.
+#'   data/: Sensor data with NA applied to VSWCfactoryDepthXX, VSWCsoilSpecificDepthXX,
+#'     and VSICDepthXX values for any depth where the temperature flag was raised (tempTestDepthXXQF == 1).
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -65,6 +71,8 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-02-16)
 #     Initial creation
+#   Teresa Burlingame  (2025-04-23)
+#     Null out data when Temp flag == 1 (frozen soil) and write out modified data file to output data directory.
 ##############################################################################################
 wrap.envscn.temp.flags <- function(DirIn,
                                    DirOutBase,
@@ -90,14 +98,14 @@ wrap.envscn.temp.flags <- function(DirIn,
   
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutQf <- fs::path(dirOut,'flags')
+  dirOutData <- fs::path(dirOut,'data')
   
-  #dirOutData <- fs::path(dirOut,'data')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
-                                DirSub = c('flags'),
+                                DirSub = c('flags', 'data'),
                                 log = log)
   
   # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy, c('flags')))
+  DirSubCopy <- base::unique(base::setdiff(DirSubCopy, c('flags', 'data')))
   if(base::length(DirSubCopy) > 0){
     NEONprocIS.base::def.dir.copy.symb(DirSrc = fs::path(DirInEnviro, DirSubCopy),
                                        DirDest = dirOut,
@@ -167,6 +175,9 @@ wrap.envscn.temp.flags <- function(DirIn,
                                             RmvDupl=TRUE,
                                             Df=TRUE, 
                                             log=log)
+  
+  # Capture schema before any merges drop it
+  SchmDataIn <- base::attr(data, 'schema')
   
   # Filter to soil moisture columns and essential metadata
   soilCols <- base::names(data)[base::grepl("SoilMoisture", base::names(data))]
@@ -303,13 +314,54 @@ wrap.envscn.temp.flags <- function(DirIn,
   sortedCols <- def.sort.qf.cols(base::names(qfAll))
   qfAll <- qfAll[, sortedCols]
   
+  # ===== Apply temperature flags to data =====
+  # For each depth where tempTestDepthXXQF == 1 (frozen soil), set data values to NA.
+  # Affected variables: VSWCfactoryDepthXX, VSWCsoilSpecificDepthXX, VSICDepthXX
+  dataOut <- base::merge(data, dataSm[, c("readout_time", qfCols)], by = "readout_time", all.x = TRUE)
+  
+  for (depthNum in depthKeys) {
+    qfColName <- base::paste0("tempTestDepth", depthNum, "QF")
+    dataCols <- c(
+      base::paste0("VSWCfactoryDepth", depthNum),
+      base::paste0("VSWCsoilSpecificDepth", depthNum),
+      base::paste0("VSICDepth", depthNum)
+    )
+    dataCols <- base::intersect(dataCols, base::names(dataOut))
+    if (base::length(dataCols) > 0 && qfColName %in% base::names(dataOut)) {
+      frozenRows <- !base::is.na(dataOut[[qfColName]]) & dataOut[[qfColName]] == 1L
+      if (base::any(frozenRows)) {
+        log$info(base::paste0('Setting ', base::sum(frozenRows), ' rows to NA for depth ',
+                              depthNum, ' due to frozen soil temperature flag'))
+        for (col in dataCols) {
+          dataOut[[col]][frozenRows] <- NA_real_
+        }
+      }
+    }
+  }
+  
+  # Remove temp QF columns from data output (they belong in flags, not data)
+  dataOut <- dataOut[, base::setdiff(base::names(dataOut), qfCols), drop = FALSE]
+  
+  # Restore original column order: merge() moves the by-column (readout_time) to front,
+  # but SchmDataIn expects the original field order. def.wrte.parq renames by position.
+  dataOut <- dataOut[, base::names(data), drop = FALSE]
+
   # ===== Write output =====
+  if (base::length(fileQfPlau) != 1) {
+    log$error(base::paste0(
+      'Expected exactly one plausibility flag file in ', dirInQf, ', found ',
+      base::length(fileQfPlau), '.'
+    ))
+    stop()
+  }
+  
   nameFileQfOut <- fs::path(dirOutQf, fileQfPlau)
   
   rptWrite <- base::try(
     NEONprocIS.base::def.wrte.parq(
       data = qfAll,
       NameFile = nameFileQfOut,
+      Schm = SchmQf,
       log = log
     ),
     silent = TRUE
@@ -325,6 +377,38 @@ wrap.envscn.temp.flags <- function(DirIn,
     log$info(base::paste0('Wrote updated flags to ', nameFileQfOut))
   }
   
+
+  # ===== Write temperature-masked data =====
+  if (base::length(fileData) != 1) {
+    log$error(base::paste0(
+      'Expected exactly one input data parquet file when writing temperature-masked data, found ',
+      base::length(fileData), '.'
+    ))
+    stop()
+  }
+  
+  nameFileDataOut <- fs::path(dirOutData, fileData[1])
+  
+  rptWriteData <- base::try(
+    NEONprocIS.base::def.wrte.parq(
+      data = dataOut,
+      NameFile = nameFileDataOut,
+      Schm = SchmDataIn,
+      log = log
+    ),
+    silent = TRUE
+  )
+  
+  if ('try-error' %in% base::class(rptWriteData)) {
+    log$error(base::paste0(
+      'Cannot write output data to ', nameFileDataOut, '. ',
+      base::attr(rptWriteData, "condition")
+    ))
+    stop()
+  } else {
+    log$info(base::paste0('Wrote temperature-masked data to ', nameFileDataOut))
+  }
+
   return()
 }
 
