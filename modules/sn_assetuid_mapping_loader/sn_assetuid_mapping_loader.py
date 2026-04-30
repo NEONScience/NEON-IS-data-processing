@@ -33,12 +33,13 @@ def load() -> None:
             try:
                 asset_uid = asset.get("assetUid")
                 log.debug(f'asset_uid: {asset_uid}')
-                serial_number = asset.get("serialNumber")
-                serial_number = serial_number.split("/")[-1]
-                log.debug(f'serial_number: {serial_number}')
-                if serial_number is None:
-                    log.debug(f'Empty serialNumber for asset_uid {asset.get("assetUid")}')
+                serial_number = asset.get("serialNumber")                
+                
+                if not serial_number:
+                    log.debug(f"Empty serialNumber for asset_uid {asset.get('assetUid')}")
                     continue
+                serial_number = serial_number.split("/")[-1]
+                log.debug(f'serial_number after split: {serial_number}')
 
                 file_name = f'{source_type}_{serial_number}_{asset_uid}.txt'
                 file_path = Path(out_path, source_type, serial_number, file_name)
