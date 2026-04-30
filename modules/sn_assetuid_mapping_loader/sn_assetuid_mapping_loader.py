@@ -34,7 +34,7 @@ def load() -> None:
                 asset_uid = asset.get("assetUid")
                 log.debug(f'asset_uid: {asset_uid}')
                 serial_number = asset.get("serialNumber")
-                serial_number = serial_number.split("/")[0]
+                serial_number = serial_number.split("/")[-1]
                 log.debug(f'serial_number: {serial_number}')
                 if serial_number is None:
                     log.debug(f'Empty serialNumber for asset_uid {asset.get("assetUid")}')
