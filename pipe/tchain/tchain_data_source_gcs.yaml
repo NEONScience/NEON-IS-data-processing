@@ -35,7 +35,7 @@ transform:
     YEAR_INDEX: "4"
     MONTH_INDEX: "5"
     DAY_INDEX: "6"
-    SOURCE_TYPE: tchain_parsed
+    SOURCE_TYPE: tchain
     SOURCE_TYPE_OUT: tchain
     # BUCKET_NAME: neon-l0-ingest # Always pull from prod bucket
   secrets:

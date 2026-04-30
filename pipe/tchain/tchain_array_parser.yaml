@@ -102,7 +102,7 @@ input:
       glob: "/tchain/tchain_parsed.avsc"
   - pfs:
       name: DATA_PATH
-      repo: tchain_data_source_kafka
+      repo: tchain_data_source_gcs
       glob: "/tchain/*/*/*"
 parallelism_spec:
   constant: 3
