@@ -317,7 +317,7 @@ wrap.exo2.logfiles <- function(FileIn,
     }#End sensor loop
     
     # Loop for dissolved oxygen
-    current_sensor<-"exo2dissolvedOxygen"
+    current_sensor<-"exo2dissolvedoxygen"
     if(!is.na(SNdo)){
       doTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat")]
       if(!"dissolvedOxygen" %in% names(doTable)){doTable$dissolvedOxygen <- NA}
@@ -351,7 +351,7 @@ wrap.exo2.logfiles <- function(FileIn,
     }#End sensorloop
     
     # Loop for pH
-    current_sensor<-"exo2ph"
+    current_sensor<-"exo2phorp"
     if(!is.na(SNph)){
       phTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","pH","pHvoltage")]
       if(!"pH" %in% names(phTable)){phTable$pH <- NA}
