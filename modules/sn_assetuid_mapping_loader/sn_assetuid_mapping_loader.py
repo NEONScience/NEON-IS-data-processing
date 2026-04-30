@@ -33,9 +33,10 @@ def load() -> None:
         for asset in assets:
             try:
                 asset_uid = asset.get("assetUid")
-                serial_number = asset.get("electronicSerialNumber")
+                serial_number = asset.get("serialNumber")
+                serial_number = serial_number.split("/")[0]
                 if serial_number is None:
-                    log.debug(f'Empty electronicSerialNumber for asset_uid {asset.get("assetUid")}')
+                    log.debug(f'Empty serialNumber for asset_uid {asset.get("assetUid")}')
                     continue
 
                 file_name = f'{source_type}_{serial_number}_{asset_uid}.txt'
