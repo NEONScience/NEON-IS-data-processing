@@ -36,10 +36,9 @@
 #' @keywords Currently none
 #' 
 #' @examples
-# FileIn <- "~/pfs/exo2_logjam_load_files/43749/602db056666dc42e9f37a9e60057baa5.csv"
-# FileIn <- "~/pfs/exo2_logjam_files/43749/602db056666dc42e9f37a9e60057baa5.csv"
-# FileIn <- "~/pfs/exo2_logjam_load_files/16231/3c24cb37011f2fc2e8fec74b9118c57f.csv"
-# FileIn <- "~/pfs/exo2_logjam_load_files/26239/8aa609e9456820f423fcb07a0ea23364.csv"
+# FileIn <- "~/pfs/exo2_logjam_load_files_testprod/15847/21a311d930e1212339285ee3944ee4d3.csv"
+# FileIn <- "~/pfs/exo2_logjam_load_files_testprod/55949/02f7a3866774546f7ec6ca85ba3cdbf7.csv"
+# FileIn <- "~/pfs/exo2_logjam_load_files_testprod/55949/cc6e671c6b5b12507e28b75a63ad4373.csv"
 # DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
 # SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
@@ -55,6 +54,8 @@
 #'   Initial creation
 #' Bobby Hensley (2026-04-23)   
 #'   Updates for error handling and to allow for older file formats
+#' Nora Catolico (2026-04-29)
+#'   Updates for file encoding
 ##############################################################################################
 wrap.exo2.logfiles <- function(FileIn,
                              DirOutBase,
@@ -76,6 +77,7 @@ wrap.exo2.logfiles <- function(FileIn,
 #get body asset info
   bodyAsset <- basename(dirname(FileIn))
   fname <- basename(FileIn)
+
   
 # Load in the csv log file(s) 
   
@@ -85,7 +87,7 @@ wrap.exo2.logfiles <- function(FileIn,
   encoding<-readr::guess_encoding(FileIn)
   encoding_to_use<-encoding$encoding[1]
   log$debug(base::paste0(FileIn,' encoding is: ',encoding_to_use))
-  
+
   logFile  <-  base::try(read.table(paste0(FileIn), fileEncoding = encoding_to_use, header = FALSE, sep = ",", 
                                     blank.lines.skip = TRUE, strip.white = TRUE, fill = TRUE,
                                     stringsAsFactors = FALSE,na.strings=c(-1,'')))
