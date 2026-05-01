@@ -18,6 +18,7 @@ transform:
     SOURCE_TYPE_4: exo2fdom
     SOURCE_TYPE_5: exo2phorp
     SOURCE_TYPE_6: exo2dissolvedoxygen
+    SOURCE_TYPE_7: exo2algae
   cmd: 
   - sh
   - "-c"
@@ -50,6 +51,10 @@ transform:
     
     # exo2dissolvedoxygen
     export SOURCE_TYPE=$SOURCE_TYPE_6
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+    
+    # exo2algae
+    export SOURCE_TYPE=$SOURCE_TYPE_7
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     EOF

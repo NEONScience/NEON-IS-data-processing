@@ -19,6 +19,8 @@ transform:
   - python3 -m location_loader.location_loader_main
   - export SOURCE_TYPE=$SOURCE_TYPE_6
   - python3 -m location_loader.location_loader_main
+  - export SOURCE_TYPE=$SOURCE_TYPE_7
+  - python3 -m location_loader.location_loader_main
   
   env:
     LOCATION_TYPE: CONFIG
@@ -28,6 +30,7 @@ transform:
     SOURCE_TYPE_4: exo2fdom
     SOURCE_TYPE_5: exo2phorp
     SOURCE_TYPE_6: exo2dissolvedoxygen
+    SOURCE_TYPE_7: exo2algae
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums

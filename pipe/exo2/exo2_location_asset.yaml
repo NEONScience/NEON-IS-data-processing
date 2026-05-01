@@ -19,6 +19,8 @@ transform:
   - python3 -m location_asset_loader.location_asset_loader_main
   - export SOURCE_TYPE=$SOURCE_TYPE_6
   - python3 -m location_asset_loader.location_asset_loader_main
+  - export SOURCE_TYPE=$SOURCE_TYPE_7
+  - python3 -m location_asset_loader.location_asset_loader_main
   
   env:
     OUT_PATH: /pfs/out    
@@ -31,6 +33,7 @@ transform:
     SOURCE_TYPE_4: exo2fdom
     SOURCE_TYPE_5: exo2phorp
     SOURCE_TYPE_6: exo2dissolvedoxygen
+    SOURCE_TYPE_7: exo2algae
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret

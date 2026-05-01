@@ -21,6 +21,8 @@ transform:
   - python3 -m sn_assetuid_mapping_loader.sn_assetuid_mapping_loader
   - export SOURCE_TYPE=$SOURCE_TYPE_6
   - python3 -m sn_assetuid_mapping_loader.sn_assetuid_mapping_loader
+  - export SOURCE_TYPE=$SOURCE_TYPE_7
+  - python3 -m sn_assetuid_mapping_loader.sn_assetuid_mapping_loader
   env:
     OUTPUT_PATH: /pfs/out
     REGION: cert
@@ -30,6 +32,7 @@ transform:
     SOURCE_TYPE_4: exo2fdom
     SOURCE_TYPE_5: exo2phorp
     SOURCE_TYPE_6: exo2dissolvedoxygen
+    SOURCE_TYPE_6: exo2algae
     CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
     LOG_LEVEL: DEBUG
   secrets:
