@@ -1,4 +1,4 @@
-name: "Build-push_sunav2_logs_group_and_fill"
+name: "Build-push_exo2_logs_group_and_fill"
 
 on:
   push:
