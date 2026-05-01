@@ -2,7 +2,7 @@ name: DEV-sunav2-nitrate-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'argo.ingest.2'
     paths:
       - 'pipe/sunav2/*.yaml'
       - 'pipe/sunav2/pipe_list_sunav2_development.txt'
