@@ -447,7 +447,7 @@ wrap.exo2.logfiles <- function(FileIn,
     
     
     # Loop for chlorophyll
-    current_sensor<-"exo2chlorophyll"
+    current_sensor<-"exo2algae"
     if(!is.na(SNchl)){
       chlTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
       if(!"chlorophyll" %in% names(chlTable)){chlTable$chlorophyll <- NA}
