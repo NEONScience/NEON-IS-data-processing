@@ -196,7 +196,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: exo2_cron_daily_and_date_control
+    repo: exo2_all_probes_cron_daily_and_date_control
     glob: "/exo2/*/*/*"
 output_branch: master
 parallelism_spec:

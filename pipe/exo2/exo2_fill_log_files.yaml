@@ -171,7 +171,7 @@ input:
         outer_join: true
     - pfs:
         name: DATE_CONTROL
-        repo: exo2_cron_daily_and_date_control
+        repo: exo2_all_probes_cron_daily_and_date_control
         glob: /(exo2/*/*/*) #exo2/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY

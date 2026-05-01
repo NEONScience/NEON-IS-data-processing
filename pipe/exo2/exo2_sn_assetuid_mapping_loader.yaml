@@ -42,7 +42,7 @@ transform:
     mount_path: /var/cds_secret
 input:
   pfs:
-    repo: exo2_cron_daily_and_date_control_tick
+    repo: exo2_all_probes_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 autoscaling: true
