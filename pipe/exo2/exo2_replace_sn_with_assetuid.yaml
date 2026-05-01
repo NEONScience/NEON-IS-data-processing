@@ -3,7 +3,7 @@ pipeline:
   name: exo2_replace_sn_with_assetuid
 transform:
   # image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sn-to-asset-uid:sha-
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sn-to-asset-uid:sha-d9e7bbf
   cmd:
   - sh
   - "-c"
@@ -24,11 +24,11 @@ input:
   - pfs:
       name: MAP_PATH
       repo: exo2_sn_assetuid_mapping_loader
-      glob: /exo2
+      glob: /*
   - pfs:
       name: DATA_PATH
-      repo: exo2_logjam_parse_by_day
-      glob: /exo2/(*/*/*)
+      repo: exo2_logjam_assign_clean_files
+      glob: /*/(*/*/*)
 parallelism_spec:
   constant: 1
 autoscaling: true
