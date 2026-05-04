@@ -19,23 +19,12 @@ WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt
-    
-RUN apt update && \
-    apt-get install -y --no-install-recommends \
-        software-properties-common \
-        gnupg && \
-    rm -rf /var/lib/apt/lists/* 
-    
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3 \
-        python3-venv \
-        python3-pip && \
-    rm -rf /var/lib/apt/lists/*
+
 
 RUN python3 -m venv /opt/venv
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
