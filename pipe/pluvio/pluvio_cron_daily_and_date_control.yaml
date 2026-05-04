@@ -10,7 +10,7 @@ transform:
     # NOTE that the pluvio has different site-dates for kafka and trino loaders.
     # This is because some kafka topics start with <site>dfir instead of simply <site>, which the trino loader cannot handle
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
-    START_DATE: "2025-08-20"
+    START_DATE: "2026-02-22"
     #END_DATE: "2024-06-01"
     OUT_PATH_KAFKA: /pfs/out/kafka
     OUT_PATH_TRINO: /pfs/out/trino
@@ -46,11 +46,11 @@ input:
   - pfs:
       name: SITE_FILE_KAFKA
       repo: pluvio_site_list
-      glob: /site-list-kafka.json
+      glob: /site-list.json
   - pfs:
       name: SITE_FILE_TRINO
       repo: pluvio_site_list
-      glob: /site-list-trino.json
+      glob: /site-list.json
 resource_requests:
   memory: 100M
   cpu: 1

@@ -1,0 +1,27 @@
+{
+    "features": [
+        {
+            "domain": "D02",
+            "geometry": null,
+            "HOR": "102",
+            "properties": {
+                "active_periods": [
+                    {
+                        "start_date": "2019-11-18T00:00:00Z",
+                        "end_date": "2019-11-19T00:00:00Z"
+                    }
+                ],
+                "data_product_ID": [
+                    "DP1.20033.001"
+                ],
+                "group": "nitrate-surfacewater_POSE102100",
+                "name": "CFGLOC101686"
+            },
+            "site": "POSE",
+            "type": "Feature",
+            "VER": "100",
+            "visibility_code": "public"
+        }
+    ],
+    "type": "FeatureCollection"
+}

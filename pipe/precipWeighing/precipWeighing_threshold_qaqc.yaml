@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighing_threshold_qaqc
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-threshold-loader:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-threshold-loader:v2.0.0
   cmd:
   - /bin/bash
   stdin:

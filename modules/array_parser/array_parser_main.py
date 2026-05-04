@@ -20,6 +20,7 @@ def main() -> None:
     log_level: str = env.str('LOG_LEVEL', 'INFO')
     source_type_index: int = env.int('SOURCE_TYPE_INDEX')
     source_type_out: str = env.str('SOURCE_TYPE_OUT',None)
+    replace_schema_name: str = env.bool('REPLACE_SCHEMA_NAME',True)
     year_index: int = env.int('YEAR_INDEX')
     month_index: int = env.int('MONTH_INDEX')
     day_index: int = env.int('DAY_INDEX')
@@ -34,6 +35,7 @@ def main() -> None:
                     parse_calibration=parse_calibration,
                     source_type_index=source_type_index,
                     source_type_out=source_type_out,
+                    replace_schema_name=replace_schema_name,
                     year_index=year_index,
                     month_index=month_index,
                     day_index=day_index,

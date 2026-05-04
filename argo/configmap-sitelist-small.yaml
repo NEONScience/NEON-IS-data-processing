@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argo-sitelist-params-small
+  namespace: argo
+  labels:
+    # Note that this label is required for the informer to detect this ConfigMap.
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  sitelist: |
+    [
+      {
+        "site": "ABBY",
+        "domain": "D16",
+        "group": "tis"
+      },
+      {
+        "site": "ARIK",
+        "domain": "D10",
+        "group": "ais"
+      },
+      {
+        "site": "BARC",
+        "domain": "D03",
+        "group": "ais"
+      },
+      {
+        "site": "BARR",
+        "domain": "D18",
+        "group": "tis"
+      },
+            {
+        "site": "BART",
+        "domain": "D01",
+        "group": "tis"
+      },
+      {
+        "site": "BIGC",
+        "domain": "D17",
+        "group": "ais"
+      },
+      {
+        "site": "BLAN",
+        "domain": "D02",
+        "group": "tis"
+      },
+      {
+        "site": "BLDE",
+        "domain": "D12",
+        "group": "ais"
+      }
+    ]
+    

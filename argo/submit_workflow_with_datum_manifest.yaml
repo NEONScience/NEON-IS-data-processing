@@ -1,0 +1,71 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: submit-workflow-with-datum-manifest
+spec:
+  # Use a SA that has permission to create/get/list/watch/patch Workflows (and get WorkflowTemplates if referenced)
+  # serviceAccountName: argo
+  entrypoint: submit-workflow
+
+  # Parameters exposed by the parent template
+  arguments:
+    parameters:
+      - name: wft-name
+      - name: log-level 
+        default: INFO
+      - name: datum-manifests 
+        default: |
+         [
+          {"paths": ["cmp22/2025/10/01/11185","cmp22/2025/10/02/11185"]},
+          {"paths": ["cmp22/2025/10/03/11185"]}
+         ]
+
+  templates:
+  # Entrypoint that submits the workflow (more steps could be added)
+  - name: submit-workflow
+    steps:
+      - - name: create
+          template: create-wf
+          arguments:
+            parameters:
+              - name: wft-name
+                value: "{{workflow.parameters.wft-name}}"
+              - name: log-level
+                value: "{{workflow.parameters.log-level}}"
+              - name: datum-manifests
+                value: "{{workflow.parameters.datum-manifests}}"
+
+  # Resource template that creates the workflow 
+  - name: create-wf
+    inputs:
+      parameters:
+        - name: wft-name
+        - name: log-level
+        - name: datum-manifests
+    outputs:
+      parameters:
+        - name: wf-name
+          valueFrom:
+            jsonPath: "{.metadata.name}"
+        - name: wf-phase
+          valueFrom:
+            jsonPath: "{.status.phase}"
+    resource:
+      action: create
+      manifest: |
+        apiVersion: argoproj.io/v1alpha1
+        kind: Workflow
+        metadata:
+          generateName: {{inputs.parameters.wft-name}}-
+          labels:
+            workflows.argoproj.io/parent: {{workflow.name}}
+        spec:
+          workflowTemplateRef:
+            name: {{inputs.parameters.wft-name}}
+          arguments:
+            parameters:
+              - name: log-level
+                value: '{{inputs.parameters.log-level}}'
+              - name: datum-manifests
+                value: '{{inputs.parameters.datum-manifests}}'

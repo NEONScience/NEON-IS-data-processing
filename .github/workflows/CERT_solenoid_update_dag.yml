@@ -1,0 +1,70 @@
+name: CERT-solenoid-update-dag
+on:
+  push:
+    branches:
+      - 'none'
+    paths:
+      - 'pipe/solenoid/*.yaml'
+      - 'pipe/solenoid/pipe_list_solenoid.txt'
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+# Workflow-level concurrency
+concurrency: 
+  group: ${{
+      contains(github.workflow, 'update-dag') ||
+      contains(github.workflow, 'site-list') && 'operations-queue'
+    || github.workflow
+    }}
+  cancel-in-progress: false  # Queue them up, don't cancel
+
+jobs:
+  # -------------------------------------------------------------
+  # Using GitHub's API is not supported for push events
+  # -------------------------------------------------------------
+  # 
+  # ----------------------------------------------------------------------------------------------
+  # Using local .git history
+  # ----------------------------------------------------------------------------------------------
+  # Event `push`: Compare the preceding remote commit -> to the current commit of the main branch 
+  # ----------------------------------------------------------------------------------------------
+
+  changed_files:
+    runs-on: ubuntu-latest  # windows-latest || macos-latest
+    outputs:
+    # Use this changed_file_list if you plan to use get-changed-files-action 
+      changed_file_list: ${{ steps.changed-files-action.outputs.changed_file_list }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+          
+    # Using get-changed-files-action 
+      - name: Get changed files action
+        id: changed-files-action
+        uses: ./.github/actions/get-changed-files
+
+  update_pipelines:
+    needs: changed_files
+    runs-on: arc-neon-gke
+    #runs-on: ubuntu-latest 
+    env:
+      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
+      PATHS: 'pipe/solenoid=pipe_list_solenoid.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/solenoid=pipe_list_solenoid.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      TRANSACTION: True
+      UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
+      CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
+    steps:
+      - uses: actions/checkout@v4
+      - run: ls -la
+
+      - name: Update pipelines
+        uses: ./.github/actions/update-pipelines
+        with:
+          pachd_address: ${{ env.PACHD_ADDRESS }}
+          pach_token: ${{ env.PACH_TOKEN }}
+          paths: ${{ env.PATHS }}
+          transaction: ${{ env.TRANSACTION }}
+          update_scope: ${{ env.UPDATE_SCOPE }}
+          changed_files: ${{ env.CHANGED_FILES }}
+          

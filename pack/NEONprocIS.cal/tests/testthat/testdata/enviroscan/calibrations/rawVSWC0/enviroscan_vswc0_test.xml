@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>11111</MxAssetID>
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID/>
+      <ActivityLocation/>
+      <SWVersion>1.0.0</SWVersion>
+      <ProcedureVersion/>
+      <Station/>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>20.0</Min>
+        <Max>20.0</Max>
+        <Mean>20.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>760.0</Min>
+        <Max>760.0</Max>
+        <Mean>760.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>50.0</Min>
+        <Max>50.0</Max>
+        <Mean>50.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient>
+		<Name>CVALD1</Name>
+		<Value>5</Value>
+    </CalibrationCoefficient><CalibrationCoefficient>
+		<Name>CVALA1</Name>
+		<Value>1</Value>
+    </CalibrationCoefficient><CalibrationCoefficient>
+		<Name>CVALA2</Name>
+		<Value>1</Value>
+    </CalibrationCoefficient><CalibrationCoefficient>
+		<Name>CVALA3</Name>
+		<Value>0</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="">
+    <Metadata>
+        <Entry>
+            <Name> </Name>
+            <Value> </Value>
+        </Entry>
+    </Metadata>
+	<Row index="">
+    <Independent name=""> </Independent>
+    <Column index="">
+        <Dependent name=""> </Dependent>
+    </Column>
+	</Row>
+	</CalibrationTable>
+    <CalibrationStandards CertNumber=""> </CalibrationStandards>
+    <StreamID>1</StreamID>
+    <Uncertainty units="">
+		<Name>U_CVALD3</Name>
+		<Value>0</Value>
+	</Uncertainty><Uncertainty units="">
+		<Name>U_CVALD2</Name>
+		<Value>0</Value>
+	</Uncertainty><Uncertainty units="">
+		<Name>U_CVALD1</Name>
+		<Value>0.005</Value>
+	</Uncertainty><Uncertainty units="">
+		<Name>U_CVALA3</Name>
+		<Value>0.005</Value>
+	</Uncertainty><Uncertainty units="">
+		<Name>U_CVALA2</Name>
+		<Value>0.001</Value>
+	</Uncertainty><Uncertainty units="">
+		<Name>U_CVALA1</Name>
+		<Value>0.005</Value>
+	</Uncertainty>
+    <Trueness units="">0.000000</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2024-01-01T00:00:00.0000</StartTime>
+      <EndTime>2024-12-31T23:59:59.0000</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>999001</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2024-01-01T00:00:00.0000</StartTime>
+    <EndTime>2025-01-01T00:00:00.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment> </Equipment>
+			<Operator>TestOperator</Operator>
+			<WorkOrder>WO00001</WorkOrder>
+			<MaximoID>11111</MaximoID>
+			<AssetID>10000000011111</AssetID>
+			<Reference/>
+			<Fixture/>
+			<NEONPN/>
+			<SN header=""/>
+			<FW header=""/>
+			<SOH header=""/>
+			<UncertaintyCtl/>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header=""/>
+	</DATA>
+</CalVal>
