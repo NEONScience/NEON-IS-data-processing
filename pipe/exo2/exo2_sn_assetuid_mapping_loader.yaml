@@ -32,7 +32,7 @@ transform:
     SOURCE_TYPE_4: exo2fdom
     SOURCE_TYPE_5: exo2phorp
     SOURCE_TYPE_6: exo2dissolvedoxygen
-    SOURCE_TYPE_6: exo2algae
+    SOURCE_TYPE_7: exo2algae
     CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
     LOG_LEVEL: DEBUG
   secrets:
