@@ -20,30 +20,31 @@ WORKDIR ${CONTAINER_APP_DIR}
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt
 
-
-RUN python3 -m venv /opt/venv
-ENV VIRTUAL_ENV=/opt/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    apt-get autoremove -y && \
-    apt-get autoclean -y && \
-    groupadd -g 9999 appuser && \
-    useradd -r -u 9999 -g appuser appuser
+RUN apt update && \
+    apt-get install -y --no-install-recommends \
+        python3.8 && \
+    apt install -y python3-pip && \
+    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+   apt-get autoremove -y && \
+	 apt-get autoclean -y && \
+	 rm -rf /var/lib/apt/lists/* 
 
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${MODULE_DIR}/${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 
-# Build in the module
+# Build in the flow module
 ARG FLOW_DIR="flow"
 
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ./flow/flow.exo2.logfiles/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
+
+# Create app user
+RUN groupadd appuser && \
+    useradd appuser -g appuser
 
 # Copy in exo2 log file workflow
 COPY ./${FLOW_DIR}/flow.exo2.logfiles/flow.exo2.logfiles.R .
