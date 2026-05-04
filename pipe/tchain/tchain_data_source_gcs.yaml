@@ -23,7 +23,7 @@ transform:
     month=${arr[4]}
     day=${arr[5]}
     
-    echo "Extracting $year-$month-$day for $source_type from GCS"
+    echo "Extracting $year-$month-$day for $SOURCE_TYPE from GCS"
     python3 -m l0_gcs_loader.l0_gcs_loader
 
     EOF
