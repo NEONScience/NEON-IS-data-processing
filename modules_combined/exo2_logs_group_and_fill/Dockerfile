@@ -19,8 +19,13 @@ WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
-RUN apt update && \
-    apt-get install -y python3.9 python3.9-venv python3-pip && \
+RUN set -eux; \
+    apt-get update -o Acquire::Retries=5; \
+    apt-get install -y --no-install-recommends --fix-missing \
+        python3.9 \
+        python3.9-venv \
+        python3-pip; \
+    rm -rf /var/lib/apt/lists/*; \
     python3.9 -m venv /opt/venv
     
 ENV VIRTUAL_ENV=/opt/venv
