@@ -226,7 +226,7 @@
 # Sys.setenv(DIR_IN='~/pfs/rmyoung_calibration_group_and_convert_test/rmyoung/2025/12/18')
 # arg <- c("DirIn=$DIR_IN", "DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","ConvFuncTerm1=def.cal.conv.nmnl:speed","ConvFuncTerm2=def.cal.conv.nmnl:direction",
 #          "TermQf=speed|direction","UcrtFuncTerm1=def.ucrt.meas.cnst:speed","UcrtFuncTerm1=def.ucrt.meas.cnst:direction","nomVal=speed:0.1666667|direction:355",
-#          "nomCalID=speed:CVALB1|direction:CVALA1")
+#          "nomCalID=speed:CVALB1|direction:CVALA1","FileSchmData=~/pfs/rmyoung_avro_schemas/rmyoung/rmyoung_calibrated.avsc" )
 
 
 #' @seealso None currently

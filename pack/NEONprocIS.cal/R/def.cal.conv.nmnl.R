@@ -14,7 +14,7 @@
 
 #' @param nomCalID A character string that identifies the calibration value that should be used, e.g. CVAL_B1
 #' 
-#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
+#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to
 #' NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.
 
 #' @param varConv A character string of the target variables (columns) in the data frame \code{data} for 
@@ -62,6 +62,8 @@
 #     original creation, from def.cal.conv.poly
 #   Kaelin Cawley (2026-02-06)
 #     created new function to be used for RMyoung 05108 buoy wind speed data
+#   Nora Catolico (2026-05-05)
+#     updates to work with cal package
 ##############################################################################################
 # # For Testing flow.cal.conv.R with this function
 # setwd("/home/NEON/kcawley/NEON-IS-data-processing/flow/flow.cal.conv")

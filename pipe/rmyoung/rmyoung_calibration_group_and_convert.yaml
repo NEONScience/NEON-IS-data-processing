@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-99798fb
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-234249c
   cmd:
   - sh
   - "-c"
@@ -24,21 +24,24 @@ transform:
     # Combine data from Kafka and Trino
     Rscript ./flow.kfka.comb.R \
           DirIn=$OUT_PATH \
-          DirOut=/tmp/pfs/kafka_merged \
+          DirOut=/pfs/out \
           DirErr=/pfs/out/errored_datums \
           FileSchmL0=$FILE_SCHEMA_L0 \
           DirSubCopy=calibration
           
     # Run calibration conversion module
-    # Removed schemas for now, probably add back in later
     Rscript ./flow.cal.conv.R \
         DirIn=/tmp/pfs/kafka_merged \
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums\
         ConvFuncTerm1=def.cal.conv.nmnl:speed \
-        TermQf=speed \
-        "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" 
-
+        ConvFuncTerm2=def.cal.conv.nmnl:direction \
+        "nomVal=speed:0.1666667|direction:355" \
+        "nomCalID=speed:CVALB1|direction:CVALA1" \
+        "TermQf=speed|direction" \
+        UcrtFuncTerm1=def.ucrt.meas.cnst:speed \
+        UcrtFuncTerm1=def.ucrt.meas.cnst:direction \
+        FileSchmData=$SCHEMA_CAL
     
     EOF
 
@@ -82,27 +85,31 @@ input:
       name: FILE_SCHEMA_L0
       repo: rmyoung_avro_schemas
       glob: /rmyoung/rmyoung_l0.avsc
+  - pfs:
+      name: SCHEMA_CAL
+      repo: rmyoung_avro_schemas
+      glob: /rmyoung/rmyoung_calibrated.avsc
   # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
         name: CALIBRATION_PATH
         repo: rmyoung_calibration_assignment
         glob: /rmyoung/(*)/(*)/(*)
-        joinOn: $1/$2/$3/$4
+        joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_TRINO
         repo: rmyoung_data_source_trino
         glob: /rmyoung/(*)/(*)/(*)
-        joinOn: $1/$2/$3/$4
+        joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_KAFKA
         repo: rmyoung_data_source_kafka
         glob: /rmyoung/(*)/(*)/(*)
-        joinOn: $1/$2/$3/$4
+        joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
@@ -122,3 +129,4 @@ datum_set_spec:
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
+    
