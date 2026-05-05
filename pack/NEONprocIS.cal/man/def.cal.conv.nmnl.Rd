@@ -6,10 +6,11 @@
 \usage{
 def.cal.conv.nmnl(
   data = data.frame(data = base::numeric(0)),
-  nomVal = NULL,
-  calID = NULL,
+  nomVal,
+  nomCalID,
   varConv = base::names(data)[1],
   calSlct = NULL,
+  Meta = list(),
   log = NULL
 )
 }
@@ -18,6 +19,8 @@ def.cal.conv.nmnl(
 a column called "readout_time" with POSIXct timestamps}
 
 \item{nomVal}{A numeric value used for nominal calibration.}
+
+\item{nomCalID}{A character string that identifies the calibration value that should be used, e.g. CVAL_B1}
 
 \item{varConv}{A character string of the target variables (columns) in the data frame \code{data} for 
 which calibrated output will be computed (all other columns will be ignored). Defaults to the first
@@ -28,11 +31,12 @@ variable (column) to calibrate. The data frame in each list element holds
 information about the calibration files and time periods that apply to the variable, 
 as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
 
+\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
+NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.}
+
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 created and used within the function.}
-
-\item{CalID}{A character string that identifies the calibration value that should be used, e.g. CVAL_B1}
 }
 \value{
 The input data frame, with the columns specified in input \code{varConv} updated with 
@@ -50,7 +54,7 @@ calSlct <- NEONprocIS.cal::wrap.cal.slct(
                TimeBgn = as.POSIXct('2025-01-01'),
                TimeEnd = as.POSIXct('2025-01-04'),
                )
-dataCal <- def.cal.conv.nmnl(data=data,nomVal=c(15/90,355),calID=c(CVAL_A1,CVAL_B1),varConv=c('var1','var2'),calSlct=calSlct)
+dataCal <- def.cal.conv.nmnl(data=data,nomVal=c(15/90,355),nomCalID=c(CVAL_A1,CVAL_B1),varConv=c('var1','var2'),calSlct=calSlct)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

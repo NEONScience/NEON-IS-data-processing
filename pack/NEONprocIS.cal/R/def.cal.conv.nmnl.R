@@ -124,70 +124,66 @@ def.cal.conv.nmnl <- function(data = data.frame(data=base::numeric(0)),
     stop()
   }
   
-  # Run through each variable to be calibrated
-  for(varIdx in varConv){
+  # Run through the variable to be calibrated
+  # Check to see if data to be calibrated is a numeric array
+  chk <-
+    NEONprocIS.base::def.validate.vector(data[[varConv]], TestEmpty = FALSE, TestNumc = TRUE, log = log)
+  if (!chk) {
+    stop()
+  }
+  
+  # Pull cal file info for this variable and initialize the output
+  calSlctIdx <- calSlct[[varConv]]
+  dataConvIdx <- data[[varConv]]
+  dataConvOutIdx <- as.numeric(NA)*dataConvIdx
+  
+  # Skip calibration if no cal info supplied
+  if(base::is.null(calSlctIdx)){
+    log$warn(base::paste0('No applicable calibration files available for ',varConv, '. Returning NA for calibrated output.'))
+    calSlctIdx <- base::data.frame()
+  }
+  
+  #retrieve appropriate nominal value and cal ID
+  nomValIdx <- as.numeric(nomVal$value[nomVal$term==varConv])
+  nomCalIDIdx <- nomCalID$ID[nomCalID$term==varConv]
+  
+  # Run through each calibration file and apply the calibration function for the applicable time period
+  for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
     
-    # Check to see if data to be calibrated is a numeric array
-    chk <-
-      NEONprocIS.base::def.validate.vector(data[[varIdx]], TestEmpty = FALSE, TestNumc = TRUE, log = log)
-    if (!chk) {
-      stop()
+    # What records in the data correspond to this cal file?
+    setCal <- timeMeas >= calSlctIdx$timeBgn[idxRow] & timeMeas < calSlctIdx$timeEnd[idxRow]
+    
+    # If a calibration file is available for this period, open it and get calibration information
+    if(!base::is.na(calSlctIdx$file[idxRow])){
+      fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
+      infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE,log=log)
+    } else {
+      infoCal <- NULL
     }
     
-    # Pull cal file info for this variable and initialize the output
-    calSlctIdx <- calSlct[[varIdx]]
-    dataConvIdx <- data[[varIdx]]
-    dataConvOutIdx <- as.numeric(NA)*dataConvIdx
-    
-    # Skip calibration if no cal info supplied
-    if(base::is.null(calSlctIdx)){
-      log$warn(base::paste0('No applicable calibration files available for ',varIdx, '. Returning NA for calibrated output.'))
-      calSlctIdx <- base::data.frame()
+    # If infoCal is NULL, return NA data
+    if (is.null(infoCal)) {
+      dataConvOutIdx[setCal] <- as.numeric(NA)
+      next
     }
     
-    #retrieve appropriate nominal value and cal ID
-    nomValIdx <- as.numeric(nomVal$value[nomVal$term==varIdx])
-    nomCalIDIdx <- nomCalID$ID[nomCalID$term==varIdx]
+    # Remove the nominal value only for records covered by this calibration file
+    dataConvOutIdx[setCal] <- data[[varConv]][setCal]/nomValIdx
     
-    # Run through each calibration file and apply the calibration function for the applicable time period
-    for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
-      
-      # What records in the data correspond to this cal file?
-      setCal <- timeMeas >= calSlctIdx$timeBgn[idxRow] & timeMeas < calSlctIdx$timeEnd[idxRow]
-      
-      # If a calibration file is available for this period, open it and get calibration information
-      if(!base::is.na(calSlctIdx$file[idxRow])){
-        fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
-        infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE,log=log)
-      } else {
-        infoCal <- NULL
-      }
-      
-      # If infoCal is NULL, return NA data
-      if (is.null(infoCal)) {
-        dataConvOutIdx[setCal] <- as.numeric(NA)
-        next
-      }
-      
-      # Remove the nominal value only for records covered by this calibration file
-      dataConvOutIdx[setCal] <- data[[varIdx]][setCal]/nomValIdx
-      
-      # Apply the value associated with the nomCalID only to this calibration period
-      dataConvOutIdx[setCal] <- dataConvOutIdx[setCal] *
-        as.numeric(infoCal$cal$Value[infoCal$cal$Name==nomCalIDIdx])
-      
-    } # End loop around calibration files
+    # Apply the value associated with the nomCalID only to this calibration period
+    dataConvOutIdx[setCal] <- dataConvOutIdx[setCal] *
+      as.numeric(infoCal$cal$Value[infoCal$cal$Name==nomCalIDIdx])
     
-    # Add calibrated data and retain raw data
-    currNames <- names(data)
-    nameToAdd <- paste0(varIdx,"Calibrated")
-    
-    data[[ncol(data)+1]] <- NA
-    names(data) <- c(currNames,nameToAdd)
-    
-    data[[nameToAdd]] <- dataConvOutIdx
-    
-  } # End loop around variables
+  } # End loop around calibration files
+  
+  # Add calibrated data and retain raw data
+  currNames <- names(data)
+  nameToAdd <- paste0(varConv,"Calibrated")
+  
+  data[[ncol(data)+1]] <- NA
+  names(data) <- c(currNames,nameToAdd)
+  
+  data[[nameToAdd]] <- dataConvOutIdx
   
   return(data)
   

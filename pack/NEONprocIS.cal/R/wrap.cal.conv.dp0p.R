@@ -26,10 +26,14 @@
 #' as the calibration conversion function is able to handle the case, for example if multiple L0 terms are used to create 
 #' a single calibrated output. \cr
 #' 
-#' @param nomVal (optional). A numeric value used for nominal calibration.
+#' @param nomVal (optional). Parsed nominal calibration value table forwarded from
+#' \code{flow.cal.conv}. This is not limited to a single numeric value; it should be
+#' provided in the tabular form expected by downstream nominal calibration functions.
 #'
-#' @param nomCalID (optional). A character string that identifies the calibration value that should be used with the nominal 
-#' calibration function, e.g. CVAL_B1
+#' @param nomCalID (optional). Parsed nominal calibration identifier table forwarded
+#' from \code{flow.cal.conv}. This is not limited to a single character string; it
+#' should be provided in the tabular form expected by downstream nominal calibration
+#' functions.
 #' 
 #' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
 #' calibration and uncertainty functions. This can contain whatever information might be needed in the
