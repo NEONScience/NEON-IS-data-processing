@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_calibration_group_and_convert_test
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-276e3ab
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-99798fb
   cmd:
   - sh
   - "-c"
@@ -71,21 +71,21 @@ input:
         name: CALIBRATION_PATH
         repo: rmyoung_calibration_assignment
         glob: /rmyoung/2025/12/18
-        joinOn: $1/$2/$3/$4
+        joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_TRINO
         repo: rmyoung_data_source_trino
         glob: /rmyoung/2025/12/18
-        joinOn: $1/$2/$3/$4
+        joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_KAFKA
         repo: rmyoung_data_source_kafka
         glob: /rmyoung/2025/12/18
-        joinOn: $1/$2/$3/$4
+        joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:

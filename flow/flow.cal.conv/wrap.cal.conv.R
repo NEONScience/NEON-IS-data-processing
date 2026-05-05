@@ -70,6 +70,11 @@
 #' see return information). Thus, ensure that the column names of data frames for the 
 #' same variable (list name) are unique. In the standard measurement and FDAS uncertainty functions, 
 #' the output list names will match the name of the L0 variable specified in \code{var}.\cr
+#' 
+#' @param nomVal (optional). A numeric value used for nominal calibration.
+#'
+#' @param nomCalID (optional). A character string that identifies the calibration value that should be used with the nominal 
+#' calibration function, e.g. CVAL_B1
 #'
 #' @param TermQf (optional) A character vector of L0 terms/variables for which to provide calibration
 #' flags. For example, if calibration information is expected for the terms "resistance" and
@@ -220,6 +225,8 @@ wrap.cal.conv <- function(DirIn,
                           FuncConv=NULL,
                           FuncUcrt=NULL,
                           TermQf=NULL,
+                          nomVal=NULL,
+                          nomCalID=NULL,
                           NumDayExpiMax=NA,
                           SchmDataOutList=NULL,
                           SchmQf=NULL,
@@ -404,10 +411,12 @@ wrap.cal.conv <- function(DirIn,
     dataConv <- data
   } else {
     dataConv <-
-      NEONprocIS.cal::wrap.cal.conv.dp0p(
+      wrap.cal.conv.dp0p(
         data = data,
         calSlct = calSlct,
         FuncConv = FuncConv,
+        nomVal = nomVal,
+        nomCalID = nomCalID,
         Meta = Meta,
         log = log
       )

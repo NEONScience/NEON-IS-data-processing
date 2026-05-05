@@ -1,0 +1,42 @@
+---
+pipeline:
+  name: rmyoung_calibration
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-99798fb
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - Rscript ./flow.cal.conv.R \
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      "ConvFuncTerm1=def.cal.conv.nmnl:speed"
+      TermQf=speed
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" 
+  env:
+    LOG_LEVEL: DEBUG
+    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: rmyoung_calibration_group_and_convert_test
+      glob: /*/*/*/*/*
+
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.2G
+  cpu: 1.3
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1.5G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

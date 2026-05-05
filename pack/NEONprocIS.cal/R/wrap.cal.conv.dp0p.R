@@ -26,6 +26,11 @@
 #' as the calibration conversion function is able to handle the case, for example if multiple L0 terms are used to create 
 #' a single calibrated output. \cr
 #' 
+#' @param nomVal (optional). A numeric value used for nominal calibration.
+#'
+#' @param nomCalID (optional). A character string that identifies the calibration value that should be used with the nominal 
+#' calibration function, e.g. CVAL_B1
+#' 
 #' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
 #' calibration and uncertainty functions. This can contain whatever information might be needed in the
 #' calibration and/or uncertainty functions in addition to calibration and uncertainty information. 
@@ -68,6 +73,8 @@
 wrap.cal.conv.dp0p <- function(data,
                                calSlct,
                                FuncConv,
+                               nomVal=NULL,
+                               nomCalID=NULL,
                                Meta=list(),
                                log=NULL){
   # initialize logging if necessary
@@ -89,6 +96,8 @@ wrap.cal.conv.dp0p <- function(data,
     data <- base::do.call(FuncConvIdx,args=base::list(data=data,
                                                       varConv=varConvIdx,
                                                       calSlct=calSlct,
+                                                      nomVal=nomVal,
+                                                      nomCalID=nomCalID,
                                                       Meta=Meta,
                                                       log=log)
     )
