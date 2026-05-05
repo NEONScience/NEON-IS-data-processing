@@ -411,7 +411,7 @@ wrap.cal.conv <- function(DirIn,
     dataConv <- data
   } else {
     dataConv <-
-      wrap.cal.conv.dp0p(
+      NEONprocIS.cal::wrap.cal.conv.dp0p(
         data = data,
         calSlct = calSlct,
         FuncConv = FuncConv,
