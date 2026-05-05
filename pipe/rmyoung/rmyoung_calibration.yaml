@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_calibration
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-99798fb
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-234249c
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -10,9 +10,12 @@ transform:
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums
+      "nomVal=speed:0.1666667|direction:355"
+      "nomCalID=speed:CVALB1|direction:CVALA1"
       "ConvFuncTerm1=def.cal.conv.nmnl:speed"
       TermQf=speed
-      "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" 
+      "UcrtFuncTerm1=def.ucrt.meas.cnst:speed"
+      FileSchmData=$SCHEMA_DATA
   env:
     LOG_LEVEL: DEBUG
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
@@ -22,6 +25,10 @@ input:
       name: DIR_IN
       repo: rmyoung_calibration_group_and_convert_test
       glob: /*/*/*/*/*
+  - pfs:
+      name: SCHEMA_DATA
+      repo: rmyoung_avro_schemas
+      glob: /rmyoung/rmyoung_calibrated.avsc
 
 parallelism_spec:
   constant: 5
