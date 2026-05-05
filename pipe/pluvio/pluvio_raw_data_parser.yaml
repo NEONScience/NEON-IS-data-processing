@@ -74,6 +74,7 @@ transform:
         if [[ -f "$f" ]]; then
           # Parse the path
           [[ "$f" =~ ^$OUT_PATH/$OUT_SOURCE_TYPE/([0-9]+)/([0-9]+)/([0-9]+)/([A-Za-z0-9]+)/data/(.*)$ ]]
+          fsourcetype="${OUT_SOURCE_TYPE}"
           fyear="${BASH_REMATCH[1]}"
           fmonth="${BASH_REMATCH[2]}"
           fday="${BASH_REMATCH[3]}"
@@ -109,7 +110,7 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/pluvio_raw/*/*/*"
 parallelism_spec:
-  constant: 1
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 300M
