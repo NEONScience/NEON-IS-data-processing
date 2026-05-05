@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-234249c
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-cfc6588
   cmd:
   - sh
   - "-c"
