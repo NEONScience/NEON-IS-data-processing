@@ -1,0 +1,108 @@
+---
+pipeline:
+  name: concH2oSoilSalinity_group_split
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:sha-d84cf6a
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    echo "=== Starting pipeline ==="
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/group_path_out
+    rm -rf /tmp/pfs/group_path_outCopy
+    mkdir -p /tmp/pfs/group_path_out
+
+    # ---- Run first module - group_path ----
+    # Splits data by group assignment into per-depth subdirectories
+
+    echo "=== Running group_path ==="
+    export OUT_PATH=/tmp/pfs/group_path_out
+
+    python3 -m group_path.group_path_main
+
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/group_path_out /tmp/pfs/group_path_outCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/pfs/group_path_out
+
+    echo "=== group_path complete ==="
+
+    # ---- Run second module - flow.concH2oSalinity.grp.split ----
+    # Selects and renames depth columns based on group VER assignment
+
+    echo "=== Running flow.concH2oSalinity.grp.split ==="
+
+    Rscript flow.concH2oSalinity.grp.split.R \
+      DirIn=/tmp/pfs/group_path_outCopy \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmStats=$FILE_SCHEMA_STATS \
+      FileSchmQm=$FILE_SCHEMA_QM
+
+    echo "=== flow.concH2oSalinity.grp.split complete ==="
+
+    EOF
+  env:
+    LOG_LEVEL: DEBUG
+    ERR_PATH: /pfs/out/errored_datums
+    # group_path settings
+    GROUP: conc-h2o-soil-salinity-split_
+    # group_assignment_split path: /pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity-split/YEAR/MONTH/DAY/CFGLOC/group/CFGLOC.json
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    # group_focus (stats/QM) path: /pfs/GROUP_FOCUS_PATH/YEAR/MONTH/DAY/original_group/enviroscan/CFGLOC/stats_or_qm/file
+    # GROUP_FOCUS_GROUP_INDEX points to CFGLOC (index 8) to match MEMBER_INDEX above
+    GROUP_FOCUS_YEAR_INDEX: '3'
+    GROUP_FOCUS_MONTH_INDEX: '4'
+    GROUP_FOCUS_DAY_INDEX: '5'
+    GROUP_FOCUS_GROUP_INDEX: '8'
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_STATS
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_stats_split.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_quality_metrics_split.avsc
+  - join:
+    - pfs:
+        # name must be GROUP_ASSIGNMENT_PATH
+        name: GROUP_ASSIGNMENT_PATH
+        repo: concH2oSoilSalinity_group_assignment_split
+        glob: /conc-h2o-soil-salinity-split/(*/*/*)
+        joinOn: $1
+    - pfs:
+        # name must be GROUP_FOCUS_PATH
+        name: GROUP_FOCUS_PATH
+        repo: concH2oSoilSalinity_qm_join_stats
+        glob: /(*/*/*)
+        joinOn: $1
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 600M
+  cpu: 0.4
+resource_limits:
+  memory: 2G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
