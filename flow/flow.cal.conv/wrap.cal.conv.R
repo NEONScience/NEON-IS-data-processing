@@ -71,10 +71,14 @@
 #' same variable (list name) are unique. In the standard measurement and FDAS uncertainty functions, 
 #' the output list names will match the name of the L0 variable specified in \code{var}.\cr
 #' 
-#' @param nomVal (optional). A numeric value used for nominal calibration.
+#' @param nomVal (optional). Parsed nominal calibration values, passed through from
+#' \code{flow.cal.conv.R}. This is not a single numeric value; custom callers should
+#' supply the same table/data-frame structure produced upstream for nominal calibration.
 #'
-#' @param nomCalID (optional). A character string that identifies the calibration value that should be used with the nominal 
-#' calibration function, e.g. CVAL_B1
+#' @param nomCalID (optional). Parsed nominal calibration identifiers, passed through
+#' from \code{flow.cal.conv.R}. This is not a single character string; custom callers
+#' should supply the corresponding table/data-frame structure used with
+#' \code{nomVal} for nominal calibration lookups.
 #'
 #' @param TermQf (optional) A character vector of L0 terms/variables for which to provide calibration
 #' flags. For example, if calibration information is expected for the terms "resistance" and
