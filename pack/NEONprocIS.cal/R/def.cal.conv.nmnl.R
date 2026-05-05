@@ -169,11 +169,12 @@ def.cal.conv.nmnl <- function(data = data.frame(data=base::numeric(0)),
         next
       }
       
-      # Remove the nominal value
-      dataConvOutIdx <- data[[varIdx]]/nomValIdx
+      # Remove the nominal value only for records covered by this calibration file
+      dataConvOutIdx[setCal] <- data[[varIdx]][setCal]/nomValIdx
       
-      # Apply the value associated with the nomCalID
-      dataConvOutIdx <- dataConvOutIdx*as.numeric(infoCal$cal$Value[infoCal$cal$Name==nomCalID])
+      # Apply the value associated with the nomCalID only to this calibration period
+      dataConvOutIdx[setCal] <- dataConvOutIdx[setCal] *
+        as.numeric(infoCal$cal$Value[infoCal$cal$Name==nomCalIDIdx])
       
     } # End loop around calibration files
     
