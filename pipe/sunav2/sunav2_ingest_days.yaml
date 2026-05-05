@@ -75,7 +75,7 @@ input:
   - pfs:
       name: INGEST_MANIFEST
       repo: sunav2_raw_ingest_trigger
-      glob: /sunav2/*/*/*/manifest.json
+      glob: /sunav2_raw/*/*/*/manifest.json
       branch: master
 output_branch: staging
 resource_requests:
