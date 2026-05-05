@@ -52,9 +52,9 @@ test_that("testing nominal calibration conversion", {
   testFileCal = "calibration_nominal.xml"
   testFileCalPath <- fs::path(testDir, testFileCal)
   
-  # Create data to calibrate - nominal wind speed data where raw values are ratios
+  # Create data to calibrate - nominal wind speed data 
   # that will be converted to actual speeds using nominal calibration
-  data <- c(15/90, 30/90, 45/90, 60/90, 75/90, 90/90)
+  data <- c(15, 30, 45, 60, 75, 90)
   readout_time <- as.POSIXct(c('2025-12-13 00:00:00','2025-12-13 06:00:00','2025-12-13 12:00:00',
                                 '2025-12-14 00:00:00','2025-12-14 06:00:00','2025-12-15 00:00:00'),tz='GMT')
   data = data.frame(readout_time=readout_time, speed=data)
@@ -65,8 +65,8 @@ test_that("testing nominal calibration conversion", {
   calSlct <- list(speed=NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=TimeBgn,TimeEnd=TimeEnd))
   
   # Create nominal value and calibration ID data frames as expected by the function
-  nomVal <- data.frame(term=c('speed'), value=c(15/90))
-  nomCalID <- data.frame(term=c('speed'), ID=c('CVAL_B1'))
+  nomVal <- data.frame(term=c('speed'), value=c(0.16667))
+  nomCalID <- data.frame(term=c('speed'), ID=c('CVALB1'))
   
   ##########
   ##########  Happy paths:::: data and cal not empty and have valid values

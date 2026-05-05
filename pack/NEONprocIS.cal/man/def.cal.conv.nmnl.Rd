@@ -31,7 +31,7 @@ variable (column) to calibrate. The data frame in each list element holds
 information about the calibration files and time periods that apply to the variable, 
 as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
 
-\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
+\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to
 NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
