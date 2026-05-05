@@ -1,2 +1,4 @@
+sunav2_ingest_days.yaml
 sunav2_cron_daily_and_date_control.yaml
-sunav2_data_source_kafka.yaml
+sunav2_data_source_gcs.yaml
+sunav2_raw_data_parser.yaml
