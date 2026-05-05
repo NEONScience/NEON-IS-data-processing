@@ -1,8 +1,8 @@
 {
   "type": "record",
-  "name": "nitrate_insufficient_data",
+  "name": "nitrate_config_qf",
   "namespace": "org.neonscience.schema.dp01",
-  "doc": "L1 quality metrics plus insufficient data flag for nitrate in surfacewater",
+  "doc": "L1 quality metrics plus configuration flag for nitrate in surfacewater",
     "__version": "1.0",
     "fields": [
     {
@@ -389,6 +389,16 @@
         ],
       "default": null,
       "doc": "Quality flag indicating whether less than the required number of data points were available during the averaging period (1=fail, 0=pass)",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "nitrateConfigQF",
+      "type": [
+        "null",
+        "int8"
+        ],
+      "default": null,
+      "doc": "Quality flag that indicates whether the SUNA was configured correctly in periodic mode (1=fail, 0=pass, -1=NA (i.e., could not be run))",
       "__neon_units": "NA"
     }
         ]
