@@ -74,7 +74,7 @@ input:
       overwrite: true
   - pfs:
       name: INGEST_MANIFEST
-      repo: sunav2_ingest_trigger
+      repo: sunav2_raw_ingest_trigger
       glob: /sunav2/*/*/*/manifest.json
       branch: master
 output_branch: staging
