@@ -62,7 +62,8 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
   
   ## Test 1: Only input and output directories passed in
   wrap.sunav2.quality.flags (DirIn=testDirIn,
-                             DirOutBase=testDirOut)
+                             DirOutBase=testDirOut,
+                             WndwMinPt=15)
   testthat::expect_true(file.exists(testDirOutPath))
   
   ## Test 2: Not NULL Schema is passed in
@@ -71,6 +72,7 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
   }
   wrap.sunav2.quality.flags (DirIn=testDirIn,
                              DirOutBase=testDirOut,
+                             WndwMinPt=15,
                              SchmFlagsOut=testSchmFlagsOut,
                              log=log)
   testthat::expect_true(file.exists(testDirOutPath))

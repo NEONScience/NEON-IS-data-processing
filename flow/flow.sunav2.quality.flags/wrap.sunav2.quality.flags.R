@@ -11,6 +11,9 @@
 #'  
 #' @param DirOut Character value. The base file path for the output data. 
 #' 
+#' @param WndwMinPt Integer. The time window in minutes for which to keep at least one row if all other points are dropped during 
+#' the lamp stabilization check.
+#' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
 #' 
@@ -33,36 +36,36 @@
 # DirOut<-"~/pfs/nitrate_sensor_flag_and_remove/2025/06/01/nitrate-surfacewater_CRAM103100/sunav2/CFGLOC110733" 
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_logfilled.avsc'),collapse='')
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_all_flags.avsc'),collapse='')
+# WndwMinPt<-15
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'
 #'                                                                                                                                                                                          
 #' @changelog
 #' Bobby Hensley (2025-08-30)
-#' Initial creation.
-#' 
+#' Initial creation 
 #' Bobby Hensley (2025-09-18)
 #' Updated so that measurements prior to lamp stabilization (never intended to be
-#' used in downstream pipeline) are removed.
-#' 
+#' used in downstream pipeline) are removed. 
 #' Bobby Hensley (2025-09-22)
 #' Updated to use single input directory and added check that data and flag file
-#' have same number of measurements.
-#' 
+#' have same number of measurements. 
 #'  Bobby Hensley (2025-10-30)
 #'  Updated to revert over-flagged measurements at end of burst. 
-#'  
 #'  Bobby Hensley (2025-12-10)
 #'  Updated lamp stabilization to pass added null "filler" for completely missing bursts.
-#' 
 #' Bobby Hensley (2025-12-16)
 #' Updated so that dark measurements caused by lamp temperature cutoff are still counted as part of same burst.
 #' Updated so that any low transmittance error codes ("-1") are always flagged and set to NA.
-#' 
 #' Bobby Hensley (2025-12-18)
 #' Updated so lamp stabilization test sets failed values to NA rather than removing entire line.
+#' Nora Catolico (2025-09-22)
+#' combined input df and updated error logging
+#' Nora Catolico (2026-05-06)
+#' update to keep a blank row if it is the only one in the window of interest
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
                                       DirOutBase,
+                                      WndwMinPt,
                                       SchmDataOut=NULL,
                                       SchmFlagsOut=NULL,
                                       log=NULL
@@ -224,30 +227,45 @@ wrap.sunav2.quality.flags <- function(DirIn,
   sunaData<-sunaData[!base::is.na(sunaData$nitrateLampStabilizeQF) & (sunaData$nitrateLampStabilizeQF==0),,drop=FALSE]
   allFlags<-allFlags[!base::is.na(allFlags$nitrateLampStabilizeQF) & (allFlags$nitrateLampStabilizeQF==0),,drop=FALSE]
   
-  if(base::any(sunaData$nitrateLampStabilizeQF==1,na.rm=TRUE) || base::any(allFlags$nitrateLampStabilizeQF==1,na.rm=TRUE)){
-    log$error(base::paste0('Error: Lamp stabilization filtering failed to remove measurements with nitrateLampStabilizeQF==1'))
-    stop()
+  
+  #add back in blank rows where entire window was removed
+  #define windows
+  timeBgn <-InfoDirIn$time # Earliest possible start date for the data
+  timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
+  # All minute window start times in [timeBgn, timeEnd)
+  all_starts <- seq(timeBgn, timeEnd - WndwMinPt*60, by = WndwMinPt*60)
+  
+  # Helper to floor readout_times to window starts
+  floor_m <- function(x) {
+    as.POSIXct(floor(as.numeric(x) / (WndwMinPt*60)) * (WndwMinPt*60),
+               origin = "1970-01-01", tz = attr(x, "tzone"))
   }
   
-  if(hasLampStabilizeFailuresInData && nrow(sunaData) >= preFilterSunaRows){
-    log$error(base::paste0('Error: Lamp stabilization filtering did not reduce data rows despite nitrateLampStabilizeQF==1 in input'))
-    stop()
+  window_starts <- unique(floor_m(sunaData$readout_time))
+  
+  # Identify windows that have no measurements after lamp stabilization filtering
+  empty_windows <- data.frame(window_start = all_starts,
+                              window_end = all_starts + (WndwMinPt*60),
+                              has_measurement = all_starts %in% window_starts)
+  # For each empty window, add back in a blank row with NA values (except for readout_time)
+  for(i in which(!empty_windows$has_measurement)){
+    new_row <- data.frame(matrix(NA, nrow = 1, ncol = ncol(sunaData)))
+    colnames(new_row) <- colnames(sunaData)
+    new_row$readout_time <- empty_windows$window_start[i]
+    sunaData <- rbind(sunaData, new_row)
+  }
+  # Same for flags file
+  for(i in which(!empty_windows$has_measurement)){
+    new_row <- data.frame(matrix(-1, nrow = 1, ncol = ncol(allFlags)))
+    colnames(new_row) <- colnames(allFlags)
+    new_row$readout_time <- empty_windows$window_start[i]
+    new_row$nitrateLampStabilizeQF <- 1
+    allFlags <- rbind(allFlags, new_row)
   }
   
-  if(hasLampStabilizeFailuresInFlags && nrow(allFlags) >= preFilterFlagRows){
-    log$error(base::paste0('Error: Lamp stabilization filtering did not reduce flag rows despite nitrateLampStabilizeQF==1 in input'))
-    stop()
-  }
-  
-  if(!hasLampStabilizeFailuresInData && nrow(sunaData) != preFilterSunaRows){
-    log$error(base::paste0('Error: Lamp stabilization filtering changed data rows despite no nitrateLampStabilizeQF==1 in input'))
-    stop()
-  }
-  
-  if(!hasLampStabilizeFailuresInFlags && nrow(allFlags) != preFilterFlagRows){
-    log$error(base::paste0('Error: Lamp stabilization filtering changed flag rows despite no nitrateLampStabilizeQF==1 in input'))
-    stop()
-  }
+  #reorder by readout time
+  sunaData <- sunaData[order(sunaData$readout_time), ]
+  allFlags <- allFlags[order(allFlags$readout_time), ]
   
   sunaData<-sunaData[,sunaDataColOrder,drop=FALSE]
   
