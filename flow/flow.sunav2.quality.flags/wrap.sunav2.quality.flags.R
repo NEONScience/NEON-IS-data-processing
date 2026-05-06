@@ -233,6 +233,8 @@ wrap.sunav2.quality.flags <- function(DirIn,
   timeBgn <-InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
   # All minute window start times in [timeBgn, timeEnd)
+  WndwMinPt<-as.numeric(WndwMinPt)
+  log$debug(base::paste0('WndwMinPt: ', WndwMinPt))
   all_starts <- seq(timeBgn, timeEnd - WndwMinPt*60, by = WndwMinPt*60)
   
   # Helper to floor readout_times to window starts
