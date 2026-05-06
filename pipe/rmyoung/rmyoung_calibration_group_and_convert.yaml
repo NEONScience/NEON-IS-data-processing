@@ -8,7 +8,7 @@ transform:
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
     
@@ -24,7 +24,7 @@ transform:
     # Combine data from Kafka and Trino
     Rscript ./flow.kfka.comb.R \
           DirIn=$OUT_PATH \
-          DirOut=/pfs/out \
+          DirOut=/tmp/pfs/kafka_merged \
           DirErr=/pfs/out/errored_datums \
           FileSchmL0=$FILE_SCHEMA_L0 \
           DirSubCopy=calibration

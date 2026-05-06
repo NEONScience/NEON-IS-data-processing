@@ -1,14 +1,14 @@
 ---
 pipeline:
-  name: hmr3300_location_group_and_restructure
+  name: rmyoung_location_group_and_restructure
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.3
   cmd:
   - sh
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
@@ -33,9 +33,9 @@ transform:
       DirIn=/tmp/pfs/structuredCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCombData=data|flags|uncertainty_data" \
+      "DirSubCombData=data|flags" \
       DirSubCombUcrt=uncertainty_coef \
-      DirSubCopy=location
+      DirSubCopy=location 
     EOF
   env:
     # Environment variables for filter-joiner
@@ -47,15 +47,15 @@ transform:
         - path:
             name: DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH/hmr3300/*/*/*/*/**
-            # Join on named location (already joined below by source type and day)
+            glob_pattern: /pfs/DATA_PATH/rmyoung/*/*/*/*/**
+            # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
         - path:
             name: LOCATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/LOCATION_PATH/hmr3300/*/*/*/*/**
-            # Join on named location (already joined below by source type and day)
+            glob_pattern: /pfs/LOCATION_PATH/rmyoung/*/*/*/*/**
+            # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: INFO
@@ -67,28 +67,28 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: hmr3300_calibration_group_and_convert
-      glob: /hmr3300/(*)/(*)/(*)
+      repo: rmyoung_calibration_group_and_convert
+      glob: /rmyoung/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - pfs:
       name: LOCATION_PATH
-      repo: hmr3300_location_asset_assignment
-      glob: /hmr3300/(*)/(*)/(*)
+      repo: rmyoung_location_asset_assignment
+      glob: /rmyoung/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 1G
-  cpu: 3.5
+  memory: 2.2G
+  cpu: 3.3
 resource_limits:
-  memory: 2G
+  memory: 4G
   cpu: 4.5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 3G
   cpu: 0.5
 datum_set_spec:
   number: 1
