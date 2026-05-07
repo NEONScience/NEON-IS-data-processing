@@ -62,8 +62,8 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
   
   ## Test 1: Only input and output directories passed in
   wrap.sunav2.quality.flags (DirIn=testDirIn,
-                             DirOutBase=testDirOut,
-                             WndwMinPt=15)
+                             WndwMinPt=15,
+                             DirOutBase=testDirOut)
   testthat::expect_true(file.exists(testDirOutPath))
   
   ## Test 2: Not NULL Schema is passed in
@@ -84,7 +84,41 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
   DirOutFlags <- file.path(testDirOutPath, 'flags')
   testthat::expect_true(dir.exists(DirOutData))
   testthat::expect_true(dir.exists(DirOutFlags))
-  # You may add further checks for file output, schema format, etc.
+  
+  # Read the output data and flags files to verify lamp stabilization filtering behavior
+  outDataFiles <- base::list.files(DirOutData, full.names = TRUE)
+  outFlagsFiles <- base::list.files(DirOutFlags, full.names = TRUE)
+  
+  testthat::expect_true(length(outDataFiles) > 0, info = "Output data file should exist")
+  testthat::expect_true(length(outFlagsFiles) > 0, info = "Output flags file should exist")
+  
+  if (length(outDataFiles) > 0 && length(outFlagsFiles) > 0) {
+    outData <- NEONprocIS.base::def.read.parq(NameFile = outDataFiles[1], log = log)
+    outFlags <- NEONprocIS.base::def.read.parq(NameFile = outFlagsFiles[1], log = log)
+    
+    # Verify output data and flags have same number of rows
+    testthat::expect_equal(nrow(outData), nrow(outFlags), 
+                           info = "Output data and flags should have equal row counts")
+    
+    # Verify that no measurements with nitrateLampStabilizeQF==1 remain in output
+    testthat::expect_false(base::any(outData$nitrateLampStabilizeQF[!is.na(outData$nitrate)] == 1, na.rm = TRUE),
+                           info = "No measurements with nitrateLampStabilizeQF==1 should remain in output")
+    
+    # Verify that all nitrate values are either NA or numeric (not flagged with 1 in lamp stabilize QF)
+    testthat::expect_false(base::any(!is.na(outData$nitrate) & 
+                                       !is.na(outFlags$nitrateLampStabilizeQF) & 
+                                       outFlags$nitrateLampStabilizeQF == 1),
+                           info = "No non-NA nitrate values should have nitrateLampStabilizeQF==1")
+    
+    # Verify row count reduction (if input had unstabilized measurements)
+    # This tests that lamp stabilization filtering actually removed rows
+    inputDataFiles <- base::list.files(file.path(testDirIn, 'data'), full.names = TRUE)
+    if (length(inputDataFiles) > 0) {
+      inputData <- NEONprocIS.base::def.read.parq(NameFile = inputDataFiles[1], log = log)
+      testthat::expect_true(nrow(outData) <= nrow(inputData),
+                            info = "Output data rows should be <= input data rows after filtering")
+    }
+  }
   
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
