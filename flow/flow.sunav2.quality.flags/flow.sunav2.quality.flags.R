@@ -92,7 +92,12 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr","WndwMinPt"),
-                                      NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
+                                      NameParaOptn = c("FileSchmData","FileSchmQf"),
+                                      TypePara = list(WndwMinPt = "numeric"),log = log)
+if(length(Para$WndwMinPt) != 1 || base::is.na(Para$WndwMinPt) ||
+   !base::is.finite(Para$WndwMinPt) || Para$WndwMinPt <= 0){
+  base::stop("Parameter 'WndwMinPt' must be a single positive numeric value.")
+}
 
 # Echo arguments
 log$debug(base::paste0('Input data directory: ', Para$DirIn))
