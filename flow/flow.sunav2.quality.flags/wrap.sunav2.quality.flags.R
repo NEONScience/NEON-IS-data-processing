@@ -257,13 +257,13 @@ wrap.sunav2.quality.flags <- function(DirIn,
   # For each empty window, add back in a blank row with NA values (except for readout_time)
   # and the corresponding placeholder row in the flags file
   for(i in empty_window_idx){
-    suna_row <- data.frame(matrix(NA, nrow = 1, ncol = ncol(sunaData)))
-    colnames(suna_row) <- colnames(sunaData)
+    suna_row <- sunaData[0, , drop = FALSE]
+    suna_row[1, ] <- NA
     suna_row$readout_time <- empty_windows$window_start[i]
     sunaData <- rbind(sunaData, suna_row)
 
-    flags_row <- data.frame(matrix(-1, nrow = 1, ncol = ncol(allFlags)))
-    colnames(flags_row) <- colnames(allFlags)
+    flags_row <- allFlags[0, , drop = FALSE]
+    flags_row[1, ] <- -1
     flags_row$readout_time <- empty_windows$window_start[i]
     flags_row$nitrateLampStabilizeQF <- 1
     allFlags <- rbind(allFlags, flags_row)
