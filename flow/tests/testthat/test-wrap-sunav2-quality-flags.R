@@ -113,13 +113,15 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
                                                           outFlags$nitrateLampStabilizeQF == 1])),
                           info = "Rows with nitrateLampStabilizeQF==1 should only remain as placeholder rows with nitrate == NA")
     
-    # Verify row count reduction (if input had unstabilized measurements)
-    # This tests that lamp stabilization filtering actually removed rows
+    # Verify that filtering does not increase the number of retained measurements.
+    # Placeholder rows with nitrate == NA may be added, so total output rows can
+    # legitimately exceed input rows.
     inputDataFiles <- base::list.files(file.path(testDirIn, 'data'), full.names = TRUE)
     if (length(inputDataFiles) > 0) {
       inputData <- NEONprocIS.base::def.read.parq(NameFile = inputDataFiles[1], log = log)
-      testthat::expect_true(nrow(outData) <= nrow(inputData),
-                            info = "Output data rows should be <= input data rows after filtering")
+      outMeasuredRows <- base::sum(!is.na(outData$nitrate))
+      testthat::expect_true(outMeasuredRows <= nrow(inputData),
+                            info = "Non-placeholder output measurements should be <= input data rows after filtering")
     }
   }
   
