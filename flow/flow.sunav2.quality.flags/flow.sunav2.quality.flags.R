@@ -5,7 +5,8 @@
 #' Bobby Hensley \email{hensley@battelleecology.org}
 
 #' @description Workflow. Uses thresholds to apply sensor-specific quality flags to SUNA data.  
-#' Measurements where the lamp has not had enough time to stabilze  (nitrateLampStabilizeQF=1) are removed. 
+#' Measurements where the lamp has not had enough time to stabilize  (nitrateLampStabilizeQF=1) are removed with the exception
+#' of keeping at least one row per window.
 #'
 #' The arguments are: 
 #' 

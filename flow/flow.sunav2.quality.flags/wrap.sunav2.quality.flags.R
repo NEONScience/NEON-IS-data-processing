@@ -5,7 +5,8 @@
 #' Bobby Hensley \email{hensley@battelleecology.org}
 #' 
 #' @description Wrapper function. Uses thresholds to apply sensor-specific quality flags to SUNA data.  
-#' Measurements where the lamp has not had enough time to stabilize  (nitrateLampStabilizeQF=1) are removed. 
+#' Measurements where the lamp has not had enough time to stabilize  (nitrateLampStabilizeQF=1) are removed with the exception
+#' of keeping at least one row per window.
 #'
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #'  
