@@ -100,15 +100,18 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
     testthat::expect_equal(nrow(outData), nrow(outFlags), 
                            info = "Output data and flags should have equal row counts")
     
-    # Verify that no measurements with nitrateLampStabilizeQF==1 remain in output
-    testthat::expect_false(base::any(outData$nitrateLampStabilizeQF[!is.na(outData$nitrate)] == 1, na.rm = TRUE),
-                           info = "No measurements with nitrateLampStabilizeQF==1 should remain in output")
-    
-    # Verify that all nitrate values are either NA or numeric (not flagged with 1 in lamp stabilize QF)
-    testthat::expect_false(base::any(!is.na(outData$nitrate) & 
-                                       !is.na(outFlags$nitrateLampStabilizeQF) & 
+    # Verify that no non-placeholder measurements remain with nitrateLampStabilizeQF==1.
+    # Lamp-stabilization flags are written to the flags parquet, while placeholder rows
+    # with nitrate == NA may remain in the output data.
+    testthat::expect_false(base::any(!is.na(outData$nitrate) &
+                                       !is.na(outFlags$nitrateLampStabilizeQF) &
                                        outFlags$nitrateLampStabilizeQF == 1),
                            info = "No non-NA nitrate values should have nitrateLampStabilizeQF==1")
+    
+    # Verify that any remaining nitrateLampStabilizeQF==1 rows are placeholder rows
+    testthat::expect_true(base::all(is.na(outData$nitrate[!is.na(outFlags$nitrateLampStabilizeQF) &
+                                                          outFlags$nitrateLampStabilizeQF == 1])),
+                          info = "Rows with nitrateLampStabilizeQF==1 should only remain as placeholder rows with nitrate == NA")
     
     # Verify row count reduction (if input had unstabilized measurements)
     # This tests that lamp stabilization filtering actually removed rows
