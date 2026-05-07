@@ -249,22 +249,21 @@ wrap.sunav2.quality.flags <- function(DirIn,
   
   # Identify windows that have no measurements after lamp stabilization filtering
   empty_windows <- data.frame(window_start = all_starts,
-                              window_end = all_starts + (WndwMinPt*60),
                               has_measurement = all_starts %in% window_starts)
+  empty_window_idx <- which(!empty_windows$has_measurement)
   # For each empty window, add back in a blank row with NA values (except for readout_time)
-  for(i in which(!empty_windows$has_measurement)){
-    new_row <- data.frame(matrix(NA, nrow = 1, ncol = ncol(sunaData)))
-    colnames(new_row) <- colnames(sunaData)
-    new_row$readout_time <- empty_windows$window_start[i]
-    sunaData <- rbind(sunaData, new_row)
-  }
-  # Same for flags file
-  for(i in which(!empty_windows$has_measurement)){
-    new_row <- data.frame(matrix(-1, nrow = 1, ncol = ncol(allFlags)))
-    colnames(new_row) <- colnames(allFlags)
-    new_row$readout_time <- empty_windows$window_start[i]
-    new_row$nitrateLampStabilizeQF <- 1
-    allFlags <- rbind(allFlags, new_row)
+  # and the corresponding placeholder row in the flags file
+  for(i in empty_window_idx){
+    suna_row <- data.frame(matrix(NA, nrow = 1, ncol = ncol(sunaData)))
+    colnames(suna_row) <- colnames(sunaData)
+    suna_row$readout_time <- empty_windows$window_start[i]
+    sunaData <- rbind(sunaData, suna_row)
+
+    flags_row <- data.frame(matrix(-1, nrow = 1, ncol = ncol(allFlags)))
+    colnames(flags_row) <- colnames(allFlags)
+    flags_row$readout_time <- empty_windows$window_start[i]
+    flags_row$nitrateLampStabilizeQF <- 1
+    allFlags <- rbind(allFlags, flags_row)
   }
   
   #reorder by readout time
