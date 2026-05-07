@@ -21,9 +21,9 @@
 #' 4. "WndwMinPt=value", The time window in minutes for which to keep at least one row if all other points are dropped during 
 #' the lamp stabilization check.
 #'  
-#' 4. "FileSchmData=value" (optional), The avro schema for the input and output data file.
+#' 5. "FileSchmData=value" (optional), The avro schema for the input and output data file.
 #' 
-#' 5. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
+#' 6. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
 #' 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
