@@ -18,7 +18,7 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "WndwMinPt=value" (integer), The time window in minutes for which to keep at least one row if all other points are dropped during 
+#' 4. "WndwMinPt=value", The time window in minutes for which to keep at least one row if all other points are dropped during 
 #' the lamp stabilization check.
 #'  
 #' 4. "FileSchmData=value" (optional), The avro schema for the input and output data file.
