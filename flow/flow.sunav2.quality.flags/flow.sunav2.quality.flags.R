@@ -46,6 +46,7 @@
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2024/06/27/nitrate-surfacewater_MART112100",
 #          "DirOut=~/pfs/out",
+#          "WndwMinPt=15",
 #          "DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
@@ -94,18 +95,22 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr","WndwMinPt"),
                                       NameParaOptn = c("FileSchmData","FileSchmQf"),
                                       TypePara = list(WndwMinPt = "numeric"),log = log)
-if(length(Para$WndwMinPt) != 1 || base::is.na(Para$WndwMinPt) ||
-   !base::is.finite(Para$WndwMinPt) || Para$WndwMinPt <= 0){
-  base::stop("Parameter 'WndwMinPt' must be a single positive numeric value.")
-}
+
 
 # Echo arguments
 log$debug(base::paste0('Input data directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Data window for which to keep a minimum of 1 point: ', Para$WndwMinPt))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+
+#read in WndwMinPt
+WndwMinPt<-as.numeric(Para$WndwMinPt)
+log$debug(base::paste0('Data window for which to keep a minimum of 1 point: ', Para$WndwMinPt))
+if(length(WndwMinPt) != 1 || base::is.na(WndwMinPt) ||
+   !base::is.finite(WndwMinPt) || WndwMinPt <= 0){
+  base::stop("Parameter 'WndwMinPt' must be a single positive numeric value.")
+}
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
@@ -136,7 +141,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
       wrap.sunav2.quality.flags(
         DirIn=idxFileIn,
         DirOutBase=Para$DirOut,
-        WndwMinPt=Para$WndwMinPt,
+        WndwMinPt=WndwMinPt,
         SchmDataOut=SchmDataOut,
         SchmFlagsOut=SchmFlagsOut,
         log=log

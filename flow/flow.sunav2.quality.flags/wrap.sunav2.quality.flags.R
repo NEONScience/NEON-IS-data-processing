@@ -234,11 +234,6 @@ wrap.sunav2.quality.flags <- function(DirIn,
   timeBgn <-InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
   # All minute window start times in [timeBgn, timeEnd)
-  WndwMinPt <- base::as.numeric(WndwMinPt)
-  if(length(WndwMinPt) != 1 || base::is.na(WndwMinPt) || !base::is.finite(WndwMinPt) || WndwMinPt <= 0){
-    base::stop("`WndwMinPt` must be a single finite positive number representing the window size in minutes.")
-  }
-  log$debug(base::paste0('WndwMinPt: ', WndwMinPt))
   all_starts <- seq(timeBgn, timeEnd - WndwMinPt*60, by = WndwMinPt*60)
   
   # Helper to floor readout_times to window starts relative to timeBgn
@@ -264,6 +259,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
 
     flags_rows <- allFlags[rep(NA_integer_, length(missing_starts)), , drop = FALSE]
     flags_rows$readout_time <- missing_starts
+    flags_rows[!colnames(flags_rows) %in% c("readout_time")] <- -1
     flags_rows$nitrateLampStabilizeQF <- 1
     allFlags <- rbind(allFlags, flags_rows)
   }
