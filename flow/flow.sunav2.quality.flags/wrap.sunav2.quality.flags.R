@@ -122,7 +122,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   
   #' Read in parquet file of logged file flags.
   logFileName<-grep("logFlags",base::list.files(DirInFlags,full.names=FALSE),value=TRUE)
-  if(length(calFileName)==0){
+  if(length(logFileName)==0){
     log$error(base::paste0('Log flags not found in ', DirInFlags)) 
     stop()
   } else {
