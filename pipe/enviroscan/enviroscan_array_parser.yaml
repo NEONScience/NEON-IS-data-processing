@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_array_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:v2.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:sha-0db60f1
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out
@@ -96,7 +96,6 @@ transform:
           copy \
           "${linkdir}" \
           ":gcs://${BUCKET_NAME}"
-        echo "Removing temporary files"
       fi
       
       # Update the trigger table for the site
@@ -110,6 +109,7 @@ transform:
       done
       
       # set +x # Uncomment for debugging
+      echo "Removing temporary files"
       rm -rf $linkdir
 
     fi
