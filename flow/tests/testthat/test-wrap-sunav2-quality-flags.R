@@ -63,7 +63,7 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
     unlink(testDirOut, recursive = TRUE)
   }
   
-  ## Test 1: Only input and output directories passed in
+  ## Test 1: Input and output directories passed in with required WndwMinPt
   wrap.sunav2.quality.flags (DirIn=testDirIn,
                              WndwMinPt=15,
                              DirOutBase=testDirOut)
