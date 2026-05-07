@@ -237,10 +237,11 @@ wrap.sunav2.quality.flags <- function(DirIn,
   log$debug(base::paste0('WndwMinPt: ', WndwMinPt))
   all_starts <- seq(timeBgn, timeEnd - WndwMinPt*60, by = WndwMinPt*60)
   
-  # Helper to floor readout_times to window starts
+  # Helper to floor readout_times to window starts relative to timeBgn
   floor_m <- function(x) {
-    as.POSIXct(floor(as.numeric(x) / (WndwMinPt*60)) * (WndwMinPt*60),
-               origin = "1970-01-01", tz = attr(x, "tzone"))
+    window_secs <- WndwMinPt * 60
+    window_idx <- floor(as.numeric(difftime(x, timeBgn, units = "secs")) / window_secs)
+    timeBgn + window_idx * window_secs
   }
   
   window_starts <- unique(floor_m(sunaData$readout_time))
