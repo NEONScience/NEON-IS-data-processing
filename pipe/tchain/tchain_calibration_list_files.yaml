@@ -15,6 +15,7 @@ input:
     repo: tchain_ingest_days
     glob: /tick/
     branch: master
+    empty_files: true
 autoscaling: true
 resource_requests:
   memory: 500M
