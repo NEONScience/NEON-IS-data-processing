@@ -106,7 +106,7 @@ transform:
         site_file="${BASH_REMATCH[6]}"
         site="${site_file:0:4}"
         echo "Updating trigger table for $site"
-        ./update-trigger-table.py -s "${site}" -S "${fsourcetype}" -D "${linkdir2}"
+        ./update-trigger-table.py -s "${site}" -S "${fsourcetype}" -D "${linkdir}"
       done
       
       # set +x # Uncomment for debugging
