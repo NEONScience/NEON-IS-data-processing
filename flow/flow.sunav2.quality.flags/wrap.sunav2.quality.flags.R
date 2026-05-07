@@ -254,19 +254,18 @@ wrap.sunav2.quality.flags <- function(DirIn,
   empty_windows <- data.frame(window_start = all_starts,
                               has_measurement = all_starts %in% window_starts)
   empty_window_idx <- which(!empty_windows$has_measurement)
-  # For each empty window, add back in a blank row with NA values (except for readout_time)
-  # and the corresponding placeholder row in the flags file
-  for(i in empty_window_idx){
-    suna_row <- sunaData[0, , drop = FALSE]
-    suna_row[1, ] <- NA
-    suna_row$readout_time <- empty_windows$window_start[i]
-    sunaData <- rbind(sunaData, suna_row)
+  # For each empty window, add back in blank rows while preserving existing column types
+  if(length(empty_window_idx) > 0){
+    missing_starts <- empty_windows$window_start[empty_window_idx]
 
-    flags_row <- allFlags[0, , drop = FALSE]
-    flags_row[1, ] <- -1
-    flags_row$readout_time <- empty_windows$window_start[i]
-    flags_row$nitrateLampStabilizeQF <- 1
-    allFlags <- rbind(allFlags, flags_row)
+    suna_rows <- sunaData[rep(NA_integer_, length(missing_starts)), , drop = FALSE]
+    suna_rows$readout_time <- missing_starts
+    sunaData <- rbind(sunaData, suna_rows)
+
+    flags_rows <- allFlags[rep(NA_integer_, length(missing_starts)), , drop = FALSE]
+    flags_rows$readout_time <- missing_starts
+    flags_rows$nitrateLampStabilizeQF <- 1
+    allFlags <- rbind(allFlags, flags_rows)
   }
   
   #reorder by readout time
