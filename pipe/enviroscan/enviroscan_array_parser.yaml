@@ -62,6 +62,7 @@ transform:
     python3 -m array_parser.array_parser_main
 
     # save parsed data to gcs 
+    cd app
     if [[ -d "$OUT_PATH/${SOURCE_TYPE_OUT}" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
