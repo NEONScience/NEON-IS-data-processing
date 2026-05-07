@@ -10,9 +10,9 @@
 #'
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #'  
-#' @param DirOut Character value. The base file path for the output data. 
+#' @param DirOutBase Character value. The base file path for the output data. 
 #' 
-#' @param WndwMinPt Numeric minutes. The time window in minutes for which to keep at least one row if all other points are dropped during 
+#' @param WndwMinPt Numeric value. The time window in minutes for which to keep at least one row if all other points are dropped during 
 #' the lamp stabilization check.
 #' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
@@ -220,11 +220,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
   #' Removes measurements where lamp has not stabilized from data and flag files.
   lampStabilizeFlagsOnly<-sensorFlags[,c("readout_time","nitrateLampStabilizeQF")]
   sunaDataColOrder<-colnames(sunaData)
-  preFilterSunaRows<-nrow(sunaData)
-  preFilterFlagRows<-nrow(allFlags)
   sunaData<-base::merge(sunaData,lampStabilizeFlagsOnly) #' Adds lamp stabilize QF to data file
-  hasLampStabilizeFailuresInData<-base::any(sunaData$nitrateLampStabilizeQF==1,na.rm=TRUE)
-  hasLampStabilizeFailuresInFlags<-base::any(allFlags$nitrateLampStabilizeQF==1,na.rm=TRUE)
   sunaData<-sunaData[!base::is.na(sunaData$nitrateLampStabilizeQF) & (sunaData$nitrateLampStabilizeQF==0),,drop=FALSE]
   allFlags<-allFlags[!base::is.na(allFlags$nitrateLampStabilizeQF) & (allFlags$nitrateLampStabilizeQF==0),,drop=FALSE]
   

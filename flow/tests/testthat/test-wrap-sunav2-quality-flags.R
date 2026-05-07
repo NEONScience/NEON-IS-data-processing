@@ -9,9 +9,9 @@
 #' 
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #'  
-#' @param DirOut Character value. The base file path for the output data. 
+#' @param DirOutBase Character value. The base file path for the output data. 
 #' 
-#' @param WndwMinPt Numeric minutes. The time window in minutes for which to keep at least one row if all other points are dropped during 
+#' @param WndwMinPt Numeric value. The time window in minutes for which to keep at least one row if all other points are dropped during 
 #' the lamp stabilization check.
 #' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
