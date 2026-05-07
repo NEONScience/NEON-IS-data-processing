@@ -21,6 +21,7 @@ def main() -> None:
     source_type_index: int = env.int('SOURCE_TYPE_INDEX')
     source_type_out: str = env.str('SOURCE_TYPE_OUT',None)
     replace_schema_name: str = env.bool('REPLACE_SCHEMA_NAME',True)
+    write_site_file: str = env.bool('WRITE_SITE_FILE',False)
     year_index: int = env.int('YEAR_INDEX')
     month_index: int = env.int('MONTH_INDEX')
     day_index: int = env.int('DAY_INDEX')
@@ -36,6 +37,7 @@ def main() -> None:
                     source_type_index=source_type_index,
                     source_type_out=source_type_out,
                     replace_schema_name=replace_schema_name,
+                    write_site_file=write_site_file,
                     year_index=year_index,
                     month_index=month_index,
                     day_index=day_index,

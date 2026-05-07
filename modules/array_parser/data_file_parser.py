@@ -55,7 +55,7 @@ def populate_columns(table: pa.Table, field_names: List[str],
             new_columns[field_name_index].append(value)
 
 
-def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_schema_name) -> None:
+def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_schema_name: bool, write_site_file: bool) -> None:
     """
     Reorder the data value array to columns labelled with the appropriate schema field names
     and write the new file.
@@ -64,6 +64,7 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_sc
     :param out_path: The path to write the new file.
     :param schema: The new schema for the reordered file.
     :param replace_schema_name: Boolean. Replace the schema name in the file name with the new schema name?
+    :param write_site_file: Boolean. Write a zero-byte file named for the NEON site ID at out_path.parent/site/<SITE> 
     :return: None
     """
     
@@ -74,6 +75,10 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_sc
     # Parse the array(s) into the new table
     table = pq.read_table(path)
     column_names = table.column_names
+    
+    if write_site_file is True:
+        site=table['site_id'][0]
+    
     array_names = set(schema_data.data_mapping.values())
     for array_name in array_names:
         column_index = column_names.index(array_name)
@@ -115,3 +120,9 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_sc
     file_path.parent.mkdir(parents=True, exist_ok=True)
     file_path.touch()
     pq.write_table(table, file_path)
+
+    # Output site file
+    if write_site_file is True:
+        site_file_path = Path(out_path.parent,'site',site)
+        site_file_path.parent.mkdir(parents=True, exist_ok=True)
+        site_file_path.touch()
