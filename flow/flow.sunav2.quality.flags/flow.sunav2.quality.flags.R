@@ -56,7 +56,7 @@
 #' 
 #' Bobby Hensley (2025-09-18)
 #' Updated so that measurements prior to lamp stabilization (never intended to be
-#' used in downstream pipeline) are removed.#'
+#' used in downstream pipeline) are removed.
 #' Nora Catolico (2025-09-22)
 #' combined input df and updated error logging
 #' Nora Catolico (2026-05-06)
