@@ -11,6 +11,9 @@
 #'  
 #' @param DirOut Character value. The base file path for the output data. 
 #' 
+#' @param WndwMinPt Numeric minutes. The time window in minutes for which to keep at least one row if all other points are dropped during 
+#' the lamp stabilization check.
+#' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
 #' 
