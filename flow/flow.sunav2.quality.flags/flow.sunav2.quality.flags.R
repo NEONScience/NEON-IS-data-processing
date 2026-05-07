@@ -44,7 +44,7 @@
 #' Stepping through the code in R studio                               
 # Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2024/06/27/nitrate_MART112100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2024/06/27/nitrate-surfacewater_MART112100",
+# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2021/09/28/nitrate-surfacewater_CUPE102100/sunav2/CFGLOC104139",
 #          "DirOut=~/pfs/out",
 #          "WndwMinPt=15",
 #          "DirErr=~/pfs/out/errored_datums")
@@ -153,7 +153,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
         NEONprocIS.base::def.err.datm(
           err=err,
           call.stack=call.stack,
-          DirDatm=idxDirIn,
+          DirDatm=idxFileIn,
           DirErrBase=Para$DirErr,
           RmvDatmOut=TRUE,
           DirOutBase=Para$DirOut,
