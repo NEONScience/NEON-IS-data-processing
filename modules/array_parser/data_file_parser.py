@@ -77,7 +77,7 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_sc
     column_names = table.column_names
     
     if write_site_file is True:
-        site=table['site_id'][0]
+        site=table['site_id'][0].as_py()
     
     array_names = set(schema_data.data_mapping.values())
     for array_name in array_names:
