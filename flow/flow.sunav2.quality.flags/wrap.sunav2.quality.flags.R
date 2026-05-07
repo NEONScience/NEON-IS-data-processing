@@ -234,7 +234,10 @@ wrap.sunav2.quality.flags <- function(DirIn,
   timeBgn <-InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
   # All minute window start times in [timeBgn, timeEnd)
-  WndwMinPt<-as.numeric(WndwMinPt)
+  WndwMinPt <- base::as.numeric(WndwMinPt)
+  if(length(WndwMinPt) != 1 || base::is.na(WndwMinPt) || !base::is.finite(WndwMinPt) || WndwMinPt <= 0){
+    base::stop("`WndwMinPt` must be a single finite positive number representing the window size in minutes.")
+  }
   log$debug(base::paste0('WndwMinPt: ', WndwMinPt))
   all_starts <- seq(timeBgn, timeEnd - WndwMinPt*60, by = WndwMinPt*60)
   
