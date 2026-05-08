@@ -5,7 +5,7 @@
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 
 #' @description Workflow. Compute the heater and status flags by assessing the bit rate. Only 
-#' flagging alarm codes of interest.
+#' flagging alarm codes of interest. Flag heater error if inlet temp is below freezing in near freezing conditions
 #' 
 #' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/location-id, where # indicates any number of parent and child directories 
@@ -69,6 +69,8 @@
 #     Initial creation
 #   Teresa Burlingame  (2026-04-08)
 #     removing unnecessary block and adding in schema to report write
+#   Teresa Burlingame  (2026-05-08)
+#     changing test so that it looks at inlet temp rather than status
 ##############################################################################################
 wrap.precip.pluvio.flags<- function(DirIn,
                                     DirOutBase,
@@ -162,23 +164,21 @@ wrap.precip.pluvio.flags<- function(DirIn,
     }
   }
   
-  #heater status for bit vals of interest
-  for (i in seq_along(data$heater_status)) {
-    if (is.na(data$heater_status[i])) {
-      qfPlau$heaterErrorQF[i] <- -1
-    } else {
-      if (data$heater_status[i] == 0) {
-        qfPlau$heaterErrorQF[i] <- 0
-      }
-      if ((data$heater_status[i] / 2^5) %% 2 >= 1) { #functional check failed
-        qfPlau$heaterErrorQF[i] <- 1
-      }
-      if ((data$heater_status[i] / 2^7) %% 2 >= 1) { #heater deactivated or not present
-        qfPlau$heaterErrorQF[i] <- 1
-      }
-    }
-  }
-    
+  # If inlet temperature indicates that sensor is not adequately heating
+
+   for (i in seq_along(data$inletTemp)) {
+    if (is.na(data$inletTemp[i])) {
+       qfPlau$heaterErrorQF[i] <- -1
+     } else {
+       if (data$inletTemp[i] > 0 ) { 
+         qfPlau$heaterErrorQF[i] <- 0
+       }
+       if (data$inletTemp[i] < 0 & data$cell_temperature > -10 ) { #see if there's a threshold where it stops trying to heat?
+         qfPlau$heaterErrorQF[i] <- 1
+       }
+     }
+   }
+  
       nameFileQfOutFlag <- fileQfPlau
 
       nameFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
