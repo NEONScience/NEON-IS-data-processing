@@ -265,7 +265,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
   )]
   
   # Calculate finalQF for 1-minute data
-  stats_01min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, na.rm = TRUE)]
+  stats_01min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, suspectCalQF, na.rm = TRUE)]
   
   # Create 30-minute time groups
   stats_01min[, time_group := floor_date(startDateTime, "30 mins")]
@@ -295,18 +295,11 @@ wrap.precip.pluvio.stats <- function(DirIn,
   ), by = time_group]
   
   # Update finalQF based on the aggregated flags
-  stats_30min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, validCalQF, suspectCalQF, na.rm = TRUE)]
+  stats_30min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, suspectCalQF, na.rm = TRUE)]
   
   # Clean up temporary columns
   stats_01min[, time_group := NULL]
   stats_30min[, time_group := NULL]
-  # Clean up
-  stats_01min[, startDateTime_1min := NULL]
-  stats_30min[, startDateTime_1min := NULL]
-  
-  # Clean up
-  stats_01min[, endDateTime_1min := NULL]
-  stats_30min[, endDateTime_1min := NULL]
   
  # Reorder columns to match schema requirements
   col_order <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
