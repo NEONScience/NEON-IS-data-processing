@@ -22,10 +22,10 @@ COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/r
 
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        python3.8 && \
+        python3.9 && \
     apt install -y python3-pip && \
-    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    python3.9 -m pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3.9 -m pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
    apt-get autoremove -y && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* && \

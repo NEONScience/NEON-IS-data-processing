@@ -9,7 +9,10 @@
 #' 
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #'  
-#' @param DirOut Character value. The base file path for the output data. 
+#' @param DirOutBase Character value. The base file path for the output data. 
+#' 
+#' @param WndwMinPt Numeric value. The time window in minutes for which to keep at least one row if all other points are dropped during 
+#' the lamp stabilization check.
 #' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
@@ -60,8 +63,9 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
     unlink(testDirOut, recursive = TRUE)
   }
   
-  ## Test 1: Only input and output directories passed in
+  ## Test 1: Input and output directories passed in with required WndwMinPt
   wrap.sunav2.quality.flags (DirIn=testDirIn,
+                             WndwMinPt=15,
                              DirOutBase=testDirOut)
   testthat::expect_true(file.exists(testDirOutPath))
   
@@ -71,6 +75,7 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
   }
   wrap.sunav2.quality.flags (DirIn=testDirIn,
                              DirOutBase=testDirOut,
+                             WndwMinPt=15,
                              SchmFlagsOut=testSchmFlagsOut,
                              log=log)
   testthat::expect_true(file.exists(testDirOutPath))
@@ -82,7 +87,46 @@ test_that("Unit test of wrap.sunav2.quality.flags.R", {
   DirOutFlags <- file.path(testDirOutPath, 'flags')
   testthat::expect_true(dir.exists(DirOutData))
   testthat::expect_true(dir.exists(DirOutFlags))
-  # You may add further checks for file output, schema format, etc.
+  
+  # Read the output data and flags files to verify lamp stabilization filtering behavior
+  outDataFiles <- base::list.files(DirOutData, full.names = TRUE)
+  outFlagsFiles <- base::list.files(DirOutFlags, full.names = TRUE)
+  
+  testthat::expect_true(length(outDataFiles) > 0, info = "Output data file should exist")
+  testthat::expect_true(length(outFlagsFiles) > 0, info = "Output flags file should exist")
+  
+  if (length(outDataFiles) > 0 && length(outFlagsFiles) > 0) {
+    outData <- NEONprocIS.base::def.read.parq(NameFile = outDataFiles[1], log = log)
+    outFlags <- NEONprocIS.base::def.read.parq(NameFile = outFlagsFiles[1], log = log)
+    
+    # Verify output data and flags have same number of rows
+    testthat::expect_equal(nrow(outData), nrow(outFlags), 
+                           info = "Output data and flags should have equal row counts")
+    
+    # Verify that no non-placeholder measurements remain with nitrateLampStabilizeQF==1.
+    # Lamp-stabilization flags are written to the flags parquet, while placeholder rows
+    # with nitrate == NA may remain in the output data.
+    testthat::expect_false(base::any(!is.na(outData$nitrate) &
+                                       !is.na(outFlags$nitrateLampStabilizeQF) &
+                                       outFlags$nitrateLampStabilizeQF == 1),
+                           info = "No non-NA nitrate values should have nitrateLampStabilizeQF==1")
+    
+    # Verify that any remaining nitrateLampStabilizeQF==1 rows are placeholder rows
+    testthat::expect_true(base::all(is.na(outData$nitrate[!is.na(outFlags$nitrateLampStabilizeQF) &
+                                                          outFlags$nitrateLampStabilizeQF == 1])),
+                          info = "Rows with nitrateLampStabilizeQF==1 should only remain as placeholder rows with nitrate == NA")
+    
+    # Verify that filtering does not increase the number of retained measurements.
+    # Placeholder rows with nitrate == NA may be added, so total output rows can
+    # legitimately exceed input rows.
+    inputDataFiles <- base::list.files(file.path(testDirIn, 'data'), full.names = TRUE)
+    if (length(inputDataFiles) > 0) {
+      inputData <- NEONprocIS.base::def.read.parq(NameFile = inputDataFiles[1], log = log)
+      outMeasuredRows <- base::sum(!is.na(outData$nitrate))
+      testthat::expect_true(outMeasuredRows <= nrow(inputData),
+                            info = "Non-placeholder output measurements should be <= input data rows after filtering")
+    }
+  }
   
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
