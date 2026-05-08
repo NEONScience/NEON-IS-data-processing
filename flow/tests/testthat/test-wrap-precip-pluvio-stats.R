@@ -16,7 +16,9 @@
 #'   pfs/precipPluvioStats/2025/03/31/precip-weighing_SITE001/pluvio/CFGLOC105245/
 #'     data/            - pluvio_CFGLOC105245_2025-03-31.parquet (60 rows, 1 hr)
 #'     flags/           - pluvio_CFGLOC105245_2025-03-31_flagsCal.parquet
+#'                          (validCalQF, suspectCalQF)
 #'                        pluvio_CFGLOC105245_2025-03-31_flagsPlausibility.parquet
+#'                          (nullQF, rangeQF, gapQF, sensorErrorQF, heaterErrorQF)
 #'     uncertainty_coef/ - pluvio_CFGLOC105245_2025-03-31_uncertaintyCoef.json
 #'                         (U_CVALA1 = 0.02)
 
