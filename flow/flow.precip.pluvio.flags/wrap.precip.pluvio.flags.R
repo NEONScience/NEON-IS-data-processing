@@ -183,6 +183,12 @@ wrap.precip.pluvio.flags<- function(DirIn,
 
       nameFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
       
+      # Strip inherited parquet schema attribute so def.wrte.parq does not error
+      # on a column count mismatch after heaterErrorQF and sensorErrorQF were added.
+      if(base::is.null(SchmQf)){
+        attr(qfPlau, 'schema') <- NULL
+      }
+      
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
           data = qfPlau,
