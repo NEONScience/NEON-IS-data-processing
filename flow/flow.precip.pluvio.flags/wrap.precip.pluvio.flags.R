@@ -173,7 +173,7 @@ wrap.precip.pluvio.flags<- function(DirIn,
        if (data$inletTemp[i] > 0 ) { 
          qfPlau$heaterErrorQF[i] <- 0
        }
-       if (data$inletTemp[i] < 0 & data$cell_temperature > -10 ) { #see if there's a threshold where it stops trying to heat?
+       if (data$inletTemp[i] < 0 & data$cell_temperature[i] > -10 ) { #see if there's a threshold where it stops trying to heat?
          qfPlau$heaterErrorQF[i] <- 1
        }
      }
