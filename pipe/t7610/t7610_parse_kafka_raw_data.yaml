@@ -106,7 +106,7 @@ transform:
 input:
   pfs:
     name: DATA_PATH
-    repo: t7610_data_source_kafka
+    repo: t7610_data_source_gcs
     glob: /t7610_raw/*/*/*
 parallelism_spec:
   constant: 3
