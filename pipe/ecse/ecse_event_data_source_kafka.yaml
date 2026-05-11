@@ -154,7 +154,7 @@ transform:
       done
       
       # Update the airflow triggering table
-      ./update-trigger-table.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE/$site" 
+      #./update-trigger-table.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE/$site" 
 
       # set +x # Uncomment for troubleshooting
       rm -rf $linkdir
