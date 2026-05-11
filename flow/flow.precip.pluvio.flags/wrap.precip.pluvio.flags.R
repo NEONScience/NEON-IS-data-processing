@@ -133,7 +133,7 @@ wrap.precip.pluvio.flags<- function(DirIn,
   
   #bitwise calculation of flags of interest
   
-  for (i in seq_along(data$sensorErrorQF)) {
+  for (i in seq_along(data$sensorStatus)) {
     if (is.na(data$sensorStatus[i])) {
       qfPlau$sensorErrorQF[i] <- -1
     } else {
