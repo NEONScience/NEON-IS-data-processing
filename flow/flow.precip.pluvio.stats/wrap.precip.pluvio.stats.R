@@ -164,6 +164,20 @@ wrap.precip.pluvio.stats <- function(DirIn,
   data <- merge(data, qfCal, by = 'readout_time', all = TRUE)
   data <- merge(data, qfPlau, by = 'readout_time', all = TRUE)
 
+  # If validCalQF or suspectCalQF are missing/NA, set to -1
+  if (!('validCalQF' %in% names(data)) || all(is.na(data$validCalQF))) {
+    data[, validCalQF := -1L]
+    log$warn('validCalQF not found or all NA — setting to -1')
+  } else {
+    data[is.na(validCalQF), validCalQF := -1L]
+  }
+  if (!('suspectCalQF' %in% names(data)) || all(is.na(data$suspectCalQF))) {
+    data[, suspectCalQF := -1L]
+    log$warn('suspectCalQF not found or all NA — setting to -1')
+  } else {
+    data[is.na(suspectCalQF), suspectCalQF := -1L]
+  }
+
   # Read uncertainty coefficients
   fileUcrt <- base::dir(dir_paths$uncertainty_coef)
   
@@ -275,7 +289,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
     startDateTime = min(startDateTime),
     endDateTime = max(endDateTime),
     precipBulk =  ifelse(all(is.na(precipBulk)), NA_real_, sum(precipBulk, na.rm = TRUE)),
-    precipBulkExpUncert = sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2, # Quadrature sum with 2x multiplier
+    precipBulkExpUncert = ifelse(all(is.na(precipBulkExpUncert)), NA_real_, sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2), # Quadrature sum with 2x multiplier
     precipNumPts = sum(precipNumPts, na.rm = TRUE), # Sum the counts from 1-minute intervals
     nullQF = as.integer(ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                ifelse(all(is.na(nullQF)), NA_integer_, min(nullQF, na.rm = TRUE)))),
