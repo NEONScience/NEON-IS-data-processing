@@ -11,7 +11,7 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be 2 days previous. 
     OUT_PATH: /pfs/out
-    START_DATE: "2026-01-06" # Inclusive
+    START_DATE: "2026-05-09" # Inclusive
     #END_DATE: "2025-03-05" # Inclusive
     SOURCE_TYPE: "l2130i"
   stdin:
@@ -19,12 +19,19 @@ transform:
   - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
 input:
   cross:
-  # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
-  - cron:
-      name: tick
-      spec: "@never"
-      #spec: "30 0 * * *" # Run at 00:30 GMT
-      overwrite: true
+  # It merges the staging branch of the ingest_trigger into the master branch. There is a cron tick 
+  #   in that repo that this pipeline and the metadata loaders will use to trigger daily updates.
+  # The key functionality with merging the staging branch into master branch is that multiple commits
+  #   can be made to the ingest trigger(s) but processing is triggered only once per day.
+  - pfs:
+      name: ingest_trigger
+      repo: l2130i_ingest_days
+      glob: "/"
+      empty_files: True
+      branch: master
+      trigger: 
+        cronSpec: "0 12 * * *" # Run at most every 12 hours (12 hours after an ingest trigger)
+        branch: "staging"
   - pfs:
       name: SITE_FILE
       repo: l2130i_site_list
