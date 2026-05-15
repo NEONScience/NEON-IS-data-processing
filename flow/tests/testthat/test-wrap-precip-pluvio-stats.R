@@ -90,7 +90,7 @@ test_that("Unit test of wrap.precip.pluvio.stats.R", {
   testthat::expect_true(all(expected_cols %in% names(stats_001)))
 
   # --------------------------------------------------------------------------------------------
-  # Test 4: 30-min output schema contains all expected columns
+  # Test 4: 30-min output schema contains all expected columns including insuffDataQF
   # --------------------------------------------------------------------------------------------
   stats_030 <- NEONprocIS.base::def.read.parq.ds(
     fileIn  = file_030,
@@ -99,7 +99,11 @@ test_that("Unit test of wrap.precip.pluvio.stats.R", {
     Df      = TRUE
   )
 
-  testthat::expect_true(all(expected_cols %in% names(stats_030)))
+  expected_cols_030 <- c(expected_cols[1:5], 'insuffDataQF', expected_cols[6:length(expected_cols)])
+  testthat::expect_true(all(expected_cols_030 %in% names(stats_030)))
+
+  # insuffDataQF must not appear in 1-min output
+  testthat::expect_false('insuffDataQF' %in% names(stats_001))
 
   # --------------------------------------------------------------------------------------------
   # Test 5: 30-min output has fewer rows than 1-min output
@@ -133,19 +137,27 @@ test_that("Unit test of wrap.precip.pluvio.stats.R", {
   # --------------------------------------------------------------------------------------------
   # Test 10: Quality flag values are within the expected set {-1, 0, 1}
   # --------------------------------------------------------------------------------------------
-  qf_cols <- c('nullQF', 'gapQF', 'extremePrecipQF', 'heaterErrorQF',
-                'sensorErrorQF', 'finalQF')
+  qf_cols_001 <- c('nullQF', 'gapQF', 'extremePrecipQF', 'heaterErrorQF',
+                   'sensorErrorQF', 'finalQF')
+  qf_cols_030 <- c(qf_cols_001, 'insuffDataQF')
 
-  for (col in qf_cols) {
+  for (col in qf_cols_001) {
     testthat::expect_true(
       all(stats_001[[col]] %in% c(-1L, 0L, 1L), na.rm = TRUE),
       info = paste0('Column ', col, ' in 1-min output has unexpected values')
     )
+  }
+  for (col in qf_cols_030) {
     testthat::expect_true(
       all(stats_030[[col]] %in% c(-1L, 0L, 1L), na.rm = TRUE),
       info = paste0('Column ', col, ' in 30-min output has unexpected values')
     )
   }
+
+  # --------------------------------------------------------------------------------------------
+  # Test 10b: insuffDataQF is 0 when precipNumPts == 30 (fixture has complete data)
+  # --------------------------------------------------------------------------------------------
+  testthat::expect_true(all(stats_030$insuffDataQF == 0L, na.rm = TRUE))
 
   # --------------------------------------------------------------------------------------------
   # Test 11: precipNumPts equals 1 for each non-NA 1-min row and sums to 30 per 30-min interval
