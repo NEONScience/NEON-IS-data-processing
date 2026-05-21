@@ -11,9 +11,6 @@ on:
 permissions:
   contents: read
 
-permissions:
-  contents: read
-
 # Workflow-level concurrency
 concurrency: 
   group: ${{
