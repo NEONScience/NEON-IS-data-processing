@@ -1,2 +1,10 @@
 hmr3300_cron_daily_and_date_control.yaml
+hmr3300_data_source_gcs.yaml
 hmr3300_data_source_kafka.yaml
+hmr3300_location_asset.yaml
+hmr3300_location_loader.yaml
+hmr3300_location_asset_assignment.yaml
+hmr3300_location_active_dates_assignment.yaml
+hmr3300_location_group_and_restructure.yaml
+hmr3300_fill_date_gaps_and_regularize.yaml
+
