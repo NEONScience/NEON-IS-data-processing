@@ -51,7 +51,7 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "SchmData=value" (optional), where value is the full path to schema for the QF flags after inputing custom flags
+#' 4. "SchmData01=value" (optional), where value is the full path to schema for the QF flags after inputing custom flags
 #' startDateTime
 #' EndDateTime
 #' precipBulk
@@ -65,6 +65,8 @@
 #' validCalQF
 #' suspectCalQF
 #' finalQF
+#' 
+#' #' 4. "SchmData03=value" (optional), addition schema that includes the insuffDataQF flag for aggregated precip.
 #' 
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.

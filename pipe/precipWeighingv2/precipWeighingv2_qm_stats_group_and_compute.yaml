@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: precipWeighingv2_qm_stats_group_and_compute
+  name: precipWeighingv2_qm_stats_group_and_compute_qft
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-stats:sha-c5d15db
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-stats:sha-cb3e16c
   cmd:
   - sh
   - "-c"
@@ -23,7 +23,8 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       "DirSubCopy=data" \
-      FileSchmData=$FILE_SCHEMA \
+      FileSchmData01=$FILE_SCHEMA_01 \
+      FileSchmData30=$FILE_SCHEMA_30
     EOF
   env:
     # Environment variables for filter-joiner
@@ -53,9 +54,13 @@ transform:
 input:
   cross:
   - pfs:
-      name: FILE_SCHEMA
+      name: FILE_SCHEMA_01
       repo: precipWeighingv2_avro_schemas
-      glob: /precipWeighingv2/precipWeighingv2_stats_qf_pluvio.avsc 
+      glob: /precipWeighingv2/precipWeighingv2_stats_qf_pluvio_001.avsc
+  - pfs:
+      name: FILE_SCHEMA_30
+      repo: precipWeighingv2_avro_schemas
+      glob: /precipWeighingv2/precipWeighingv2_stats_qf_pluvio_030.avsc
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH
