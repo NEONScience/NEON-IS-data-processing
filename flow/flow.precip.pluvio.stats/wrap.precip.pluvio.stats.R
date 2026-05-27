@@ -282,7 +282,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
   )]
   
   # Calculate finalQF for 1-minute data
-  stats_01min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, suspectCalQF, na.rm = TRUE)]
+  stats_01min[, finalQF := pmax(nullQF, extremePrecipQF, sensorErrorQF, heaterErrorQF, suspectCalQF, na.rm = TRUE)]
   
   # Create 30-minute time groups
   stats_01min[, time_group := floor_date(startDateTime, "30 mins")]
