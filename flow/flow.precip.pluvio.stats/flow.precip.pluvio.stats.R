@@ -66,7 +66,7 @@
 #' suspectCalQF
 #' finalQF
 #' 
-#' #' 4. "SchmData03=value" (optional), addition schema that includes the insuffDataQF flag for aggregated precip.
+#' 4. "SchmData03=value" (optional), addition schema that includes the insuffDataQF flag for aggregated precip.
 #' 
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.

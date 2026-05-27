@@ -30,9 +30,12 @@
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
-#' @param SchmData (Optional). A json-formatted character string containing the schema for the aggregated data, standard calibration and
+#' @param SchmData01 (Optional). A json-formatted character string containing the schema for the aggregated data, standard calibration and
 #' custom plausibility QFs as well as the heaterQMs
-
+#' 
+#'  @param SchmData30 (Optional). A json-formatted character string containing the schema for the aggregated data, standard calibration and
+#' custom plausibility QFs as well as the heaterQMs and an additional QM for partially missing data. 
+#' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data/flags/threshold folders in the input path that are to be copied with a 
 #' symbolic link to the output path (i.e. carried through as-is). Note that the 'stats' directory
