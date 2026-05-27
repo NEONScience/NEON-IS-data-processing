@@ -275,7 +275,6 @@ wrap.precip.pluvio.stats <- function(DirIn,
     precipNumPts = ifelse(is.na(accu_nrt), 0L, 1L), # 1 if data exists, 0 if NA
     nullQF = nullQF,
     extremePrecipQF = rangeQF,
-    gapQF = gapQF,
     sensorErrorQF = sensorErrorQF,
     heaterErrorQF = heaterErrorQF,
     validCalQF = validCalQF,
@@ -299,8 +298,6 @@ wrap.precip.pluvio.stats <- function(DirIn,
                                ifelse(all(is.na(nullQF)), NA_integer_, min(nullQF, na.rm = TRUE)))),
     extremePrecipQF = as.integer(ifelse(mean(extremePrecipQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                         ifelse(all(is.na(extremePrecipQF)), NA_integer_, min(extremePrecipQF, na.rm = TRUE)))),
-    gapQF = as.integer(ifelse(mean(gapQF == 1, na.rm = TRUE) >= 0.1, 1L, 
-                              ifelse(all(is.na(gapQF)), NA_integer_, min(gapQF, na.rm = TRUE)))),
     sensorErrorQF = as.integer(ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                       ifelse(all(is.na(sensorErrorQF)), NA_integer_, min(sensorErrorQF, na.rm = TRUE)))),
     validCalQF = as.integer(ifelse(mean(validCalQF == 1, na.rm = TRUE) >= 0.1, 1L, 
@@ -324,7 +321,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
   )]
 
   # Update finalQF based on the aggregated flags, including insuffDataQF
-  stats_30min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, suspectCalQF, insuffDataQF, na.rm = TRUE)]
+  stats_30min[, finalQF := pmax(nullQF, extremePrecipQF, sensorErrorQF, heaterErrorQF, suspectCalQF, insuffDataQF, na.rm = TRUE)]
   
   # Clean up temporary columns
   stats_01min[, time_group := NULL]
@@ -332,10 +329,10 @@ wrap.precip.pluvio.stats <- function(DirIn,
   
   # Reorder columns to match schema requirements
   col_order_01 <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
-                    'nullQF', 'gapQF', 'extremePrecipQF', 'heaterErrorQF',
+                    'nullQF','extremePrecipQF', 'heaterErrorQF',
                     'sensorErrorQF', 'validCalQF', 'suspectCalQF', 'finalQF')
   col_order_30 <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
-                    'insuffDataQF', 'nullQF', 'gapQF', 'extremePrecipQF', 'heaterErrorQF',
+                    'insuffDataQF', 'nullQF', 'extremePrecipQF', 'heaterErrorQF',
                     'sensorErrorQF', 'validCalQF', 'suspectCalQF', 'finalQF')
 
   stats_aggr01 <- stats_01min[, ..col_order_01]
