@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: precipWeighingv2_qm_stats_group_and_compute_qft
+  name: precipWeighingv2_qm_stats_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-stats:sha-cb3e16c
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-stats:sha-a15382a
   cmd:
   - sh
   - "-c"
