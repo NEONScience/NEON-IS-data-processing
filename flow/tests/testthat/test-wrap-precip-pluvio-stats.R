@@ -79,10 +79,12 @@ test_that("Unit test of wrap.precip.pluvio.stats.R", {
     Df      = TRUE
   )
 
+
+  # Update expected columns: remove gapQF, add insuffDataQF for 30-min
   expected_cols <- c(
     'startDateTime', 'endDateTime',
     'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
-    'nullQF', 'gapQF', 'extremePrecipQF',
+    'nullQF', 'extremePrecipQF',
     'heaterErrorQF', 'sensorErrorQF',
     'validCalQF', 'suspectCalQF', 'finalQF'
   )
@@ -98,6 +100,7 @@ test_that("Unit test of wrap.precip.pluvio.stats.R", {
     RmvDupl = TRUE,
     Df      = TRUE
   )
+
 
   expected_cols_030 <- c(expected_cols[1:5], 'insuffDataQF', expected_cols[6:length(expected_cols)])
   testthat::expect_true(all(expected_cols_030 %in% names(stats_030)))
@@ -137,7 +140,8 @@ test_that("Unit test of wrap.precip.pluvio.stats.R", {
   # --------------------------------------------------------------------------------------------
   # Test 10: Quality flag values are within the expected set {-1, 0, 1}
   # --------------------------------------------------------------------------------------------
-  qf_cols_001 <- c('nullQF', 'gapQF', 'extremePrecipQF', 'heaterErrorQF',
+
+  qf_cols_001 <- c('nullQF', 'extremePrecipQF', 'heaterErrorQF',
                    'sensorErrorQF', 'finalQF')
   qf_cols_030 <- c(qf_cols_001, 'insuffDataQF')
 
