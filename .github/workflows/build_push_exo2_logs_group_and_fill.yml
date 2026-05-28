@@ -1,16 +1,15 @@
-name: "Build_push_sunav2_ucrt_group"
+name: "Build-push_exo2_logs_group_and_fill"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/sunav2_ucrt_group/**'
+      - 'modules_combined/exo2_logs_group_and_fill/**'
       - 'modules/filter_joiner/**'
       - 'modules/common/**'
-      - 'flow/flow.sunav2.exp.uncert/**'
-      - 'flow/flow.qf.insuff.data/**'
-      - 'flow/flow.sunav2.config.qf/**'
+      - 'flow/flow.kfka.comb/**'
+      - 'flow/flow.exo2.logfiles.fill/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -27,8 +26,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./modules_combined/sunav2_ucrt_group
-  IMAGE_NAME: neon-is-sunav2-ucrt-group
+  MODULE_PATH: ./modules_combined/exo2_logs_group_and_fill
+  IMAGE_NAME: neon-is-exo2-logs-group-fill
 
 jobs:
   build-push:

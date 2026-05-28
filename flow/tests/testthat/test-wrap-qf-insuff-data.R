@@ -50,7 +50,6 @@ test_that("Unit test of wrap.qf.insuff.data.R", {
   }
   
   # Example insuffParam dataframe
-  # Should match what your flow scripts produce (InfoSet, field, value, etc)
   insuffParam <- data.frame(
     InfoSet = c("insuffInfo1", "insuffInfo1", "insuffInfo1"),
     field = c("wndw", "minPoints", "term"),
