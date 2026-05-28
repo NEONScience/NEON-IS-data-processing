@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-e18eeeb
   cmd:
   - sh
   - "-c"
@@ -52,7 +52,7 @@ transform:
     
     # Run os_table_loader for maintenance files
     export IN_PATH=$OUT_PATH_PUBFILES
-    export OUT_PATH=$OUT_PATH_MAINTFILES
+    export OUT_PATH="/pfs/out"
     export WORKBOOK_PATH=$WORKBOOK_PATH
     export PARTIAL_TABLE_NAME="maintenance"
     export FILE_TYPE="csv"
@@ -67,7 +67,7 @@ transform:
     python3 -m os_table_loader.publication_main
     
     # Run os_table_loader for SUNA clean/cal files
-    export IN_PATH=$OUT_PATH_MAINTFILES
+    export IN_PATH=$OUT_PATH_PUBFILES
     export OUT_PATH="/pfs/out"
     export WORKBOOK_PATH=$WORKBOOK_PATH
     export PARTIAL_TABLE_NAME="sunaCleanAndCal"
