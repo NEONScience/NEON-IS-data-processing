@@ -28,15 +28,42 @@ def get_workbook_header(workbook_rows: list[dict]) -> list[str]:
 def filter_workbook_rows(workbook_rows: list[dict], table_name: str, package_type: str) -> list[dict]:
     """Filter the workbook by table name and download package type."""
     filtered_rows = []
+    table_row_count = 0
+    for row in workbook_rows:
+        if row['table'] == table_name:
+            table_row_count += 1
+    print('Filtering workbook rows: table=%s package_type=%s total_rows=%d table_rows=%d',
+                 table_name,
+                 package_type,
+                 len(workbook_rows),
+                 table_row_count)
+
+    added_basic_rows = 0
+    added_expanded_rows = 0
+    added_matching_rows = 0
     for row in workbook_rows:
         if row['table'] != table_name:
             continue
         # Expanded packages should include both basic and expanded workbook rows.
         if package_type == 'expanded' and row['downloadPkg'] in {'basic', 'expanded'}:
             filtered_rows.append(row)
+            if row['downloadPkg'] == 'basic':
+                added_basic_rows += 1
+            if row['downloadPkg'] == 'expanded':
+                added_expanded_rows += 1
             continue
         if row['downloadPkg'] == package_type:
             filtered_rows.append(row)
+            added_matching_rows += 1
+
+    print('Filtered workbook rows complete: table=%s package_type=%s kept_rows=%d '
+                 'expanded_basic_rows=%d expanded_expanded_rows=%d matching_rows=%d',
+                 table_name,
+                 package_type,
+                 len(filtered_rows),
+                 added_basic_rows,
+                 added_expanded_rows,
+                 added_matching_rows)
     return filtered_rows
 
 
