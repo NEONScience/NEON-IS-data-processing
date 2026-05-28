@@ -51,7 +51,7 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "SchmData=value" (optional), where value is the full path to schema for the QF flags after inputing custom flags
+#' 4. "SchmData01=value" (optional), where value is the full path to schema for the QF flags after inputing custom flags
 #' startDateTime
 #' EndDateTime
 #' precipBulk
@@ -65,6 +65,8 @@
 #' validCalQF
 #' suspectCalQF
 #' finalQF
+#' 
+#' 4. "SchmData03=value" (optional), addition schema that includes the insuffDataQF flag for aggregated precip.
 #' 
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.
@@ -138,7 +140,8 @@ Para <-
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "FileSchmData"
+                     "FileSchmData01",
+                     "FileSchmData30"
                      ),
     log = log
   )
@@ -148,15 +151,20 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve output schema for  stats
-FileSchmData <- Para$FileSchmData
+# Retrieve output schemas for 1-min and 30-min stats
+FileSchmData01 <- Para$FileSchmData01
+FileSchmData30 <- Para$FileSchmData30
 
-#one or more will always be null 
-# Read in the schema 
-if(base::is.null(FileSchmData) || FileSchmData == 'NA'){
-  FileSchmData <- NULL
+# Read in the schemas
+if(base::is.null(FileSchmData01) || FileSchmData01 == 'NA'){
+  FileSchmData01 <- NULL
 } else {
-  FileSchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
+  FileSchmData01 <- base::paste0(base::readLines(FileSchmData01),collapse='')
+}
+if(base::is.null(FileSchmData30) || FileSchmData30 == 'NA'){
+  FileSchmData30 <- NULL
+} else {
+  FileSchmData30 <- base::paste0(base::readLines(FileSchmData30),collapse='')
 }
 
 # Retrieve optional subdirectories to copy over
@@ -189,7 +197,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
     withCallingHandlers(
       wrap.precip.pluvio.stats(DirIn=idxDirIn,
                               DirOutBase=Para$DirOut,
-                              SchmData = FileSchmData,
+                              SchmData01 = FileSchmData01,
+                              SchmData30 = FileSchmData30,
                               DirSubCopy=DirSubCopy,
                               log=log
       ),
