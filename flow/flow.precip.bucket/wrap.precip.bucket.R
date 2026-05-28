@@ -368,9 +368,6 @@ wrap.precip.bucket <- function(DirIn,
   setDF(stats_aggr01)
   setDF(stats_aggr30)
   
-  print("DEBUG: write_output_files args:")
-  print(args(write_output_files))
-  
   # Write output files
   write_output_files_bucket(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData, log)
   
