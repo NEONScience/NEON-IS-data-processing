@@ -29,7 +29,13 @@ def filter_workbook_rows(workbook_rows: list[dict], table_name: str, package_typ
     """Filter the workbook by table name and download package type."""
     filtered_rows = []
     for row in workbook_rows:
-        if row['table'] == table_name and row['downloadPkg'] == package_type:
+        if row['table'] != table_name:
+            continue
+        # Expanded packages should include both basic and expanded workbook rows.
+        if package_type == 'expanded' and row['downloadPkg'] in {'basic', 'expanded'}:
+            filtered_rows.append(row)
+            continue
+        if row['downloadPkg'] == package_type:
             filtered_rows.append(row)
     return filtered_rows
 
