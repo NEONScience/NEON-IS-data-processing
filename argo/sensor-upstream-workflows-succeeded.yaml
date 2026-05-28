@@ -19,16 +19,7 @@ spec:
         - name: LOG_LEVEL
           value: info
     nodeSelector:
-      cloud.google.com/machine-family: n2d
-      cloud.google.com/requested-min-cpu-platform: AMD_Milan
-      gke.neoninternal.org/workload: common
-      kubernetes.io/os: linux
-    tolerations:
-      - key: gke.neoninternal.org/workload
-        operator: Equal
-        value: common
-        effect: NoSchedule
-
+      cloud.google.com/compute-class: transitions-class
   dependencies:
     - name: wf-a-done
       eventSourceName: all-workflows
