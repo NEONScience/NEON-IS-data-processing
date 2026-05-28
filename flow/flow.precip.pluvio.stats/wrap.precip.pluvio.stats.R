@@ -343,13 +343,13 @@ wrap.precip.pluvio.stats <- function(DirIn,
   setDF(stats_aggr30)
   
   # Write output files
-  write_output_files(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData01, SchmData30, log)
+  write_output_files_pluvio(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData01, SchmData30, log)
   
   return()
 }
 
 # Helper function for file writing
-write_output_files <- function(stats_01, stats_30, fileData, dirOutStat, SchmData01, SchmData30, log) {
+write_output_file_pluvio <- function(stats_01, stats_30, fileData, dirOutStat, SchmData01, SchmData30, log = NULL) {
   if (is.na(fileData)) return()
   
   # Create output filenames

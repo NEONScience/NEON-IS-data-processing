@@ -372,13 +372,13 @@ wrap.precip.bucket <- function(DirIn,
   print(args(write_output_files))
   
   # Write output files
-  write_output_files(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData, log)
+  write_output_files_bucket(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData, log)
   
   return()
 }
 
 # Helper function for file writing
-write_output_files <- function(stats_01, stats_30, fileData, dirOutStat, SchmData, log = NULL) {
+write_output_files_bucket <- function(stats_01, stats_30, fileData, dirOutStat, SchmData, log = NULL) {
   if (is.na(fileData)) return()
   
   # Create output filenames
