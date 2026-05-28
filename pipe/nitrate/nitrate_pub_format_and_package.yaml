@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-e18eeeb
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-f1c60c6
   cmd:
   - sh
   - "-c"
@@ -16,11 +16,9 @@ transform:
     rm -rf $OUT_PATH_TRANSFORMER
     rm -rf $OUT_PATH_PACKAGER
     rm -rf $OUT_PATH_PUBFILES
-    rm -rf $OUT_PATH_MAINTFILES
     mkdir $OUT_PATH_TRANSFORMER
     mkdir $OUT_PATH_PACKAGER
     mkdir $OUT_PATH_PUBFILES
-    mkdir $OUT_PATH_MAINTFILES
 
     # Set some environment variables for the pub transformer module
     export DATA_PATH=$GROUPED_PATH
