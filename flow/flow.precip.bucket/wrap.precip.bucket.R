@@ -185,7 +185,7 @@ wrap.precip.bucket <- function(DirIn,
     fileLoc <- fileLoc[1]
   }
   
-  loc <- NEONprocIS.base::def.loc.meta(NameFile = fs::path(dir_paths$location, fileLoc))
+  loc <- NEONprocIS.base::def.loc.meta(NameFile = fs::path(dir_paths$location, fileLoc), log = log)
   
   # Read and merge datasets more efficiently
   data <- NEONprocIS.base::def.read.parq.ds(
