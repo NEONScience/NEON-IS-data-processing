@@ -1,6 +1,8 @@
 import csv
 from collections import OrderedDict
 from pathlib import Path
+from structlog import get_logger
+log = get_logger()
 
 
 def parse_workbook_file(workbook_path: Path, data_product_idq: str) -> list[dict]:
@@ -32,11 +34,11 @@ def filter_workbook_rows(workbook_rows: list[dict], table_name: str, package_typ
     for row in workbook_rows:
         if row['table'] == table_name:
             table_row_count += 1
-    print('Filtering workbook rows: table=%s package_type=%s total_rows=%d table_rows=%d',
-                 table_name,
-                 package_type,
-                 len(workbook_rows),
-                 table_row_count)
+    log.debug('Filtering workbook rows',
+              table=table_name,
+              package_type=package_type,
+              total_rows=len(workbook_rows),
+              table_rows=table_row_count)
 
     added_basic_rows = 0
     added_expanded_rows = 0
@@ -56,14 +58,13 @@ def filter_workbook_rows(workbook_rows: list[dict], table_name: str, package_typ
             filtered_rows.append(row)
             added_matching_rows += 1
 
-    print('Filtered workbook rows complete: table=%s package_type=%s kept_rows=%d '
-                 'expanded_basic_rows=%d expanded_expanded_rows=%d matching_rows=%d',
-                 table_name,
-                 package_type,
-                 len(filtered_rows),
-                 added_basic_rows,
-                 added_expanded_rows,
-                 added_matching_rows)
+    log.debug('Filtered workbook rows complete',
+              table=table_name,
+              package_type=package_type,
+              kept_rows=len(filtered_rows),
+              expanded_basic_rows=added_basic_rows,
+              expanded_expanded_rows=added_expanded_rows,
+              matching_rows=added_matching_rows)
     return filtered_rows
 
 
