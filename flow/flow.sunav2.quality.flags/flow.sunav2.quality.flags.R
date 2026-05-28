@@ -42,9 +42,8 @@
 #'                               FileSchmQf=base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_sensor_specific_flags.avsc'),collapse=''),
 #'                               log=log)
 #' Stepping through the code in R studio                               
-# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2024/06/27/nitrate_MART112100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2021/09/28/nitrate-surfacewater_CUPE102100/sunav2/CFGLOC104139",
+# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2026/03/03/nitrate-surfacewater_WLOU102100/sunav2",
 #          "DirOut=~/pfs/out",
 #          "WndwMinPt=15",
 #          "DirErr=~/pfs/out/errored_datums")
@@ -63,7 +62,8 @@
 #' combined input df and updated error logging
 #' Nora Catolico (2026-05-06)
 #' update to keep a blank row if it is the only one in the window of interest
-
+#' Nora Catolico (2026-05-28)
+#' update to remove duplicate timestamps
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)

@@ -63,6 +63,8 @@
 #' combined input df and updated error logging
 #' Nora Catolico (2026-05-06)
 #' update to keep a blank row if it is the only one in the window of interest
+#' Nora Catolico (2026-05-28)
+#' update to remove duplicate timestamps
 ##############################################################################################
 wrap.sunav2.quality.flags <- function(DirIn,
                                       DirOutBase,
@@ -97,6 +99,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
                                                        log = log),silent = FALSE)
     log$debug(base::paste0('Successfully read in file: ',dataFileName))
   }
+  sunaData<-sunaData[!duplicated(sunaData$readout_time),]
   
   #' Read in parquet file of QAQC plausibility flags.
   plausFileName<-grep("flagsPlaus",base::list.files(DirInFlags,full.names=FALSE),value=TRUE)
@@ -108,6 +111,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
                                                          log = log),silent = FALSE)
     log$debug(base::paste0('Successfully read in file: ',plausFileName))
   }
+  plausFlags<-plausFlags[!duplicated(plausFlags$readout_time),]
   
   #' Read in parquet file of calibration flags.
   calFileName<-grep("flagsCal",base::list.files(DirInFlags,full.names=FALSE),value=TRUE)
@@ -119,6 +123,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
                                                        log = log),silent = FALSE)
     log$debug(base::paste0('Successfully read in file: ',calFileName))
   }
+  calFlags<-calFlags[!duplicated(calFlags$readout_time),]
   
   #' Read in parquet file of logged file flags.
   logFileName<-grep("logFlags",base::list.files(DirInFlags,full.names=FALSE),value=TRUE)
@@ -130,6 +135,7 @@ wrap.sunav2.quality.flags <- function(DirIn,
                                                        log = log),silent = FALSE)
     log$debug(base::paste0('Successfully read in file: ',logFileName))
   }
+  logFlags<-logFlags[!duplicated(logFlags$readout_time),]
   
   #' Convert measurements to be tested from class character to numeric.
   sunaData$relative_humidity<-as.numeric(sunaData$relative_humidity)
