@@ -94,6 +94,8 @@
 # changelog and author contributions / copyrights
 #   Nora Catolico (12/4/2025)
 #     original creation 
+#   Nora Catolico (2026-05-29)
+#     remove duplicate timestamps
 ##############################################################################################
 library(foreach)
 library(doParallel)
