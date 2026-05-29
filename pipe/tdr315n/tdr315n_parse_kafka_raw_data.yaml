@@ -7,10 +7,9 @@ transform:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "4"
     LOG_LEVEL: INFO 
-    UPDATE_TRIGGER_TABLE: "F"
+    UPDATE_TRIGGER_TABLE: "False"
     SOURCE_TYPE: "tdr315n_raw"
-    PARSE_FIELD: ""
-    PARSED_START_INDEX: "1"
+    PARSE_FIELD: "serial_output"
     PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/tdr315/tdr315n.avsc
     ERR_PATH: /pfs/out/errored_datums
   secrets:
