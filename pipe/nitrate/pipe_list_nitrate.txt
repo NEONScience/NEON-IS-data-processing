@@ -10,3 +10,4 @@ nitrate_flags_specific.yaml
 nitrate_stats_group_and_compute.yaml
 nitrate_qm_group_and_compute.yaml
 nitrate_null_gap_ucrt.yaml
+nitrate_cron_monthly_and_pub_control.yaml
