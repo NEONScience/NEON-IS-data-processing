@@ -8,6 +8,9 @@ on:
     paths:
       - 'pipe/tdr315l/*.yaml'
       - 'pipe/tdr315l/pipe_list_tdr315l.txt'
+permissions:
+  contents: read
+
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
