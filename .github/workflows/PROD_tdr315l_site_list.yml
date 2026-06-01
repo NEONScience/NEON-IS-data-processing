@@ -1,11 +1,14 @@
-name: DEV-tdr315l-site-list
+name: PROD-tdr315l-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'prod'
     paths:
       - 'pipe/tdr315l/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+permissions:
+  contents: read
 
 # Workflow-level concurrency
 concurrency: 
@@ -15,15 +18,16 @@ concurrency:
     || github.workflow
     }}
   cancel-in-progress: false  # Queue them up, don't cancel
+  
 jobs:
   put_files:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
       REPO: tdr315l_site_list # Pachyderm repo
-      BRANCH: master 
+      BRANCH: master # Pachyderm branch - should be master
       IN_PATHS: 'pipe/tdr315l/site-list.json' # Comma-separated list (no spaces) to one or more paths or directories. Length must match OUT_PATHS. If directory, all files in directory will be placed in pachyderm at corresponding entry of OUT_PATHS. 
       OUT_PATHS: 'site-list.json' # Comma-separated list (no spaces) of corresponding path(s) to place the files(s) in Pachyderm. Must be same length as IN_PATHS. If corresponding entry in IN_PATHS is a file, specify to the file. If corresponding entry in IN_PATHS is a directory, specify to the directory. 
     steps:
