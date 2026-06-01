@@ -2,7 +2,7 @@ name: DEV-tdr315l-update-dag
 on:
   push:
     branches:
-      - 'tdr315'
+      - 'none'
     paths:
       - 'pipe/tdr315l/*.yaml'
       - 'pipe/tdr315l/pipe_list_tdr315l.txt'
