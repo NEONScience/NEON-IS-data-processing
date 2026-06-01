@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau-envscn:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau-envscn:v1.1.0
   cmd:
   - sh
   - "-c"
@@ -98,14 +98,14 @@ transform:
       DirIn=/tmp/pfs/joined_dataCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCopy=data|location|flags" \
+      "DirSubCopy=location|threshold" \
       SchmQf=$SCHEMA_FLAGS
       
       
     EOF
   env:
     # Environment variables for padded timeseries analyzer
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     ERR_PATH: /pfs/out/errored_datums
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY

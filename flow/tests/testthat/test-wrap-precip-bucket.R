@@ -101,7 +101,8 @@ test_that("Unit test of wrap.precip.bucket.R", {
   wrap.precip.bucket(
     DirIn      = DirIn_throughfall,
     DirOutBase = DirOutBase,
-    DirSubCopy = 'location'
+    DirSubCopy = 'location',
+    log        = NULL
   )
   
   DirOut_throughfall <- file.path(DirOutBase, '2025/08/30/precip-throughfall_OSBS001000/metone370380/CFGLOC102741')
@@ -151,7 +152,8 @@ test_that("Unit test of wrap.precip.bucket.R", {
   wrap.precip.bucket(
     DirIn      = DirIn_tf2,
     DirOutBase = DirOutBase,
-    DirSubCopy = c('location', 'threshold')
+    DirSubCopy = c('location', 'threshold'),
+    log        = NULL
   )
   
   DirOut_tf2 <- file.path(DirOutBase, '2025/08/30/precip-throughfall_OSBS002000/metone370380/CFGLOC102768')
@@ -168,7 +170,8 @@ test_that("Unit test of wrap.precip.bucket.R", {
   rpt <- try(
     wrap.precip.bucket(
       DirIn      = DirIn_bad,
-      DirOutBase = DirOutBase
+      DirOutBase = DirOutBase,
+      log        = NULL
     ),
     silent = TRUE
   )
@@ -182,7 +185,8 @@ test_that("Unit test of wrap.precip.bucket.R", {
   wrap.precip.bucket(
     DirIn      = DirIn_tf3,
     DirOutBase = DirOutBase,
-    DirSubCopy = c('location', 'threshold')
+    DirSubCopy = c('location', 'threshold'),
+    log        = NULL
   )
   
   DirOut_tf3 <- file.path(DirOutBase, '2025/08/30/modHeatPrecip_precip-throughfall_OSBS003000/metone370380/CFGLOC102795/')
@@ -251,7 +255,8 @@ test_that("Integration test with missing thresholds", {
   
   expect_error(wrap.precip.bucket(
     DirIn      = DirIn,
-    DirOutBase = DirOutBase
+    DirOutBase = DirOutBase,
+    log        = NULL
   ))
   # Cleanup
   unlink(DirOutBase, recursive = TRUE)
@@ -267,7 +272,8 @@ test_that("Integration test with locations", {
   # Run the wrap function
   expect_error(wrap.precip.bucket(
     DirIn      = DirIn,
-    DirOutBase = DirOutBase
+    DirOutBase = DirOutBase,
+    log        = NULL
   ))
   # Cleanup
   unlink(DirOutBase, recursive = TRUE)

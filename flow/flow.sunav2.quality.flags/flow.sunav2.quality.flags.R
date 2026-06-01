@@ -5,7 +5,8 @@
 #' Bobby Hensley \email{hensley@battelleecology.org}
 
 #' @description Workflow. Uses thresholds to apply sensor-specific quality flags to SUNA data.  
-#' Measurements where the lamp has not had enough time to stabilze  (nitrateLampStabilizeQF=1) are removed. 
+#' Measurements where the lamp has not had enough time to stabilize  (nitrateLampStabilizeQF=1) are removed with the exception
+#' of keeping at least one row per window.
 #'
 #' The arguments are: 
 #' 
@@ -16,10 +17,13 @@
 #' 
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
-#'  
-#' 4. "FileSchmData=value" (optional), The avro schema for the input and output data file.
 #' 
-#' 5. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
+#' 4. "WndwMinPt=value", The time window in minutes for which to keep at least one row if all other points are dropped during 
+#' the lamp stabilization check.
+#'  
+#' 5. "FileSchmData=value" (optional), The avro schema for the input and output data file.
+#' 
+#' 6. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
 #' 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -34,14 +38,15 @@
 
 #' @examples
 #' flow.sunav2.quality.flags <- function(DirIn="~/pfs/nitrate_thresh_select_ts_pad/2025/06/25/nitrate_HOPB112100",                        
-#'                               DirOut="~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733", 
-#'                               FileSchmQf=base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_sensor_specific_flags.avsc'),collapse='')
+#'                               DirOut="~/pfs/sunav2_sensor_specific_flags/sunav2/2024/09/10/CFGLOC110733", WndwMinPt=15,
+#'                               FileSchmQf=base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_sensor_specific_flags.avsc'),collapse=''),
 #'                               log=log)
 #' Stepping through the code in R studio                               
-# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100')
+# Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/nitrate_analyze_pad_and_qaqc_plau/2024/06/27/nitrate_MART112100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2025/06/24/nitrate_HOPB112100",
+# arg <- c("DirIn=~/pfs/nitrate_analyze_pad_and_qaqc_plau/2021/09/28/nitrate-surfacewater_CUPE102100/sunav2/CFGLOC104139",
 #          "DirOut=~/pfs/out",
+#          "WndwMinPt=15",
 #          "DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
@@ -54,10 +59,10 @@
 #' Bobby Hensley (2025-09-18)
 #' Updated so that measurements prior to lamp stabilization (never intended to be
 #' used in downstream pipeline) are removed.
-#'
 #' Nora Catolico (2025-09-22)
 #' combined input df and updated error logging
-# 
+#' Nora Catolico (2026-05-06)
+#' update to keep a blank row if it is the only one in the window of interest
 
 ##############################################################################################
 options(digits.secs = 3)
@@ -87,8 +92,10 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),
-                                      NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr","WndwMinPt"),
+                                      NameParaOptn = c("FileSchmData","FileSchmQf"),
+                                      TypePara = list(WndwMinPt = "numeric"),log = log)
+
 
 # Echo arguments
 log$debug(base::paste0('Input data directory: ', Para$DirIn))
@@ -96,6 +103,14 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+
+#read in WndwMinPt
+WndwMinPt<-as.numeric(Para$WndwMinPt)
+log$debug(base::paste0('Data window for which to keep a minimum of 1 point: ', Para$WndwMinPt))
+if(length(WndwMinPt) != 1 || base::is.na(WndwMinPt) ||
+   !base::is.finite(WndwMinPt) || WndwMinPt <= 0){
+  base::stop("Parameter 'WndwMinPt' must be a single positive numeric value.")
+}
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
@@ -126,6 +141,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
       wrap.sunav2.quality.flags(
         DirIn=idxFileIn,
         DirOutBase=Para$DirOut,
+        WndwMinPt=WndwMinPt,
         SchmDataOut=SchmDataOut,
         SchmFlagsOut=SchmFlagsOut,
         log=log
@@ -137,7 +153,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
         NEONprocIS.base::def.err.datm(
           err=err,
           call.stack=call.stack,
-          DirDatm=idxDirIn,
+          DirDatm=idxFileIn,
           DirErrBase=Para$DirErr,
           RmvDatmOut=TRUE,
           DirOutBase=Para$DirOut,

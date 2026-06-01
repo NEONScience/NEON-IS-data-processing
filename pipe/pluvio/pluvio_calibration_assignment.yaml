@@ -18,7 +18,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: pluvio_calibration_loader_test_files
+      repo: pluvio_calibration_loader
       glob: /*/*
   - pfs:
       name: FILE_YEAR

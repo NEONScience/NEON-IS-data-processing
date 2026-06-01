@@ -18,10 +18,10 @@ input:
     empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 500M
+  memory: 800M
   cpu: 0.4
 resource_limits:
-  memory: 1G
+  memory: 1.2G
   cpu: 1.5
 sidecar_resource_requests:
   memory: 1G
