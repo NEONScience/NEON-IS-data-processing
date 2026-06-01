@@ -30,7 +30,7 @@ input:
       repo: gascylinder_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 100M
+  memory: 800M
   cpu: 1
 resource_limits:
   memory: 300M
