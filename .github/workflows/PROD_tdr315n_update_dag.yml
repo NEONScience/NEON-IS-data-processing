@@ -1,4 +1,6 @@
 name: PROD-tdr315n-update-dag
+permissions:
+  contents: read
 on:
   push:
     branches:
@@ -7,12 +9,6 @@ on:
       - 'pipe/tdr315n/*.yaml'
       - 'pipe/tdr315n/pipe_list_tdr315n.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
-
-permissions:
-  contents: read
-
-permissions:
-  contents: read
 
 # Workflow-level concurrency
 concurrency: 
