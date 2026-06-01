@@ -2,7 +2,7 @@ name: DEV-tdr315n-site-list
 on:
   push:
     branches:
-      - 'tdr315'
+      - 'master'
     paths:
       - 'pipe/tdr315n/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
