@@ -1,11 +1,19 @@
-name: DEV-tdr315l-update-dag
+name: PROD-tdr315l-update-dag
+permissions:
+  contents: read
 on:
   push:
     branches:
-      - 'none'
+      - 'prod'
     paths:
       - 'pipe/tdr315l/*.yaml'
       - 'pipe/tdr315l/pipe_list_tdr315l.txt'
+permissions:
+  contents: read
+
+permissions:
+  contents: read
+
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
@@ -16,7 +24,6 @@ concurrency:
     || github.workflow
     }}
   cancel-in-progress: false  # Queue them up, don't cancel
-
 jobs:
   # -------------------------------------------------------------
   # Using GitHub's API is not supported for push events
@@ -48,8 +55,8 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
       PATHS: 'pipe/tdr315l=pipe_list_tdr315l.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
