@@ -29,10 +29,10 @@ input:
       repo: mcseries_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 100M
+  memory: 500M
   cpu: 1
 resource_limits:
-  memory: 300M
+  memory: 800M
   cpu: 1.5
 sidecar_resource_requests:
   memory: 500M

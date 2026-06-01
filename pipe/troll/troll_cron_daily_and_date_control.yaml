@@ -44,10 +44,10 @@ input:
       repo: troll_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 2G
-  cpu: 1.5
+  memory: 500M
+  cpu: 1
 resource_limits:
-  memory: 3G
+  memory: 800M
   cpu: 1.5
 sidecar_resource_requests:
   memory: 2G
