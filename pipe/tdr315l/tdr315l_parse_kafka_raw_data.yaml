@@ -2,7 +2,7 @@
 pipeline:
   name: tdr315l_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-98510b0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.4.0
   env:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "4"
