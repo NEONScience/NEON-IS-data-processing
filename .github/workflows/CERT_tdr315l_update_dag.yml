@@ -8,6 +8,9 @@ on:
       - 'pipe/tdr315l/pipe_list_tdr315l.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
+permissions:
+  contents: read
+
 # Workflow-level concurrency
 concurrency: 
   group: ${{
