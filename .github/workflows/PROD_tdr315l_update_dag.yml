@@ -1,4 +1,6 @@
 name: PROD-tdr315l-update-dag
+permissions:
+  contents: read
 on:
   push:
     branches:
