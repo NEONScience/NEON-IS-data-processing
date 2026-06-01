@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+permissions:
+  contents: read
+
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
