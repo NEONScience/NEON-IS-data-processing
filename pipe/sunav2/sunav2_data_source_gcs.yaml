@@ -47,7 +47,7 @@ input:
       name: import_trigger
       repo: sunav2_cron_daily_and_date_control
       # Glob must be daily
-      glob: "/(*/*/*/*)"
+      glob: "/*/(*/*/*)"
       joinOn: $1
       # Need outer join so that days loaded prior to starting argo ingest will stay in the system
       outer_join: true
@@ -55,7 +55,7 @@ input:
       name: ingest_trigger
       repo: sunav2_ingest_days
       # Glob must be daily
-      glob: "/(*/*/*/*)"
+      glob: "/*/(*/*/*)"
       joinOn: $1
       branch: master
 output_branch: master
