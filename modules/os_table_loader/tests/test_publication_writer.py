@@ -83,7 +83,8 @@ class PublicationWriterTest(DatabaseBackedTest):
                                  get_fields=get_fields,
                                  get_results=get_results,
                                  get_site_results=get_site_results,
-                                 get_result_values=get_result_values)
+                                 get_result_values=get_result_values,
+                                 get_lovValues=lambda lov_name: [])
         path_config = PathConfig(input_path=self.in_path,
                                  workbook_path=self.workbook_path,
                                  out_path=self.out_path,

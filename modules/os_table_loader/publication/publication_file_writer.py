@@ -37,6 +37,10 @@ def write_publication_files(config: PublicationConfig) -> None:
                 workbook_path = config.path_config.workbook_path
                 workbook_rows: list[dict] = workbook_parser.parse_workbook_file(workbook_path,
                                                                                 path_parts.data_product)
+                unique_lov_names = workbook_parser.get_unique_lov_names(workbook_rows)
+                for lov_name in unique_lov_names:
+                    lov_values = config.data_loader.get_lovValues(lov_name)
+                    print(f'LOV {lov_name}: {lov_values}')
                 for table in config.data_loader.get_tables(config.partial_table_name):
                     table_workbook_rows = workbook_parser.filter_workbook_rows(workbook_rows,
                                                                                table.name,

@@ -13,8 +13,16 @@ def parse_workbook_file(workbook_path: Path, data_product_idq: str) -> list[dict
             if path.name == expected_filename:
                 with open(path) as file:
                     reader = csv.DictReader(file, delimiter='\t')
-                    return list(reader)
+                    workbook_rows = list(reader)
+                    unique_lov_names = get_unique_lov_names(workbook_rows)
+                    print(f'Unique lovName values ({len(unique_lov_names)}): {unique_lov_names}')
+                    return workbook_rows
     raise SystemExit(f'Publication workbook "{expected_filename}" not found.')
+
+
+def get_unique_lov_names(workbook_rows: list[dict]) -> list[str]:
+    """Return sorted unique lovName values from workbook rows."""
+    return sorted({row['lovName'].strip() for row in workbook_rows if row.get('lovName', '').strip()})
 
 
 def get_workbook_header(workbook_rows: list[dict]) -> list[str]:

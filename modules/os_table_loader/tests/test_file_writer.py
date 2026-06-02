@@ -57,7 +57,8 @@ class LoaderTest(DatabaseBackedTest):
                                  get_fields=get_fields,
                                  get_results=get_results,
                                  get_site_results=get_site_results,
-                                 get_result_values=get_result_values)
+                                 get_result_values=get_result_values,
+                                 get_lovValues=lambda lov_name: [])
         write_files(self.out_path, data_loader, self.file_type, self.partial_table_name)
         file_name = f'NEON.DOM.SITE.DP1.00026.001.ais_maintenanceGroundwater_pub.{self.file_type}'
         file_path = Path(self.out_path, file_name)

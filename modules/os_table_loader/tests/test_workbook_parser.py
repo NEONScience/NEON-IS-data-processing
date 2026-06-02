@@ -2,6 +2,7 @@
 import unittest
 
 from os_table_loader.publication.workbook_parser import filter_workbook_rows
+from os_table_loader.publication.workbook_parser import get_unique_lov_names
 
 
 class WorkbookParserTest(unittest.TestCase):
@@ -29,6 +30,19 @@ class WorkbookParserTest(unittest.TestCase):
 
         field_names = [row['fieldName'] for row in filtered_rows]
         self.assertEqual(field_names, ['field_basic'])
+
+    def test_get_unique_lov_names_returns_sorted_unique_non_empty_values(self):
+        rows = [
+            {'lovName': 'Zeta'},
+            {'lovName': ' Alpha '},
+            {'lovName': 'Zeta'},
+            {'lovName': ''},
+            {},
+        ]
+
+        unique_lov_names = get_unique_lov_names(rows)
+
+        self.assertEqual(unique_lov_names, ['Alpha', 'Zeta'])
 
 
 if __name__ == '__main__':
