@@ -72,6 +72,7 @@ def write_publication_files(config: PublicationConfig) -> None:
     for metadata_path, lov_value_rows in lov_rows_by_metadata_path.items():
         if lov_value_rows:
             domain, path_parts = metadata_context_by_path[metadata_path]
+            remove_previous_categorical_codes(config.path_config.out_path, metadata_path, domain, path_parts)
             filename = get_categorical_codes_filename(domain, now, path_parts)
             write_lov_values_csv(Path(config.path_config.out_path, metadata_path, filename), lov_value_rows)
     write_manifests(manifest_files, new_files)
@@ -175,3 +176,13 @@ def get_categorical_codes_filename(domain: str, now: datetime, path_parts: PathP
     data_product = path_parts.data_product
     time = now.strftime('%Y%m%dT%H%M%SZ')
     return f'NEON.{domain}.{site}.{data_product}.categoricalCodes.{time}.csv'
+
+
+def remove_previous_categorical_codes(out_path: Path, metadata_path: Path, domain: str, path_parts: PathParts) -> None:
+    """Remove prior categoricalCodes files in a specific metadata/package output folder."""
+    directory = Path(out_path, metadata_path)
+    site = path_parts.site
+    data_product = path_parts.data_product
+    pattern = f'NEON.{domain}.{site}.{data_product}.categoricalCodes.*.csv'
+    for path in directory.glob(pattern):
+        path.unlink(missing_ok=True)

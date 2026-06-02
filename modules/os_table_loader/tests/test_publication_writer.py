@@ -88,6 +88,15 @@ class PublicationWriterTest(DatabaseBackedTest):
                 'endDate': ''
             }]
 
+        self.fs.create_file(Path(self.out_path,
+                                 self.metadata_path_1,
+                                 'basic',
+                                 'NEON.D10.ARIK.DP1.20100.001.categoricalCodes.20000101T000000Z.csv'))
+        self.fs.create_file(Path(self.out_path,
+                                 self.metadata_path_1,
+                                 'expanded',
+                                 'NEON.D10.ARIK.DP1.20100.001.categoricalCodes.20000101T000000Z.csv'))
+
         data_loader = DataLoader(get_tables=get_tables,
                                  get_fields=get_fields,
                                  get_results=get_results,
