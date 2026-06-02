@@ -71,10 +71,6 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2026-02-16)
 #     Initial creation
-#   Teresa Burlingame  (2026-04-23)
-#     Null out data when Temp flag == 1 (frozen soil) and write out modified data file to output data directory.
-#   Teresa Burlingame  (2026-06-01)
-#     updated to no longer need dummy variables for threshold testing
 ##############################################################################################
 wrap.envscn.temp.flags <- function(DirIn,
                                    DirOutBase,
