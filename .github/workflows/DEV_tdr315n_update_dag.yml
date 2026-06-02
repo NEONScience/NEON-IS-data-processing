@@ -2,7 +2,7 @@ name: DEV-tdr315n-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'argo.ingest.2'
     paths:
       - 'pipe/tdr315n/*.yaml'
       - 'pipe/tdr315n/pipe_list_tdr315n.txt'
