@@ -79,12 +79,21 @@ class PublicationWriterTest(DatabaseBackedTest):
                     view_csv_file(path)
 
     def test_write_publication_files(self):
+        def get_lov_values(lov_name: str):
+            return [{
+                'name': lov_name,
+                'pubCode': 'Sample',
+                'description': 'Sample Description',
+                'startDate': '2012-01-01T00:00:00',
+                'endDate': ''
+            }]
+
         data_loader = DataLoader(get_tables=get_tables,
                                  get_fields=get_fields,
                                  get_results=get_results,
                                  get_site_results=get_site_results,
                                  get_result_values=get_result_values,
-                                 get_lovValues=lambda lov_name: [])
+                                 get_lovValues=get_lov_values)
         path_config = PathConfig(input_path=self.in_path,
                                  workbook_path=self.workbook_path,
                                  out_path=self.out_path,
@@ -106,7 +115,13 @@ class PublicationWriterTest(DatabaseBackedTest):
                 if self.view_files and path.name == 'manifest.csv':
                     print(f'\npath: {path}')
                     view_csv_file(path)
-        assert i == 6
+        basic_matches = list(Path(self.out_path, self.metadata_path_1, 'basic').glob(
+            'NEON.D10.ARIK.DP1.20100.001.categoricalCodes.*.csv'))
+        expanded_matches = list(Path(self.out_path, self.metadata_path_1, 'expanded').glob(
+            'NEON.D10.ARIK.DP1.20100.001.categoricalCodes.*.csv'))
+        assert len(basic_matches) == 1
+        assert len(expanded_matches) == 1
+        assert i == 7
 
     def view_file(self, file_path):
         if self.file_type == 'csv':

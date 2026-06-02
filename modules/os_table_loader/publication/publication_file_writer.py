@@ -23,8 +23,10 @@ def write_publication_files(config: PublicationConfig) -> None:
     now = datetime.now(timezone.utc)
     manifest_files = {}
     new_files = defaultdict(set)
-    processed_lov_names = set()
-    lov_value_rows = []
+    lov_values_by_name: dict[str, list[dict[str, str]]] = {}
+    lov_rows_by_metadata_path: defaultdict[Path, list[dict[str, str]]] = defaultdict(list)
+    processed_lov_names_by_metadata_path: defaultdict[Path, set[str]] = defaultdict(set)
+    metadata_context_by_path: dict[Path, tuple[str, PathParts]] = {}
     for path in config.path_config.input_path.rglob('*'):
         if path.is_file():
             path_parts = parse_path(path, config.path_config)
@@ -40,12 +42,15 @@ def write_publication_files(config: PublicationConfig) -> None:
                 workbook_rows: list[dict] = workbook_parser.parse_workbook_file(workbook_path,
                                                                                 path_parts.data_product)
                 unique_lov_names = workbook_parser.get_unique_lov_names(workbook_rows)
+                metadata_path = path_parts.metadata_path
+                metadata_context_by_path[metadata_path] = (domain, path_parts)
                 for lov_name in unique_lov_names:
-                    if lov_name in processed_lov_names:
+                    if lov_name in processed_lov_names_by_metadata_path[metadata_path]:
                         continue
-                    lov_values = config.data_loader.get_lovValues(lov_name)
-                    lov_value_rows.extend(lov_values)
-                    processed_lov_names.add(lov_name)
+                    if lov_name not in lov_values_by_name:
+                        lov_values_by_name[lov_name] = config.data_loader.get_lovValues(lov_name)
+                    lov_rows_by_metadata_path[metadata_path].extend(lov_values_by_name[lov_name])
+                    processed_lov_names_by_metadata_path[metadata_path].add(lov_name)
                 for table in config.data_loader.get_tables(config.partial_table_name):
                     table_workbook_rows = workbook_parser.filter_workbook_rows(workbook_rows,
                                                                                table.name,
@@ -64,8 +69,11 @@ def write_publication_files(config: PublicationConfig) -> None:
                         if config.file_type == 'csv':
                             write_csv(file_path, table_workbook_rows, values)
                             new_files[path_parts.package_type].add(file_path)
-    if lov_value_rows:
-        write_lov_values_csv(Path(config.path_config.out_path, 'categoricalCodes.csv'), lov_value_rows)
+    for metadata_path, lov_value_rows in lov_rows_by_metadata_path.items():
+        if lov_value_rows:
+            domain, path_parts = metadata_context_by_path[metadata_path]
+            filename = get_categorical_codes_filename(domain, now, path_parts)
+            write_lov_values_csv(Path(config.path_config.out_path, metadata_path, filename), lov_value_rows)
     write_manifests(manifest_files, new_files)
 
 
@@ -160,3 +168,10 @@ def get_filename(table: Table, domain, now: datetime, path_parts: PathParts, con
     time = now.strftime('%Y%m%dT%H%M%SZ')
     file_type = config.file_type
     return f'NEON.{domain}.{site}.{data_product}.{table_name}.{year}-{month}.{package_type}.{time}.{file_type}'
+
+
+def get_categorical_codes_filename(domain: str, now: datetime, path_parts: PathParts) -> str:
+    site = path_parts.site
+    data_product = path_parts.data_product
+    time = now.strftime('%Y%m%dT%H%M%SZ')
+    return f'NEON.{domain}.{site}.{data_product}.categoricalCodes.{time}.csv'
