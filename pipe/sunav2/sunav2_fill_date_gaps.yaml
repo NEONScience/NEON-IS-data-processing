@@ -99,7 +99,7 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 2G
-  cpu: 32
+  cpu: 2
 resource_limits:
   memory: 3G
   cpu: 4.5
