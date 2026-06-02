@@ -1,26 +1,30 @@
-import json
 import os
-from functools import lru_cache
 from urllib.parse import quote
-from urllib.request import urlopen
 
+import requests
 from structlog import get_logger
 
 log = get_logger()
 DEFAULT_LOV_BASE_URL = 'https://os-api-int.svcs-nonprod.gcp.neoninternal.org/os-api'
 
 
-@lru_cache(maxsize=256)
 def get_lov_values(lov_name: str) -> list[dict[str, str]]:
     """Fetch code/description LOV items for a workbook lovName."""
     base_url = os.environ.get('LOV_BASE_URL', DEFAULT_LOV_BASE_URL).rstrip('/')
     encoded_lov_name = quote(lov_name, safe='')
     url = f'{base_url}/list-of-values/{encoded_lov_name}'
+    log.debug(f"url_path is {url_path}")
+
     try:
-        with urlopen(url, timeout=15) as response:
-            payload = json.loads(response.read().decode('utf-8'))
+        response = requests.get(url, headers={'Accept': 'application/json'}, timeout=15)
     except Exception as exc:
         log.warning('Failed to load LOV values', lov_name=lov_name, url=url, error=str(exc))
+        return []
+
+    if response.status_code == 200:
+        payload = response.json()
+    else:
+        log.warning('LOV call failed', lov_name=lov_name, url=url, status_code=response.status_code)
         return []
 
     if isinstance(payload, dict):

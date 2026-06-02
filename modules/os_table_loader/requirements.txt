@@ -6,3 +6,4 @@ numpy==1.26.4
 psycopg2-binary==2.8.6
 pyarrow==14.0.1
 structlog==21.5.0
+requests==2.32.3
