@@ -13,12 +13,22 @@ class LovValuesLoaderTest(unittest.TestCase):
         os.environ['LOV_BASE_URL'] = 'https://example.org/os-api'
         response = Mock()
         response.status_code = 200
-        response.json.return_value = {'items': [{'itemCode': 'Y', 'itemDescription': 'Yes'}]}
+        response.json.return_value = {
+            'listOfValuesItems': [
+                {'pubCode': 'Y', 'description': 'Yes', 'effectiveDate': '2012-01-01T00:00:00Z[GMT]'}
+            ]
+        }
         mock_get.return_value = response
 
         values = get_lov_values('Yes or No choice')
 
-        self.assertEqual(values, [{'code': 'Y', 'description': 'Yes'}])
+        self.assertEqual(values, [{
+            'name': 'Yes or No choice',
+            'pubCode': 'Y',
+            'description': 'Yes',
+            'startDate': '2012-01-01T00:00:00',
+            'endDate': ''
+        }])
         called_url = mock_get.call_args.args[0]
         self.assertTrue(called_url.endswith('/list-of-values/Yes%20or%20No%20choice'))
 

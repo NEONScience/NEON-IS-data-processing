@@ -9,7 +9,7 @@ DEFAULT_LOV_BASE_URL = 'https://os-api-int.svcs-nonprod.gcp.neoninternal.org/os-
 
 
 def get_lov_values(lov_name: str) -> list[dict[str, str]]:
-    """Fetch code/description LOV items for a workbook lovName."""
+    """Fetch LOV items formatted for CSV output rows."""
     base_url = os.environ.get('LOV_BASE_URL', DEFAULT_LOV_BASE_URL).rstrip('/')
     encoded_lov_name = quote(lov_name, safe='')
     url = f'{base_url}/list-of-values/{encoded_lov_name}'
@@ -28,7 +28,7 @@ def get_lov_values(lov_name: str) -> list[dict[str, str]]:
         return []
 
     if isinstance(payload, dict):
-        items = payload.get('items', [])
+        items = payload.get('listOfValuesItems') or payload.get('items', [])
     elif isinstance(payload, list):
         items = payload
     else:
@@ -38,9 +38,19 @@ def get_lov_values(lov_name: str) -> list[dict[str, str]]:
     for item in items:
         if not isinstance(item, dict):
             continue
-        code = item.get('itemCode') or item.get('code') or ''
-        description = item.get('itemDescription') or item.get('description') or ''
-        if not code and not description:
+        pub_code = item.get('pubCode') or item.get('itemCode') or item.get('code') or ''
+        description = item.get('description') or item.get('itemDescription') or ''
+        start_date = item.get('effectiveDate') or item.get('startDate') or ''
+        if isinstance(start_date, str):
+            start_date = start_date.split('Z', 1)[0]
+        end_date = item.get('endDate') or ''
+        if isinstance(end_date, str):
+            end_date = end_date.split('Z', 1)[0]
+        if not pub_code and not description:
             continue
-        values.append({'code': str(code), 'description': str(description)})
+        values.append({'name': lov_name,
+                       'pubCode': str(pub_code),
+                       'description': str(description),
+                       'startDate': str(start_date),
+                       'endDate': str(end_date)})
     return values

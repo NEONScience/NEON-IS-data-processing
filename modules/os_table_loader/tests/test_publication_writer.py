@@ -106,7 +106,7 @@ class PublicationWriterTest(DatabaseBackedTest):
                 if self.view_files and path.name == 'manifest.csv':
                     print(f'\npath: {path}')
                     view_csv_file(path)
-        assert i == 5
+        assert i == 6
 
     def view_file(self, file_path):
         if self.file_type == 'csv':

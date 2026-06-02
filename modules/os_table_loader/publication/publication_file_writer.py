@@ -23,6 +23,8 @@ def write_publication_files(config: PublicationConfig) -> None:
     now = datetime.now(timezone.utc)
     manifest_files = {}
     new_files = defaultdict(set)
+    processed_lov_names = set()
+    lov_value_rows = []
     for path in config.path_config.input_path.rglob('*'):
         if path.is_file():
             path_parts = parse_path(path, config.path_config)
@@ -39,8 +41,11 @@ def write_publication_files(config: PublicationConfig) -> None:
                                                                                 path_parts.data_product)
                 unique_lov_names = workbook_parser.get_unique_lov_names(workbook_rows)
                 for lov_name in unique_lov_names:
+                    if lov_name in processed_lov_names:
+                        continue
                     lov_values = config.data_loader.get_lovValues(lov_name)
-                    print(f'LOV {lov_name}: {lov_values}')
+                    lov_value_rows.extend(lov_values)
+                    processed_lov_names.add(lov_name)
                 for table in config.data_loader.get_tables(config.partial_table_name):
                     table_workbook_rows = workbook_parser.filter_workbook_rows(workbook_rows,
                                                                                table.name,
@@ -59,6 +64,8 @@ def write_publication_files(config: PublicationConfig) -> None:
                         if config.file_type == 'csv':
                             write_csv(file_path, table_workbook_rows, values)
                             new_files[path_parts.package_type].add(file_path)
+    if lov_value_rows:
+        write_lov_values_csv(Path(config.path_config.out_path, 'categoricalCodes.csv'), lov_value_rows)
     write_manifests(manifest_files, new_files)
 
 
@@ -115,6 +122,16 @@ def write_csv(path: Path, workbook_rows: list[dict],
                 if uri_value is not None:
                     row.append(uri_value)
             writer.writerow(row)
+
+
+def write_lov_values_csv(path: Path, rows: list[dict[str, str]]) -> None:
+    """Write a consolidated LOV table CSV."""
+    headers = ['name', 'pubCode', 'description', 'startDate', 'endDate']
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with closing(open(path, 'w', encoding='utf-8-sig', newline='')) as file:
+        writer = csv.DictWriter(file, fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def link_file(out_path: Path, metadata_path: Path, path: Path) -> None:
