@@ -5,6 +5,8 @@ import psycopg2.extras
 
 from data_access.db_connector import DbConnector
 
+log = structlog.get_logger()
+
 
 class Table(NamedTuple):
     id: int
