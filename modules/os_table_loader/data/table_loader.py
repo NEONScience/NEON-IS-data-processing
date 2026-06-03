@@ -1,6 +1,6 @@
 from contextlib import closing
 from typing import NamedTuple, Optional
-
+from structlog import get_logger
 import psycopg2.extras
 
 from data_access.db_connector import DbConnector
