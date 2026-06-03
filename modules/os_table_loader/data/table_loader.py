@@ -5,7 +5,7 @@ import psycopg2.extras
 
 from data_access.db_connector import DbConnector
 
-log = log = get_logger()
+log = get_logger()
 
 
 class Table(NamedTuple):
