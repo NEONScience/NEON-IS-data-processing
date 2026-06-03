@@ -4,13 +4,24 @@ from urllib.parse import quote
 import requests
 from structlog import get_logger
 
+from data_access.db_connector import DbConnector
+
 log = get_logger()
-DEFAULT_LOV_BASE_URL = 'https://os-api-int.svcs-nonprod.gcp.neoninternal.org/os-api'
 
 
-def get_lov_values(lov_name: str) -> list[dict[str, str]]:
+def get_api_host(database_host: str) -> str:
+    """Return the environment token used by the OS API host."""
+    return database_host.split('-', 1)[0].strip()
+
+
+def get_default_lov_base_url(connector: DbConnector) -> str:
+    api_host = get_api_host(connector.config.host)
+    return f'https://os-api-{api_host}.svcs-nonprod.gcp.neoninternal.org/os-api'
+
+
+def get_lov_values(connector: DbConnector, lov_name: str) -> list[dict[str, str]]:
     """Fetch LOV items formatted for CSV output rows."""
-    base_url = os.environ.get('LOV_BASE_URL', DEFAULT_LOV_BASE_URL).rstrip('/')
+    base_url = os.environ.get('LOV_BASE_URL', get_default_lov_base_url(connector)).rstrip('/')
     encoded_lov_name = quote(lov_name, safe='')
     url = f'{base_url}/list-of-values/{encoded_lov_name}'
     log.debug(f"url path is {url}")

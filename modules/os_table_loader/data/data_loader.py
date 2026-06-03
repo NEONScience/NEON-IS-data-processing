@@ -25,7 +25,7 @@ def get_data_loader(connector: DbConnector) -> DataLoader:
     get_results_partial = partial(get_results, connector)
     get_site_results_partial = partial(get_site_results, connector)
     get_result_values_partial = partial(get_result_values, connector)
-    get_lov_values_partial = get_lov_values
+    get_lov_values_partial = partial(get_lov_values, connector)
     return DataLoader(get_tables=get_tables_partial,
                       get_fields=get_fields_partial,
                       get_results=get_results_partial,
