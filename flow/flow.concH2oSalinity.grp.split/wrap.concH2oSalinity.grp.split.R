@@ -120,15 +120,16 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
   dirOut    <- fs::path(DirOutBase, InfoDirIn$dirRepo)
   dirOutStats <- fs::path(dirOut, 'stats')
   dirOutQm    <- fs::path(dirOut, 'quality_metrics')
+  dirOutGroup <- fs::path(dirOut, 'group')
 
   NEONprocIS.base::def.dir.crea(
     DirBgn = dirOut,
-    DirSub = c('stats', 'quality_metrics'),
+    DirSub = c('stats', 'quality_metrics', 'group'),
     log = log
   )
 
   # Copy additional subdirectories via symbolic link if requested
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy, c('stats', 'quality_metrics')))
+  DirSubCopy <- base::unique(base::setdiff(DirSubCopy, c('stats', 'quality_metrics', 'group')))
   if (base::length(DirSubCopy) > 0) {
     NEONprocIS.base::def.dir.copy.symb(
       DirSrc  = fs::path(DirIn, DirSubCopy),
@@ -207,6 +208,23 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
 
   # Process quality_metrics files
   processParquetDir(dirInQm, dirOutQm, depthStr, 'quality_metrics', SchmQm)
+
+
+  # Link only this datum's group JSON into the output group/ directory.
+  fileOutGrpJson <- fs::path(dirOutGroup, paste0(nameCfgloc, '.json'))
+  if (!base::file.exists(fileOutGrpJson)) {
+    linkOk <- base::file.symlink(from = fileGrpJson, to = fileOutGrpJson)
+    if (!isTRUE(linkOk)) {
+      log$warn(base::paste0('Could not create symbolic link for group JSON: ',
+                            fileGrpJson, ' -> ', fileOutGrpJson,
+                            '. Falling back to file copy.'))
+      copyOk <- base::file.copy(from = fileGrpJson, to = fileOutGrpJson, overwrite = TRUE)
+      if (!isTRUE(copyOk)) {
+        log$fatal(base::paste0('Could not copy group JSON to output: ', fileOutGrpJson))
+        stop()
+      }
+    }
+  }
 
   log$info(base::paste0('Completed processing for ', nameCfgloc, ' (', site, ' HOR=', HOR, ' VER=', VER, ')'))
 
