@@ -22,6 +22,8 @@ def get_tables(connector: DbConnector, partial_name: str) -> list[Table]:
     tables = []
     connection = connector.get_connection()
     schema = connector.get_schema()
+    log.debug(f"schema is {schema}")
+    log.debug(f"connection is {connection}")
     sql = f'''
         select 
             pub_table_def_id,
