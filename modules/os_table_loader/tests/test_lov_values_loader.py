@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 import unittest
 from unittest.mock import Mock, patch
 
@@ -25,7 +24,6 @@ class LovValuesLoaderTest(unittest.TestCase):
     @patch('os_table_loader.data.lov_values_loader.requests.get')
     @patch.object(DbConnector, '_connect')
     def test_get_lov_values_returns_code_and_description(self, _mock_connect, mock_get):
-        os.environ['LOV_BASE_URL'] = 'https://example.org/os-api'
         connector = DbConnector(DbConfig(host='int-pdr.gcp.neoninternal.org',
                                          user='user',
                                          password='password',

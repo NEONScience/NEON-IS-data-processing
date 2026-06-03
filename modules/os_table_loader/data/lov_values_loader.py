@@ -1,4 +1,3 @@
-import os
 from urllib.parse import quote
 
 import requests
@@ -21,7 +20,7 @@ def get_default_lov_base_url(connector: DbConnector) -> str:
 
 def get_lov_values(connector: DbConnector, lov_name: str) -> list[dict[str, str]]:
     """Fetch LOV items formatted for CSV output rows."""
-    base_url = os.environ.get('LOV_BASE_URL', get_default_lov_base_url(connector)).rstrip('/')
+    base_url = get_default_lov_base_url(connector).rstrip('/')
     encoded_lov_name = quote(lov_name, safe='')
     url = f'{base_url}/list-of-values/{encoded_lov_name}'
     log.debug(f"url path is {url}")
