@@ -15,7 +15,10 @@ def get_api_host(database_host: str) -> str:
 
 def get_default_lov_base_url(connector: DbConnector) -> str:
     api_host = get_api_host(connector.config.host)
-    return f'https://os-api-{api_host}.svcs-nonprod.gcp.neoninternal.org/os-api'
+    if api_host in {'int', 'cert'}:
+        return f'https://os-api-{api_host}.svcs-nonprod.gcp.neoninternal.org/os-api'
+    elif api_host == 'prod':
+        return f'https://os-api-{api_host}.svcs.gcp.neoninternal.org/os-api'
 
 
 def get_lov_values(connector: DbConnector, lov_name: str) -> list[dict[str, str]]:
