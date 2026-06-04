@@ -2,13 +2,13 @@
 pipeline:
   name: concH2oSoilSalinity_stats_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:sha-94ba050
   cmd:
   - sh
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
@@ -24,14 +24,14 @@ transform:
       DirErr=/pfs/out/errored_datums \
       FileSchmStat=$FILE_SCHEMA_STATS \
       "WndwAgr=005|030" \
-      "TermStat1=VSWCsoilSpecificDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat2=VSWCsoilSpecificDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat3=VSWCsoilSpecificDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat4=VSWCsoilSpecificDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat5=VSWCsoilSpecificDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat6=VSWCsoilSpecificDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat7=VSWCsoilSpecificDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat8=VSWCsoilSpecificDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
+      "TermStat1=VSWCsoilSpecificDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
+      "TermStat2=VSWCsoilSpecificDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
+      "TermStat3=VSWCsoilSpecificDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
+      "TermStat4=VSWCsoilSpecificDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
+      "TermStat5=VSWCsoilSpecificDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
+      "TermStat6=VSWCsoilSpecificDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
+      "TermStat7=VSWCsoilSpecificDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
+      "TermStat8=VSWCsoilSpecificDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
       "TermStat9=VSWCfactoryDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
       "TermStat10=VSWCfactoryDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
       "TermStat11=VSWCfactoryDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
