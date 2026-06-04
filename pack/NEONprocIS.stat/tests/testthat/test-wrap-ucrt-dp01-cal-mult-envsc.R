@@ -17,11 +17,11 @@
 #' The positive test is for a case when all the params to the function are valid
 #' The negative tests are when a param(s) is empty or does not have valid values
 #'
-#' @param data Data frame of L0' (calibrated) data. Must contain columns \\code{readout_time} (POSIX) and 
-#' whatever variable is specified in input parameter \\code{VarUcrt} (numeric).
-#' A single aggregated uncertainty for the selected variable \\code{VarUcrt} will be computed over the full timeseries.
-#' @param VarUcrt A character string of the target variable (column) in the data frame \\code{data} for 
-#' which uncertainty data will be computed (all other columns will be ignored in this function). 
+#' @param data Data frame of L0' (calibrated) data. Must contain columns \code{readout_time} (POSIX) and 
+#' whatever variable is specified in input parameter \code{VarUcrt} (numeric).
+#' A single aggregated uncertainty for the selected variable \code{VarUcrt} will be computed over the full timeseries.
+#' @param VarUcrt A character string of the target variable (column) in the data frame \code{data} for 
+#' which uncertainty data will be computed (all other columns will be ignored in this function).
 #' @param ucrtCoef A list of uncertainty coefficients, each a list containing at a minimum the list 
 #' elements: term (name of L0' term for which the coefficient applies - string), start_date (POSIX), 
 #' end_date(POSIX), Name (of the coefficient - string), and 
