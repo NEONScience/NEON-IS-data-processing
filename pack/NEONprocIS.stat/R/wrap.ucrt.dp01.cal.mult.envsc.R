@@ -51,7 +51,7 @@
 
 # changelog and author contributions / copyrights
 #   Teresa Burlingame (2026-06-04)
-#     Branched of C.Sturtevant's wrap.ucrt.dp01.cal.mult to create a wrapper specific to enviroscan
+#     Branched off C.Sturtevant's wrap.ucrt.dp01.cal.mult to create a wrapper specific to enviroscan
 ##############################################################################################
 wrap.ucrt.dp01.cal.mult.envsc <- function(data,
                                     VarUcrt,
