@@ -1,0 +1,106 @@
+---
+pipeline:
+  name: concH2oSoilSalinity_level1_grp_cons_srf_test
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.3
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    
+    # Set some environment variables for the first module
+    export OUT_PATH=$OUT_PATH
+    
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    
+    
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      
+      input_paths:
+        - path:
+            name: GROUP_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/GROUP_PATH/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [6]
+            outer_join: True
+        - path:
+            name: SRF_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/SRF_PATH/*/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '1' # Option for stats module
+    
+    # Environment variables for pub_workbook_loader
+    OUT_PATH_WORKBOOK: /tmp/pub_workbooks
+    PRODUCTS: NEON.DOM.SITE.DP1.00094.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+  
+    # Environment variables for pub table and srf module
+    PUB_WORKBOOKS: /tmp/pub_workbooks
+    
+    # Environment variables for the L1 archiver
+    GROUP_PREFIX: conc-h2o-soil-salinity-split # no ending "_"
+    
+    
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+    
+input:
+  join:
+    - pfs:
+        name: GROUP_PATH
+        repo: concH2oSoilSalinity_group_split
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true # Need outer join to pull in with or without SRFs
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: SRF_PATH
+        repo: concH2oSoilSalinity_srf_assignment
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+resource_requests: 
+  memory: 500M
+  cpu: 1.2
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+autoscaling: true
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

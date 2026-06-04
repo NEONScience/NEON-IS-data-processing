@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_group_split
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:sha-818678a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:sha-f184d79
   cmd:
   - sh
   - "-c"
@@ -44,10 +44,9 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmStats=$FILE_SCHEMA_STATS \
-      FileSchmQm=$FILE_SCHEMA_QM
+      FileSchmQm=$FILE_SCHEMA_QM 
 
     echo "=== flow.concH2oSalinity.grp.split complete ==="
-
     EOF
   env:
     LOG_LEVEL: DEBUG
