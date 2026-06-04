@@ -26,9 +26,8 @@ which uncertainty data will be computed (all other columns will be ignored in th
 elements: term (name of L0' term for which the coefficient applies - string), start_date (POSIX), 
 end_date(POSIX), Name (of the coefficient - string), and 
 Value (of the coefficient - string or numeric, to be interpreted as numeric). 
-This will be passed into the calibration and FDAS uncertainty functions. Calibration uncertainty 
-requires the U_CVALA3_soilSpec coefficient.
-coefficients.}
+This will be passed into the calibration uncertainty function. Calibration uncertainty
+requires the U_CVALA3_soilSpec coefficient.}
 
 \item{ucrtData}{Unused in this function}
 
