@@ -22,9 +22,8 @@
 #' elements: term (name of L0' term for which the coefficient applies - string), start_date (POSIX), 
 #' end_date(POSIX), Name (of the coefficient - string), and 
 #' Value (of the coefficient - string or numeric, to be interpreted as numeric). 
-#' This will be passed into the calibration and FDAS uncertainty functions. Calibration uncertainty 
+#' This will be passed into the calibration uncertainty function. Calibration uncertainty
 #' requires the U_CVALA3_soilSpec coefficient.
-#' coefficients.
 #' @param ucrtData Unused in this function
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
