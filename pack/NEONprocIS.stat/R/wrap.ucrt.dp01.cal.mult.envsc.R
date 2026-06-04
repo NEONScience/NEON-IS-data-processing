@@ -1,10 +1,10 @@
 ##############################################################################################
 #' @title Compute combined and expanded (95% confidence) temporally aggregated L1 uncertainty 
 #' due to natural variation and calibration (multiplier). Specific naming convention changed
-#' for envirscan sensor to get soilSpecific calibration multiplier coefficient.
+#' for enviroscan sensor to get soilSpecific calibration multiplier coefficient.
 
 #' @author
-#' Teresa Burlingame \
+#' Teresa Burlingame 
 #'
 #' @description
 #' Wrapper function. Compute the combined and expanded (95% confidence) temporally aggregated L1 
@@ -23,7 +23,7 @@
 #' end_date(POSIX), Name (of the coefficient - string), and 
 #' Value (of the coefficient - string or numeric, to be interpreted as numeric). 
 #' This will be passed into the calibration and FDAS uncertainty functions. Calibration uncertainty 
-#' requires the U_CVALA3 coefficient. Voltage-based FDAS uncertainty requires U_CVALV3 and U_CVALV4 
+#' requires the U_CVALA3_soilSpec coefficient.
 #' coefficients.
 #' @param ucrtData Unused in this function
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -41,8 +41,8 @@
 
 #' @examples
 #' data <- data.frame(readout_time=as.POSIXct(c('2019-01-01 00:00','2019-01-01 00:01','2019-01-01 00:02'),tz='GMT'),
-#'                    linePAR=c(827.7,827.8,831.3))
-#' ucrtCoef <- list(list(term='VSWCsoilSpecificMean',start_date=as.POSIXct('2019-01-01',tz='GMT'),end_date=as.POSIXct('2019-01-02',tz='GMT'),Name='U_CVALA3',Value='0.0388'))
+#'                    VSWCsoilSpecificMean=c(827.7,827.8,831.3))
+#' ucrtCoef <- list(list(term='VSWCsoilSpecificMean',start_date=as.POSIXct('2019-01-01',tz='GMT'),end_date=as.POSIXct('2019-01-02',tz='GMT'),Name='U_CVALA3_soilSpec',Value='0.0388'))
 #' ucrt <- NEONprocIS.stat::wrap.ucrt.dp01.cal.mult.envsc(data=data,VarUcrt='VSWCsoilSpecificMean',ucrtCoef=ucrtCoef)
 
 #' @seealso \link[NEONprocIS.stat]{wrap.ucrt.dp01}

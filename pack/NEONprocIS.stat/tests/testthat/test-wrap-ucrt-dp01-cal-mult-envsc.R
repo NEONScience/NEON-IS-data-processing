@@ -1,6 +1,6 @@
 ##############################################################################################
 #' @title Unit test of wrap.ucrt.dp01.cal.mult.envsc.R, compute combined and expanded (95% confidence) temporally aggregated L1 uncertainty 
-#' due to natural variation and calibration (multiplier) using specific enviroscan cval coefficent
+#' due to natural variation and calibration (multiplier) using specific Enviroscan cval coefficient
 #' 
 #' Wrapper function. Compute the combined and expanded (95% confidence) temporally aggregated L1 
 #' uncertainty for a set of values subject to natural variation and calibration uncertainty 
@@ -74,10 +74,11 @@ test_that("Unit test of wrap.ucrt.dp01.cal.mult.envsc.R", {
   expect_true(is.numeric(ucrt))
   expect_false(is.na(ucrt))
   
-  # Sad Path 1, if data input is not numeric then wrap.ucrt.dp01.cal.mult.envsc will not be executed
-  
-  dataComp <- as.character(data[['VSWCsoilSpecificMean']])
-  
-  ucrt <- try(NEONprocIS.stat::wrap.ucrt.dp01.cal.mult.envsc(data=dataComp,VarUcrt='VSWCsoilSpecificMean',ucrtCoef=ucrtCoef,), silent = TRUE)
+  # Sad Path 1, if VarUcrt data is not numeric then wrap.ucrt.dp01.cal.mult.envsc will not be executed
+
+  dataComp <- data
+  dataComp$VSWCsoilSpecificMean <- as.character(dataComp$VSWCsoilSpecificMean)
+
+  ucrt <- try(NEONprocIS.stat::wrap.ucrt.dp01.cal.mult.envsc(data=dataComp,VarUcrt='VSWCsoilSpecificMean',ucrtCoef=ucrtCoef), silent = TRUE)
   expect_true((class(ucrt)[1] == "try-error"))
 })
