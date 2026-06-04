@@ -47,8 +47,8 @@
 #' ucrtCoef <- list(list(term='VSWCsoilSpecificMean',start_date=as.POSIXct('2019-01-01',tz='GMT'),end_date=as.POSIXct('2019-01-02',tz='GMT'),Name='U_CVALA3_soilSpec',Value='0.0388'))
 #' ucrt <- NEONprocIS.stat::wrap.ucrt.dp01.cal.mult.envsc(data=data,VarUcrt='VSWCsoilSpecificMean',ucrtCoef=ucrtCoef)
 #' 
-#' @seealso \\link[NEONprocIS.stat]{wrap.ucrt.dp01}
-#' @seealso \\link[NEONprocIS.stat]{def.ucrt.dp01.cal.mult}
+#' @seealso \link[NEONprocIS.stat]{wrap.ucrt.dp01}
+#' @seealso \link[NEONprocIS.stat]{def.ucrt.dp01.cal.mult}
 #' 
 #' @export
 #'
