@@ -50,7 +50,6 @@
 #' @seealso \link[NEONprocIS.stat]{wrap.ucrt.dp01}
 #' @seealso \link[NEONprocIS.stat]{def.ucrt.dp01.cal.mult}
 #' 
-#' @export
 #'
 # changelog and author contributions / copyrights
 #   Teresa Burlingame (2026-06-04)
