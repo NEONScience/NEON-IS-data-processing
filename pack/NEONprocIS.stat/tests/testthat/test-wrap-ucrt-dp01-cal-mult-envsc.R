@@ -1,6 +1,6 @@
 ##############################################################################################
 #' @title Unit test of wrap.ucrt.dp01.cal.mult.envsc.R, compute combined and expanded (95% confidence) temporally aggregated L1 uncertainty 
-#' due to natural variation and calibration (multiplier)
+#' due to natural variation and calibration (multiplier) using specific enviroscan cval coefficent
 #' 
 #' Wrapper function. Compute the combined and expanded (95% confidence) temporally aggregated L1 
 #' uncertainty for a set of values subject to natural variation and calibration uncertainty 
@@ -9,7 +9,7 @@
 #' (U_CVALA3 (%) coefficient provided by CVAL) to the maximum L0' value. 
 #'
 #' @author
-#' Mija Choi \\email{choim@battelleecology.org}
+#' Teresa Burlingame
 #'
 #' @description
 #' Run unit tests for wrap.ucrt.dp01.cal.mult.envsc.R.
@@ -26,8 +26,7 @@
 #' elements: term (name of L0' term for which the coefficient applies - string), start_date (POSIX), 
 #' end_date(POSIX), Name (of the coefficient - string), and 
 #' Value (of the coefficient - string or numeric, to be interpreted as numeric). 
-#' This will be passed into the calibration and FDAS uncertainty functions. Calibration uncertainty 
-#' requires the U_CVALA3 coefficient. Voltage-based FDAS uncertainty requires U_CVALV3 and U_CVALV4 
+#' requires the U_CVALA3_soilSpec coefficient. 
 #' coefficients.
 #' @param ucrtData Unused in this function
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -55,8 +54,8 @@
 #' @export
 #'
 # changelog and author contributions / copyrights
-#   Mija Choi (2026-06-04)
-#     Original Creation
+#   Teresa Burlingame (2026-06-04)
+#     Created based off original unit tests for wrap.ucrt.dp01.cal.mult.R
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of wrap.ucrt.dp01.cal.mult.envsc.R\n")
