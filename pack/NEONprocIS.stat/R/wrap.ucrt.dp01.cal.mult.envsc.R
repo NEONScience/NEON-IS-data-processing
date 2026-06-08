@@ -65,9 +65,9 @@ wrap.ucrt.dp01.cal.mult.envsc <- function(data,
   
   # Validate the data. Need columns readout_time and VarUcrt
   chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c('readout_time',VarUcrt),TestEmpty=TRUE, log = log)
+  if (!chk) {
     stop()
   }
-  
   # Pull the variable from data that we care about
   dataComp <- data[[VarUcrt]]
   
