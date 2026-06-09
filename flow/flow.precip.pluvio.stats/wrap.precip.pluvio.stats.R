@@ -69,8 +69,11 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-07-21)
 #     Initial creation
-#   Teresa Burlingame  (2025-04-08)
+#   Teresa Burlingame  (2026-04-08)
 #     change sum logic to be NA when all 30 mins are NA. 
+#   Teresa Burlingame  (2026-06-26)
+#     update ucrt to be set to a minimum of 0.03 mm based on 0.1 mm gauge resolution, which converts to standard uncertainty (res / sqrt(12)).
+
 ##############################################################################################
 wrap.precip.pluvio.stats <- function(DirIn,
                                DirOutBase,
@@ -256,8 +259,10 @@ wrap.precip.pluvio.stats <- function(DirIn,
   #apply UCRT to combined
   data[, combinedUcrt := uCvalA1 * accu_nrt]
     
-  #if ucrt less than 0.1mm, change to 0.1mm (manufacturer accuracy spec)
-  data[, combinedUcrt := fifelse(combinedUcrt < 0.1, 0.1, combinedUcrt)]
+# Minimum uncertainty set to 0.03 mm based on 0.1 mm gauge resolution.
+# This converts resolution to standard uncertainty (res / sqrt(12)),
+
+  data[, combinedUcrt := fifelse(combinedUcrt < 0.03, 0.03, combinedUcrt)]
     
   # More efficient aggregation using data.table
   data[, `:=`(
