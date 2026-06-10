@@ -192,7 +192,7 @@ input:
   - pfs:
       name: SRF_PATH
       repo: nitrate_srf_assignment
-      glob: /((2016|2017)/*/*)
+      glob: /((2016|2017|2018|2019|2020)/*/*)
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
