@@ -44,7 +44,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     groupadd appuser -g 1001 && \
     useradd appuser -d ${CONTAINER_APP_DIR} -g appuser -u 1001 && \
-    rm -rf ${CONTAINER_APP_DIR}/venv
+    rm -rf ${CONTAINER_APP_DIR}/venv && \
+    ln -s /usr/bin/${PYTHON_BIN} /usr/bin/python3
 
 
 # Install yq (v4.x example) for manipulating json
