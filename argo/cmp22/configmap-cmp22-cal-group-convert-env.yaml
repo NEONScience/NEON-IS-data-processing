@@ -11,18 +11,19 @@ metadata:
     # Note: This label is required for the informer to detect this ConfigMap.
     workflows.argoproj.io/configmap-type: Parameter
 data:
-  # All modules
+  # Workflow-level parameters
   log-level: INFO
-  mount-path-inputs: /inputs
-  mount-path-outputs: /pfs
-  mount-path-tmp: /tmp
-  err-path: /pfs/errored_datums
+  err-path: /pfs/errored_datums # All modules that produce errored datums
   schema-repo-eng-url: git@github.com:BattelleEcology/neon-avro-schemas.git
   schema-repo-eng-revision: develop # Branch or tag
   schema-repo-sci-url: https://github.com/NEONScience/NEON-IS-avro-schemas.git
   schema-repo-sci-revision: master # Branch or tag
-
-  # Command line arguments for filter-joiner merging calibrations with data
+  parallelism-internal: "3" # Internal R parallelization for all R modules
+  
+  # Parameters for input data load
+  l0-bucket-name: neon-dev-argo-workflow-test
+ 
+ # Parameters for filter-joiner merging calibrations with data
   filter-joiner-config: |
     ---
     # Configuration for filter-joiner module that will bring together the data and calibrations
@@ -47,7 +48,7 @@ data:
   link-type: SYMLINK
   out-path-joiner: /pfs/data_cal_joined
 
-  # Command line arguments for flow.kfka.comb.R
+  # Command line arguments and other input params for flow.kfka.comb.R
   kfka-comb-r-args: >
     DirIn=$OUT_PATH_JOINER
     DirOut=$OUT_PATH_KAFKA_COMB
@@ -56,7 +57,7 @@ data:
     DirSubCopy=calibration
   out-path-kafka-comb: /pfs/kafka_combined
 
-  # Command line arguments for flow.cal.conv.R
+  # Command line arguments and other input params for flow.cal.conv.R
   cal-conv-r-args: >
     DirIn=$OUT_PATH_KAFKA_COMB
     DirOut=$OUT_PATH_CAL_CONV
@@ -69,3 +70,8 @@ data:
     UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage
     FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
   out-path-cal-conv: /pfs/cmp22_calibration_group_and_convert
+  file-uncertainty-fdas: /inputs/schemas-sci/uncertainty_fdas/fdas_calibration_uncertainty_general.json
+
+ # Parameters for data upload to bucket
+ output-bucket-name: neon-dev-argo-workflow-test
+ output-bucket-prefix: cmp22_calibration_group_and_convert

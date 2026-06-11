@@ -29,24 +29,10 @@ spec:
         value: /inputs/schemas-sci/avro_schemas/cmp22/cmp22_calibrated.avsc
       - name: schema-cal-flags
         value: /inputs/schemas-sci/avro_schemas/cmp22/flags_calibration_cmp22.avsc
-      - name: file-uncertainty-fdas
-        value: /inputs/uncertainty_fdas/fdas_calibration_uncertainty_general.json
-      - name: parallelism-internal # All R modules
-        value: 3
       - name: bucket-name # Bucket download/upload
         value: neon-dev-argo-workflow-test
-      - name: out-repo
-        value: cmp22_calibration_group_and_convert
       - name: env_config # ConfigMap holding environment vars
         value: cmp22-cal-group-convert-env
-      - name: schema-repo-eng-url # Public Git repo containing schema folder(s)
-        value: git@github.com:BattelleEcology/neon-avro-schemas.git
-      - name: schema-repo-eng-revision
-        value: develop
-      - name: schema-repo-sci-url # Public Git repo containing SCI schema folder(s)
-        value: https://github.com/NEONScience/NEON-IS-avro-schemas.git
-      - name: schema-repo-sci-revision
-        value: master
 
   templates:
     - name: run
@@ -61,12 +47,32 @@ spec:
       inputs:
         parameters:
         - name: datum-manifest
+        - name: schema-repo-eng-url # Must be defined here bc can't access configmap in same parameter block above where it is defined 
+          valueFrom:
+            configMapKeyRef:
+              name: "{{workflow.parameters.env_config}}"
+              key: schema-repo-eng-url
+        - name: schema-repo-eng-revision
+          valueFrom:
+            configMapKeyRef:
+              name: "{{workflow.parameters.env_config}}"
+              key: schema-repo-eng-revision
+        - name: schema-repo-sci-url # Must be defined here bc can't access configmap in same parameter block above where it is defined 
+          valueFrom:
+            configMapKeyRef:
+              name: "{{workflow.parameters.env_config}}"
+              key: schema-repo-sci-url
+        - name: schema-repo-sci-revision
+          valueFrom:
+            configMapKeyRef:
+              name: "{{workflow.parameters.env_config}}"
+              key: schema-repo-sci-revision
         artifacts: 
         - name: schemas-eng
           path: /inputs/schemas-eng
           git:
-            repo: "{{workflow.parameters.schema-repo-eng-url}}"
-            revision: "{{workflow.parameters.schema-repo-eng-revision}}"
+            repo: "{{inputs.parameters.schema-repo-eng-url}}"
+            revision: "{{inputs.parameters.schema-repo-eng-revision}}"
             depth: 1
             sshPrivateKeySecret:
               name: neon-avro-schemas-secret-readonly
@@ -74,14 +80,9 @@ spec:
         - name: schemas-sci
           path: /inputs/schemas-sci
           git:
-            repo: "{{workflow.parameters.schema-repo-sci-url}}"
-            revision: "{{workflow.parameters.schema-repo-sci-revision}}"
+            repo: "{{inputs.parameters.schema-repo-sci-url}}"
+            revision: "{{inputs.parameters.schema-repo-sci-revision}}"
             depth: 1
-        - name: uncertainty-fdas
-          path: /inputs/uncertainty_fdas
-          gcs:
-            bucket: neon-dev-argo-workflow-test
-            key: cmp22_uncertainty_fdas
 
       containerSet:
         # Note: Must mount volume with the input artifact(s) in order to have it accessible to all containers 
@@ -187,7 +188,7 @@ spec:
               #set +x # Uncomment for troubleshooting
                         
             env:
-              # Environment variables for data upload
+              # Environment variables for data download
               - name: DATUM_MANIFEST
                 value: "{{inputs.parameters.datum-manifest}}"   # <- parameterized
               - name: BUCKET_NAME
@@ -290,9 +291,15 @@ spec:
               - name: FILE_SCHEMA_FLAGS
                 value: "{{workflow.parameters.schema-cal-flags}}"   # <- parameterized
               - name: FILE_UNCERTAINTY_FDAS
-                value: "{{workflow.parameters.file-uncertainty-fdas}}"   # <- parameterized
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: file-uncertainty-fdas
               - name: PARALLELISM_INTERNAL
-                value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: parallelism-internal
               - name: KFKA_COMB_R_ARGS
                 valueFrom:
                   configMapKeyRef:
@@ -343,7 +350,7 @@ spec:
                   rel_path="${BASH_REMATCH[1]}"
                   fname="${rel_path##*/}"
                   rel_dir="${rel_path%/*}"
-                  outdir="${linkdir}/${OUT_REPO}/${rel_dir}"
+                  outdir="${linkdir}/${OUTPUT_BUCKET_PREFIX}/${rel_dir}"
                   mkdir -p "${outdir}"
                   ln -s "${f}" "${outdir}"
                 done
@@ -353,8 +360,8 @@ spec:
                   --copy-links \
                   --gcs-bucket-policy-only \
                   copy \
-                  "${linkdir}/${OUT_REPO}" \
-                  ":gcs://${BUCKET_NAME}/${OUT_REPO}"
+                  "${linkdir}/${OUTPUT_BUCKET_PREFIX}" \
+                  ":gcs://${OUTPUT_BUCKET_NAME}/${OUTPUT_BUCKET_PREFIX}"
                   
                 echo "Removing temporary files"
                 rm -rf $linkdir
@@ -369,7 +376,13 @@ spec:
                   configMapKeyRef:
                     name: "{{workflow.parameters.env_config}}"
                     key: out-path-cal-conv
-              - name: BUCKET_NAME
-                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
-              - name: OUT_REPO
-                value: "{{workflow.parameters.out-repo}}"   # <- parameterized
+              - name: OUTPUT_BUCKET_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: output-bucket-name
+              - name: OUTPUT_BUCKET_PREFIX
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: output-bucket-prefix
