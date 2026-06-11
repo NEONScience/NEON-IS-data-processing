@@ -185,6 +185,7 @@ def l0_gcs_loader_by_manifest() -> None:
             normalized_source_id = manifest_source_id.replace('source_id=', '')
             prefixes = [f"{prefix}/source_id={normalized_source_id}"]
 
+        files_downloaded_for_path = 0
         for list_prefix in prefixes:
             for blob in ingest_bucket.list_blobs(prefix=list_prefix):
                 if blob.name in downloaded_blob_names:
@@ -260,6 +261,18 @@ def l0_gcs_loader_by_manifest() -> None:
                         blob_name=blob.name)
 
                 downloaded_blob_names.add(blob.name)
+                files_downloaded_for_path += 1
+
+        if files_downloaded_for_path == 0:
+            log.error('No files found in bucket for manifest path', 
+                     manifest_path=manifest_path,
+                     bucket_prefix=prefixes[0] if prefixes else 'N/A',
+                     source_type=source_type,
+                     year=download_year,
+                     month=download_month,
+                     day=download_day,
+                     source_id=manifest_source_id)
+            sys.exit(f'No files found in bucket for manifest path: {manifest_path}')
 
     log.info('Manifest processing completed', total_files_downloaded=len(downloaded_blob_names))
 
