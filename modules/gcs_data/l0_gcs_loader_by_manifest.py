@@ -69,7 +69,7 @@ def _parse_manifest_data(manifest_data: object) -> list[str]:
     return [path for path in manifest_paths if isinstance(path, str) and path.strip()]
 
 
-def l0_gcs_loader() -> None:
+def l0_gcs_loader_by_manifest() -> None:
 
     env = environs.Env()
     ingest_bucket_name = env.str('BUCKET_NAME')
@@ -215,4 +215,4 @@ def l0_gcs_loader() -> None:
                 downloaded_blob_names.add(blob.name)
 
 if __name__ == '__main__':
-    l0_gcs_loader()
+    l0_gcs_loader_by_manifest()
