@@ -75,6 +75,7 @@ COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/requirements
 RUN ${PYTHON_BIN} -m pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/requirements.txt
 
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}
+COPY ${MODULE_DIR}/common ${CONTAINER_APP_DIR}/common
 
 
 USER appuser

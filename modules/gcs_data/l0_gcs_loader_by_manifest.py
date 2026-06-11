@@ -54,16 +54,21 @@ import re
 import json
 from datetime import datetime
 
+import structlog
+import common.log_config as log_config
 
-def _parse_manifest_data(manifest_data: object) -> list[str]:
+
+def _parse_manifest_data(manifest_data: object, log) -> list[str]:
     if isinstance(manifest_data, dict):
         manifest_paths = manifest_data.get('paths', [])
     elif isinstance(manifest_data, list):
         manifest_paths = manifest_data
     else:
+        log.error('Invalid manifest format', manifest_type=type(manifest_data).__name__)
         sys.exit('Manifest must contain a JSON array or an object with a "paths" array.')
 
     if not isinstance(manifest_paths, list):
+        log.error('Invalid manifest paths entry')
         sys.exit('Manifest "paths" entry must be a JSON array of strings.')
 
     return [path for path in manifest_paths if isinstance(path, str) and path.strip()]
@@ -72,6 +77,10 @@ def _parse_manifest_data(manifest_data: object) -> list[str]:
 def l0_gcs_loader_by_manifest() -> None:
 
     env = environs.Env()
+    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
+    log_config.configure(log_level)
+    log = structlog.get_logger()
+    
     ingest_bucket_name = env.str('BUCKET_NAME')
     bucket_version_path = env.str('BUCKET_VERSION_PATH')
     source_type_index = env.int('SOURCE_TYPE_INDEX', None)
@@ -84,35 +93,55 @@ def l0_gcs_loader_by_manifest() -> None:
     manifest_file_raw = env.str('MANIFEST_FILE', None)
     output_directory: Path = env.path('OUT_PATH')
 
+    log.debug('Configuration loaded', 
+              bucket_name=ingest_bucket_name,
+              output_directory=output_directory,
+              source_type_index=source_type_index,
+              year_index=year_index,
+              month_index=month_index,
+              day_index=day_index,
+              source_id_index=source_id_index)
+
     if source_type_index is None:
+        log.error('SOURCE_TYPE_INDEX environment variable is required')
         sys.exit('SOURCE_TYPE_INDEX environment variable is required.')
 
     if manifest_inline and manifest_inline.strip():
         try:
             manifest_data = json.loads(manifest_inline)
+            log.debug('Manifest loaded from MANIFEST environment variable')
         except json.JSONDecodeError as exc:
+            log.error('Invalid JSON in MANIFEST', error=str(exc))
             sys.exit(f'Invalid JSON in MANIFEST: {exc}')
-        manifest_paths = _parse_manifest_data(manifest_data)
+        manifest_paths = _parse_manifest_data(manifest_data, log)
     else:
         if not manifest_file_raw:
+            log.error('One of MANIFEST or MANIFEST_FILE environment variables is required')
             sys.exit('One of MANIFEST or MANIFEST_FILE environment variables is required.')
         manifest_file = Path(manifest_file_raw)
         if not manifest_file.exists():
+            log.error('MANIFEST_FILE does not exist', manifest_file=str(manifest_file))
             sys.exit(f'MANIFEST_FILE does not exist: {manifest_file}')
 
+        log.debug('Loading manifest from file', manifest_file=str(manifest_file))
         with open(manifest_file, 'r', encoding='utf-8') as manifest_handle:
             try:
                 manifest_data = json.load(manifest_handle)
+                log.debug('Manifest loaded from file', manifest_file=str(manifest_file))
             except json.JSONDecodeError as exc:
+                log.error('Invalid JSON in MANIFEST_FILE', manifest_file=str(manifest_file), error=str(exc))
                 sys.exit(f'Invalid JSON in MANIFEST_FILE {manifest_file}: {exc}')
-        manifest_paths = _parse_manifest_data(manifest_data)
+        manifest_paths = _parse_manifest_data(manifest_data, log)
 
     if not manifest_paths:
-        print('No valid paths found in MANIFEST input.')
+        log.warning('No valid paths found in MANIFEST input')
         return
+
+    log.info('Processing manifest paths', path_count=len(manifest_paths))
 
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
+    log.debug('Connected to GCS bucket', bucket_name=ingest_bucket_name)
 
     def get_part(parts: list[str], index: int | None) -> str | None:
         if index is None:
@@ -136,6 +165,8 @@ def l0_gcs_loader_by_manifest() -> None:
         parts = [part for part in manifest_path.strip('/').split('/') if part]
         if not parts:
             continue
+
+        log.debug('Processing manifest path', manifest_path=manifest_path)
 
         source_type = get_part(parts, source_type_index)
         download_year = get_part(parts, year_index)
@@ -215,12 +246,22 @@ def l0_gcs_loader_by_manifest() -> None:
                     file_name,
                 )
 
-                print('File path is:  ', file_path)
+                log.debug('Downloading file to local path', 
+                         file_path=str(file_path),
+                         blob_name=blob.name,
+                         resolved_source_type=resolved_source_type,
+                         resolved_source_id=resolved_source_id,
+                         file_date=file_date)
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(file_path, 'wb') as l0_data_file:
                     l0_data_file.write(blob.download_as_bytes())
+                log.info('File downloaded successfully', 
+                        file_path=str(file_path),
+                        blob_name=blob.name)
 
                 downloaded_blob_names.add(blob.name)
+
+    log.info('Manifest processing completed', total_files_downloaded=len(downloaded_blob_names))
 
 if __name__ == '__main__':
     l0_gcs_loader_by_manifest()
