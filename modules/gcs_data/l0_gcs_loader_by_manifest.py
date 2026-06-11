@@ -1,7 +1,13 @@
 
 """Load L0 parquet files from GCS using manifest-driven path selectors.
 
-Manifest file format (MANIFEST_FILE):
+Manifest input can be provided by either:
+1. MANIFEST: JSON-formatted string.
+2. MANIFEST_FILE: Path to a file containing JSON.
+
+If both are set, MANIFEST is used.
+
+Accepted JSON formats for either input:
 1. JSON object containing a "paths" array.
 2. JSON array of strings.
 
@@ -49,6 +55,20 @@ import json
 from datetime import datetime
 
 
+def _parse_manifest_data(manifest_data: object) -> list[str]:
+    if isinstance(manifest_data, dict):
+        manifest_paths = manifest_data.get('paths', [])
+    elif isinstance(manifest_data, list):
+        manifest_paths = manifest_data
+    else:
+        sys.exit('Manifest must contain a JSON array or an object with a "paths" array.')
+
+    if not isinstance(manifest_paths, list):
+        sys.exit('Manifest "paths" entry must be a JSON array of strings.')
+
+    return [path for path in manifest_paths if isinstance(path, str) and path.strip()]
+
+
 def l0_gcs_loader() -> None:
 
     env = environs.Env()
@@ -60,31 +80,29 @@ def l0_gcs_loader() -> None:
     month_index = env.int('MONTH_INDEX', None)
     day_index = env.int('DAY_INDEX', None)
     source_id_index = env.int('SOURCE_ID_INDEX', None)
-    manifest_file: Path = env.path('MANIFEST_FILE')
+    manifest_inline = env.str('MANIFEST', None)
+    manifest_file_raw = env.str('MANIFEST_FILE', None)
     output_directory: Path = env.path('OUT_PATH')
 
     if source_type_index is None:
         sys.exit('SOURCE_TYPE_INDEX environment variable is required.')
 
-    if not manifest_file.exists():
-        sys.exit(f'MANIFEST_FILE does not exist: {manifest_file}')
-
-    with open(manifest_file, 'r', encoding='utf-8') as manifest_handle:
-        manifest_data = json.load(manifest_handle)
-
-    if isinstance(manifest_data, dict):
-        manifest_paths = manifest_data.get('paths', [])
-    elif isinstance(manifest_data, list):
-        manifest_paths = manifest_data
+    if manifest_inline and manifest_inline.strip():
+        manifest_data = json.loads(manifest_inline)
+        manifest_paths = _parse_manifest_data(manifest_data)
     else:
-        sys.exit('MANIFEST_FILE must contain a JSON array or an object with a "paths" array.')
+        if not manifest_file_raw:
+            sys.exit('One of MANIFEST or MANIFEST_FILE environment variables is required.')
+        manifest_file = Path(manifest_file_raw)
+        if not manifest_file.exists():
+            sys.exit(f'MANIFEST_FILE does not exist: {manifest_file}')
 
-    if not isinstance(manifest_paths, list):
-        sys.exit('MANIFEST_FILE "paths" entry must be a JSON array of strings.')
+        with open(manifest_file, 'r', encoding='utf-8') as manifest_handle:
+            manifest_data = json.load(manifest_handle)
+        manifest_paths = _parse_manifest_data(manifest_data)
 
-    manifest_paths = [path for path in manifest_paths if isinstance(path, str) and path.strip()]
     if not manifest_paths:
-        print('No valid paths found in MANIFEST_FILE.')
+        print('No valid paths found in MANIFEST input.')
         return
 
     storage_client = storage.Client()
