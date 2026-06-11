@@ -8,6 +8,7 @@
 # Use ubi9 as the base image
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.7
 ARG MODULE_DIR="./modules"
+ARG APP_DIR="gcs_data"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 
 # For rclone
@@ -21,8 +22,13 @@ RUN microdnf update -y --disableplugin=subscription-manager && \
             findutils \
             gzip \
             libzstd  \
+            python3 \
+            python3-pip \
+            python3-setuptools \
+            python3-wheel \
             shadow-utils \
             tar && \
+            python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
             microdnf clean all --disableplugin=subscription-manager &&\
     groupadd appuser -g 1001 && \
     useradd appuser -d ${CONTAINER_APP_DIR} -g appuser -u 1001 &&\
@@ -43,6 +49,11 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; \
     rpm -Uvh "https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-${ARCHITECTURE}.rpm"
 
 WORKDIR ${CONTAINER_APP_DIR}
+
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/requirements.txt
+RUN python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/requirements.txt
+
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}
 
 
 USER appuser

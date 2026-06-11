@@ -1,0 +1,2 @@
+google-cloud-storage==3.9.0
+environs==14.4.0
