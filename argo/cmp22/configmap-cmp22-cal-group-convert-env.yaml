@@ -13,7 +13,14 @@ metadata:
 data:
   # All modules
   log-level: INFO
+  mount-path-inputs: /inputs
+  mount-path-outputs: /pfs
+  mount-path-tmp: /tmp
   err-path: /pfs/errored_datums
+  schema-repo-eng-url: git@github.com:BattelleEcology/neon-avro-schemas.git
+  schema-repo-eng-revision: develop # Branch or tag
+  schema-repo-sci-url: https://github.com/NEONScience/NEON-IS-avro-schemas.git
+  schema-repo-sci-revision: master # Branch or tag
 
   # Command line arguments for filter-joiner merging calibrations with data
   filter-joiner-config: |
