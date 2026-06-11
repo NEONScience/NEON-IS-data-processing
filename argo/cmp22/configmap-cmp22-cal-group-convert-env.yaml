@@ -1,0 +1,64 @@
+# Environment variables for the cmp22 calibration group and convert module
+# To load this configmap in kubernetes:
+#   kubectl config set-context --current --namespace=argo-workflows-dev
+#   kubectl apply -f <configmapFile> 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmp22-cal-group-convert-env
+  namespace: argo-workflows-dev
+  labels:
+    # Note: This label is required for the informer to detect this ConfigMap.
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  # All modules
+  log-level: INFO
+  err-path: /pfs/errored_datums
+
+  # Command line arguments for filter-joiner merging calibrations with data
+  filter-joiner-config: |
+    ---
+    # Configuration for filter-joiner module that will bring together the data and calibrations
+    # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+    # Metadata indices will typically begin at index 3.
+    input_paths:
+    - path:
+        name: DATA_PATH_ARCHIVE
+        # Filter for data directory
+        glob_pattern: /inputs/DATA_PATH_ARCHIVE/cmp22/*/*/*/*/**
+        # Join on named location (already joined below by day)
+        join_indices: [7]
+        outer_join: true
+    - path:
+        name: CALIBRATION_PATH
+        # Filter for data directory
+        glob_pattern: /inputs/CALIBRATION_PATH/cmp22/*/*/*/*/**
+        # Join on named location (already joined below by day)
+        join_indices: [7]
+        outer_join: true
+  relative-path-index: "3"
+  link-type: SYMLINK
+  out-path-joiner: /pfs/data_cal_joined
+
+  # Command line arguments for flow.kfka.comb.R
+  kfka-comb-r-args: >
+    DirIn=$OUT_PATH_JOINER
+    DirOut=$OUT_PATH_KAFKA_COMB
+    DirErr=$ERR_PATH
+    FileSchmL0=$FILE_SCHEMA_L0
+    DirSubCopy=calibration
+  out-path-kafka-comb: /pfs/kafka_combined
+
+  # Command line arguments for flow.cal.conv.R
+  cal-conv-r-args: >
+    DirIn=$OUT_PATH_KAFKA_COMB
+    DirOut=$OUT_PATH_CAL_CONV
+    DirErr=$ERR_PATH
+    FileSchmData=$FILE_SCHEMA_DATA
+    FileSchmQf=$FILE_SCHEMA_FLAGS
+    ConvFuncTerm1=def.cal.conv.poly:voltage
+    TermQf=voltage
+    UcrtFuncTerm1=def.ucrt.meas.mult:voltage
+    UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage
+    FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
+  out-path-cal-conv: /pfs/cmp22_calibration_group_and_convert

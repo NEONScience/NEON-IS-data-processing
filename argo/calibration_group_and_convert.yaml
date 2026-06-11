@@ -1,0 +1,375 @@
+# Default workflow for applying calibration to raw sensor data.
+# This workflow template accepts a manifest of datums (paths) to retrieve and process.
+# Each datum can be specified to whatever path makes sense. For example, can specify to 
+# the /source_type/year/month/day, or to the /source_type/year/month/day/source-id
+# The data is loaded to a local volume.
+# The calibration group and convert module processes whatever is in the volume.
+# The final output is copied to a specified repo in the specified output bucket
+# The next workflow in the series is spawned, as read from a configmap
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cal-conv
+spec:
+  # You can set sensible defaults here, can override in the workflow
+  entrypoint: run
+  # This block for granting setting the group permissions on the emptyDir volumes
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: OnRootMismatch
+  arguments:
+    parameters:
+      - name: datum-manifest # Data loader
+        value: |
+          {"paths": ["cmp22/2025/10/01/11185","cmp22/2025/10/02/11185"]}
+      - name: schema-l0
+        value: /inputs/schemas-eng/schemas/cmp22/cmp22.avsc
+      - name: schema-calibrated
+        value: /inputs/schemas-sci/avro_schemas/cmp22/cmp22_calibrated.avsc
+      - name: schema-cal-flags
+        value: /inputs/schemas-sci/avro_schemas/cmp22/flags_calibration_cmp22.avsc
+      - name: file-uncertainty-fdas
+        value: /inputs/uncertainty_fdas/fdas_calibration_uncertainty_general.json
+      - name: parallelism-internal # All R modules
+        value: 3
+      - name: bucket-name # Bucket download/upload
+        value: neon-dev-argo-workflow-test
+      - name: out-repo
+        value: cmp22_calibration_group_and_convert
+      - name: env_config # ConfigMap holding environment vars
+        value: cmp22-cal-group-convert-env
+      - name: schema-repo-eng-url # Public Git repo containing schema folder(s)
+        value: git@github.com:BattelleEcology/neon-avro-schemas.git
+      - name: schema-repo-eng-revision
+        value: develop
+      - name: schema-repo-sci-url # Public Git repo containing SCI schema folder(s)
+        value: https://github.com/NEONScience/NEON-IS-avro-schemas.git
+      - name: schema-repo-sci-revision
+        value: master
+
+  templates:
+    - name: run
+      volumes:
+        - name: in-vol
+          emptyDir: { }
+        - name: out-vol
+          emptyDir: { }
+        - name: tmp-vol
+          emptyDir: { }
+          
+      inputs:
+        parameters:
+        - name: datum-manifest
+        artifacts: 
+        - name: schemas-eng
+          path: /inputs/schemas-eng
+          git:
+            repo: "{{workflow.parameters.schema-repo-eng-url}}"
+            revision: "{{workflow.parameters.schema-repo-eng-revision}}"
+            depth: 1
+            sshPrivateKeySecret:
+              name: neon-avro-schemas-secret-readonly
+              key: sshPrivateKey
+        - name: schemas-sci
+          path: /inputs/schemas-sci
+          git:
+            repo: "{{workflow.parameters.schema-repo-sci-url}}"
+            revision: "{{workflow.parameters.schema-repo-sci-revision}}"
+            depth: 1
+        - name: uncertainty-fdas
+          path: /inputs/uncertainty_fdas
+          gcs:
+            bucket: neon-dev-argo-workflow-test
+            key: cmp22_uncertainty_fdas
+
+      containerSet:
+        # Note: Must mount volume with the input artifact(s) in order to have it accessible to all containers 
+        #   (otherwise it is only accessible to the "main" container). Same goes for outputs.
+        volumeMounts:
+          - name: in-vol
+            mountPath: /inputs
+          - name: out-vol
+            mountPath: /pfs
+            # /tmp is required to run R code if it ever creates a temp directory
+          - name: tmp-vol
+            mountPath: /tmp
+            
+        containers:
+          - name: load-data
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image might set the user and group as something else, but this doesn't matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "100m"
+              limits:
+                memory: "500Mi"
+                cpu: "1"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              echo $BUCKET_NAME
+              echo $DATUM_MANIFEST
+              
+              DATA_REPO="cmp22_data_source_gcs"
+              DATA_DEST="/inputs/DATA_PATH_ARCHIVE"
+              CAL_REPO="cmp22_calibration_assignment"
+              CAL_DEST="/inputs/CALIBRATION_PATH"
+              
+              #set -x  # Uncomment for troubleshooting
+              
+              # Normalize repo prefixes (remove leading/trailing slashes)
+              DATA_REPO="${DATA_REPO#/}"
+              DATA_REPO="${DATA_REPO%/}"
+              CAL_REPO="${CAL_REPO#/}"
+              CAL_REPO="${CAL_REPO%/}"
+
+              DATA_ROOT=":gcs://${BUCKET_NAME}/${DATA_REPO}"
+              CAL_ROOT=":gcs://${BUCKET_NAME}/${CAL_REPO}"
+              
+              mkdir -p "$DATA_DEST"
+              mkdir -p "$CAL_DEST"
+              
+              echo "Datum Manifest:        $DATUM_MANIFEST"
+              echo "Data Root:             $DATA_ROOT"
+              echo "Data Dest:             $DATA_DEST"
+              echo "Cal Root:              $CAL_ROOT"
+              echo "Cal Dest:              $CAL_DEST"
+              echo
+
+
+              for datum_path in $(printf '%s' "$DATUM_MANIFEST" | jq -r '.paths[]'); do
+
+                echo "DATUM: $datum_path"
+
+                src="${DATA_ROOT}/${datum_path}"
+                dst="${DATA_DEST}/${datum_path}"
+                mkdir -p "$dst"
+
+                rclone \
+                  --no-check-dest \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  --gcs-no-check-bucket \
+                  copy \
+                  --progress \
+                  "${src}" "${dst}" 
+
+                # Get calibrations
+                echo "Getting calibration datum: $datum_path"
+                
+                src="${CAL_ROOT}/${datum_path}"
+                dst="${CAL_DEST}/${datum_path}"
+                mkdir -p "$dst"
+
+                rclone \
+                  --no-check-dest \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  --gcs-no-check-bucket \
+                  copy \
+                  --progress \
+                  "${src}" "${dst}" 
+              done
+              
+              echo "Done getting data and calibrations."
+              
+              #set +x # Uncomment for troubleshooting
+                        
+            env:
+              # Environment variables for data upload
+              - name: DATUM_MANIFEST
+                value: "{{inputs.parameters.datum-manifest}}"   # <- parameterized
+              - name: BUCKET_NAME
+                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
+
+          - name: calibration-group-and-convert
+            dependencies:
+              - load-data
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.1.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+              
+            # NOTE: The individual resources requested for each container don't really matter. 
+            #   It's the sum total of them that is actually available to each container, so long as they run in sequence.
+            #   Any containers that run in parallel need to have the sum of their resource needs available
+            resources:
+              requests:
+                memory: "700Mi"
+                cpu: "1"
+              limits:
+                memory: "1Gi"
+                cpu: "1.25"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              # ls -l /inputs
+              # ls -l /inputs/DATA_PATH_ARCHIVE
+
+              # Join files from the archive and from Kafka
+              export OUT_PATH=$OUT_PATH_JOINER
+              python3 -m filter_joiner.filter_joiner_main
+              
+              # ls -l $OUT_PATH_JOINER
+              
+              # Combine data from Kafka and the archive
+              # In this case we are just removing fields outside the schema
+              eval "Rscript ./flow.kfka.comb.R $KFKA_COMB_R_ARGS"
+    
+              # ls -l $OUT_PATH_KAFKA_COMB
+              
+              # Run calibration conversion module
+              eval "Rscript ./flow.cal.conv.R $CAL_CONV_R_ARGS"
+    
+              # ls -l $OUT_PATH_KAFKA_COMB
+              
+            env:
+              # Environment variables for filter-joiner
+              - name: CONFIG
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: filter-joiner-config
+              - name: OUT_PATH_JOINER
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: out-path-joiner
+              - name: OUT_PATH_KAFKA_COMB
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: out-path-kafka-comb
+              - name: OUT_PATH_CAL_CONV
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: out-path-cal-conv
+              - name: ERR_PATH
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: err-path
+              - name: LOG_LEVEL
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: log-level
+              - name: RELATIVE_PATH_INDEX
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: relative-path-index
+              - name: LINK_TYPE
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: link-type
+              - name: FILE_SCHEMA_L0
+                value: "{{workflow.parameters.schema-l0}}"   # <- parameterized
+              - name: FILE_SCHEMA_DATA
+                value: "{{workflow.parameters.schema-calibrated}}"   # <- parameterized
+              - name: FILE_SCHEMA_FLAGS
+                value: "{{workflow.parameters.schema-cal-flags}}"   # <- parameterized
+              - name: FILE_UNCERTAINTY_FDAS
+                value: "{{workflow.parameters.file-uncertainty-fdas}}"   # <- parameterized
+              - name: PARALLELISM_INTERNAL
+                value: "{{workflow.parameters.parallelism-internal}}"   # <- parameterized
+              - name: KFKA_COMB_R_ARGS
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: kfka-comb-r-args
+              - name: CAL_CONV_R_ARGS
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: cal-conv-r-args
+          - name: main
+            dependencies:
+              - calibration-group-and-convert
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
+            # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
+            # Note that the image sets the user and group as 9999, but this doesn't seem to matter because we don't need write priveleges in the container
+            securityContext:
+              runAsUser: 1001 
+              runAsGroup: 1001
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "100m"
+              limits:
+                memory: "500Mi"
+                cpu: "1"
+            command:
+            - bash
+            - -c
+            - |
+              # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+              set -euo pipefail
+              IFS=$'\n\t'
+              
+              ls -l $OUT_PATH
+
+              # Export data to bucket
+              if [[ -d "$OUT_PATH" ]]; then
+                linkdir=$(mktemp -d)
+                shopt -s globstar
+                out_parquet_glob="${OUT_PATH}/**/*.*" # Get all files, assuming there is an extension
+                # Example: /pfs/out/cmp22/2023/01/01/12345/data/file.parquet
+                echo "Linking output files to ${linkdir}"
+                # set -x # Uncomment for troubleshooting
+                for f in $out_parquet_glob; do
+                  # Parse the path
+                  [[ "$f" =~ ^$OUT_PATH/(.*)$ ]]
+                  rel_path="${BASH_REMATCH[1]}"
+                  fname="${rel_path##*/}"
+                  rel_dir="${rel_path%/*}"
+                  outdir="${linkdir}/${OUT_REPO}/${rel_dir}"
+                  mkdir -p "${outdir}"
+                  ln -s "${f}" "${outdir}"
+                done
+          
+                echo "Syncing files to bucket"
+                rclone \
+                  --copy-links \
+                  --gcs-bucket-policy-only \
+                  copy \
+                  "${linkdir}/${OUT_REPO}" \
+                  ":gcs://${BUCKET_NAME}/${OUT_REPO}"
+                  
+                echo "Removing temporary files"
+                rm -rf $linkdir
+                
+                # set +x # Uncomment for troubleshooting
+              fi
+                        
+            env:
+              # Environment variables for data upload
+              - name: OUT_PATH
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: out-path-cal-conv
+              - name: BUCKET_NAME
+                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
+              - name: OUT_REPO
+                value: "{{workflow.parameters.out-repo}}"   # <- parameterized
