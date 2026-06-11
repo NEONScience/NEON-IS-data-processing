@@ -88,7 +88,10 @@ def l0_gcs_loader_by_manifest() -> None:
         sys.exit('SOURCE_TYPE_INDEX environment variable is required.')
 
     if manifest_inline and manifest_inline.strip():
-        manifest_data = json.loads(manifest_inline)
+        try:
+            manifest_data = json.loads(manifest_inline)
+        except json.JSONDecodeError as exc:
+            sys.exit(f'Invalid JSON in MANIFEST: {exc}')
         manifest_paths = _parse_manifest_data(manifest_data)
     else:
         if not manifest_file_raw:
@@ -98,7 +101,10 @@ def l0_gcs_loader_by_manifest() -> None:
             sys.exit(f'MANIFEST_FILE does not exist: {manifest_file}')
 
         with open(manifest_file, 'r', encoding='utf-8') as manifest_handle:
-            manifest_data = json.load(manifest_handle)
+            try:
+                manifest_data = json.load(manifest_handle)
+            except json.JSONDecodeError as exc:
+                sys.exit(f'Invalid JSON in MANIFEST_FILE {manifest_file}: {exc}')
         manifest_paths = _parse_manifest_data(manifest_data)
 
     if not manifest_paths:
@@ -182,6 +188,8 @@ def l0_gcs_loader_by_manifest() -> None:
                     continue
 
                 if download_day:
+                    if not download_year or not download_month:
+                        continue
                     trigger_date = datetime(int(download_year), int(download_month), int(download_day))
                     bucket_file_date = datetime(int(file_year), int(file_month), int(file_day))
                     if trigger_date != bucket_file_date:
