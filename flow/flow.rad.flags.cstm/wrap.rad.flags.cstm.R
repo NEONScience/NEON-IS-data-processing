@@ -129,16 +129,25 @@ wrap.rad.flags.cstm <- function(DirIn,
   flagDf <- data.frame(readout_time = data$readout_time)
 
   if("Cmp22Heater" %in% FlagsRad){
-    source("./def.cmp22.heater.flags.R")
+    suppressWarnings(tryCatch(
+      source("./def.cmp22.heater.flags.R"),
+      error = function(e) {
+        # Silently continue - function may already be loaded or sourced elsewhere
+      }
+    ))
     flagDf <- def.cmp22.heater.flags(data, flagDf, log)
   }
-
+  
   #run radiation shading script
   if("Shadow" %in% FlagsRad){
-    source("./def.rad.shadow.flags.R")
+    suppressWarnings(tryCatch(
+      source("./def.rad.shadow.flags.R"),
+      error = function(e) {
+        # Silently continue - function may already be loaded or sourced elsewhere
+      }
+    ))
     flagDf <- def.rad.shadow.flags(DirIn, flagDf, termTest,shadowSource, log)
   }
-
   # Create output filenames
   nameFileIdxSplt <- strsplit(fileData, '.', fixed = TRUE)[[1]]
   base_name <- paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt) - 1)], collapse = '.')

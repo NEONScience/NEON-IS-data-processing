@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: transition-workflows-dev
+  namespace: argo
+spec:
+  template:
+    serviceAccountName: argo-events-source-resource
+    container:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      securityContext:
+        capabilities:
+          drop:
+            - all
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 3000
+      runAsNonRoot: true
+      fsGroup: 2000
+      seccompProfile:
+        type: RuntimeDefault
+    nodeSelector:
+      cloud.google.com/machine-family: n2d
+      cloud.google.com/requested-min-cpu-platform: AMD_Milan
+      gke.neoninternal.org/workload: common
+      kubernetes.io/os: linux
+    tolerations:
+      - key: gke.neoninternal.org/workload
+        operator: Equal
+        value: common
+        effect: NoSchedule
+  resource:
+    workflows-succeeded:
+      group: argoproj.io
+      version: v1alpha1
+      resource: workflows
+      # Only watch workflows in this namespace; omit to watch all (cluster-scope install required)
+      namespace: argo-workflows-dev
+      eventTypes:
+        - UPDATE
+      # filter:
+      #   # Only those with pipeline label, e.g., pipeline=foo
+      #   labelSelector:
+      #     matchLabels:
+      #       pipeline: foo
+      # Only fire on Succeeded (you can add Failed and map to a different trigger)
+      fields:
+        - key: status.phase
+          operation: equals
+          value: Succeeded

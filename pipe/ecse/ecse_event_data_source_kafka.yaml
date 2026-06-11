@@ -2,7 +2,7 @@
 pipeline:
   name: ecse_event_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -29,6 +29,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_LOG_TOPIC
     key: KAFKA_LOG_TOPIC
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_COMPACT_TOPIC
+    key: KAFKA_COMPACT_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -150,9 +153,6 @@ transform:
         rm -rf "${outdir}"
       done
       
-      # Update the airflow triggering table
-      ./update-trigger-table.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE/$site" 
-
       # set +x # Uncomment for troubleshooting
       rm -rf $linkdir
     fi
@@ -167,14 +167,14 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.3
+  memory: 900M
+  cpu: 1.5
 resource_limits:
-  memory: 1.5G
+  memory: 2G
   cpu: 2
 sidecar_resource_requests:
   memory: 2G
-  cpu: 0.5
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:

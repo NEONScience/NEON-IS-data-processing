@@ -1,0 +1,22 @@
+{
+    "features":[
+        {
+            "Data Rate":"0.0166666666667",
+            "geometry":null,
+            "HOR":"102",
+            "properties":{
+                "active_periods":[
+                    {
+                        "start_date":"2019-11-18T00:00:00Z",
+                        "end_date":"2019-11-19T00:00:00Z"
+                    }
+                ],
+                "description":"Posey Creek Nitrate Analyzer S2",
+                "name":"CFGLOC101686",
+                "site":"POSE"
+            },
+            "VER":"100"
+        }
+    ],
+    "type":"FeatureCollection"
+}

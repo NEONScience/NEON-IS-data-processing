@@ -61,12 +61,12 @@ test_that("Unit test of wrap.troll.logfiles.R", {
   #
   fileData <- base::list.files(testFileIn,full.names=TRUE)
   log_file  <- base::try(read.table(paste0(testFileIn), header = FALSE, sep = ",", 
-                         col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
-                         stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
+                                    col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
+                                    stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
   #log_file$V1[52]  "11/5/2019 19:50"
   #log_file$V1[53]  "11/19/2019 19:11"
   #log_file$V2[13] "Level TROLL 500"
-
+  
   sensor = tolower(gsub(" ", "", paste(log_file$V2[13])))
   #datePattern = "\d{1,2}\/\d{1,2}\/\d{2,4}"
   #format(as.Date(df1$Date, format="%d/%m/%Y"),"%Y")
@@ -81,14 +81,14 @@ test_that("Unit test of wrap.troll.logfiles.R", {
   }
   
   wrap.troll.logfiles (FileIn=testFileIn,
-                    DirOut=testDirOut,
-                    SchmDataOut=NULL,
-                    log=log)
+                       DirOut=testDirOut,
+                       SchmDataOut=NULL,
+                       log=log)
   
   for (iDate in startDate:endDate){
     #need to keep leading 0 in the directory
     expect_true (file.exists(file.path(testDirOutDir, str_pad(iDate, 2, pad = "0"))))
-    }
+  }
   #
   # Test 2. Not NULL Schema is passed in
   # 
@@ -109,9 +109,9 @@ test_that("Unit test of wrap.troll.logfiles.R", {
   schm = NEONprocIS.base::def.schm.parq.from.df (df = df1, log=NULL)
   
   wrap.troll.logfiles (FileIn=testFileIn,
-                      DirOut=testDirOut,
-                      SchmDataOut=schm,
-                      log=log)
+                       DirOut=testDirOut,
+                       SchmDataOut=schm,
+                       log=log)
   
   # Test 3. The input file has date < 2018
   
@@ -137,5 +137,9 @@ test_that("Unit test of wrap.troll.logfiles.R", {
                        log=log)
   
   expect_true (file.exists(file.path(testDirOutDir)))
-
+  
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  
 })

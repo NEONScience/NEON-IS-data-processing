@@ -29,7 +29,7 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-            arrow@14.0.0
+            arrow@19.0.1
             BiocManager
             bit
             covr
@@ -38,6 +38,7 @@ jobs:
             dplyr
             fastmatch
             ff
+            suncalc
             testthat
           extra-packages: |
               any::xml2
@@ -63,7 +64,7 @@ jobs:
               subdir="pack/eddy4R.base",
               dependencies=c(NA, TRUE)[2],
               repos=c(BiocManager::repositories(), "https://cran.rstudio.com/"),
-              upgrade="never"
+              upgrade=FALSE
           )
           devtools::install_github(
               repo="NEONScience/eddy4R",
@@ -71,16 +72,16 @@ jobs:
               subdir="pack/eddy4R.qaqc",
               dependencies=c(NA, TRUE)[2],
               repos=c(BiocManager::repositories(), "https://cran.rstudio.com/"),
-              upgrade="never"
+              upgrade=FALSE
           )
 
           # Install NEON packages
-          devtools::install("./pack/NEONprocIS.base", upgrade="never")
-          devtools::install("./pack/NEONprocIS.cal", upgrade="never")
-          devtools::install("./pack/NEONprocIS.pub", upgrade="never")
-          devtools::install("./pack/NEONprocIS.qaqc", upgrade="never")
-          devtools::install("./pack/NEONprocIS.stat", upgrade="never")
-          devtools::install("./pack/NEONprocIS.wq", upgrade="never")
+          devtools::install("./pack/NEONprocIS.base", upgrade=FALSE)
+          devtools::install("./pack/NEONprocIS.cal", upgrade=FALSE)
+          devtools::install("./pack/NEONprocIS.pub", upgrade=FALSE)
+          devtools::install("./pack/NEONprocIS.qaqc", upgrade=FALSE)
+          devtools::install("./pack/NEONprocIS.stat", upgrade=FALSE)
+          devtools::install("./pack/NEONprocIS.wq", upgrade=FALSE)
 
           library(NEONprocIS.base)
           library(NEONprocIS.cal)

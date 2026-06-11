@@ -1,0 +1,212 @@
+{
+   "thresholds":[
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         3,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Altitude_LR"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         241,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Azimuth_LR"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Length_corrector_LR"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         3.5,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Length_LR"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         2.6,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Obstruction_height_LR"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         0.0001,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         3600,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         2800,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         -5,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         1400,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CLBJ",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"primary",
+"radiation"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"REALM",
+         "number_value":         1000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"shortwaveRadiation",
+         "threshold_name":"Step Test value"
+      }
+   ]
+}

@@ -2,7 +2,7 @@ name: DEV-solenoid-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/solenoid/*.yaml'
       - 'pipe/solenoid/pipe_list_solenoid.txt'
