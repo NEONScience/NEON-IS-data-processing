@@ -264,7 +264,7 @@ def l0_gcs_loader_by_manifest() -> None:
                 files_downloaded_for_path += 1
 
         if files_downloaded_for_path == 0:
-            log.error('No files found in bucket for manifest path', 
+            log.warning('No files found in bucket for manifest path', 
                      manifest_path=manifest_path,
                      bucket_prefix=prefixes[0] if prefixes else 'N/A',
                      source_type=source_type,
@@ -272,7 +272,6 @@ def l0_gcs_loader_by_manifest() -> None:
                      month=download_month,
                      day=download_day,
                      source_id=manifest_source_id)
-            sys.exit(f'No files found in bucket for manifest path: {manifest_path}')
 
     log.info('Manifest processing completed', total_files_downloaded=len(downloaded_blob_names))
 
