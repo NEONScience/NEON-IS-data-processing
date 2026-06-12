@@ -21,8 +21,16 @@ data:
   parallelism-internal: "3" # Internal R parallelization for all R modules
   
   # Parameters for input data load
-  l0-bucket-name: neon-dev-argo-workflow-test
- 
+  l0-bucket-name: neon-dev-l0-ingest # STILL WORKING ON THIS
+  l0-bucket-version-path: v2
+  cal-bucket-name: neon-dev-argo-workflow-test # STILL WORKING ON THIS 
+  source-type-index: "0" # Index in the manifest path  (must be present)
+  year-index: "1" # Index in the manifest path (doesn't actually need to be present)
+  month-index: "2" # Index in the manifest path (doesn't actually need to be present)
+  day-index: "3" # Index in the manifest path (doesn't actually need to be present)
+  source-id-index: "4" # Index in the manifest path (doesn't actually need to be present)
+  out-path-l0: /inputs/DATA_PATH_ARCHIVE
+
  # Parameters for filter-joiner merging calibrations with data
   filter-joiner-config: |
     ---
@@ -56,22 +64,25 @@ data:
     FileSchmL0=$FILE_SCHEMA_L0
     DirSubCopy=calibration
   out-path-kafka-comb: /pfs/kafka_combined
+  file-schema-l0: /inputs/schemas-eng/schemas/cmp22/cmp22.avsc
 
   # Command line arguments and other input params for flow.cal.conv.R
   cal-conv-r-args: >
     DirIn=$OUT_PATH_KAFKA_COMB
     DirOut=$OUT_PATH_CAL_CONV
     DirErr=$ERR_PATH
-    FileSchmData=$FILE_SCHEMA_DATA
-    FileSchmQf=$FILE_SCHEMA_FLAGS
+    FileSchmData=$FILE_SCHEMA_CALIBRATED_DATA
+    FileSchmQf=$FILE_SCHEMA_CALIBRATION_FLAGS
     ConvFuncTerm1=def.cal.conv.poly:voltage
     TermQf=voltage
     UcrtFuncTerm1=def.ucrt.meas.mult:voltage
     UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage
     FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
+  file-schema-calibrated-data: /inputs/schemas-sci/avro_schemas/cmp22/cmp22_calibrated.avsc
+  file-schema-calibration-flags: /inputs/schemas-sci/avro_schemas/cmp22/flags_calibration_cmp22.avsc
   out-path-cal-conv: /pfs/cmp22_calibration_group_and_convert
   file-uncertainty-fdas: /inputs/schemas-sci/uncertainty_fdas/fdas_calibration_uncertainty_general.json
 
- # Parameters for data upload to bucket
- output-bucket-name: neon-dev-argo-workflow-test
- output-bucket-prefix: cmp22_calibration_group_and_convert
+  # Parameters for data upload to bucket
+  output-bucket-name: neon-dev-argo-workflow-test
+  output-bucket-prefix: cmp22_calibration_group_and_convert # Output Repo name

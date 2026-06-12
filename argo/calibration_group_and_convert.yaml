@@ -22,15 +22,7 @@ spec:
     parameters:
       - name: datum-manifest # Data loader
         value: |
-          {"paths": ["cmp22/2025/10/01/11185","cmp22/2025/10/02/11185"]}
-      - name: schema-l0
-        value: /inputs/schemas-eng/schemas/cmp22/cmp22.avsc
-      - name: schema-calibrated
-        value: /inputs/schemas-sci/avro_schemas/cmp22/cmp22_calibrated.avsc
-      - name: schema-cal-flags
-        value: /inputs/schemas-sci/avro_schemas/cmp22/flags_calibration_cmp22.avsc
-      - name: bucket-name # Bucket download/upload
-        value: neon-dev-argo-workflow-test
+          {"paths": ["cmp22/2025/10/01/11185","cmp22/2026/05/01/11185","cmp22/2026/05/02/11183"]}
       - name: env_config # ConfigMap holding environment vars
         value: cmp22-cal-group-convert-env
 
@@ -92,13 +84,12 @@ spec:
             mountPath: /inputs
           - name: out-vol
             mountPath: /pfs
-            # /tmp is required to run R code if it ever creates a temp directory
           - name: tmp-vol
-            mountPath: /tmp
+            mountPath: /tmp # /tmp is required to run R code if it ever creates a temp directory
             
         containers:
           - name: load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-fb7a80e
             # Need to run as user 1001 because the gcs input is loaded as this user and group, as controlled by the helm chart.
             # Note that the image might set the user and group as something else, but this doesn't matter because we don't need write priveleges in the container
             securityContext:
@@ -118,53 +109,34 @@ spec:
               # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
               set -euo pipefail
               IFS=$'\n\t'
-              
-              echo $BUCKET_NAME
-              echo $DATUM_MANIFEST
-              
-              DATA_REPO="cmp22_data_source_gcs"
-              DATA_DEST="/inputs/DATA_PATH_ARCHIVE"
+
+              # Get L0 data from GCS
+              python3 -m l0_gcs_loader_by_manifest
+
+              # Get assigned calibrations 
               CAL_REPO="cmp22_calibration_assignment"
               CAL_DEST="/inputs/CALIBRATION_PATH"
               
               #set -x  # Uncomment for troubleshooting
               
               # Normalize repo prefixes (remove leading/trailing slashes)
-              DATA_REPO="${DATA_REPO#/}"
-              DATA_REPO="${DATA_REPO%/}"
               CAL_REPO="${CAL_REPO#/}"
               CAL_REPO="${CAL_REPO%/}"
-
-              DATA_ROOT=":gcs://${BUCKET_NAME}/${DATA_REPO}"
-              CAL_ROOT=":gcs://${BUCKET_NAME}/${CAL_REPO}"
+              CAL_ROOT=":gcs://${CAL_BUCKET_NAME}/${CAL_REPO}"
               
-              mkdir -p "$DATA_DEST"
               mkdir -p "$CAL_DEST"
               
-              echo "Datum Manifest:        $DATUM_MANIFEST"
-              echo "Data Root:             $DATA_ROOT"
-              echo "Data Dest:             $DATA_DEST"
+              echo "Datum Manifest:        $MANIFEST"
+              # echo "Data Root:             $DATA_ROOT"
+              # echo "Data Dest:             $DATA_DEST"
               echo "Cal Root:              $CAL_ROOT"
               echo "Cal Dest:              $CAL_DEST"
               echo
 
 
-              for datum_path in $(printf '%s' "$DATUM_MANIFEST" | jq -r '.paths[]'); do
+              for datum_path in $(printf '%s' "$MANIFEST" | jq -r '.paths[]'); do
 
                 echo "DATUM: $datum_path"
-
-                src="${DATA_ROOT}/${datum_path}"
-                dst="${DATA_DEST}/${datum_path}"
-                mkdir -p "$dst"
-
-                rclone \
-                  --no-check-dest \
-                  --copy-links \
-                  --gcs-bucket-policy-only \
-                  --gcs-no-check-bucket \
-                  copy \
-                  --progress \
-                  "${src}" "${dst}" 
 
                 # Get calibrations
                 echo "Getting calibration datum: $datum_path"
@@ -189,10 +161,59 @@ spec:
                         
             env:
               # Environment variables for data download
-              - name: DATUM_MANIFEST
-                value: "{{inputs.parameters.datum-manifest}}"   # <- parameterized
+              - name: MANIFEST
+                value: "{{inputs.parameters.datum-manifest}}"
               - name: BUCKET_NAME
-                value: "{{workflow.parameters.bucket-name}}"   # <- parameterized
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: l0-bucket-name
+              - name: BUCKET_VERSION_PATH
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: l0-bucket-version-path
+              - name: CAL_BUCKET_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: cal-bucket-name
+              - name: SOURCE_TYPE_INDEX
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: source-type-index
+              - name: YEAR_INDEX
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: year-index
+              - name: MONTH_INDEX
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: month-index
+              - name: DAY_INDEX
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: day-index
+              - name: SOURCE_ID_INDEX
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: source-id-index
+              - name: OUT_PATH
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: out-path-l0
+              - name: LOG_LEVEL
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: log-level
+
 
           - name: calibration-group-and-convert
             dependencies:
@@ -221,26 +242,17 @@ spec:
               # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
               set -euo pipefail
               IFS=$'\n\t'
-              
-              # ls -l /inputs
-              # ls -l /inputs/DATA_PATH_ARCHIVE
 
               # Join files from the archive and from Kafka
               export OUT_PATH=$OUT_PATH_JOINER
               python3 -m filter_joiner.filter_joiner_main
-              
-              # ls -l $OUT_PATH_JOINER
-              
+
               # Combine data from Kafka and the archive
               # In this case we are just removing fields outside the schema
               eval "Rscript ./flow.kfka.comb.R $KFKA_COMB_R_ARGS"
     
-              # ls -l $OUT_PATH_KAFKA_COMB
-              
               # Run calibration conversion module
               eval "Rscript ./flow.cal.conv.R $CAL_CONV_R_ARGS"
-    
-              # ls -l $OUT_PATH_KAFKA_COMB
               
             env:
               # Environment variables for filter-joiner
@@ -285,11 +297,20 @@ spec:
                     name: "{{workflow.parameters.env_config}}"
                     key: link-type
               - name: FILE_SCHEMA_L0
-                value: "{{workflow.parameters.schema-l0}}"   # <- parameterized
-              - name: FILE_SCHEMA_DATA
-                value: "{{workflow.parameters.schema-calibrated}}"   # <- parameterized
-              - name: FILE_SCHEMA_FLAGS
-                value: "{{workflow.parameters.schema-cal-flags}}"   # <- parameterized
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: file-schema-l0
+              - name: FILE_SCHEMA_CALIBRATED_DATA
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: file-schema-calibrated-data
+              - name: FILE_SCHEMA_CALIBRATION_FLAGS
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.env_config}}"
+                    key: file-schema-calibration-flags
               - name: FILE_UNCERTAINTY_FDAS
                 valueFrom:
                   configMapKeyRef:
