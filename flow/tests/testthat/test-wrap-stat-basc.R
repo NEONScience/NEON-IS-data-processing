@@ -99,9 +99,23 @@
 #'    original creation
 ##############################################################################################
 #'Define test context
+# Load required libraries
+library(testthat)
+library(data.table)
+library(arrow)
+library(jsonlite)
+
 context("\n       | Unit test of basic statistics and uncertainty module for NEON IS data processing \n")
 
 test_that("Unit test of wrap.stat.basc.R", {
+  # Muffle arrow's "discarded from R metadata" warnings that fire on every
+  # read_parquet of the committed test fixtures. The fixture parquets carry
+  # an `environment` blob in their schema metadata that modern arrow refuses
+  # to deserialize; the data values themselves are unaffected. The documented
+  # options(arrow.unsafe_metadata = TRUE) no longer suppresses this in arrow >= 21,
+  # so we intercept the specific warning class here instead.
+  withCallingHandlers({
+
   source('../../flow.stat.basc/wrap.stat.basc.R')
   library(stringr)
   
@@ -272,9 +286,9 @@ test_that("Unit test of wrap.stat.basc.R", {
   ),silent = TRUE)
   
   #12 Test 12, the subfolder is nonStats
-  
+
   if (dir.exists(DirOutBase)) {unlink(DirOutBase, recursive = TRUE)}
-  
+
   DirSubCopy = 'nonSstats'
   try(wrap.stat.basc(
     DirIn = DirIn,
@@ -283,5 +297,60 @@ test_that("Unit test of wrap.stat.basc.R", {
     ParaStat = ParaStat,
     DirSubCopy = DirSubCopy
   ),silent = TRUE)
-  
+
+  #13 Test 13, numerical equivalence vs. golden outputs from the pre-refactor
+  # base R implementation. Goldens live at pfs/tempSoil_pre_statistics_group_golden/
+  # and were generated against the basic stats set (mean/median/minimum/maximum/
+  # variance/numPts/stdEr/expUncert) for term="temp" with cal.cnst.fdas.rstc.
+  # See pack/NEONprocIS.base/R/def.wrte.parq.R round-trip behavior.
+
+  GoldenBase = "pfs/tempSoil_pre_statistics_group_golden"
+  if (dir.exists(GoldenBase)) {
+    ParaStat_golden = list(
+      temp = list(
+        term = "temp",
+        stat = c("mean","median","minimum","maximum","variance","numPts","stdEr","expUncert"),
+        funcUcrt = "wrap.ucrt.dp01.cal.cnst.fdas.rstc"
+      )
+    )
+
+    if (dir.exists(DirOutBase)) {unlink(DirOutBase, recursive = TRUE)}
+    wrap.stat.basc(
+      DirIn = DirIn,
+      DirOutBase = DirOutBase,
+      WndwAgr = as.difftime(c(1, 30), units = 'mins'),
+      ParaStat = ParaStat_golden
+    )
+
+    goldenFiles = list.files(GoldenBase, recursive = TRUE, full.names = TRUE, pattern = "\\.parquet$")
+    newFiles    = list.files(DirOutBase, recursive = TRUE, full.names = TRUE, pattern = "\\.parquet$")
+    expect_equal(length(newFiles), length(goldenFiles))
+
+    goldenFiles = sort(goldenFiles)
+    newFiles    = sort(newFiles)
+    for (i in seq_along(goldenFiles)) {
+      g = arrow::read_parquet(goldenFiles[i])
+      n = arrow::read_parquet(newFiles[i])
+      expect_equal(nrow(n), nrow(g),
+                   label = paste0("row count: ", basename(goldenFiles[i])))
+      expect_equal(names(n), names(g),
+                   label = paste0("column names: ", basename(goldenFiles[i])))
+      for (col in names(g)) {
+        if (is.numeric(g[[col]])) {
+          expect_equal(n[[col]], g[[col]], tolerance = 1e-10,
+                       label = paste0(basename(goldenFiles[i]), " column: ", col))
+        } else {
+          expect_identical(n[[col]], g[[col]],
+                           label = paste0(basename(goldenFiles[i]), " column: ", col))
+        }
+      }
+    }
+  }
+
+  }, warning = function(w) {
+    if (grepl("discarded from R metadata|invalid elements",
+              conditionMessage(w))) {
+      invokeRestart("muffleWarning")
+    }
+  })
 })

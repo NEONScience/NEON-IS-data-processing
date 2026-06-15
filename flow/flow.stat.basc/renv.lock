@@ -17,6 +17,14 @@
       "Hash": "019388fc48e48b3da0d3a76ff94608a8",
       "Requirements": []
     },
+    "data.table": {
+      "Package": "data.table",
+      "Version": "1.17.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1d991cd6160fa7b1fdbd3689034cbd15",
+      "Requirements": []
+    },
     "doParallel": {
       "Package": "doParallel",
       "Version": "1.0.17",
