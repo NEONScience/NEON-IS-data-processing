@@ -46,7 +46,8 @@ input:
       empty_files: True
       branch: master
       trigger: 
-        cronSpec: "0 12 * * *" # Run at most every 12 hours (12 hours after an ingest trigger)
+        cronSpec: "@never"
+        #cronSpec: "0 6 * * *" # Run at most every 6 hours (6 hours after an ingest trigger)
         branch: "staging"
   - pfs:
       name: SITE_FILE
