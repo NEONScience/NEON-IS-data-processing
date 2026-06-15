@@ -69,8 +69,8 @@ input:
   # Run on a cron as well so that we can create a cron trigger file for use in later modules
   - cron:
       name: tick
-      # spec: "@every 2m"
-      spec: "0 0 * * *" # Run at 00:00 GMT
+      spec: "@never"
+      #spec: "0 0 * * *" # Run at 00:00 GMT
       overwrite: true
   - pfs:
       name: INGEST_MANIFEST
