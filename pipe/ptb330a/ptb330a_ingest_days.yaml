@@ -69,7 +69,7 @@ input:
   # Run on a cron as well so that we can create a cron trigger file for use in later modules
   - cron:
       name: tick
-      spec: @none
+      spec: "@never"
       #spec: "0 0 * * *" # Run at 00:00 GMT
       overwrite: true
   - pfs:
