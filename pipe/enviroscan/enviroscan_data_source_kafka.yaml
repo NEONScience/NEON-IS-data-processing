@@ -172,7 +172,7 @@ input:
     name: import_trigger
     repo: enviroscan_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/enviroscan/*/*/*"
+    glob: "/enviroscan/*/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
