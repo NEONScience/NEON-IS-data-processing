@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4.1.4"
+        uses: "actions/checkout@v6"
         with:
           ref: 'master'
           fetch-depth: '0'
@@ -45,7 +45,7 @@ jobs:
         # Note: must clone other repos AFTER checking out the repo where the action is run from. 
         # Otherwise, previously cloned repos are removed.
       - name: "Clone avro"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # Repository name with owner. For example, actions/checkout
           # Default: ${{ github.repository }}

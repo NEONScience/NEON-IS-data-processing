@@ -33,7 +33,7 @@ jobs:
     # Use this changed_file_list if you plan to use get-changed-files-action 
       changed_file_list: ${{ steps.changed-files-action.outputs.changed_file_list }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
           
@@ -54,7 +54,7 @@ jobs:
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: ls -la
 
       - name: Update pipelines
