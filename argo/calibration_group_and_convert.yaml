@@ -23,8 +23,8 @@ spec:
       - name: datum-manifest # Data loader
         value: |
           {"paths": ["cmp22/2025/10/01/11185","cmp22/2026/05/01/11185","cmp22/2026/05/02/11183"]}
-      - name: env_config # ConfigMap holding environment vars
-        value: cmp22-cal-group-convert-env
+      - name: config # ConfigMap holding environment vars
+        value: cmp22-cal-group-convert-config
 
   templates:
     - name: run
@@ -42,22 +42,22 @@ spec:
         - name: schema-repo-eng-url # Must be defined here bc can't access configmap in same parameter block above where it is defined 
           valueFrom:
             configMapKeyRef:
-              name: "{{workflow.parameters.env_config}}"
+              name: "{{workflow.parameters.config}}"
               key: schema-repo-eng-url
         - name: schema-repo-eng-revision
           valueFrom:
             configMapKeyRef:
-              name: "{{workflow.parameters.env_config}}"
+              name: "{{workflow.parameters.config}}"
               key: schema-repo-eng-revision
         - name: schema-repo-sci-url # Must be defined here bc can't access configmap in same parameter block above where it is defined 
           valueFrom:
             configMapKeyRef:
-              name: "{{workflow.parameters.env_config}}"
+              name: "{{workflow.parameters.config}}"
               key: schema-repo-sci-url
         - name: schema-repo-sci-revision
           valueFrom:
             configMapKeyRef:
-              name: "{{workflow.parameters.env_config}}"
+              name: "{{workflow.parameters.config}}"
               key: schema-repo-sci-revision
         artifacts: 
         - name: schemas-eng
@@ -114,26 +114,21 @@ spec:
               python3 -m l0_gcs_loader_by_manifest
 
               # Get assigned calibrations 
-              CAL_REPO="cmp22_calibration_assignment"
-              CAL_DEST="/inputs/CALIBRATION_PATH"
-              
-              #set -x  # Uncomment for troubleshooting
-              
               # Normalize repo prefixes (remove leading/trailing slashes)
-              CAL_REPO="${CAL_REPO#/}"
+              CAL_REPO="${CAL_BUCKET_PREFIX#/}"
               CAL_REPO="${CAL_REPO%/}"
               CAL_ROOT=":gcs://${CAL_BUCKET_NAME}/${CAL_REPO}"
               
-              mkdir -p "$CAL_DEST"
+              mkdir -p "$OUT_PATH_CAL"
               
               echo "Datum Manifest:        $MANIFEST"
               # echo "Data Root:             $DATA_ROOT"
               # echo "Data Dest:             $DATA_DEST"
               echo "Cal Root:              $CAL_ROOT"
-              echo "Cal Dest:              $CAL_DEST"
+              echo "Cal Dest:              $OUT_PATH_CAL"
               echo
 
-
+              #set -x  # Uncomment for troubleshooting
               for datum_path in $(printf '%s' "$MANIFEST" | jq -r '.paths[]'); do
 
                 echo "DATUM: $datum_path"
@@ -142,7 +137,7 @@ spec:
                 echo "Getting calibration datum: $datum_path"
                 
                 src="${CAL_ROOT}/${datum_path}"
-                dst="${CAL_DEST}/${datum_path}"
+                dst="${OUT_PATH_CAL}/${datum_path}"
                 mkdir -p "$dst"
 
                 rclone \
@@ -166,52 +161,62 @@ spec:
               - name: BUCKET_NAME
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: l0-bucket-name
               - name: BUCKET_VERSION_PATH
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: l0-bucket-version-path
               - name: CAL_BUCKET_NAME
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: cal-bucket-name
+              - name: CAL_BUCKET_PREFIX
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.config}}"
+                    key: cal-bucket-prefix
               - name: SOURCE_TYPE_INDEX
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: source-type-index
               - name: YEAR_INDEX
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: year-index
               - name: MONTH_INDEX
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: month-index
               - name: DAY_INDEX
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: day-index
               - name: SOURCE_ID_INDEX
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: source-id-index
               - name: OUT_PATH
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: out-path-l0
+              - name: OUT_PATH_CAL
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{workflow.parameters.config}}"
+                    key: out-path-cal
               - name: LOG_LEVEL
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: log-level
 
 
@@ -259,77 +264,57 @@ spec:
               - name: CONFIG
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: filter-joiner-config
               - name: OUT_PATH_JOINER
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: out-path-joiner
               - name: OUT_PATH_KAFKA_COMB
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: out-path-kafka-comb
               - name: OUT_PATH_CAL_CONV
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: out-path-cal-conv
               - name: ERR_PATH
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: err-path
               - name: LOG_LEVEL
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: log-level
               - name: RELATIVE_PATH_INDEX
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: relative-path-index
               - name: LINK_TYPE
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: link-type
-              - name: FILE_SCHEMA_L0
-                valueFrom:
-                  configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
-                    key: file-schema-l0
-              - name: FILE_SCHEMA_CALIBRATED_DATA
-                valueFrom:
-                  configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
-                    key: file-schema-calibrated-data
-              - name: FILE_SCHEMA_CALIBRATION_FLAGS
-                valueFrom:
-                  configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
-                    key: file-schema-calibration-flags
-              - name: FILE_UNCERTAINTY_FDAS
-                valueFrom:
-                  configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
-                    key: file-uncertainty-fdas
               - name: PARALLELISM_INTERNAL
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: parallelism-internal
               - name: KFKA_COMB_R_ARGS
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: kfka-comb-r-args
               - name: CAL_CONV_R_ARGS
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: cal-conv-r-args
           - name: main
             dependencies:
@@ -355,8 +340,6 @@ spec:
               set -euo pipefail
               IFS=$'\n\t'
               
-              ls -l $OUT_PATH
-
               # Export data to bucket
               if [[ -d "$OUT_PATH" ]]; then
                 linkdir=$(mktemp -d)
@@ -388,6 +371,8 @@ spec:
                 rm -rf $linkdir
                 
                 # set +x # Uncomment for troubleshooting
+              else
+                echo "No output found."
               fi
                         
             env:
@@ -395,15 +380,15 @@ spec:
               - name: OUT_PATH
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: out-path-cal-conv
               - name: OUTPUT_BUCKET_NAME
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: output-bucket-name
               - name: OUTPUT_BUCKET_PREFIX
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{workflow.parameters.env_config}}"
+                    name: "{{workflow.parameters.config}}"
                     key: output-bucket-prefix
