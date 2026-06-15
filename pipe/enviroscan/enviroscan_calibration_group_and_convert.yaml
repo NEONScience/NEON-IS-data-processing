@@ -73,9 +73,9 @@ transform:
             join_indices: [7]
             outer_join: true
         - path:
-            name: DATA_PATH_ARCHIVE
+            name: DATA_PATH_PARSED
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_ARCHIVE/enviroscan/*/*/*/*/**
+            glob_pattern: /pfs/DATA_PATH_PARSED/enviroscan/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
@@ -143,19 +143,19 @@ input:
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
-        name: DATA_PATH_ARCHIVE
-        repo: enviroscan_data_source_gcs
-        glob: /enviroscan/(2025)/(10)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    - pfs:
-        name: KAFKA_UNMERGED_DATA
+        name: DATA_PATH_PARSED
         repo: enviroscan_array_parser
         glob: /enviroscan/(2025)/(10)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    # - pfs:
+    #     name: KAFKA_UNMERGED_DATA
+    #     repo: enviroscan_array_parser
+    #     glob: /enviroscan/(2025)/(10)/(*)
+    #     joinOn: $1/$2/$3
+    #     outer_join: true
+    #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: LOCATION_PATH
         repo: enviroscan_location_asset_assignment
