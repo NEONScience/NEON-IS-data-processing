@@ -94,7 +94,7 @@ input:
   - pfs:
       name: REPO_LOCATIONS
       repo: concH2oSoilSalinity_group_path
-      glob: /(*/*/*)
+      glob: /*/*/*/*(GUAN|DEJU|SERC|KONZ|JORN|ABBY)*
   - pfs:
       name: FILE_THRESHOLDS
       repo: concH2oSoilSalinity_threshold

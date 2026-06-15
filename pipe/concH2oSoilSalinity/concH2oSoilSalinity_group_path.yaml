@@ -44,26 +44,26 @@ input:
   - pfs:
       name: LOCATION_FOCUS_PATH
       repo: enviroscan_fill_date_gaps_and_regularize
-      glob: /*/*/*
+      glob: /*/(*/*/*)
       joinOn: $1
       outer_join: True
   - pfs:
       name: GROUP_FOCUS_PATH
       repo: tempSoil_level1_group_consolidate_srf
-      glob: /*/*/*
+      glob: /(*/*/*)
       joinOn: $1
       outer_join: True
 parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 600M
-  cpu: 0.4
-resource_limits:
   memory: 2G
+  cpu: 0.6
+resource_limits:
+  memory: 2.5G
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 4G
   cpu: 1
 datum_set_spec:
   number: 1
