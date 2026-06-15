@@ -2,7 +2,7 @@ name: DEV-g2131i-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/g2131i/*.yaml'
       - 'pipe/g2131i/pipe_list_g2131i.txt'
