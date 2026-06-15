@@ -2,7 +2,7 @@ name: DEV-g2131i-update-dag
 on:
   push:
     branches:
-      - 'argo.ingest.2'
+      - 'master'
     paths:
       - 'pipe/g2131i/*.yaml'
       - 'pipe/g2131i/pipe_list_g2131i.txt'

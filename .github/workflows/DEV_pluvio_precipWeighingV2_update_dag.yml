@@ -2,7 +2,7 @@ name: DEV-pluvio-precipWeighingV2-update-dag
 on:
   push:
     branches:
-      - 'argo.ingest.2'
+      - 'master'
     paths:
       - 'pipe/pluvio/*.yaml'
       - 'pipe/pluvio/pipe_list_pluvio_development.txt'

@@ -2,7 +2,7 @@ name: DEV-enviroscan-update-dag
 on:
   push:
     branches:
-      - 'argo.ingest.2'
+      - 'master'
     paths:
       - 'pipe/enviroscan/*.yaml'
       - 'pipe/enviroscan/pipe_list_enviroscan_development.txt'
