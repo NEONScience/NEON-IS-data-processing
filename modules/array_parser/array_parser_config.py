@@ -10,7 +10,8 @@ class Config(NamedTuple):
     parse_calibration: bool
     source_type_index: int
     source_type_out: str
-    replace_schema_name: str
+    replace_schema_name: bool
+    write_site_file: bool
     year_index: int
     month_index: int
     day_index: int

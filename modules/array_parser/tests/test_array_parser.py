@@ -81,6 +81,7 @@ class ArrayParserTest(TestCase):
         self.data_type_index = 8
         self.source_type_out = 'tchain'
         self.replace_schema_name = False
+        self.write_site_file = False
         self.test_mode = True
 
     def test_calibration_parser(self) -> None:
@@ -104,6 +105,7 @@ class ArrayParserTest(TestCase):
                         source_type_index=self.source_type_index,
                         source_type_out=self.source_type_out,
                         replace_schema_name=self.replace_schema_name,
+                        write_site_file=self.write_site_file,
                         year_index=self.year_index,
                         month_index=self.month_index,
                         day_index=self.day_index,

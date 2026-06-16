@@ -87,19 +87,26 @@ transform:
 
         done
 
-        # Upload to bucket, compacting with any existing file
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --dedupmethod "readout_time" --nolog
+        echo "Syncing files to bucket"
+        rclone \
+          --no-check-dest \
+          --copy-links \
+          --gcs-bucket-policy-only \
+          --gcs-no-check-bucket \
+          copy \
+          "${linkdir}" \
+          ":gcs://${BUCKET_NAME}"
+        echo "Removing temporary files"
+        rm -rf $linkdir
       fi
 
-      # set +x # Uncomment for debugging
-      rm -rf $linkdir
     fi
 
     EOF
 input:
   pfs:
     name: DATA_PATH
-    repo: t7610_data_source_kafka
+    repo: t7610_data_source_gcs
     glob: /t7610_raw/*/*/*
 parallelism_spec:
   constant: 3
