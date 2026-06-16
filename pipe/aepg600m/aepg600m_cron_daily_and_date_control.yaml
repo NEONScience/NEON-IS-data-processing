@@ -65,7 +65,7 @@ input:
       branch: master
       trigger: 
         cronSpec: "@never"
-        #cronSpec: "0 6 * * *" # Run at most every 12 hours (12 hours after an ingest trigger)
+        #cronSpec: "0 6 * * *" # Run at most every 6 hours (6 hours after an ingest trigger)
         branch: "staging"
   - pfs:
       name: SITE_FILE_HEATED_KAFKA
