@@ -110,13 +110,13 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/sunav2_raw/*/*/*"
 parallelism_spec:
-  constant: 3
+  constant: 8
 autoscaling: true
 resource_requests:
-  memory: 1.5G
+  memory: 2G
   cpu: 1.2
 resource_limits:
-  memory: 2G
+  memory: 3G
   cpu: 1.5
 sidecar_resource_requests:
   memory: 1.2G
