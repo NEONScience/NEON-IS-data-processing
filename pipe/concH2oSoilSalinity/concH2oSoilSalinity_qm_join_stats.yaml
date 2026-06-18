@@ -1,0 +1,201 @@
+---
+# combines qm_group_and_compute a joiner to pull stats into repo. 
+pipeline:
+  name: concH2oSoilSalinity_qm_join_stats
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.3
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+
+    rm -r -f /tmp/qm_output
+    rm -r -f /tmp/qm_outputCopy
+    mkdir -p /tmp/qm_output
+
+    # ---- Step 1: filter-joiner - join QAQC plausibility flags + regularized flags ----
+    # Uses CONFIG env variable defined below
+    python3 -m filter_joiner.filter_joiner_main
+
+    # ---- Step 2: quality metrics ----
+    # Write to /tmp/qm_output (not /pfs/out) so we can join with stats in step 4
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/tmp/qm_output \
+      DirErr=/pfs/out/errored_datums \
+      "WndwAgr=005|030" \
+      "WghtAlphBeta=1|1" \
+      FileSchmQm=$FILE_SCHEMA_QM \
+      Thsh=0.3 \
+      "GrpQfAlph1=VSWCsoilSpecificDepth01:VSWCsoilSpecificDepth01NullQF|VSWCsoilSpecificDepth01GapQF|VSWCsoilSpecificDepth01RangeQF|VSWCsoilSpecificDepth01StepQF|VSWCsoilSpecificDepth01PersistenceQF|VSWCsoilSpecificDepth01SpikeQF|VSWCDepth01SuspectCalQF|tempTestDepth01QF" \
+      "GrpQfBeta1=VSWCsoilSpecificDepth01:VSWCsoilSpecificDepth01NullQF|VSWCsoilSpecificDepth01GapQF|VSWCsoilSpecificDepth01RangeQF|VSWCsoilSpecificDepth01StepQF|VSWCsoilSpecificDepth01PersistenceQF|VSWCsoilSpecificDepth01SpikeQF|VSWCDepth01SuspectCalQF|tempTestDepth01QF" \
+      "GrpQfBetaIgnr1=VSWCsoilSpecificDepth01:VSWCsoilSpecificDepth01NullQF|VSWCsoilSpecificDepth01GapQF" \
+      "GrpQfAlph2=VSWCsoilSpecificDepth02:VSWCsoilSpecificDepth02NullQF|VSWCsoilSpecificDepth02GapQF|VSWCsoilSpecificDepth02RangeQF|VSWCsoilSpecificDepth02StepQF|VSWCsoilSpecificDepth02PersistenceQF|VSWCsoilSpecificDepth02SpikeQF|VSWCDepth02SuspectCalQF|tempTestDepth02QF" \
+      "GrpQfBeta2=VSWCsoilSpecificDepth02:VSWCsoilSpecificDepth02NullQF|VSWCsoilSpecificDepth02GapQF|VSWCsoilSpecificDepth02RangeQF|VSWCsoilSpecificDepth02StepQF|VSWCsoilSpecificDepth02PersistenceQF|VSWCsoilSpecificDepth02SpikeQF|VSWCDepth02SuspectCalQF|tempTestDepth02QF" \
+      "GrpQfBetaIgnr2=VSWCsoilSpecificDepth02:VSWCsoilSpecificDepth02NullQF|VSWCsoilSpecificDepth02GapQF" \
+      "GrpQfAlph3=VSWCsoilSpecificDepth03:VSWCsoilSpecificDepth03NullQF|VSWCsoilSpecificDepth03GapQF|VSWCsoilSpecificDepth03RangeQF|VSWCsoilSpecificDepth03StepQF|VSWCsoilSpecificDepth03PersistenceQF|VSWCsoilSpecificDepth03SpikeQF|VSWCDepth03SuspectCalQF|tempTestDepth03QF" \
+      "GrpQfBeta3=VSWCsoilSpecificDepth03:VSWCsoilSpecificDepth03NullQF|VSWCsoilSpecificDepth03GapQF|VSWCsoilSpecificDepth03RangeQF|VSWCsoilSpecificDepth03StepQF|VSWCsoilSpecificDepth03PersistenceQF|VSWCsoilSpecificDepth03SpikeQF|VSWCDepth03SuspectCalQF|tempTestDepth03QF" \
+      "GrpQfBetaIgnr3=VSWCsoilSpecificDepth03:VSWCsoilSpecificDepth03NullQF|VSWCsoilSpecificDepth03GapQF" \
+      "GrpQfAlph4=VSWCsoilSpecificDepth04:VSWCsoilSpecificDepth04NullQF|VSWCsoilSpecificDepth04GapQF|VSWCsoilSpecificDepth04RangeQF|VSWCsoilSpecificDepth04StepQF|VSWCsoilSpecificDepth04PersistenceQF|VSWCsoilSpecificDepth04SpikeQF|VSWCDepth04SuspectCalQF|tempTestDepth04QF" \
+      "GrpQfBeta4=VSWCsoilSpecificDepth04:VSWCsoilSpecificDepth04NullQF|VSWCsoilSpecificDepth04GapQF|VSWCsoilSpecificDepth04RangeQF|VSWCsoilSpecificDepth04StepQF|VSWCsoilSpecificDepth04PersistenceQF|VSWCsoilSpecificDepth04SpikeQF|VSWCDepth04SuspectCalQF|tempTestDepth04QF" \
+      "GrpQfBetaIgnr4=VSWCsoilSpecificDepth04:VSWCsoilSpecificDepth04NullQF|VSWCsoilSpecificDepth04GapQF" \
+      "GrpQfAlph5=VSWCsoilSpecificDepth05:VSWCsoilSpecificDepth05NullQF|VSWCsoilSpecificDepth05GapQF|VSWCsoilSpecificDepth05RangeQF|VSWCsoilSpecificDepth05StepQF|VSWCsoilSpecificDepth05PersistenceQF|VSWCsoilSpecificDepth05SpikeQF|VSWCDepth05SuspectCalQF|tempTestDepth05QF" \
+      "GrpQfBeta5=VSWCsoilSpecificDepth05:VSWCsoilSpecificDepth05NullQF|VSWCsoilSpecificDepth05GapQF|VSWCsoilSpecificDepth05RangeQF|VSWCsoilSpecificDepth05StepQF|VSWCsoilSpecificDepth05PersistenceQF|VSWCsoilSpecificDepth05SpikeQF|VSWCDepth05SuspectCalQF|tempTestDepth05QF" \
+      "GrpQfBetaIgnr5=VSWCsoilSpecificDepth05:VSWCsoilSpecificDepth05NullQF|VSWCsoilSpecificDepth05GapQF" \
+      "GrpQfAlph6=VSWCsoilSpecificDepth06:VSWCsoilSpecificDepth06NullQF|VSWCsoilSpecificDepth06GapQF|VSWCsoilSpecificDepth06RangeQF|VSWCsoilSpecificDepth06StepQF|VSWCsoilSpecificDepth06PersistenceQF|VSWCsoilSpecificDepth06SpikeQF|VSWCDepth06SuspectCalQF|tempTestDepth06QF" \
+      "GrpQfBeta6=VSWCsoilSpecificDepth06:VSWCsoilSpecificDepth06NullQF|VSWCsoilSpecificDepth06GapQF|VSWCsoilSpecificDepth06RangeQF|VSWCsoilSpecificDepth06StepQF|VSWCsoilSpecificDepth06PersistenceQF|VSWCsoilSpecificDepth06SpikeQF|VSWCDepth06SuspectCalQF|tempTestDepth06QF" \
+      "GrpQfBetaIgnr6=VSWCsoilSpecificDepth06:VSWCsoilSpecificDepth06NullQF|VSWCsoilSpecificDepth06GapQF" \
+      "GrpQfAlph7=VSWCsoilSpecificDepth07:VSWCsoilSpecificDepth07NullQF|VSWCsoilSpecificDepth07GapQF|VSWCsoilSpecificDepth07RangeQF|VSWCsoilSpecificDepth07StepQF|VSWCsoilSpecificDepth07PersistenceQF|VSWCsoilSpecificDepth07SpikeQF|VSWCDepth07SuspectCalQF|tempTestDepth07QF" \
+      "GrpQfBeta7=VSWCsoilSpecificDepth07:VSWCsoilSpecificDepth07NullQF|VSWCsoilSpecificDepth07GapQF|VSWCsoilSpecificDepth07RangeQF|VSWCsoilSpecificDepth07StepQF|VSWCsoilSpecificDepth07PersistenceQF|VSWCsoilSpecificDepth07SpikeQF|VSWCDepth07SuspectCalQF|tempTestDepth07QF" \
+      "GrpQfBetaIgnr7=VSWCsoilSpecificDepth07:VSWCsoilSpecificDepth07NullQF|VSWCsoilSpecificDepth07GapQF" \
+      "GrpQfAlph8=VSWCsoilSpecificDepth08:VSWCsoilSpecificDepth08NullQF|VSWCsoilSpecificDepth08GapQF|VSWCsoilSpecificDepth08RangeQF|VSWCsoilSpecificDepth08StepQF|VSWCsoilSpecificDepth08PersistenceQF|VSWCsoilSpecificDepth08SpikeQF|VSWCDepth08SuspectCalQF|tempTestDepth08QF" \
+      "GrpQfBeta8=VSWCsoilSpecificDepth08:VSWCsoilSpecificDepth08NullQF|VSWCsoilSpecificDepth08GapQF|VSWCsoilSpecificDepth08RangeQF|VSWCsoilSpecificDepth08StepQF|VSWCsoilSpecificDepth08PersistenceQF|VSWCsoilSpecificDepth08SpikeQF|VSWCDepth08SuspectCalQF|tempTestDepth08QF" \
+      "GrpQfBetaIgnr8=VSWCsoilSpecificDepth08:VSWCsoilSpecificDepth08NullQF|VSWCsoilSpecificDepth08GapQF" \
+      "GrpQfAlph9=VSWCfactoryDepth01:VSWCfactoryDepth01NullQF|VSWCfactoryDepth01GapQF|VSWCfactoryDepth01RangeQF|VSWCfactoryDepth01StepQF|VSWCfactoryDepth01PersistenceQF|VSWCfactoryDepth01SpikeQF|VSWCDepth01SuspectCalQF|tempTestDepth01QF" \
+      "GrpQfBeta9=VSWCfactoryDepth01:VSWCfactoryDepth01NullQF|VSWCfactoryDepth01GapQF|VSWCfactoryDepth01RangeQF|VSWCfactoryDepth01StepQF|VSWCfactoryDepth01PersistenceQF|VSWCfactoryDepth01SpikeQF|VSWCDepth01SuspectCalQF|tempTestDepth01QF" \
+      "GrpQfBetaIgnr9=VSWCfactoryDepth01:VSWCfactoryDepth01NullQF|VSWCfactoryDepth01GapQF" \
+      "GrpQfAlph10=VSWCfactoryDepth02:VSWCfactoryDepth02NullQF|VSWCfactoryDepth02GapQF|VSWCfactoryDepth02RangeQF|VSWCfactoryDepth02StepQF|VSWCfactoryDepth02PersistenceQF|VSWCfactoryDepth02SpikeQF|VSWCDepth02SuspectCalQF|tempTestDepth02QF" \
+      "GrpQfBeta10=VSWCfactoryDepth02:VSWCfactoryDepth02NullQF|VSWCfactoryDepth02GapQF|VSWCfactoryDepth02RangeQF|VSWCfactoryDepth02StepQF|VSWCfactoryDepth02PersistenceQF|VSWCfactoryDepth02SpikeQF|VSWCDepth02SuspectCalQF|tempTestDepth02QF" \
+      "GrpQfBetaIgnr10=VSWCfactoryDepth02:VSWCfactoryDepth02NullQF|VSWCfactoryDepth02GapQF" \
+      "GrpQfAlph11=VSWCfactoryDepth03:VSWCfactoryDepth03NullQF|VSWCfactoryDepth03GapQF|VSWCfactoryDepth03RangeQF|VSWCfactoryDepth03StepQF|VSWCfactoryDepth03PersistenceQF|VSWCfactoryDepth03SpikeQF|VSWCDepth03SuspectCalQF|tempTestDepth03QF" \
+      "GrpQfBeta11=VSWCfactoryDepth03:VSWCfactoryDepth03NullQF|VSWCfactoryDepth03GapQF|VSWCfactoryDepth03RangeQF|VSWCfactoryDepth03StepQF|VSWCfactoryDepth03PersistenceQF|VSWCfactoryDepth03SpikeQF|VSWCDepth03SuspectCalQF|tempTestDepth03QF" \
+      "GrpQfBetaIgnr11=VSWCfactoryDepth03:VSWCfactoryDepth03NullQF|VSWCfactoryDepth03GapQF" \
+      "GrpQfAlph12=VSWCfactoryDepth04:VSWCfactoryDepth04NullQF|VSWCfactoryDepth04GapQF|VSWCfactoryDepth04RangeQF|VSWCfactoryDepth04StepQF|VSWCfactoryDepth04PersistenceQF|VSWCfactoryDepth04SpikeQF|VSWCDepth04SuspectCalQF|tempTestDepth04QF" \
+      "GrpQfBeta12=VSWCfactoryDepth04:VSWCfactoryDepth04NullQF|VSWCfactoryDepth04GapQF|VSWCfactoryDepth04RangeQF|VSWCfactoryDepth04StepQF|VSWCfactoryDepth04PersistenceQF|VSWCfactoryDepth04SpikeQF|VSWCDepth04SuspectCalQF|tempTestDepth04QF" \
+      "GrpQfBetaIgnr12=VSWCfactoryDepth04:VSWCfactoryDepth04NullQF|VSWCfactoryDepth04GapQF" \
+      "GrpQfAlph13=VSWCfactoryDepth05:VSWCfactoryDepth05NullQF|VSWCfactoryDepth05GapQF|VSWCfactoryDepth05RangeQF|VSWCfactoryDepth05StepQF|VSWCfactoryDepth05PersistenceQF|VSWCfactoryDepth05SpikeQF|VSWCDepth05SuspectCalQF|tempTestDepth05QF" \
+      "GrpQfBeta13=VSWCfactoryDepth05:VSWCfactoryDepth05NullQF|VSWCfactoryDepth05GapQF|VSWCfactoryDepth05RangeQF|VSWCfactoryDepth05StepQF|VSWCfactoryDepth05PersistenceQF|VSWCfactoryDepth05SpikeQF|VSWCDepth05SuspectCalQF|tempTestDepth05QF" \
+      "GrpQfBetaIgnr13=VSWCfactoryDepth05:VSWCfactoryDepth05NullQF|VSWCfactoryDepth05GapQF" \
+      "GrpQfAlph14=VSWCfactoryDepth06:VSWCfactoryDepth06NullQF|VSWCfactoryDepth06GapQF|VSWCfactoryDepth06RangeQF|VSWCfactoryDepth06StepQF|VSWCfactoryDepth06PersistenceQF|VSWCfactoryDepth06SpikeQF|VSWCDepth06SuspectCalQF|tempTestDepth06QF" \
+      "GrpQfBeta14=VSWCfactoryDepth06:VSWCfactoryDepth06NullQF|VSWCfactoryDepth06GapQF|VSWCfactoryDepth06RangeQF|VSWCfactoryDepth06StepQF|VSWCfactoryDepth06PersistenceQF|VSWCfactoryDepth06SpikeQF|VSWCDepth06SuspectCalQF|tempTestDepth06QF" \
+      "GrpQfBetaIgnr14=VSWCfactoryDepth06:VSWCfactoryDepth06NullQF|VSWCfactoryDepth06GapQF" \
+      "GrpQfAlph15=VSWCfactoryDepth07:VSWCfactoryDepth07NullQF|VSWCfactoryDepth07GapQF|VSWCfactoryDepth07RangeQF|VSWCfactoryDepth07StepQF|VSWCfactoryDepth07PersistenceQF|VSWCfactoryDepth07SpikeQF|VSWCDepth07SuspectCalQF|tempTestDepth07QF" \
+      "GrpQfBeta15=VSWCfactoryDepth07:VSWCfactoryDepth07NullQF|VSWCfactoryDepth07GapQF|VSWCfactoryDepth07RangeQF|VSWCfactoryDepth07StepQF|VSWCfactoryDepth07PersistenceQF|VSWCfactoryDepth07SpikeQF|VSWCDepth07SuspectCalQF|tempTestDepth07QF" \
+      "GrpQfBetaIgnr15=VSWCfactoryDepth07:VSWCfactoryDepth07NullQF|VSWCfactoryDepth07GapQF" \
+      "GrpQfAlph16=VSWCfactoryDepth08:VSWCfactoryDepth08NullQF|VSWCfactoryDepth08GapQF|VSWCfactoryDepth08RangeQF|VSWCfactoryDepth08StepQF|VSWCfactoryDepth08PersistenceQF|VSWCfactoryDepth08SpikeQF|VSWCDepth08SuspectCalQF|tempTestDepth08QF" \
+      "GrpQfBeta16=VSWCfactoryDepth08:VSWCfactoryDepth08NullQF|VSWCfactoryDepth08GapQF|VSWCfactoryDepth08RangeQF|VSWCfactoryDepth08StepQF|VSWCfactoryDepth08PersistenceQF|VSWCfactoryDepth08SpikeQF|VSWCDepth08SuspectCalQF|tempTestDepth08QF" \
+      "GrpQfBetaIgnr16=VSWCfactoryDepth08:VSWCfactoryDepth08NullQF|VSWCfactoryDepth08GapQF" \
+      "GrpQfAlph17=VSICDepth01:VSICDepth01NullQF|VSICDepth01GapQF|VSICDepth01RangeQF|VSICDepth01StepQF|VSICDepth01PersistenceQF|VSICDepth01SpikeQF|VSICDepth01SuspectCalQF|tempTestDepth01QF" \
+      "GrpQfBeta17=VSICDepth01:VSICDepth01NullQF|VSICDepth01GapQF|VSICDepth01RangeQF|VSICDepth01StepQF|VSICDepth01PersistenceQF|VSICDepth01SpikeQF|VSICDepth01SuspectCalQF|tempTestDepth01QF" \
+      "GrpQfBetaIgnr17=VSICDepth01:VSICDepth01NullQF|VSICDepth01GapQF" \
+      "GrpQfAlph18=VSICDepth02:VSICDepth02NullQF|VSICDepth02GapQF|VSICDepth02RangeQF|VSICDepth02StepQF|VSICDepth02PersistenceQF|VSICDepth02SpikeQF|VSICDepth02SuspectCalQF|tempTestDepth02QF" \
+      "GrpQfBeta18=VSICDepth02:VSICDepth02NullQF|VSICDepth02GapQF|VSICDepth02RangeQF|VSICDepth02StepQF|VSICDepth02PersistenceQF|VSICDepth02SpikeQF|VSICDepth02SuspectCalQF|tempTestDepth02QF" \
+      "GrpQfBetaIgnr18=VSICDepth02:VSICDepth02NullQF|VSICDepth02GapQF" \
+      "GrpQfAlph19=VSICDepth03:VSICDepth03NullQF|VSICDepth03GapQF|VSICDepth03RangeQF|VSICDepth03StepQF|VSICDepth03PersistenceQF|VSICDepth03SpikeQF|VSICDepth03SuspectCalQF|tempTestDepth03QF" \
+      "GrpQfBeta19=VSICDepth03:VSICDepth03NullQF|VSICDepth03GapQF|VSICDepth03RangeQF|VSICDepth03StepQF|VSICDepth03PersistenceQF|VSICDepth03SpikeQF|VSICDepth03SuspectCalQF|tempTestDepth03QF" \
+      "GrpQfBetaIgnr19=VSICDepth03:VSICDepth03NullQF|VSICDepth03GapQF" \
+      "GrpQfAlph20=VSICDepth04:VSICDepth04NullQF|VSICDepth04GapQF|VSICDepth04RangeQF|VSICDepth04StepQF|VSICDepth04PersistenceQF|VSICDepth04SpikeQF|VSICDepth04SuspectCalQF|tempTestDepth04QF" \
+      "GrpQfBeta20=VSICDepth04:VSICDepth04NullQF|VSICDepth04GapQF|VSICDepth04RangeQF|VSICDepth04StepQF|VSICDepth04PersistenceQF|VSICDepth04SpikeQF|VSICDepth04SuspectCalQF|tempTestDepth04QF" \
+      "GrpQfBetaIgnr20=VSICDepth04:VSICDepth04NullQF|VSICDepth04GapQF" \
+      "GrpQfAlph21=VSICDepth05:VSICDepth05NullQF|VSICDepth05GapQF|VSICDepth05RangeQF|VSICDepth05StepQF|VSICDepth05PersistenceQF|VSICDepth05SpikeQF|VSICDepth05SuspectCalQF|tempTestDepth05QF" \
+      "GrpQfBeta21=VSICDepth05:VSICDepth05NullQF|VSICDepth05GapQF|VSICDepth05RangeQF|VSICDepth05StepQF|VSICDepth05PersistenceQF|VSICDepth05SpikeQF|VSICDepth05SuspectCalQF|tempTestDepth05QF" \
+      "GrpQfBetaIgnr21=VSICDepth05:VSICDepth05NullQF|VSICDepth05GapQF" \
+      "GrpQfAlph22=VSICDepth06:VSICDepth06NullQF|VSICDepth06GapQF|VSICDepth06RangeQF|VSICDepth06StepQF|VSICDepth06PersistenceQF|VSICDepth06SpikeQF|VSICDepth06SuspectCalQF|tempTestDepth06QF" \
+      "GrpQfBeta22=VSICDepth06:VSICDepth06NullQF|VSICDepth06GapQF|VSICDepth06RangeQF|VSICDepth06StepQF|VSICDepth06PersistenceQF|VSICDepth06SpikeQF|VSICDepth06SuspectCalQF|tempTestDepth06QF" \
+      "GrpQfBetaIgnr22=VSICDepth06:VSICDepth06NullQF|VSICDepth06GapQF" \
+      "GrpQfAlph23=VSICDepth07:VSICDepth07NullQF|VSICDepth07GapQF|VSICDepth07RangeQF|VSICDepth07StepQF|VSICDepth07PersistenceQF|VSICDepth07SpikeQF|VSICDepth07SuspectCalQF|tempTestDepth07QF" \
+      "GrpQfBeta23=VSICDepth07:VSICDepth07NullQF|VSICDepth07GapQF|VSICDepth07RangeQF|VSICDepth07StepQF|VSICDepth07PersistenceQF|VSICDepth07SpikeQF|VSICDepth07SuspectCalQF|tempTestDepth07QF" \
+      "GrpQfBetaIgnr23=VSICDepth07:VSICDepth07NullQF|VSICDepth07GapQF" \
+      "GrpQfAlph24=VSICDepth08:VSICDepth08NullQF|VSICDepth08GapQF|VSICDepth08RangeQF|VSICDepth08StepQF|VSICDepth08PersistenceQF|VSICDepth08SpikeQF|VSICDepth08SuspectCalQF|tempTestDepth08QF" \
+      "GrpQfBeta24=VSICDepth08:VSICDepth08NullQF|VSICDepth08GapQF|VSICDepth08RangeQF|VSICDepth08StepQF|VSICDepth08PersistenceQF|VSICDepth08SpikeQF|VSICDepth08SuspectCalQF|tempTestDepth08QF" \
+      "GrpQfBetaIgnr24=VSICDepth08:VSICDepth08NullQF|VSICDepth08GapQF"
+
+    # ---- Step 3: copy QM output to break symlinks before joining with stats ----
+    cp -rL /tmp/qm_output /tmp/qm_outputCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/qm_output
+
+    # ---- Step 4: filter-joiner - join QM output + stats ----
+    # Override CONFIG, OUT_PATH for second filter_joiner call.
+    # /tmp/qm_outputCopy path: ('/', 'tmp', 'qm_outputCopy', Y, M, D, group, ...) -> RELATIVE_PATH_INDEX=3 -> Y/M/D/group/...
+    # /pfs/STATS_PATH path:    ('/', 'pfs', 'STATS_PATH',    Y, M, D, group, ...) -> RELATIVE_PATH_INDEX=3 -> Y/M/D/group/...
+    # join_indices [3,4,5,6] = Y+M+D+group for both paths -> keys match
+    export CONFIG='---
+    input_paths:
+      - path:
+          name: QM_OUTPUT
+          glob_pattern: /tmp/qm_outputCopy/*/*/*/*/**
+          join_indices: [3,4,5,6]
+      - path:
+          name: STATS_PATH
+          glob_pattern: /pfs/STATS_PATH/*/*/*/*/**
+          join_indices: [3,4,5,6]'
+    export OUT_PATH=/pfs/out
+    export RELATIVE_PATH_INDEX=3
+    export LINK_TYPE=COPY
+    python3 -m filter_joiner.filter_joiner_main
+
+    EOF
+  env:
+    # Environment variables for step 1 filter-joiner (joins QAQC plausibility + regularized flags)
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: REGULARIZED_FLAGS_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/enviroscan/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY
+    PARALLELIZATION_INTERNAL: '3'
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_quality_metrics.avsc
+  - join:
+    - pfs:
+        name: QAQC_PLAUSIBILITY_PATH
+        repo: concH2oSoilSalinity_analyze_pad_qaqc_join_custom
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false
+    - pfs:
+        name: REGULARIZED_FLAGS_PATH
+        repo: concH2oSoilSalinity_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false
+    - pfs:
+        name: STATS_PATH
+        repo: concH2oSoilSalinity_stats_group_and_compute
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 900M
+  cpu: 3.5
+resource_limits:
+  memory: 2G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
