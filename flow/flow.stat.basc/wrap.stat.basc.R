@@ -176,7 +176,7 @@
   # For each bin, pick the row with max ucrtComb
   data.table::setorderv(uTmp, c(".bin", colUcrt), order = c(1L, -1L))
   uMax <- uTmp[, .SD[1L], by = .bin, .SDcols = c(colRaw, colDerv, colUcrt)]
-  setnames(uMax, c(colRaw, colDerv, colUcrt), c(".raw", ".dervCal", ".ucrtComb"))
+  data.table::setnames(uMax, c(colRaw, colDerv, colUcrt), c(".raw", ".dervCal", ".ucrtComb"))
   # Pull per-bin stdEr from the already-computed statsLong for this var
   seDT <- statsLong[term == var, .(.bin, stdEr)]
   m <- merge(uMax, seDT, by = ".bin", all.x = TRUE)
@@ -228,6 +228,9 @@ wrap.stat.basc <- function(DirIn,
                          DirSubCopy=NULL,
                          log=NULL
 ){
+
+  # Load libraries
+  library(data.table)
 
   # Start logging if not already
   if(base::is.null(log)){
