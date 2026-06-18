@@ -174,7 +174,7 @@
   uTmp <- uTmp[!is.na(.bin) & !is.na(get(colUcrt))]
   if (nrow(uTmp) == 0L) return(out)
   # For each bin, pick the row with max ucrtComb
-  setorderv(uTmp, c(".bin", colUcrt), order = c(1L, -1L))
+  data.table::setorderv(uTmp, c(".bin", colUcrt), order = c(1L, -1L))
   uMax <- uTmp[, .SD[1L], by = .bin, .SDcols = c(colRaw, colDerv, colUcrt)]
   setnames(uMax, c(colRaw, colDerv, colUcrt), c(".raw", ".dervCal", ".ucrtComb"))
   # Pull per-bin stdEr from the already-computed statsLong for this var
