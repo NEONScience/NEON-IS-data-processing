@@ -232,6 +232,13 @@ wrap.stat.basc <- function(DirIn,
   # Load libraries
   library(data.table)
 
+  # Pin data.table to a single thread. The outer foreach %dopar% loop
+  # (PARALLELIZATION_INTERNAL in the YAML) is the only intended parallelism
+  # source. Letting data.table also spin up OpenMP threads oversubscribes
+  # the box: at PARALLELIZATION_INTERNAL=6 on an 8-core node, each datum
+  # would otherwise pull ~2 cores and cause CPU contention.
+  data.table::setDTthreads(1)
+
   # Start logging if not already
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
