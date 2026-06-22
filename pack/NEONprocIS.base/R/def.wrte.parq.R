@@ -126,8 +126,11 @@ def.wrte.parq <- function(data,
       # In order to reliably apply the schema, we need to do some type conversion of the data first.
       data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
       
-      # Covert to arrow table
-      data <- arrow::arrow_table(data, schema=schmData)
+      # Covert to arrow table (without schema first to avoid type mismatch errors)
+      data <- arrow::arrow_table(data)
+      
+      # Now cast columns to match the schema
+      data <- NEONprocIS.base::def.wrte.parq.cast.cols(data, schmData, log=log)
       
     } else if ("arrow_dplyr_query" %in% base::class(data)){
       data <- arrow::as_arrow_table(data, schema=schmData)
@@ -166,8 +169,11 @@ def.wrte.parq <- function(data,
     # In order to reliably apply the schema, we need to do some type conversion of the data first.
     data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
     
-    # Apply the arrow schema
-    data <- arrow::arrow_table(data, schema=Schm)
+    # Apply the arrow table (without schema first to avoid type mismatch errors)
+    data <- arrow::arrow_table(data)
+    
+    # Now cast columns to match the schema
+    data <- NEONprocIS.base::def.wrte.parq.cast.cols(data, Schm, log=log)
     
   }
   
@@ -205,6 +211,7 @@ def.wrte.parq <- function(data,
   }
   log$debug(base::paste0('Dictionary settings per variable: ',base::paste0(Dict,collapse=' '), ' for output file ',NameFile))
   
+
   # Write the data
   rpt <- base::try(
     arrow::write_parquet(x=data,

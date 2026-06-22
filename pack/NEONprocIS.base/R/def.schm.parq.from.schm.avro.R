@@ -66,7 +66,7 @@ def.schm.parq.from.schm.avro <- function(FileSchm=NULL,
     } else if (base::any(base::grepl('timestamp-nano', typeData))) {
       typeArrw <- arrow::timestamp(unit = "ns")
       
-    } else if (base::any(base::grepl('time', typeData) || base::grepl('date', typeData))) {
+    } else if (base::any(base::grepl('time', typeData)) || base::any(base::grepl('date', typeData))) {
       typeArrw <- arrow::timestamp(unit = "s")
     
     } else if (base::any(base::grepl('float', typeData))) {
@@ -106,7 +106,7 @@ def.schm.parq.from.schm.avro <- function(FileSchm=NULL,
       typeArrw <- arrow::int32()
       
     } else if (base::any(typeData == 'string')) {
-      typeArrw <- arrow::string()
+      typeArrw <- arrow::large_utf8()
       
     } else if (base::any(typeData == 'boolean')) {
       typeArrw <- arrow::boolean()
