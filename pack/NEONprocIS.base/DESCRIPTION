@@ -1,6 +1,6 @@
 Package: NEONprocIS.base
 Title: Basic functions for NEON IS data processing
-Version: 1.7.2
+Version: 2.0.0
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",
