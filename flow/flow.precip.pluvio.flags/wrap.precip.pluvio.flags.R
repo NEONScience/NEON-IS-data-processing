@@ -5,7 +5,7 @@
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 
 #' @description Workflow. Compute the heater and status flags by assessing the bit rate. Only 
-#' flagging alarm codes of interest.
+#' flagging alarm codes of interest. Flag heater error if inlet temp is below freezing in near freezing conditions
 #' 
 #' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/location-id, where # indicates any number of parent and child directories 
@@ -67,6 +67,10 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-04-15)
 #     Initial creation
+#   Teresa Burlingame  (2026-04-08)
+#     removing unnecessary block and adding in schema to report write
+#   Teresa Burlingame  (2026-05-08)
+#     changing test so that it looks at inlet temp rather than status
 ##############################################################################################
 wrap.precip.pluvio.flags<- function(DirIn,
                                     DirOutBase,
@@ -118,15 +122,6 @@ wrap.precip.pluvio.flags<- function(DirIn,
                                                  Df=TRUE,
                                                  log=log)
   
-  ## wipe preexisting schema TODO check with Cove
-  # Remove the "schema" attribute
-  #remove existing schema from plau so we can add more cols. 
-  if (is.null(SchmQf)){
-    base::attr(qfPlau, "schema") <- NULL
-  } else {
-    base::attr(qfPlau, "schema") <- SchmQf
-  }
-  
   # if there are no heater streams add them in as NA
   if(!('heater_status' %in% names(data))){
     data$heater_status <- NA
@@ -138,7 +133,7 @@ wrap.precip.pluvio.flags<- function(DirIn,
   
   #bitwise calculation of flags of interest
   
-  for (i in seq_along(data$sensorErrorQF)) {
+  for (i in seq_along(data$sensorStatus)) {
     if (is.na(data$sensorStatus[i])) {
       qfPlau$sensorErrorQF[i] <- -1
     } else {
@@ -169,64 +164,36 @@ wrap.precip.pluvio.flags<- function(DirIn,
     }
   }
   
-  #heater status for bit vals of interest
-  for (i in seq_along(data$heater_status)) {
-    if (is.na(data$heater_status[i])) {
-      qfPlau$heaterErrorQF[i] <- -1
-    } else {
-      if (data$heater_status[i] == 0) {
-        qfPlau$heaterErrorQF[i] <- 0
-      }
-      if ((data$heater_status[i] / 2^5) %% 2 >= 1) { #functional check failed
-        qfPlau$heaterErrorQF[i] <- 1
-      }
-      if ((data$heater_status[i] / 2^7) %% 2 >= 1) { #heater deactivated or not present
-        qfPlau$heaterErrorQF[i] <- 1
-      }
-    }
-  }
+  # If inlet temperature indicates that sensor is not adequately heating
 
-  # "pass through" of data
-  # TODO ask Cove if this is necessary? 
-  # qfs added to list of flags to process through qm module. 
-      # 
-      # #get file name based on date of data in directory
-      # nameFileOut <- fileData
-      # 
-      # # Write out the time shifted dataset to file
-      # fileOut <- fs::path(dirOutData,nameFileOut)
-      # 
-      # rptWrte <-
-      #   base::try(NEONprocIS.base::def.wrte.parq(
-      #     data = data,
-      #     NameFile = fileOut,
-      #     log=log
-      #   ),
-      #   silent = TRUE)
-      # 
-      # if ('try-error' %in% base::class(rptWrte)) {
-      #   log$error(base::paste0(
-      #     'Cannot write output to ',
-      #     fileOut,
-      #     '. ',
-      #     attr(rptWrte, "condition")
-      #   ))
-      #   stop()
-      # } else {
-      #   log$info(base::paste0(
-      #     'Data file written to file ',
-      #     fileOut
-      #   ))
-      # }
-    
+   for (i in seq_along(data$inletTemp)) {
+    if (is.na(data$inletTemp[i])) {
+       qfPlau$heaterErrorQF[i] <- -1
+     } else {
+       if (data$inletTemp[i] > 0 ) { 
+         qfPlau$heaterErrorQF[i] <- 0
+       }
+       if (data$inletTemp[i] < 0 & data$cell_temperature[i] > -40 ) { #see if there's a threshold where it stops trying to heat?
+         qfPlau$heaterErrorQF[i] <- 1
+       }
+     }
+   }
+  
       nameFileQfOutFlag <- fileQfPlau
 
       nameFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
+      
+      # Strip inherited parquet schema attribute so def.wrte.parq does not error
+      # on a column count mismatch after heaterErrorQF and sensorErrorQF were added.
+      if(base::is.null(SchmQf)){
+        attr(qfPlau, 'schema') <- NULL
+      }
       
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
           data = qfPlau,
           NameFile = nameFileQfOutFlag,
+          Schm=SchmQf,
           log=log
         ),
         silent = TRUE)

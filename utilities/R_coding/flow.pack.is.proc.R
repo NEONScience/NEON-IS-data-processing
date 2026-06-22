@@ -11,9 +11,9 @@
 DirWrk00 <-
   
   # Cove
-  # "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+  "~/Git/NEON-IS-data-processing"
   # Teresa
-   "/home/NEON/tburlingame/GitHub/NEON-IS-data-processing"
+  # "/home/NEON/tburlingame/GitHub/NEON-IS-data-processing"
   # Ed
   #"/home/NEON/ayres/R/NEON-IS-data-processing"
   # Nora
@@ -33,7 +33,7 @@ namePack <- c("NEONprocIS.base",
               "NEONprocIS.qaqc",
               "NEONprocIS.stat",
               "NEONprocIS.wq",
-              "NEONprocIS.pub")[2]
+              "NEONprocIS.pub")[1]
 
 
 # Do you want to run the unit tests for the package? Additionally, want to compute and show test coverage?
@@ -111,7 +111,7 @@ for(idxNamePack in namePack) {
   document()
   
   # remove any existing version of package in the library location
-  remove.packages(idxNamePack)
+  try(remove.packages(idxNamePack))
   
   # Install the package
   setwd("..")

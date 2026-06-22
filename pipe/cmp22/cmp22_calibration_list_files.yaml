@@ -12,15 +12,16 @@ transform:
   - python3 -m calval_loader.calval_loader
 input:
   pfs:
-    repo: cmp22_cron_daily_and_date_control_tick
-    glob: /*
+    repo: cmp22_ingest_days
+    glob: /tick/
+    branch: master
     empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 500M
+  memory: 800M
   cpu: 0.4
 resource_limits:
-  memory: 1G
+  memory: 1.2G
   cpu: 1.5
 sidecar_resource_requests:
   memory: 1G
