@@ -7,7 +7,7 @@ on:
       - 'pipe/enviroscan/*.yaml'
       - 'pipe/enviroscan/pipe_list_enviroscan_development.txt'
       - 'pipe/concH2oSoilSalinity/*.yaml'
-      - 'pipe/concH2oSoilSalinity/pipe_list_concH2oSoilSalinity_development.txt'
+      - 'pipe/concH2oSoilSalinity/pipe_list_concH2oSoilSalinity.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
