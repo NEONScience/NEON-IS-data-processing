@@ -34,6 +34,10 @@ def.wrte.parq.cast.cols <- function(data, schm, log=NULL){
     
     # Get the current column
     currentCol <- data$GetColumnByName(colName)
+    if (base::is.null(currentCol)) {
+      log$warn(base::paste0('Column "', colName, '" not found in input Arrow table; skipping cast.'))
+      next
+    }
     currentType <- currentCol$type
     
     # Convert types to strings before error handling
