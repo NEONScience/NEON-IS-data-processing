@@ -29,7 +29,7 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 #RUN git clone -b deve https://github.com/NEONScience/eddy4R.git
 
 # Now make the final build, which will leave behind our access token
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:sha-5dd8d05
 
 # copy the eddy4R.base package from the previous image (comment this out if the eddy4R packages are listed in the renv.lock file)
 #COPY --from=intermediate /eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/

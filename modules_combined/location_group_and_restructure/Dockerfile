@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-loc-grp-strc-comb -f <path to this file> <path to parent directory of flow/ and modules/>
 
 # Start with the base R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:sha-5dd8d05
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
