@@ -5,9 +5,8 @@
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description 
-#' Internal function. Casts arrow table columns to match the types specified in a target schema.
-#' Handles special cases like string to large_utf8 conversion.
-
+#' Cast Arrow table columns to match the types specified in a target schema.
+#' Columns that cannot be cast are left unchanged and a warning is logged.
 #' @param data An Arrow table object
 #' @param schm Target Arrow schema
 #' @param log Optional logger object. Defaults to NULL.
@@ -35,6 +34,10 @@ def.wrte.parq.cast.cols <- function(data, schm, log=NULL){
     
     # Get the current column
     currentCol <- data$GetColumnByName(colName)
+    if (base::is.null(currentCol)) {
+      log$warn(base::paste0('Column "', colName, '" not found in input Arrow table; skipping cast.'))
+      next
+    }
     currentType <- currentCol$type
     
     # Convert types to strings before error handling
