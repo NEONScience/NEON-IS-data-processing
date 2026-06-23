@@ -49,14 +49,14 @@ input:
       repo: nitrate_threshold
       glob: /thresholds.json
 parallelism_spec:
-  constant: 1
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 1.1
-resource_limits:
   memory: 1G
-  cpu: 2
+  cpu: 2.2
+resource_limits:
+  memory: 1.5G
+  cpu: 3
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.7

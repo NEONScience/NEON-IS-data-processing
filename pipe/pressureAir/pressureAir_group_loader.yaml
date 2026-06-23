@@ -24,10 +24,10 @@ transform:
     - python3 -m group_loader.group_loader_main
 input:
   pfs:
+    repo: ptb330a_ingest_days
+    glob: /tick/
     branch: master
     empty_files: true
-    glob: /*
-    repo: ptb330a_cron_daily_and_date_control_tick
 autoscaling: true
 resource_requests:
   memory: 50M
