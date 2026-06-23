@@ -17,8 +17,8 @@ def.wrte.parq.cast.cols(data, schm, log = NULL)
 The Arrow table with columns cast to match the schema
 }
 \description{
-Internal function. Casts arrow table columns to match the types specified in a target schema.
-Handles special cases like string to large_utf8 conversion.
+Cast Arrow table columns to match the types specified in a target schema.
+Columns that cannot be cast are left unchanged and a warning is logged.
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
