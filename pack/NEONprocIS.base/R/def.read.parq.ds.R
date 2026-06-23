@@ -131,12 +131,46 @@ def.read.parq.ds <- function(fileIn,
 
     base::do.call(arrow::schema, fields_out)
   }
+
+  # Detect Arrow schema merge failures caused by string vs large_string mismatch.
+  is_string_width_schema_error <- function(err) {
+    if (base::is.null(err)) {
+      return(FALSE)
+    }
+
+    msg <- base::tolower(base::conditionMessage(err))
+    has_string_pair <-
+      (base::grepl("string", msg, fixed = TRUE) && base::grepl("large_string", msg, fixed = TRUE)) ||
+      (base::grepl("utf8", msg, fixed = TRUE) && base::grepl("large_utf8", msg, fixed = TRUE))
+    has_type_merge_context <-
+      base::grepl("schema", msg, fixed = TRUE) ||
+      base::grepl("type", msg, fixed = TRUE) ||
+      base::grepl("cast", msg, fixed = TRUE)
+
+    has_string_pair && has_type_merge_context
+  }
   
   # Load data files into an arrow dataset
-  schmIn <- build_schema_for_string_conflicts(fileIn = fileIn, log = log)
-  if (base::is.null(schmIn)) {
-    data <- arrow::open_dataset(fileIn, unify_schemas = TRUE)
-  } else {
+  data <- tryCatch(
+    arrow::open_dataset(fileIn, unify_schemas = TRUE),
+    error = function(e) e
+  )
+
+  if (inherits(data, "error")) {
+    if (!is_string_width_schema_error(data)) {
+      stop(data)
+    }
+
+    log$warn(base::paste0(
+      "open_dataset() failed due to a detected string width schema conflict. ",
+      "Attempting schema normalization for string/large_string fields."
+    ))
+
+    schmIn <- build_schema_for_string_conflicts(fileIn = fileIn, log = log)
+    if (base::is.null(schmIn)) {
+      stop(data)
+    }
+
     data <- arrow::open_dataset(fileIn, schema = schmIn, unify_schemas = TRUE)
   }
   schm <- data$schema

@@ -1,6 +1,5 @@
 #library(testthat)
 #source("R/def.read.parq.ds.R")
-Sys.setenv(LOG_LEVEL="DEBUG")
 test_that("Read parquet dataset",
           {
             # Successful: read in dataset as class "arrow_dplyr_query"

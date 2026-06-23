@@ -14,8 +14,6 @@
 
 #' @return The Arrow table with columns cast to match the schema
 
-#' @keywords internal
-
 #' @export
 
 # changelog and author contributions / copyrights
@@ -24,10 +22,7 @@
 
 ##############################################################################################
 def.wrte.parq.cast.cols <- function(data, schm, log=NULL){
-  
-  library(arrow)
-  library(dplyr)
-  
+    
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
   }

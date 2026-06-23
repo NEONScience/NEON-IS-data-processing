@@ -23,4 +23,3 @@ Handles special cases like string to large_utf8 conversion.
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
 }
-\keyword{internal}
