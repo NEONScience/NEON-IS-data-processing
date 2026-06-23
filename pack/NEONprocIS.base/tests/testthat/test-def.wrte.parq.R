@@ -211,7 +211,7 @@ test_that("cast string columns to large_string when required",
               )
             )
             NameFile <- 'out_cmp22_cast_large_string.parquet'
-
+            on.exit(if (file.exists(NameFile)) file.remove(NameFile), add = TRUE)
             # Input data has string fields but target schema has large_string fields.
             rpt <- suppressWarnings(
               NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile, Schm = schmLarge)
