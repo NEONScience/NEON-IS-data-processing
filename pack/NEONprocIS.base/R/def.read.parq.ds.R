@@ -82,9 +82,9 @@ def.read.parq.ds <- function(fileIn,
       return(NULL)
     }
 
-    # Read schemas from parquet footers
+    # Read schemas from parquet footers without materializing row groups.
     sch_list <- base::lapply(files, FUN = function(f) {
-      try(arrow::read_parquet(f, as_data_frame = FALSE)$schema, silent = TRUE)
+      try(arrow::ParquetFileReader$create(f)$GetSchema(), silent = TRUE)
     })
     sch_list <- sch_list[!base::vapply(sch_list, inherits, logical(1), "try-error")]
 
