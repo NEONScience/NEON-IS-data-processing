@@ -22,7 +22,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQm=$FILE_SCHEMA_QM \
-      "WndwAgr=001|030" \
+      "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       "GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF" \
