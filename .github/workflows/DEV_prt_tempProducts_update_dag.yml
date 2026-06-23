@@ -2,7 +2,7 @@ name: DEV-prt-tempProducts-update-dag
 on:
   push:
     branches:
-      - 'prtSoil'
+      - 'master'
     paths:
       - 'pipe/prt/*.yaml'
       - 'pipe/prt/pipe_list_prt_development.txt'
