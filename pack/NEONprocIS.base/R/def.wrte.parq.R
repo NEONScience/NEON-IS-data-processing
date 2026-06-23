@@ -128,7 +128,7 @@ def.wrte.parq <- function(data,
       # In order to reliably apply the schema, we need to do some type conversion of the data first.
       data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
       
-      # Covert to arrow table (without schema first to avoid type mismatch errors)
+      # Convert to arrow table (without schema first to avoid type mismatch errors)
       data <- arrow::arrow_table(data)
       
       # Now cast columns to match the schema
@@ -171,7 +171,7 @@ def.wrte.parq <- function(data,
     # In order to reliably apply the schema, we need to do some type conversion of the data first.
     data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
     
-    # Apply the arrow table (without schema first to avoid type mismatch errors)
+    # Convert to arrow table (without schema first to avoid type mismatch errors)
     data <- arrow::arrow_table(data)
     
     # Now cast columns to match the schema
