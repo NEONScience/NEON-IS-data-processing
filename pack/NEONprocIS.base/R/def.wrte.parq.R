@@ -60,6 +60,8 @@
 #   Cove Sturtevant (2023-08-15)
 #     if no schema is input, create a parquet schema before writing (which allows e.g. defaulting to float vs. double)
 #     change default compression to zstd (similar compression ratio as gzip but much faster)
+#   Cove Sturtevant (2026-06-22)
+#     explicitly cast arrow table to arrow data types to avoid schema errors
 ##############################################################################################
 def.wrte.parq <- function(data,
                           NameFile,
