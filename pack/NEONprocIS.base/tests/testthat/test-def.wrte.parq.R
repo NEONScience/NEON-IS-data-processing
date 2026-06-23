@@ -180,7 +180,7 @@ test_that("preserve large_string fields when writing parquet data",
               )
             )
             NameFile <- 'out_cmp22_large_string.parquet'
-
+            on.exit(if (file.exists(NameFile)) file.remove(NameFile), add = TRUE)
             # Uses schema attached to input data; should preserve large_string fields.
             rpt <- suppressWarnings(
               NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile)
