@@ -1,7 +1,7 @@
 #library(testthat)
 #source("R/def.wrte.parq.R")
 
-
+Sys.setenv(LOG_LEVEL="DEBUG")
 test_that("write parquet file with basic parameter",
      {
        data <- data.frame(x=c(1,2,3), y=c('one','two','three'), stringsAsFactors=FALSE)
