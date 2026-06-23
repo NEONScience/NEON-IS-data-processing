@@ -31,6 +31,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2023-02-20)
 #     original creation
+#   Cove Sturtevant (2026-06-22)
+#     write strings as large_string
 ##############################################################################################
 def.schm.parq.from.schm.avro <- function(FileSchm=NULL,
                                          Schm=NULL,

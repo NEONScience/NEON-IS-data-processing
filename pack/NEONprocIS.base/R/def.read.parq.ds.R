@@ -47,6 +47,8 @@
 #     add option to remove duplicated rows
 #   Cove Sturtevant (2026-02-19)
 #     Handling for non-hashable data columns when deduplicating
+#   Cove Sturtevant (2026-06-22)
+#     Handling for string and large_string types across dataset files
 ##############################################################################################
 def.read.parq.ds <- function(fileIn,
                              Var=NULL,

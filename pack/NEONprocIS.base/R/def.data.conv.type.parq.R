@@ -43,6 +43,8 @@
 #     Do not attempt to convert lists 
 #   Cove Sturtevant (2026-02-19)
 #     Expand handling for list data columns
+#   Cove Sturtevant (2026-06-22)
+#     Handling for large_string type
 ##############################################################################################
 def.data.conv.type.parq <- function(data,
                                     type,
