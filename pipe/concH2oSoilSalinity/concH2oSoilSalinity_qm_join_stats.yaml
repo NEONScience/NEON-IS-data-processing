@@ -3,7 +3,7 @@
 pipeline:
   name: concH2oSoilSalinity_qm_join_stats
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.4
   cmd:
   - sh
   - "-c"
