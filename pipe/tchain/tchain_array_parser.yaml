@@ -2,7 +2,7 @@
 pipeline:
   name: tchain_array_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:v2.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:v2.2.0
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out
@@ -61,7 +61,6 @@ transform:
     python3 -m array_parser.array_parser_main
 
     # save parsed data to gcs 
-    cd app
     if [[ -d "$OUT_PATH/${SOURCE_TYPE_OUT}" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
@@ -69,6 +68,7 @@ transform:
       # /pfs/out/tchain/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       # set -x
+      fname=""
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
@@ -85,11 +85,20 @@ transform:
         
       done
       
-      # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset --dedupmethod="readout_time" --nolog
-      
-      # set +x # Uncomment for debugging
-      rm -rf $linkdir
+      if [[ "${fname}" ]]; then
+        echo "Syncing files to bucket"
+        rclone \
+          --no-check-dest \
+          --copy-links \
+          --gcs-bucket-policy-only \
+          --gcs-no-check-bucket \
+          copy \
+          "${linkdir}" \
+          ":gcs://${BUCKET_NAME}"
+        echo "Removing temporary files"
+        rm -rf $linkdir
+      fi
+
 
     fi
 
@@ -102,7 +111,7 @@ input:
       glob: "/tchain/tchain_parsed.avsc"
   - pfs:
       name: DATA_PATH
-      repo: tchain_data_source_kafka
+      repo: tchain_data_source_gcs
       glob: "/tchain/*/*/*"
 parallelism_spec:
   constant: 3
