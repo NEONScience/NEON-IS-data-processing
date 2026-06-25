@@ -1,7 +1,7 @@
-# Refactored calibration group and convert workflow template
+# Calibration group and convert workflow template
 # This template is platform-agnostic and sensor-agnostic.
 # Sensor-specific configuration is injected via a mounted ConfigMap.
-# An init container normalizes the configuration for consumption by workflow containers.
+# An init container creates executable env var configurations for consumption by workflow containers.
 
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
