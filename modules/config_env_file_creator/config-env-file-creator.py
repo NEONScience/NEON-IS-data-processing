@@ -8,7 +8,7 @@ Each key:value pair in a section becomes an exported shell variable
 whose name is the key exactly as written.
 
 Sections to skip are controlled by the EXCLUDED_SECTIONS environment
-variable (comma-separated list; defaults to "schemas").
+variable (comma-separated list; defaults to DEFAULT_EXCLUDED_SECTIONS).
 """
 
 import os
@@ -16,7 +16,7 @@ import sys
 import yaml
 from pathlib import Path
 
-DEFAULT_EXCLUDED_SECTIONS = 'schemas'
+DEFAULT_EXCLUDED_SECTIONS = None  # Example: 'schemas'
 
 
 def load_config(config_file: str) -> dict:
@@ -45,10 +45,16 @@ def write_env_file(section_name: str, env_vars: dict, output_dir: str) -> None:
 
 
 def main():
-    config_input_file = os.getenv('CONFIG_INPUT_FILE', '/etc/config-in/config.yaml')
+    config_input_file = os.getenv('CONFIG_INPUT_FILE', '/etc/config-in/config-env.yaml')
     config_output_dir = os.getenv('CONFIG_OUTPUT_DIR', '/etc/config-out')
-    excluded_raw = os.getenv('EXCLUDED_SECTIONS', DEFAULT_EXCLUDED_SECTIONS)
-    excluded_sections = {s.strip() for s in excluded_raw.split(',') if s.strip()}
+    excluded_raw = os.getenv('EXCLUDED_SECTIONS')
+    if excluded_raw is None:
+        excluded_raw = DEFAULT_EXCLUDED_SECTIONS
+    excluded_sections = (
+        {s.strip() for s in excluded_raw.split(',') if s.strip()}
+        if excluded_raw is not None
+        else set()
+    )
 
     # Ensure output directory exists
     Path(config_output_dir).mkdir(parents=True, exist_ok=True)
