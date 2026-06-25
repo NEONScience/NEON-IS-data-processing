@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Configuration normalizer for calibration-group-and-convert workflow.
+Configuration environment file creator.
 
 This script reads a structured YAML configuration file and generates
 one environment file per top-level section, named <section>.env.
