@@ -100,7 +100,8 @@ spec:
                 set -euo pipefail
                 IFS=$'\n\t'
 
-                # Source the normalized configuration
+                # Source the normalized configurations
+                source /etc/config-out/workflow.env
                 source /etc/config-out/load-data.env
 
                 # Get L0 data from GCS
@@ -164,7 +165,8 @@ spec:
                 IFS=$'\n\t'
 
                 # Source the normalized configuration
-                source /etc/config-out/calibration-group-and-convert.env
+                source /etc/config-out/workflow.env
+                source /etc/config-out/processing.env
 
                 # Join files from the archive and from Kafka
                 export OUT_PATH=$OUT_PATH_JOINER
@@ -198,6 +200,7 @@ spec:
                 IFS=$'\n\t'
 
                 # Source the normalized configuration
+                source /etc/config-out/workflow.env
                 source /etc/config-out/data-upload.env
 
                 # Export data to bucket

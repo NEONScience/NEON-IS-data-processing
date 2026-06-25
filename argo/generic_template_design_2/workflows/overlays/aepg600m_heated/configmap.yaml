@@ -10,21 +10,21 @@ data:
     # Structured configuration for AEPG600M_HEATED sensor calibration group and convert workflow
     
     workflow:
-      log_level: INFO
-      error_path: /pfs/errored_datums
+      LOG_LEVEL: INFO
+      ERR_PATH: /pfs/errored_datums
     
-    data_loading:
-      l0_bucket_name: neon-dev-l0-ingest
-      l0_bucket_version_path: v2
-      calibration_bucket_name: neon-dev-argo-workflow-test
-      calibration_bucket_prefix: aepg600m_heated_calibration_assignment
-      source_type_index: 0
-      year_index: 1
-      month_index: 2
-      day_index: 3
-      source_id_index: 4
-      out_path_l0: /inputs/DATA_PATH_ARCHIVE
-      out_path_calibration: /inputs/CALIBRATION_PATH
+    load-data:
+      BUCKET_NAME: neon-dev-l0-ingest
+      BUCKET_VERSION_PATH: v2
+      CAL_BUCKET_NAME: neon-dev-argo-workflow-test
+      CAL_BUCKET_PREFIX: aepg600m_heated_calibration_assignment
+      SOURCE_TYPE_INDEX: 0
+      YEAR_INDEX: 1
+      MONTH_INDEX: 2
+      DAY_INDEX: 3
+      SOURCE_ID_INDEX: 4
+      OUT_PATH: /inputs/DATA_PATH_ARCHIVE
+      OUT_PATH_CAL: /inputs/CALIBRATION_PATH
     
     schemas:
       engineering:
@@ -36,7 +36,7 @@ data:
     
     processing:
       # Filter-joiner configuration for merging data and calibrations
-      filter_joiner_config: |
+      CONFIG: |
         ---
         input_paths:
         - path:
@@ -50,16 +50,16 @@ data:
             join_indices: [7]
             outer_join: true
       
-      relative_path_index: 3
-      link_type: SYMLINK
-      parallelism_internal: 3
+      RELATIVE_PATH_INDEX: 3
+      LINK_TYPE: SYMLINK
+      PARALLELISM_INTERNAL: 3
       
-      out_path_joiner: /pfs/data_cal_joined
-      out_path_kafka_comb: /pfs/kafka_combined
-      out_path_calibration_conversion: /pfs/aepg600m_heated_calibration_group_and_convert
+      OUT_PATH_JOINER: /pfs/data_cal_joined
+      OUT_PATH_KAFKA_COMB: /pfs/kafka_combined
+      OUT_PATH_CAL_CONV: /pfs/aepg600m_heated_calibration_group_and_convert
       
       # R arguments for kafka combine step
-      kafka_combine_r_args: |
+      KFKA_COMB_R_ARGS: |
         DirIn=$OUT_PATH_JOINER \
         DirOut=$OUT_PATH_KAFKA_COMB \
         DirErr=$ERR_PATH \
@@ -67,7 +67,7 @@ data:
         DirSubCopy=calibration
       
       # R arguments for calibration conversion step
-      calibration_conversion_r_args: |
+      CAL_CONV_R_ARGS: |
         DirIn=$OUT_PATH_KAFKA_COMB \
         DirOut=$OUT_PATH_CAL_CONV \
         DirErr=$ERR_PATH \
@@ -78,7 +78,7 @@ data:
         ConvFuncTerm3=def.cal.conv.poly.aepg600m:strain_gauge3_frequency_raw \
         TermQf=strain_gauge1_frequency_raw|strain_gauge2_frequency_raw|strain_gauge3_frequency_raw
     
-    data_output:
-      out_path: /pfs/aepg600m_heated_calibration_group_and_convert
-      output_bucket_name: neon-dev-argo-workflow-test
-      output_bucket_prefix: aepg600m_heated_calibration_group_and_convert
+    data-upload:
+      OUT_PATH: /pfs/aepg600m_heated_calibration_group_and_convert
+      OUTPUT_BUCKET_NAME: neon-dev-argo-workflow-test
+      OUTPUT_BUCKET_PREFIX: aepg600m_heated_calibration_group_and_convert
