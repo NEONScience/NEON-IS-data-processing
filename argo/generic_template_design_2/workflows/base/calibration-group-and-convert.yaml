@@ -67,9 +67,9 @@ spec:
               repo: "{{inputs.parameters.schema-repo-eng-url}}"
               revision: "{{inputs.parameters.schema-repo-eng-revision}}"
               depth: 1
-            sshPrivateKeySecret:
-              name: neon-avro-schemas-secret-readonly
-              key: sshPrivateKey
+              sshPrivateKeySecret:
+                name: neon-avro-schemas-secret-readonly
+                key: sshPrivateKey
           - name: schemas-sci
             path: /inputs/schemas-sci
             git:
@@ -81,7 +81,7 @@ spec:
         # This container normalizes the configuration from the mounted ConfigMap
         # into environment variables and config files that the workflow containers expect.
         - name: config-env-file-creator
-          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-2a0e197"
+          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-658a13b"
           volumeMounts:
             - name: config-vol
               mountPath: /config/config-in
