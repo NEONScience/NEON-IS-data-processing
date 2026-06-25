@@ -14,6 +14,7 @@ data:
   config-env.yaml: |
     ---
     # Structured configuration for AEPG600M sensor calibration group and convert workflow
+    # All of the key-value pairs in each top-level section will be loadable from an env file named <section>.env (e.g. workflow.env).
 
     # Environment vars for all processes in the workflow
     workflow:
