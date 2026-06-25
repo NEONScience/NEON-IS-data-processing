@@ -5,17 +5,15 @@ metadata:
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
-  config.yaml: |
+  # Schema repository URLs and revisions
+  schema-repo-eng-url: git@github.com:BattelleEcology/neon-avro-schemas.git
+  schema-repo-eng-revision: develop
+  schema-repo-sci-url: https://github.com/NEONScience/NEON-IS-avro-schemas.git
+  schema-repo-sci-revision: master
+  
+  config-env.yaml: |
     ---
     # Structured configuration for CMP22 sensor calibration group and convert workflow
-     
-    schemas:
-      engineering:
-        url: git@github.com:BattelleEcology/neon-avro-schemas.git
-        revision: develop
-      scientific:
-        url: https://github.com/NEONScience/NEON-IS-avro-schemas.git
-        revision: master
 
     # Environment vars for all processes in the workflow
     workflow:

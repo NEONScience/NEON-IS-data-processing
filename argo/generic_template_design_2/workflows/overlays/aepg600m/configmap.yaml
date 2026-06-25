@@ -5,14 +5,22 @@ metadata:
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
-  config.yaml: |
+  # Schema repository URLs and revisions
+  schema-repo-eng-url: git@github.com:BattelleEcology/neon-avro-schemas.git
+  schema-repo-eng-revision: develop
+  schema-repo-sci-url: https://github.com/NEONScience/NEON-IS-avro-schemas.git
+  schema-repo-sci-revision: master
+  
+  config-env.yaml: |
     ---
     # Structured configuration for AEPG600M sensor calibration group and convert workflow
-    
+
+    # Environment vars for all processes in the workflow
     workflow:
       LOG_LEVEL: INFO
       ERR_PATH: /pfs/errored_datums
     
+    # Environment vars for loading data
     load-data:
       BUCKET_NAME: neon-dev-l0-ingest
       BUCKET_VERSION_PATH: v2
@@ -26,14 +34,7 @@ data:
       OUT_PATH: /inputs/DATA_PATH_ARCHIVE
       OUT_PATH_CAL: /inputs/CALIBRATION_PATH
     
-    schemas:
-      engineering:
-        url: git@github.com:BattelleEcology/neon-avro-schemas.git
-        revision: develop
-      scientific:
-        url: https://github.com/NEONScience/NEON-IS-avro-schemas.git
-        revision: master
-    
+    # Environment vars for processing
     processing:
       # Filter-joiner configuration for merging data and calibrations
       CONFIG: |
@@ -78,6 +79,7 @@ data:
         ConvFuncTerm3=def.cal.conv.poly.aepg600m:strain_gauge3_frequency_raw \
         TermQf=strain_gauge1_frequency_raw|strain_gauge2_frequency_raw|strain_gauge3_frequency_raw
     
+    # Environment vars for data upload
     data-upload:
       OUT_PATH: /pfs/aepg600m_calibration_group_and_convert
       OUTPUT_BUCKET_NAME: neon-dev-argo-workflow-test

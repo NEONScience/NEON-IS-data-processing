@@ -40,6 +40,42 @@ spec:
         parameters:
           - name: datum-manifest
           - name: config-map-name
+          - name: schema-repo-eng-url
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-name}}"
+                key: schema-repo-eng-url
+          - name: schema-repo-eng-revision
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-name}}"
+                key: schema-repo-eng-revision
+          - name: schema-repo-sci-url
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-name}}"
+                key: schema-repo-sci-url
+          - name: schema-repo-sci-revision
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-name}}"
+                key: schema-repo-sci-revision
+        artifacts:
+          - name: schemas-eng
+            path: /inputs/schemas-eng
+            git:
+              repo: "{{inputs.parameters.schema-repo-eng-url}}"
+              revision: "{{inputs.parameters.schema-repo-eng-revision}}"
+              depth: 1
+            sshPrivateKeySecret:
+              name: neon-avro-schemas-secret-readonly
+              key: sshPrivateKey
+          - name: schemas-sci
+            path: /inputs/schemas-sci
+            git:
+              repo: "{{inputs.parameters.schema-repo-sci-url}}"
+              revision: "{{inputs.parameters.schema-repo-sci-revision}}"
+              depth: 1
 
       initContainers:
         # This container normalizes the configuration from the mounted ConfigMap
@@ -56,7 +92,7 @@ spec:
             - /usr/src/app/config_env_file_creator/config-env-file-creator.py
           env:
             - name: CONFIG_INPUT_FILE
-              value: /config/config-in/config.yaml
+              value: /config/config-in/config-env.yaml
             - name: CONFIG_OUTPUT_DIR
               value: /config/config-out
           resources:
