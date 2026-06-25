@@ -44,21 +44,21 @@ spec:
       initContainers:
         # This container normalizes the configuration from the mounted ConfigMap
         # into environment variables and config files that the workflow containers expect.
-        - name: config-normalizer
-          image: python:3.11-slim
+        - name: config-env-file-creator
+          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-2a0e197"
           volumeMounts:
             - name: config-vol
-              mountPath: /etc/config-in
+              mountPath: /config/config-in
             - name: config-output-vol
-              mountPath: /etc/config-out
+              mountPath: /config/config-out
           command:
             - python3
-            - /entrypoint.py
+            - /usr/src/app/config_env_file_creator/config-env-file-creator.py
           env:
             - name: CONFIG_INPUT_FILE
-              value: /etc/config-in/config.yaml
+              value: /config/config-in/config.yaml
             - name: CONFIG_OUTPUT_DIR
-              value: /etc/config-out
+              value: /config/config-out
           resources:
             requests:
               memory: "128Mi"
@@ -70,9 +70,9 @@ spec:
       containerSet:
         volumeMounts:
           - name: config-vol
-            mountPath: /etc/config-in
+            mountPath: /config/config-in
           - name: config-output-vol
-            mountPath: /etc/config-out
+            mountPath: /config/config-out
           - name: in-vol
             mountPath: /inputs
           - name: out-vol
@@ -101,8 +101,8 @@ spec:
                 IFS=$'\n\t'
 
                 # Source the normalized configurations
-                source /etc/config-out/workflow.env
-                source /etc/config-out/load-data.env
+                source /config/config-out/workflow.env
+                source /config/config-out/load-data.env
 
                 # Get L0 data from GCS
                 python3 -m l0_gcs_loader_by_manifest
@@ -165,8 +165,8 @@ spec:
                 IFS=$'\n\t'
 
                 # Source the normalized configuration
-                source /etc/config-out/workflow.env
-                source /etc/config-out/processing.env
+                source /config/config-out/workflow.env
+                source /config/config-out/processing.env
 
                 # Join files from the archive and from Kafka
                 export OUT_PATH=$OUT_PATH_JOINER
@@ -200,8 +200,8 @@ spec:
                 IFS=$'\n\t'
 
                 # Source the normalized configuration
-                source /etc/config-out/workflow.env
-                source /etc/config-out/data-upload.env
+                source /config/config-out/workflow.env
+                source /config/config-out/data-upload.env
 
                 # Export data to bucket
                 if [[ -d "$OUT_PATH" ]]; then
