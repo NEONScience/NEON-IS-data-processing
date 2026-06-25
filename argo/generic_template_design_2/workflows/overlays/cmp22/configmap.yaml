@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: calibration-group-convert-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  config.yaml: |
+    ---
+    # Structured configuration for CMP22 sensor calibration group and convert workflow
+    
+    workflow:
+      log_level: INFO
+      error_path: /pfs/errored_datums
+    
+    data_loading:
+      l0_bucket_name: neon-dev-l0-ingest
+      l0_bucket_version_path: v2
+      calibration_bucket_name: neon-dev-argo-workflow-test
+      calibration_bucket_prefix: cmp22_calibration_assignment
+      source_type_index: 0
+      year_index: 1
+      month_index: 2
+      day_index: 3
+      source_id_index: 4
+      out_path_l0: /inputs/DATA_PATH_ARCHIVE
+      out_path_calibration: /inputs/CALIBRATION_PATH
+    
+    schemas:
+      engineering:
+        url: git@github.com:BattelleEcology/neon-avro-schemas.git
+        revision: develop
+      scientific:
+        url: https://github.com/NEONScience/NEON-IS-avro-schemas.git
+        revision: master
+    
+    processing:
+      # Filter-joiner configuration for merging data and calibrations
+      filter_joiner_config: |
+        ---
+        input_paths:
+        - path:
+            name: DATA_PATH_ARCHIVE
+            glob_pattern: /inputs/DATA_PATH_ARCHIVE/cmp22/*/*/*/*/**
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            glob_pattern: /inputs/CALIBRATION_PATH/cmp22/*/*/*/*/**
+            join_indices: [7]
+            outer_join: true
+      
+      relative_path_index: 3
+      link_type: SYMLINK
+      parallelism_internal: 3
+      
+      out_path_joiner: /pfs/data_cal_joined
+      out_path_kafka_comb: /pfs/kafka_combined
+      out_path_calibration_conversion: /pfs/cmp22_calibration_group_and_convert
+      
+      # R arguments for kafka combine step
+      kafka_combine_r_args: |
+        DirIn=$OUT_PATH_JOINER \
+        DirOut=$OUT_PATH_KAFKA_COMB \
+        DirErr=$ERR_PATH \
+        FileSchmL0=/inputs/schemas-eng/schemas/cmp22/cmp22.avsc \
+        DirSubCopy=calibration
+      
+      # R arguments for calibration conversion step
+      calibration_conversion_r_args: |
+        DirIn=$OUT_PATH_KAFKA_COMB \
+        DirOut=$OUT_PATH_CAL_CONV \
+        DirErr=$ERR_PATH \
+        FileSchmData=/inputs/schemas-sci/avro_schemas/cmp22/cmp22_calibrated.avsc \
+        FileSchmQf=/inputs/schemas-sci/avro_schemas/cmp22/flags_calibration_cmp22.avsc \
+        ConvFuncTerm1=def.cal.conv.poly:voltage \
+        TermQf=voltage \
+        UcrtFuncTerm1=def.ucrt.meas.mult:voltage \
+        UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage \
+        FileUcrtFdas=/inputs/schemas-sci/uncertainty_fdas/fdas_calibration_uncertainty_general.json
+    
+    data_output:
+      out_path: /pfs/cmp22_calibration_group_and_convert
+      output_bucket_name: neon-dev-argo-workflow-test
+      output_bucket_prefix: cmp22_calibration_group_and_convert
