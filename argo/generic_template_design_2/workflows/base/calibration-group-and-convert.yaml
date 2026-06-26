@@ -81,7 +81,7 @@ spec:
         # This container normalizes the configuration from the mounted ConfigMap
         # into environment variables and config files that the workflow containers expect.
         - name: config-env-file-creator
-          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-658a13b"
+          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-37b2af5"
           volumeMounts:
             - name: config-vol
               mountPath: /config/config-in
