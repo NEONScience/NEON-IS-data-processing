@@ -15,7 +15,7 @@ data:
     ---
     # Structured configuration for AEPG600M_HEATED sensor calibration group and convert workflow
     # All of the key-value pairs in each top-level section will be loadable from an env file named <section>.env (e.g. workflow.env).
-    
+
     # Environment vars for all processes in the workflow
     workflow:
       LOG_LEVEL: INFO
@@ -23,15 +23,15 @@ data:
     
     # Environment vars for loading data
     load-data:
-      BUCKET_NAME: neon-dev-l0-ingest
-      BUCKET_VERSION_PATH: v2
+      L0_BUCKET_NAME: neon-dev-l0-ingest
+      L0_BUCKET_VERSION_PATH: v2
       CAL_BUCKET_NAME: neon-dev-argo-workflow-test
       CAL_BUCKET_PREFIX: aepg600m_heated_calibration_assignment
-      SOURCE_TYPE_INDEX: 0
-      YEAR_INDEX: 1
-      MONTH_INDEX: 2
-      DAY_INDEX: 3
-      SOURCE_ID_INDEX: 4
+      MANIFEST_SOURCE_TYPE_INDEX: 0
+      MANIFEST_YEAR_INDEX: 1
+      MANIFEST_MONTH_INDEX: 2
+      MANIFEST_DAY_INDEX: 3
+      MANIFEST_SOURCE_ID_INDEX: 4
       OUT_PATH: /inputs/DATA_PATH_ARCHIVE
       OUT_PATH_CAL: /inputs/CALIBRATION_PATH
 
