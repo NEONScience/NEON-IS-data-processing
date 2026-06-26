@@ -240,10 +240,20 @@ wrap.exo2.logfiles <- function(FileIn,
     
     #' Check that there are no dates prior to when NEON began collecting IS data
     if(any(dataTable$readout_time<"2014-01-01 00:00:00 UTC")){
-      log$debug(base::paste0("Data contains dates prior to when NEON began collecting IS data"))}
+      dataTable<-dataTable[dataTable$readout_time>="2014-01-01 00:00:00 UTC",]
+      if(nrow(dataTable)==0){
+        log$debug(base::paste0("All data removed due to dates prior to when NEON began collecting IS data for ", FileIn))
+        stop()
+      }
+    }
     #' Check that there are no future dates after the current date
     if(any(dataTable$readout_time>Sys.time())){
-      log$debug(base::paste0("Data contains future dates after the current date"))}
+      dataTable<-dataTable[dataTable$readout_time<=Sys.time(),]
+      if(nrow(dataTable)==0){
+        log$debug(base::paste0("All data removed due to dates after the current date for ", FileIn))
+        stop()
+      }
+    }
 
     # Loop for exo body data streams
     current_sensor<-"exo2"
@@ -453,6 +463,7 @@ wrap.exo2.logfiles <- function(FileIn,
       if(!"chlorophyll" %in% names(chlTable)){chlTable$chlorophyll <- NA}
       if(!"chlaRelativeFluorescence" %in% names(chlTable)){chlTable$chlaRelativeFluorescence <- NA}
       if(!"blueGreenAlgaePhycocyanin" %in% names(chlTable)){chlTable$blueGreenAlgaePhycocyanin <- NA}
+      
       currentTable <- chlTable[, c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
       ###subset into 1-day data files
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
