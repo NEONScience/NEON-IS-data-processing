@@ -31,18 +31,18 @@ Example array form:
 
 Each string in the manifest is split on '/'. Index environment variables map
 positions in that split path:
-- SOURCE_TYPE_INDEX
-- YEAR_INDEX
-- MONTH_INDEX
-- DAY_INDEX
-- SOURCE_ID_INDEX
+- MANIFEST_SOURCE_TYPE_INDEX
+- MANIFEST_YEAR_INDEX
+- MANIFEST_MONTH_INDEX
+- MANIFEST_DAY_INDEX
+- MANIFEST_SOURCE_ID_INDEX
 
 Paths may be partial. Only one path element is required. Missing indexed
 elements are treated as wildcards for listing/filtering, except SOURCE_TYPE,
-which must be available from SOURCE_TYPE_INDEX for each processed path.
+which must be available from MANIFEST_SOURCE_TYPE_INDEX for each processed path.
 
-When SOURCE_ID_INDEX is present, the bucket prefix includes:
-{BUCKET_VERSION_PATH}/{source_type}/ms={download_year}-{download_month}/source_id={source_id}
+When MANIFEST_SOURCE_ID_INDEX is present, the bucket prefix includes:
+{L0_BUCKET_VERSION_PATH}/{source_type}/ms={download_year}-{download_month}/source_id={source_id}
 """
 
 from google.cloud import storage
@@ -81,14 +81,14 @@ def l0_gcs_loader_by_manifest() -> None:
     log_config.configure(log_level)
     log = structlog.get_logger()
     
-    ingest_bucket_name = env.str('BUCKET_NAME')
-    bucket_version_path = env.str('BUCKET_VERSION_PATH')
-    source_type_index = env.int('SOURCE_TYPE_INDEX', None)
+    ingest_bucket_name = env.str('L0_BUCKET_NAME')
+    bucket_version_path = env.str('L0_BUCKET_VERSION_PATH')
+    source_type_index = env.int('MANIFEST_SOURCE_TYPE_INDEX', None)
     source_type_out = env.str('SOURCE_TYPE_OUT', None)
-    year_index = env.int('YEAR_INDEX', None)
-    month_index = env.int('MONTH_INDEX', None)
-    day_index = env.int('DAY_INDEX', None)
-    source_id_index = env.int('SOURCE_ID_INDEX', None)
+    year_index = env.int('MANIFEST_YEAR_INDEX', None)
+    month_index = env.int('MANIFEST_MONTH_INDEX', None)
+    day_index = env.int('MANIFEST_DAY_INDEX', None)
+    source_id_index = env.int('MANIFEST_SOURCE_ID_INDEX', None)
     manifest_inline = env.str('MANIFEST', None)
     manifest_file_raw = env.str('MANIFEST_FILE', None)
     output_directory: Path = env.path('OUT_PATH')
@@ -103,8 +103,8 @@ def l0_gcs_loader_by_manifest() -> None:
               source_id_index=source_id_index)
 
     if source_type_index is None:
-        log.error('SOURCE_TYPE_INDEX environment variable is required')
-        sys.exit('SOURCE_TYPE_INDEX environment variable is required.')
+        log.error('MANIFEST_SOURCE_TYPE_INDEX environment variable is required')
+        sys.exit('MANIFEST_SOURCE_TYPE_INDEX environment variable is required.')
 
     if manifest_inline and manifest_inline.strip():
         try:
