@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: exo2_logs_load_clean_assign
+  name: exo2_logjam_load_clean_assign
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-
   cmd:
