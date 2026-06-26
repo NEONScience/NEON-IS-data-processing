@@ -5,7 +5,7 @@
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.7.2
 
 # maintainer handle
-MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
+LABEL maintainer="Nora Catolico <ncatolico@battelleecology.org>"
 
 # Add in the python-based logjam loader module
 ARG MODULE_DIR="./modules"
@@ -22,7 +22,7 @@ COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${AP
 
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        python3.9 && \
+        python3.8 && \
     apt install -y python3-pip && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
