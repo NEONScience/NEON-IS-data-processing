@@ -89,7 +89,7 @@ input:
         glob: /(*/*/*)
         joinOn: $1
 parallelism_spec:
-  constant: 10
+  constant: 8
 autoscaling: true
 resource_requests:
   memory: 4G
