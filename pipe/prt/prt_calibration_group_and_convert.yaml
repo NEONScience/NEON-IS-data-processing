@@ -2,7 +2,7 @@
 pipeline:
   name: prt_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.2.1
   cmd:
   - sh
   - "-c"
@@ -107,7 +107,7 @@ input:
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
-        repo: prt_data_source_trino
+        repo: prt_data_source_gcs
         glob: /prt/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
@@ -123,14 +123,14 @@ parallelism_spec:
   constant: 10
 autoscaling: true
 resource_requests:
-  memory: 2.5G
-  cpu: 5.5
-resource_limits:
   memory: 4G
-  cpu: 7
+  cpu: 6.5
+resource_limits:
+  memory: 5G
+  cpu: 7.5
 sidecar_resource_requests:
-  memory: 3.5G
-  cpu: 0.6
+  memory: 4G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

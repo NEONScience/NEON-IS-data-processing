@@ -1,0 +1,11 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: my-shared-template
+spec:
+  templates:
+    - name: hello
+      container:
+        image: alpine
+        command: [echo]
+        args: ["Hello from shared template"]
