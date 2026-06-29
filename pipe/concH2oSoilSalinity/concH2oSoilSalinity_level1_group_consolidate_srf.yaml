@@ -160,19 +160,22 @@ input:
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
-  memory: 1G
-  cpu: 2.2
-resource_limits:
-  memory: 2G
-  cpu: 3.5
-sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 3
+resource_limits:
+  memory: 4G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
+parallelism_spec:
+  constant: 5
+autoscaling: true
