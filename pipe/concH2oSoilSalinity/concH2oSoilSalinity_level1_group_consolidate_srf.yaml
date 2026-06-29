@@ -132,7 +132,7 @@ transform:
   
 # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /tmp/pub_workbooks
-    PARALLELIZATION_INTERNAL: '2'
+    PARALLELIZATION_INTERNAL: '5'
 
 # Environment variables for the L1 archiver
     GROUP_PREFIX: conc-h2o-soil-salinity-split # no ending "_"
@@ -163,10 +163,10 @@ parallelism_spec:
   constant: 8
 autoscaling: true
 resource_requests:
-  memory: 3G
+  memory: 4G
   cpu: 3
 resource_limits:
-  memory: 4G
+  memory: 5G
   cpu: 4.5
 sidecar_resource_requests:
   memory: 4G
