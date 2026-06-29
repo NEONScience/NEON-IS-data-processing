@@ -109,7 +109,7 @@ transform:
             join_indices: [6]
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
     OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for filter-joiner module
 
 # Environment variables for level 1 consolidation

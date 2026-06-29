@@ -49,7 +49,7 @@ transform:
     echo "=== flow.concH2oSalinity.grp.split complete ==="
     EOF
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     ERR_PATH: /pfs/out/errored_datums
     # group_path settings
     GROUP: conc-h2o-soil-salinity-split_
