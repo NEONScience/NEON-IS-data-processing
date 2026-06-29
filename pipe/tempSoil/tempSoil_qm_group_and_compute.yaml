@@ -69,7 +69,7 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
-        repo: tempSoil_pre_stats_qm
+        repo: tempSoil_group_path
         glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
