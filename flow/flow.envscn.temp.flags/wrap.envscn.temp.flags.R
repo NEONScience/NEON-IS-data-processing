@@ -69,10 +69,8 @@
 #' @seealso Currently none
 
 # changelog and author contributions / copyrights
-#   Teresa Burlingame  (2025-02-16)
+#   Teresa Burlingame  (2026-02-16)
 #     Initial creation
-#   Teresa Burlingame  (2025-04-23)
-#     Null out data when Temp flag == 1 (frozen soil) and write out modified data file to output data directory.
 ##############################################################################################
 wrap.envscn.temp.flags <- function(DirIn,
                                    DirOutBase,
@@ -135,18 +133,10 @@ wrap.envscn.temp.flags <- function(DirIn,
   # Define expected terms and threshold names
   termTest <- c("VSICDepth01", "VSICDepth02", "VSICDepth03", "VSICDepth04", 
                 "VSICDepth05", "VSICDepth06", "VSICDepth07", "VSICDepth08")
-  tempTestName <- "tempTest"
+  tempTestName <- "temperatureTest"
   
-  #############
-  #dummy TODO delete after thresholds finalized
-  tempTestName <- "Range Threshold Soft Min"
   thshSubset <- thsh[thsh$threshold_name == tempTestName & thsh$term_name %in% termTest, ]
-  thshSubset$threshold_name <- "tempTest"
-  
-  #replace with just   thshSubset <- thsh[thsh$threshold_name == tempTestName & thsh$term_name %in% termTest, ]
 
-  ###############
-  
   # Filter thresholds for temperature test
   
   if (base::nrow(thshSubset) == 0) {

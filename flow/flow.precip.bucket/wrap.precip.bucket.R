@@ -185,7 +185,7 @@ wrap.precip.bucket <- function(DirIn,
     fileLoc <- fileLoc[1]
   }
   
-  loc <- NEONprocIS.base::def.loc.meta(NameFile = fs::path(dir_paths$location, fileLoc))
+  loc <- NEONprocIS.base::def.loc.meta(NameFile = fs::path(dir_paths$location, fileLoc), log = log)
   
   # Read and merge datasets more efficiently
   data <- NEONprocIS.base::def.read.parq.ds(
@@ -369,13 +369,13 @@ wrap.precip.bucket <- function(DirIn,
   setDF(stats_aggr30)
   
   # Write output files
-  write_output_files(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData, log)
+  write_output_files_bucket(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData, log)
   
   return()
 }
 
 # Helper function for file writing
-write_output_files <- function(stats_01, stats_30, fileData, dirOutStat, SchmData, log) {
+write_output_files_bucket <- function(stats_01, stats_30, fileData, dirOutStat, SchmData, log = NULL) {
   if (is.na(fileData)) return()
   
   # Create output filenames

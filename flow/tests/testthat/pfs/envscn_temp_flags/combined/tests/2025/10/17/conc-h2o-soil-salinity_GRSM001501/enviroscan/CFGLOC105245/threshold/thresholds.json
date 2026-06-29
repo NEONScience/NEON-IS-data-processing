@@ -14,7 +14,7 @@
       "start_day_of_year": null,
       "string_value": null,
       "term_name": "VSICDepth02",
-      "threshold_name": "Range Threshold Soft Min"
+      "threshold_name": "temperatureTest"
     },
     {
       "context": [
@@ -30,7 +30,7 @@
       "start_day_of_year": null,
       "string_value": null,
       "term_name": "VSICDepth03",
-      "threshold_name": "Range Threshold Soft Min"
+      "threshold_name": "temperatureTest"
     },
     {
       "context": [
@@ -46,7 +46,7 @@
       "start_day_of_year": null,
       "string_value": null,
       "term_name": "VSICDepth04",
-      "threshold_name": "Range Threshold Soft Min"
+      "threshold_name": "temperatureTest"
     },
     {
       "context": [
@@ -62,7 +62,7 @@
       "start_day_of_year": null,
       "string_value": null,
       "term_name": "VSICDepth05",
-      "threshold_name": "Range Threshold Soft Min"
+      "threshold_name": "temperatureTest"
     },
     {
       "context": [
@@ -78,7 +78,7 @@
       "start_day_of_year": null,
       "string_value": null,
       "term_name": "VSICDepth06",
-      "threshold_name": "Range Threshold Soft Min"
+      "threshold_name": "temperatureTest"
     },
     {
       "context": [
@@ -94,7 +94,7 @@
       "start_day_of_year": null,
       "string_value": null,
       "term_name": "VSICDepth07",
-      "threshold_name": "Range Threshold Soft Min"
+      "threshold_name": "temperatureTest"
     },
     {
       "context": [
@@ -110,7 +110,7 @@
       "start_day_of_year": null,
       "string_value": null,
       "term_name": "VSICDepth08",
-      "threshold_name": "Range Threshold Soft Min"
+      "threshold_name": "temperatureTest"
     },
     {
       "context": [
@@ -126,7 +126,7 @@
       "start_day_of_year": null,
       "string_value": null,
       "term_name": "VSICDepth01",
-      "threshold_name": "Range Threshold Soft Min"
+      "threshold_name": "temperatureTest"
     }
   ]
 }

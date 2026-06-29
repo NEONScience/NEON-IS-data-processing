@@ -2,7 +2,7 @@
 pipeline:
   name: prt_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.3
   cmd:
   - sh
   - "-c"
@@ -89,13 +89,13 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 5G
-  cpu: 3.3
+  cpu: 4.3
 resource_limits:
   memory: 7G
-  cpu: 4.5
+  cpu: 5
 sidecar_resource_requests:
-  memory: 3.5G
-  cpu: 1
+  memory: 4G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

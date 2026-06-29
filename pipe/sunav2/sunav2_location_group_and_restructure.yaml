@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_location_group_and_restructure
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.4
   cmd:
   - sh
   - "-c"
@@ -82,14 +82,14 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 2.2G
-  cpu: 3.3
+  memory: 1.8G
+  cpu: 2.5
 resource_limits:
-  memory: 4G
+  memory: 3G
   cpu: 4.5
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 0.7
 datum_set_spec:
   number: 1
 scheduling_spec:

@@ -2,7 +2,7 @@
 pipeline:
   name: nitrate_thresh_select_ts_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.3.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.3.3
   cmd:
   - sh
   - "-c"
@@ -49,16 +49,16 @@ input:
       repo: nitrate_threshold
       glob: /thresholds.json
 parallelism_spec:
-  constant: 1
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.1
+  memory: 1G
+  cpu: 2.2
 resource_limits:
   memory: 1.5G
-  cpu: 5
+  cpu: 3
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.7
 datum_set_spec:
   number: 1
