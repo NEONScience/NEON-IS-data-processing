@@ -40,19 +40,16 @@ input:
       repo: concH2oSoilSalinity_group_assignment
       glob: /conc-h2o-soil-salinity/(*/*/*)
       joinOn: $1
-      outer_join: True
   - pfs:
       name: LOCATION_FOCUS_PATH
       repo: enviroscan_fill_date_gaps_and_regularize
       glob: /*/(*/*/*)
       joinOn: $1
-      outer_join: True
   - pfs:
       name: GROUP_FOCUS_PATH
       repo: tempSoil_level1_group_consolidate_srf
       glob: /(*/*/*)
       joinOn: $1
-      outer_join: True
 parallelism_spec:
   constant: 5
 autoscaling: true
