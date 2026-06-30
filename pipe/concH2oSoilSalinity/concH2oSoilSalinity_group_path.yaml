@@ -36,6 +36,7 @@ input:
   - pfs:
       # name must be GROUP_ASSIGNMENT_PATH
       # remove hard coded glob pattern before going to productions. This is just to limit the scope for testing.
+      # outer join has been removed to avoid double processing in daily operations.
       name: GROUP_ASSIGNMENT_PATH
       repo: concH2oSoilSalinity_group_assignment
       glob: /conc-h2o-soil-salinity/(*/*/*)
