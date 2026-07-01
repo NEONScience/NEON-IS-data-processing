@@ -116,22 +116,28 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
   dirInStats <- fs::path(DirIn, 'stats')
   dirInQm    <- fs::path(DirIn, 'quality_metrics')
 
-  # Set up output directory. Write directly under the group-level directory,
-  # dropping the redundant terminal CFGLOC level from the path. Each split group
-  # maps 1:1 to a single CFGLOC, and the CFGLOC level is discarded during level1
-  # consolidation anyway. Placing group, stats, and quality_metrics directly
-  # under the group (rather than under GROUP/CFGLOC) keeps them at the same path
-  # depth as the science_review_flags folder added downstream, matching the
-  # standard convention used by tempSoil/parQuantumLine so a single
-  # GROUP_METADATA_INDEX captures both group metadata and science review flags.
-  dirOut    <- base::dirname(fs::path(DirOutBase, InfoDirIn$dirRepo))
+  # Set up output directories. Stats and quality_metrics are written under the
+  # CFGLOC-level directory (preserving the full input path structure), but the
+  # group JSON is written one level up, directly under the group directory
+  # (above the CFGLOC identity). This places the group metadata at the same path
+  # depth as the science_review_flags folder added downstream, so a single
+  # GROUP_METADATA_INDEX captures group metadata + SRFs while DATA_TYPE_INDEX
+  # (one level deeper) captures the CFGLOC-nested stats/quality_metrics.
+  dirOut    <- fs::path(DirOutBase, InfoDirIn$dirRepo)
   dirOutStats <- fs::path(dirOut, 'stats')
   dirOutQm    <- fs::path(dirOut, 'quality_metrics')
-  dirOutGroup <- fs::path(dirOut, 'group')
+  dirOutGroup <- fs::path(base::dirname(dirOut), 'group')
 
+  # Create the CFGLOC-level data directories
   NEONprocIS.base::def.dir.crea(
     DirBgn = dirOut,
-    DirSub = c('stats', 'quality_metrics', 'group'),
+    DirSub = c('stats', 'quality_metrics'),
+    log = log
+  )
+  # Create the group directory one level up (above the CFGLOC identity)
+  NEONprocIS.base::def.dir.crea(
+    DirBgn = base::dirname(dirOut),
+    DirSub = c('group'),
     log = log
   )
 
