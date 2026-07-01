@@ -24,17 +24,7 @@ transform:
     #
     # Run filter-joiner to bring in SRF (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
-    # SRF files from srf_assignment land at GROUP_ID/science_review_flags/ (depth 7),
-    # but GROUP_METADATA_INDEX=8 expects GROUP_ID/INTERMEDIATE/science_review_flags/ (depth 8).
-    # Add an intermediate directory to align SRF file depth with group JSON depth.
-    shopt -s nullglob
-    for srf_dir in /tmp/interimB/[0-9]*/[0-9]*/[0-9]*/*/science_review_flags; do
-      parent="${srf_dir%/science_review_flags}"
-      group_id=$(basename "$parent")
-      mkdir -p "${parent}/${group_id}/science_review_flags"
-      cp -r "${srf_dir}/." "${parent}/${group_id}/science_review_flags/"
-      rm -rf "${srf_dir}"
-    done
+  
     # Set some environment variables for the 3rd module
     export OUT_PATH=$OUT_PATH_3
     #
@@ -127,13 +117,12 @@ transform:
     IN_PATH: /tmp/interimB
     OUT_PATH_3: /tmp/pfs/interimC # This will be transfered to OUT_PATH for the second module
     GROUP_INDEX: "6" # path index of names of group-level metadata to include in the output
-    # Input data carries an intermediate CFGLOC segment at index 7, so
-    # group metadata folders (group, science_review_flags) are at index 8.
-    GROUP_METADATA_INDEX: "8"
+    # group_split saves the group JSON above the CFGLOC level, so group metadata
+    # folders (group, science_review_flags) sit directly under the group at index 7.
+    GROUP_METADATA_INDEX: "7"
     GROUP_METADATA_NAMES: group,science_review_flags
-    # path index of names of directories to include in the output
-    # Input data carries an intermediate CFGLOC segment at index 7, so
-    # data types (stats, quality_metrics) are at index 8.
+    # Data types (stats, quality_metrics) remain nested under the CFGLOC level,
+    # one deeper than the group metadata, at index 8.
     DATA_TYPE_INDEX: "8"
     DATA_TYPE_NAMES: stats,quality_metrics
     

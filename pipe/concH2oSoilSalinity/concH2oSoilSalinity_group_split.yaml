@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_group_split
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:sha-bc2c0da
   cmd:
   - sh
   - "-c"
@@ -65,6 +65,7 @@ transform:
     GROUP_FOCUS_MONTH_INDEX: '4'
     GROUP_FOCUS_DAY_INDEX: '5'
     GROUP_FOCUS_GROUP_INDEX: '8'
+    PARALLELIZATION_INTERNAL: '5'
 input:
   cross:
   - pfs:
@@ -92,11 +93,11 @@ parallelism_spec:
   constant: 8
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 1.5
+  memory: 4G
+  cpu: 3
 resource_limits:
-  memory: 3G
-  cpu: 2
+  memory: 5G
+  cpu: 4
 sidecar_resource_requests:
   memory: 3G
   cpu: 1
@@ -105,3 +106,4 @@ datum_set_spec:
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
+
