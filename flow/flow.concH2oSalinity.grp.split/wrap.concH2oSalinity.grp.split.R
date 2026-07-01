@@ -116,8 +116,15 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
   dirInStats <- fs::path(DirIn, 'stats')
   dirInQm    <- fs::path(DirIn, 'quality_metrics')
 
-  # Set up output directory, preserving the full path structure under DirOutBase
-  dirOut    <- fs::path(DirOutBase, InfoDirIn$dirRepo)
+  # Set up output directory. Write directly under the group-level directory,
+  # dropping the redundant terminal CFGLOC level from the path. Each split group
+  # maps 1:1 to a single CFGLOC, and the CFGLOC level is discarded during level1
+  # consolidation anyway. Placing group, stats, and quality_metrics directly
+  # under the group (rather than under GROUP/CFGLOC) keeps them at the same path
+  # depth as the science_review_flags folder added downstream, matching the
+  # standard convention used by tempSoil/parQuantumLine so a single
+  # GROUP_METADATA_INDEX captures both group metadata and science review flags.
+  dirOut    <- base::dirname(fs::path(DirOutBase, InfoDirIn$dirRepo))
   dirOutStats <- fs::path(dirOut, 'stats')
   dirOutQm    <- fs::path(dirOut, 'quality_metrics')
   dirOutGroup <- fs::path(dirOut, 'group')
