@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_l0_combine_and_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-comb-pad:v1.1.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-comb-pad:v1.1.3
   cmd:
   - sh
   - "-c"
@@ -88,7 +88,7 @@ input:
   - join:
     - pfs:
         name: DATA_PATH_ARCHIVE
-        repo: pluvio_raw_data_parser
+        repo: pluvio_data_source_gcs
         glob: /pluvio/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true

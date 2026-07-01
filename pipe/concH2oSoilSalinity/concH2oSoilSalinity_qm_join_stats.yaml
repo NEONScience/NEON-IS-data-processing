@@ -3,7 +3,7 @@
 pipeline:
   name: concH2oSoilSalinity_qm_join_stats
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.4
   cmd:
   - sh
   - "-c"
@@ -32,9 +32,9 @@ transform:
       DirOut=/tmp/qm_output \
       DirErr=/pfs/out/errored_datums \
       "WndwAgr=005|030" \
-      "WghtAlphBeta=1|1" \
+      "WghtAlphBeta=1|2" \
       FileSchmQm=$FILE_SCHEMA_QM \
-      Thsh=0.3 \
+      Thsh=0.6 \
       "GrpQfAlph1=VSWCsoilSpecificDepth01:VSWCsoilSpecificDepth01NullQF|VSWCsoilSpecificDepth01GapQF|VSWCsoilSpecificDepth01RangeQF|VSWCsoilSpecificDepth01StepQF|VSWCsoilSpecificDepth01PersistenceQF|VSWCsoilSpecificDepth01SpikeQF|VSWCDepth01SuspectCalQF|tempTestDepth01QF" \
       "GrpQfBeta1=VSWCsoilSpecificDepth01:VSWCsoilSpecificDepth01NullQF|VSWCsoilSpecificDepth01GapQF|VSWCsoilSpecificDepth01RangeQF|VSWCsoilSpecificDepth01StepQF|VSWCsoilSpecificDepth01PersistenceQF|VSWCsoilSpecificDepth01SpikeQF|VSWCDepth01SuspectCalQF|tempTestDepth01QF" \
       "GrpQfBetaIgnr1=VSWCsoilSpecificDepth01:VSWCsoilSpecificDepth01NullQF|VSWCsoilSpecificDepth01GapQF" \
