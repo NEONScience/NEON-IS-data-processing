@@ -24,6 +24,17 @@ transform:
     #
     # Run filter-joiner to bring in SRF (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
+    # SRF files from srf_assignment land at GROUP_ID/science_review_flags/ (depth 7),
+    # but GROUP_METADATA_INDEX=8 expects GROUP_ID/INTERMEDIATE/science_review_flags/ (depth 8).
+    # Add an intermediate directory to align SRF file depth with group JSON depth.
+    shopt -s nullglob
+    for srf_dir in /tmp/interimB/[0-9]*/[0-9]*/[0-9]*/*/science_review_flags; do
+      parent="${srf_dir%/science_review_flags}"
+      group_id=$(basename "$parent")
+      mkdir -p "${parent}/${group_id}/science_review_flags"
+      cp -r "${srf_dir}/." "${parent}/${group_id}/science_review_flags/"
+      rm -rf "${srf_dir}"
+    done
     # Set some environment variables for the 3rd module
     export OUT_PATH=$OUT_PATH_3
     #
