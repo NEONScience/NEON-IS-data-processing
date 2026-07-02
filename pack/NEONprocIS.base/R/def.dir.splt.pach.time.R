@@ -46,6 +46,8 @@
 #     add error catching when the repo structure does not match expectations
 ##############################################################################################
 def.dir.splt.pach.time <- function(dir, 
+                                   NameBaseDir='pfs',
+                                   IdxDirRepo=NULL
                                    log=NULL
  ){
   
