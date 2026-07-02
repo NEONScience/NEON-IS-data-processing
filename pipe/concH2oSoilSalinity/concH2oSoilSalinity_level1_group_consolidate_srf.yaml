@@ -109,7 +109,7 @@ transform:
             join_indices: [6]
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
     OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for filter-joiner module
 
 # Environment variables for level 1 consolidation
@@ -132,7 +132,7 @@ transform:
   
 # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /tmp/pub_workbooks
-    PARALLELIZATION_INTERNAL: '2'
+    PARALLELIZATION_INTERNAL: '5'
 
 # Environment variables for the L1 archiver
     GROUP_PREFIX: conc-h2o-soil-salinity-split # no ending "_"
@@ -160,17 +160,17 @@ input:
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
-  memory: 1G
-  cpu: 2.2
+  memory: 4G
+  cpu: 3
 resource_limits:
-  memory: 2G
-  cpu: 3.5
+  memory: 5G
+  cpu: 6
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 0.5
+  memory: 4G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
