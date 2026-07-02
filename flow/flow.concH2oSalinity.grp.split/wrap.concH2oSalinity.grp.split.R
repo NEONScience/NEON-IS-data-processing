@@ -119,10 +119,6 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
   # Set up output directories. Stats and quality_metrics are written under the
   # CFGLOC-level directory (preserving the full input path structure), but the
   # group JSON is written one level up, directly under the group directory
-  # (above the CFGLOC identity). This places the group metadata at the same path
-  # depth as the science_review_flags folder added downstream, so a single
-  # GROUP_METADATA_INDEX captures group metadata + SRFs while DATA_TYPE_INDEX
-  # (one level deeper) captures the CFGLOC-nested stats/quality_metrics.
   dirOut    <- fs::path(DirOutBase, InfoDirIn$dirRepo)
   dirOutStats <- fs::path(dirOut, 'stats')
   dirOutQm    <- fs::path(dirOut, 'quality_metrics')
