@@ -11,11 +11,11 @@
 
 
 # Define paths
-git_path_pipelines='/home/csturtevant/Git/NEON-IS-data-processing/pipe'
-source_type='sunav2'
-product='nitrate'
+git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
+source_type='pqs1'
+product='parQuantumLine'
 pipe_list_prefix='pipe_list_'
-pipe_list_suffix=''
+pipe_list_suffix='_development'
 ext='.yaml' # file extension for pipeline specs specified in the pipe_list files. Must be consistent.
 
 # Define paths based on base paths and product information above 
