@@ -27,7 +27,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: rmyoung_site_list
+      repo: rmyoung_hmr3300_site_list
       glob: /site-list.json
 resource_requests:
   memory: 500M

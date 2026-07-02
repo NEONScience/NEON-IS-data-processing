@@ -1,16 +1,20 @@
 ---
 pipeline:
-  name: rmyoung_location_loader
+  name: rmyoung_hmr3300_location_loader
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-loader:v1.0.0
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
+  - export SOURCE_TYPE=$SOURCE_TYPE_1
+  - python3 -m location_loader.location_loader_main
+  - export SOURCE_TYPE=$SOURCE_TYPE_2
   - python3 -m location_loader.location_loader_main
   env:
     LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: rmyoung
+    SOURCE_TYPE_1: rmyoung
+    SOURCE_TYPE_2: hmr3300
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
@@ -20,7 +24,7 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: rmyoung_cron_daily_and_date_control_tick
+    repo: rmyoung_hmr3300_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 autoscaling: true
