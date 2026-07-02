@@ -9,6 +9,8 @@ def.cal.conv.enviro.multi.out(
   varConv = setdiff(base::names(data), c("source_id", "site_id", "readout_time")),
   calSlct = NULL,
   Meta = list(),
+  nomVal = NULL,
+  nomCalID = NULL,
   log = NULL
 )
 }
@@ -28,6 +30,12 @@ as returned from NEONprocIS.cal::def.cal.slct. See documentation for that functi
 \item{Meta}{(Optional) List object containing additional metadata for use in 
 this function as needed. Defaults to an empty list, but this example requires that the list
 item Meta$Locations is input to work properly.}
+
+\item{nomVal}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::def.cal.conv.nmnl for what this input is.}
+
+\item{nomCalID}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::def.cal.conv.nmnl for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be

@@ -9,6 +9,8 @@ def.cal.conv.poly.m(
   varConv = base::names(data)[1],
   calSlct = NULL,
   Meta = list(),
+  nomVal = NULL,
+  nomCalID = NULL,
   log = NULL
 )
 }
@@ -27,6 +29,12 @@ as returned from NEONprocIS.cal::def.cal.slct. See documentation for that functi
 
 \item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
 NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.}
+
+\item{nomVal}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::def.cal.conv.nmnl for what this input is.}
+
+\item{nomCalID}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::def.cal.conv.nmnl for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be

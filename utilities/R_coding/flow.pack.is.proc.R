@@ -17,7 +17,7 @@ DirWrk00 <-
   # Ed
   #"/home/NEON/ayres/R/NEON-IS-data-processing"
   # Nora
-  #"/home/NEON/ncatolico/R/NEON-IS-data-processing"
+  "/home/NEON/ncatolico/R/NEON-IS-data-processing"
   #Dave
   #"~/code/NEON-IS-data-processing-ddurden"
 

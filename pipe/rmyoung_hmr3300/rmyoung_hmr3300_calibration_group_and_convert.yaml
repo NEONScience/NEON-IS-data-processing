@@ -1,0 +1,164 @@
+---
+pipeline:
+  name: rmyoung_hmr3300_calibration_group_and_convert
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-1c9356d
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH
+    rm -rf /tmp/pfs/kafka_merged
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    mkdir -p /tmp/pfs/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    
+    # Get source type from the data path that is present: /SOURCE_TYPE/YYYY/MM/DD
+    if [ ${DATA_PATH_TRINO+x} ]; then
+      source_type_path=$DATA_PATH_TRINO
+    elif [ ${DATA_PATH_KAFKA+x} ]; then
+      source_type_path=$DATA_PATH_KAFKA
+    else
+      echo "No Trino or Kafka data path present for this datum; skipping"
+      exit 0
+    fi
+
+    source_type=$(echo $source_type_path | cut -f $SOURCE_TYPE_INDEX -d "/")
+    echo "source_type = $source_type"
+
+    # Run filter-joiner for joining cal and data (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main      
+    
+    # Combine data from Kafka and Trino
+    if [ $source_type = "rmyoung" ]; then 
+      Rscript ./flow.kfka.comb.R \
+        DirIn=$OUT_PATH \
+        DirOut=/tmp/pfs/kafka_merged \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmL0=$SCHEMA_L0_RMYOUNG \
+        DirSubCopy=calibration
+    elif [ $source_type = "hmr3300" ]; then 
+      Rscript ./flow.kfka.comb.R \
+        DirIn=$OUT_PATH \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmL0=$SCHEMA_L0_HMR3300 \
+        DirSubCopy=calibration
+    fi
+
+    # Run calibration conversion module
+    #hmr3300 not calibrated, so only run for rmyoung
+    if [ $source_type = "rmyoung" ]; then 
+      Rscript ./flow.cal.conv.R \
+        DirIn=/tmp/pfs/kafka_merged \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums\
+        ConvFuncTerm1=def.cal.conv.nmnl:speed \
+        ConvFuncTerm2=def.cal.conv.nmnl:direction \
+        "nomVal=speed:0.1666667|direction:355" \
+        "nomCalID=speed:CVALB1|direction:CVALA1" \
+        "TermQf=speed|direction" \
+        UcrtFuncTerm1=def.ucrt.meas.cnst:speed \
+        UcrtFuncTerm1=def.ucrt.meas.cnst:direction \
+        FileSchmData=$SCHEMA_CAL_RMYOUNG \
+        FileSchmQf=$SCHEMA_FLAGS_RMYOUNG
+    fi    
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_KAFKA
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_KAFKA/*/*/*/*/*/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: DATA_PATH_TRINO
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_TRINO/*/*/*/*/*/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+    LOG_LEVEL: INFO
+    OUT_PATH: /tmp/pfs/filter_joined
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. 
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+    # Environment variables for bash code
+    SOURCE_TYPE_INDEX: '4' 
+input:
+  cross:
+  - pfs:
+      name: SCHEMA_L0_RMYOUNG
+      repo: rmyoung_hmr3300_avro_schemas
+      glob: /rmyoung/rmyoung_l0.avsc
+  - pfs:
+      name: SCHEMA_L0_HMR3300
+      repo: rmyoung_hmr3300_avro_schemas
+      glob: /hmr3300/hmr3300_l0.avsc
+  - pfs:
+      name: SCHEMA_CAL_RMYOUNG
+      repo: rmyoung_hmr3300_avro_schemas
+      glob: /rmyoung/rmyoung_calibrated.avsc
+  - pfs:
+      name: SCHEMA_FLAGS_RMYOUNG
+      repo: rmyoung_hmr3300_avro_schemas
+      glob: /rmyoung/rmyoung_calibration_flags.avsc
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: rmyoung_calibration_assignment
+        glob: /rmyoung/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH_TRINO
+        repo: rmyoung_hmr3300_data_source_trino
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH_KAFKA
+        repo: rmyoung_hmr3300_data_source_kafka
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.2G
+  cpu: 1.3
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
