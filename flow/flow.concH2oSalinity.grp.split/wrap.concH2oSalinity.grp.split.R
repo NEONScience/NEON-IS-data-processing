@@ -124,10 +124,12 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
   dirOutQm    <- fs::path(dirOut, 'quality_metrics')
   dirOutGroup <- fs::path(base::dirname(dirOut), 'group')
 
-  # Create the CFGLOC-level data directories
+  # Create the CFGLOC-level data directories. 'location' holds the synthesized
+  # per-VER CFGLOC JSON consumed by pub_files (sensor positions), sibling to
+  # stats and quality_metrics so it lands under DATA_TYPE_INDEX in consolidate.
   NEONprocIS.base::def.dir.crea(
     DirBgn = dirOut,
-    DirSub = c('stats', 'quality_metrics'),
+    DirSub = c('stats', 'quality_metrics', 'location'),
     log = log
   )
   # Create the group directory one level up (above the CFGLOC identity)
@@ -217,6 +219,60 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
 
   # Process quality_metrics files
   processParquetDir(dirInQm, dirOutQm, depthStr, 'quality_metrics', SchmQm)
+
+  # Synthesize the per-VER CFGLOC location JSON consumed by pub_files. Depth
+  # for this VER lives in the stats INPUT as depth##SoilMoistureMean (added
+  # as a passthrough TermStat in stats_group_and_compute.yaml since depth is
+  # constant per day per VER). Read from dirInStats because selectRenameCols
+  # drops the column from output (case-sensitive grep won't match lowercase 'd').
+  # Emit a CFGLOC-shaped JSON marked override_source=enviroscan so pub_files'
+  # is_enviroscan_sensor branch differentiates the 8 rows by JSON contents.
+  depthColName <- base::sprintf('depth%02dSoilMoistureMean', depthIdx)
+  depthValue <- NA_real_
+  statsFiles <- base::list.files(dirInStats, pattern = '\\.parquet$',
+                                 full.names = TRUE, recursive = FALSE)
+  if (base::length(statsFiles) > 0) {
+    dfStats <- base::tryCatch(
+      arrow::read_parquet(statsFiles[1], as_data_frame = TRUE),
+      error = function(e) NULL
+    )
+    if (!base::is.null(dfStats) && depthColName %in% base::names(dfStats)) {
+      vals <- dfStats[[depthColName]]
+      vals <- vals[!base::is.na(vals)]
+      if (base::length(vals) > 0) {
+        depthValue <- base::as.numeric(vals[1])
+      }
+    }
+  }
+
+  if (base::is.na(depthValue)) {
+    log$warn(base::paste0(
+      'No non-NA depth value found in column ', depthColName,
+      ' for ', nameCfgloc, ' (VER=', VER,
+      '). Skipping location JSON emit; sensor_positions will not include this row.'
+    ))
+  } else {
+    locJson <- base::list(
+      type = 'FeatureCollection',
+      override_source = 'enviroscan',
+      features = base::list(
+        base::list(
+          type = 'Feature',
+          geometry = NA,
+          properties = base::list(name = nameCfgloc, site = site),
+          HOR = HOR,
+          VER = VER,
+          depth = depthValue
+        )
+      )
+    )
+    fileOutLocJson <- fs::path(dirOut, 'location', paste0(nameCfgloc, '.json'))
+    base::writeLines(rjson::toJSON(locJson, indent = 2), con = fileOutLocJson)
+    log$info(base::paste0(
+      'Wrote synthesized location JSON: ', fileOutLocJson,
+      ' (HOR=', HOR, ' VER=', VER, ' depth=', depthValue, ')'
+    ))
+  }
 
 
   # Link only this datum's group JSON into the output group/ directory.
