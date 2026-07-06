@@ -29,9 +29,7 @@ spec:
             name: "{{workflow.parameters.config-map-name}}"
         - name: config-output-vol
           emptyDir: { }
-        - name: in-vol
-          emptyDir: { }
-        - name: out-vol
+        - name: data-vol
           emptyDir: { }
         - name: tmp-vol
           emptyDir: { }
@@ -62,7 +60,7 @@ spec:
                 key: schema-repo-sci-revision
         artifacts:
           - name: schemas-eng
-            path: /inputs/schemas-eng
+            path: /data/schemas-eng
             git:
               repo: "{{inputs.parameters.schema-repo-eng-url}}"
               revision: "{{inputs.parameters.schema-repo-eng-revision}}"
@@ -71,7 +69,7 @@ spec:
                 name: neon-avro-schemas-secret-readonly
                 key: sshPrivateKey
           - name: schemas-sci
-            path: /inputs/schemas-sci
+            path: /data/schemas-sci
             git:
               repo: "{{inputs.parameters.schema-repo-sci-url}}"
               revision: "{{inputs.parameters.schema-repo-sci-revision}}"
@@ -109,10 +107,8 @@ spec:
             mountPath: /config/config-in
           - name: config-output-vol
             mountPath: /config/config-out
-          - name: in-vol
-            mountPath: /inputs
-          - name: out-vol
-            mountPath: /pfs
+          - name: data-vol
+            mountPath: /data
           - name: tmp-vol
             mountPath: /tmp
 
@@ -182,7 +178,7 @@ spec:
           - name: calibration-group-and-convert
             dependencies:
               - load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.1.0
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-33f7182
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
