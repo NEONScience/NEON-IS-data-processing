@@ -3,6 +3,7 @@ Sensor-specific processing module.
 Handles thermistor depth processing for tchain sensors and per-VER depth
 overrides for EnviroSCAN (concH2oSoilSalinity).
 """
+from collections import defaultdict
 from typing import List, Dict, Optional
 from pub_files.output_files.sensor_positions.sensor_position import get_property
 from pub_files.output_files.sensor_positions.sensor_positions_database import SensorPositionsDatabase
@@ -84,50 +85,105 @@ def is_enviroscan_sensor(location_json: Optional[dict]) -> bool:
     return location_json.get('override_source') == 'enviroscan'
 
 
-def create_enviroscan_row(location_json: dict, geolocation,
-                          row_location_id: str, row_description: str,
-                          create_base_row_data_func, add_reference_position_data_func,
-                          database: SensorPositionsDatabase) -> List[List]:
-    """Build one row per DB geolocation history entry, with HOR/VER/z_offset
-    overridden from the synthesized location JSON."""
-    feature = location_json.get('features', [{}])[0] or {}
-    hor = feature.get('HOR', '')
-    ver = feature.get('VER', '')
-    override_hor_ver = f'{hor}.{ver}'
-    depth = feature.get('depth')
+def collect_enviroscan_features(location_json: dict, cfgloc: str,
+                                row_location_id: str, row_description: str,
+                                geolocations, sink: List[Dict]) -> None:
+    """Append each feature in the JSON to a shared collection pool for
+    later aggregation across days. group_split emits one JSON per (CFGLOC,
+    VER) per day with N features covering N depth segments within that day;
+    pub_files sees all monthly datum days at once and merges day-adjacent
+    same-(cfgloc, HOR, VER, depth) features into single rows."""
+    for feature in location_json.get('features', []) or []:
+        if not feature:
+            continue
+        depth = feature.get('depth')
+        if depth is None:
+            continue
+        sink.append({
+            'cfgloc': cfgloc,
+            'hor': feature.get('HOR', ''),
+            'ver': feature.get('VER', ''),
+            'depth': float(depth),
+            'position_start_date': feature.get('positionStartDateTime', ''),
+            'position_end_date': feature.get('positionEndDateTime', ''),
+            'row_location_id': row_location_id,
+            'row_description': row_description,
+            'geolocations': geolocations,
+        })
 
-    base_data = create_base_row_data_func(database, geolocation, override_hor_ver,
-                                          row_location_id, row_description)
-    if depth is not None:
-        base_data['row_z_offset'] = round(base_data['row_z_offset'] + float(depth), 2)
 
-    complete_rows = add_reference_position_data_func(database, base_data, geolocation,
-                                                     geolocation.offset_name)
+def aggregate_enviroscan_rows(collected: List[Dict],
+                              database: SensorPositionsDatabase,
+                              create_base_row_data_func,
+                              add_reference_position_data_func) -> List[List]:
+    """Merge day-adjacent same-(cfgloc, HOR, VER, depth) features into
+    contiguous ranges, emit one row per merged range per DB geolocation.
+    Adjacent day-runs are considered contiguous when prev.end == next.start
+    (group_split ensures this: day N ends at UTC midnight, day N+1 starts
+    at the same instant; transition-day crossovers fall in the middle of
+    the ambiguous zone). z_offset overridden as DB_z + segment depth."""
+    if not collected:
+        return []
 
-    rows = []
-    for row_data in complete_rows:
-        rows.append([
-            row_data['row_hor_ver'],
-            row_data['row_location_id'],
-            row_data['row_description'],
-            row_data['row_position_start_date'],
-            row_data['row_position_end_date'],
-            row_data['row_reference_location_id'],
-            row_data['row_reference_location_description'],
-            row_data['row_reference_location_start_date'],
-            row_data['row_reference_location_end_date'],
-            row_data['row_x_offset'],
-            row_data['row_y_offset'],
-            row_data['row_z_offset'],
-            row_data['row_pitch'],
-            row_data['row_roll'],
-            row_data['row_azimuth'],
-            row_data['row_reference_location_latitude'],
-            row_data['row_reference_location_longitude'],
-            row_data['row_reference_location_elevation'],
-            row_data['row_east_offset'],
-            row_data['row_north_offset'],
-            row_data['row_x_azimuth'],
-            row_data['row_y_azimuth']
-        ])
+    # Group by (cfgloc, HOR, VER, rounded depth). Depths compared to 4
+    # decimals so cal-file jitter doesn't fragment same-depth runs.
+    groups: Dict[tuple, List[Dict]] = defaultdict(list)
+    for f in collected:
+        key = (f['cfgloc'], f['hor'], f['ver'], round(f['depth'], 4))
+        groups[key].append(f)
+
+    rows: List[List] = []
+    for (cfgloc, hor, ver, depth), feats in groups.items():
+        feats.sort(key=lambda x: x['position_start_date'])
+
+        # Merge contiguous ISO-Z strings (group_split guarantees exact match
+        # at day boundaries — no timezone or precision drift on the seam).
+        merged: List[Dict] = [dict(feats[0])]
+        for f in feats[1:]:
+            if merged[-1]['position_end_date'] == f['position_start_date']:
+                merged[-1]['position_end_date'] = f['position_end_date']
+            else:
+                merged.append(dict(f))
+
+        override_hor_ver = f'{hor}.{ver}'
+        for m in merged:
+            for geolocation in m['geolocations']:
+                base_data = create_base_row_data_func(
+                    database, geolocation, override_hor_ver,
+                    m['row_location_id'], m['row_description'])
+                base_data['row_z_offset'] = round(
+                    base_data['row_z_offset'] + float(depth), 2)
+                # Segment range overrides DB geolocation dates for the
+                # positionStart/EndDateTime CSV columns.
+                base_data['row_position_start_date'] = m['position_start_date']
+                base_data['row_position_end_date'] = m['position_end_date']
+
+                complete_rows = add_reference_position_data_func(
+                    database, base_data, geolocation, geolocation.offset_name)
+
+                for row_data in complete_rows:
+                    rows.append([
+                        row_data['row_hor_ver'],
+                        row_data['row_location_id'],
+                        row_data['row_description'],
+                        row_data['row_position_start_date'],
+                        row_data['row_position_end_date'],
+                        row_data['row_reference_location_id'],
+                        row_data['row_reference_location_description'],
+                        row_data['row_reference_location_start_date'],
+                        row_data['row_reference_location_end_date'],
+                        row_data['row_x_offset'],
+                        row_data['row_y_offset'],
+                        row_data['row_z_offset'],
+                        row_data['row_pitch'],
+                        row_data['row_roll'],
+                        row_data['row_azimuth'],
+                        row_data['row_reference_location_latitude'],
+                        row_data['row_reference_location_longitude'],
+                        row_data['row_reference_location_elevation'],
+                        row_data['row_east_offset'],
+                        row_data['row_north_offset'],
+                        row_data['row_x_azimuth'],
+                        row_data['row_y_azimuth']
+                    ])
     return rows
