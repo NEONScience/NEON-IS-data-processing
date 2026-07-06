@@ -57,3 +57,28 @@ test_that(" Path structure does not conform to expectations",
             
             
           })
+
+test_that("No pfs in path - uses RELATIVE_PATH_INDEX parent rule",
+          {
+            idxRelativeOld <- base::Sys.getenv('RELATIVE_PATH_INDEX', unset='')
+            base::Sys.setenv(RELATIVE_PATH_INDEX='3')
+            on.exit({
+              if(base::nzchar(idxRelativeOld)){
+                base::Sys.setenv(RELATIVE_PATH_INDEX=idxRelativeOld)
+              } else {
+                base::Sys.unsetenv('RELATIVE_PATH_INDEX')
+              }
+            }, add=TRUE)
+
+            nameFile <-
+              "def.dir.splt.pach.time/test_input/testFolder/prt/2019/01/01/prt_16247_location.json"
+
+            rpt <- NEONprocIS.base::def.dir.splt.pach.time(nameFile)
+            timeInPath <- base::as.POSIXct('2019-01-01 00:00:00', tz = 'GMT')
+
+            testthat::expect_true(is.list(rpt))
+            testthat::expect_equal(rpt$repo[1], 'testFolder')
+            testthat::expect_equal(rpt$idxRepo[1], 3)
+            testthat::expect_equal(rpt$dirRepo[1], '/prt/2019/01/01/prt_16247_location.json')
+            testthat::expect_equal(rpt$time[1], timeInPath)
+          })

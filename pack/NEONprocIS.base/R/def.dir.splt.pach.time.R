@@ -11,7 +11,11 @@
 #' @param dir String. Directory path (often found as an environment variable named as the input repository), structured as 
 #' follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number (including zero) of 
 #' parent and child directories of any name, so long as they are not 'pfs' or recognizable as the '/yyyy/mm/dd' structure which 
-#' indicates the 4-digit year, 2-digit month, and 2-digit day.
+#' indicates the 4-digit year, 2-digit month, and 2-digit day. If 'pfs' is absent, the function will
+#' fall back to environment variable \code{RELATIVE_PATH_INDEX} (Python pathlib-style, zero-based)
+#' and use the parent of that indexed directory as the repository name. In the example structure above,
+#' / is index 0, pfs is 1, BASE_REPO is 2
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -44,6 +48,8 @@
 #     fixed bug causing bad interpretation of repo structure when the terminal directory is the repo
 #   Cove Sturtevant (2023-03-08)
 #     add error catching when the repo structure does not match expectations
+#   Copilot (2026-07-06)
+#     add fallback using RELATIVE_PATH_INDEX when 'pfs' is not present
 ##############################################################################################
 def.dir.splt.pach.time <- function(dir, 
                                    log=NULL
@@ -58,8 +64,26 @@ def.dir.splt.pach.time <- function(dir,
   # Split the directory into parents and children, and parse basic components
   dirSplt <- base::strsplit(dir,'/',fixed=TRUE)[[1]]
   idxRepo <- base::which(dirSplt=='pfs')+1
+
+  # Fallback to RELATIVE_PATH_INDEX if 'pfs' is not present.
+  # RELATIVE_PATH_INDEX follows Python pathlib parts indexing (zero-based).
+  # If idxRel is the indexed directory, repository is its parent.
   if(base::length(idxRepo) == 0){
-    log$error('pfs directory not found in input path structure. Check input repo.')
+    idxRelTxt <- base::trimws(base::Sys.getenv('RELATIVE_PATH_INDEX',unset=''))
+    if(base::nzchar(idxRelTxt)){
+      idxRel <- base::suppressWarnings(base::as.integer(idxRelTxt))
+      if(!base::is.na(idxRel)){
+        idxRepoTmp <- idxRel
+        if(idxRepoTmp >= 1 && idxRepoTmp <= base::length(dirSplt) && dirSplt[idxRepoTmp] != ''){
+          idxRepo <- idxRepoTmp
+          log$debug("'pfs' directory not found; inferred repository using RELATIVE_PATH_INDEX parent.")
+        }
+      }
+    }
+  }
+
+  if(base::length(idxRepo) == 0){
+    log$error("pfs directory not found in input path structure and RELATIVE_PATH_INDEX fallback failed. Check input repo.")
     stop()
   } 
   repo <- dirSplt[idxRepo]

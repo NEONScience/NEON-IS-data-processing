@@ -10,7 +10,10 @@ def.dir.splt.pach.time(dir, log = NULL)
 \item{dir}{String. Directory path (often found as an environment variable named as the input repository), structured as 
 follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number (including zero) of 
 parent and child directories of any name, so long as they are not 'pfs' or recognizable as the '/yyyy/mm/dd' structure which 
-indicates the 4-digit year, 2-digit month, and 2-digit day.}
+indicates the 4-digit year, 2-digit month, and 2-digit day. If 'pfs' is absent, the function will
+fall back to environment variable \code{RELATIVE_PATH_INDEX} (Python pathlib-style, zero-based)
+and use the parent of that indexed directory as the repository name. In the example structure above,
+/ is index 0, pfs is 1, BASE_REPO is 2}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
