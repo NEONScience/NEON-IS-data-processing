@@ -2,7 +2,7 @@ name: PROD-sq500ss-update-dag
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/sq500ss/*.yaml'
       - 'pipe/sq500ss/pipe_list_sq500ss.txt'

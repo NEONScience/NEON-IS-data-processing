@@ -73,14 +73,16 @@
 # changelog and author contributions / copyrights
 #   Nora Catolico (2025-12-4)
 #     original creation
+#   Nora Catolico (2026-05-29)
+#     remove duplicate timestamps
 ##############################################################################################
 wrap.gap.fill.nonrglr <- function(DirIn,
-                      DirOutBase,
-                      DirFill,
-                      WndwFill,
-                      SchmFill,
-                      DirSubCopy=NULL,
-                      log=NULL
+                                  DirOutBase,
+                                  DirFill,
+                                  WndwFill,
+                                  SchmFill,
+                                  DirSubCopy=NULL,
+                                  log=NULL
 ){
   
   library(dplyr)
@@ -160,6 +162,9 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       df_filled <- bind_rows(df, blanks)
       df_filled <- df_filled[order(df_filled$readout_time), ]
       
+      #remove any duplicated time stamps, keep first instance
+      df_filled <- df_filled[!duplicated(df_filled$readout_time),]
+      
       #add in source id if needed
       if("source_id" %in% colnames(df_filled)){
         source_id<-unique(df_filled$source_id[!is.na(df_filled$source_id)])
@@ -169,8 +174,6 @@ wrap.gap.fill.nonrglr <- function(DirIn,
           df_filled$source_id[is.na(df_filled$source_id)]<-"99999"
         }
       }
-      
-      
       
       # select output schema
       if(typeof(SchmFill) == "list"){
@@ -205,8 +208,8 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       } else {
         log$info(base::paste0('File written successfully in ', base::paste0(subDirOut,fileName)))
       }
-  
+      
     }
   }
-
+  
 }

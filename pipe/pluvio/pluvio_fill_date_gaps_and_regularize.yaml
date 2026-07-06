@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.3
   cmd:
   - sh
   - "-c"
@@ -83,7 +83,7 @@ input:
       - pfs:
           name: DATE_LIMITER_PATH
           repo: pluvio_cron_daily_and_date_control
-          glob: /trino/pluvio_raw/(*/*/*)
+          glob: /trino/pluvio/(*/*/*)
           joinOn: $1
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY

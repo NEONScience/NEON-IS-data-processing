@@ -30,9 +30,12 @@
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
-#' @param SchmData (Optional). A json-formatted character string containing the schema for the aggregated data, standard calibration and
+#' @param SchmData01 (Optional). A json-formatted character string containing the schema for the aggregated data, standard calibration and
 #' custom plausibility QFs as well as the heaterQMs
-
+#' 
+#'  @param SchmData30 (Optional). A json-formatted character string containing the schema for the aggregated data, standard calibration and
+#' custom plausibility QFs as well as the heaterQMs and an additional QM for partially missing data. 
+#' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data/flags/threshold folders in the input path that are to be copied with a 
 #' symbolic link to the output path (i.e. carried through as-is). Note that the 'stats' directory
@@ -66,10 +69,13 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-07-21)
 #     Initial creation
+#   Teresa Burlingame  (2025-04-08)
+#     change sum logic to be NA when all 30 mins are NA. 
 ##############################################################################################
 wrap.precip.pluvio.stats <- function(DirIn,
                                DirOutBase,
-                               SchmData = NULL, #new schema with all data
+                               SchmData01 = NULL, #schema for 1-minute output
+                               SchmData30 = NULL, #schema for 30-minute output (includes insuffDataQF)
                                DirSubCopy = NULL,
                                log = NULL) {
   
@@ -161,6 +167,20 @@ wrap.precip.pluvio.stats <- function(DirIn,
   setDT(qfPlau)
   data <- merge(data, qfCal, by = 'readout_time', all = TRUE)
   data <- merge(data, qfPlau, by = 'readout_time', all = TRUE)
+
+  # If validCalQF or suspectCalQF are missing/NA, set to -1
+  if (!('validCalQF' %in% names(data)) || all(is.na(data$validCalQF))) {
+    data[, validCalQF := -1L]
+    log$warn('validCalQF not found or all NA — setting to -1')
+  } else {
+    data[is.na(validCalQF), validCalQF := -1L]
+  }
+  if (!('suspectCalQF' %in% names(data)) || all(is.na(data$suspectCalQF))) {
+    data[, suspectCalQF := -1L]
+    log$warn('suspectCalQF not found or all NA — setting to -1')
+  } else {
+    data[is.na(suspectCalQF), suspectCalQF := -1L]
+  }
 
   # Read uncertainty coefficients
   fileUcrt <- base::dir(dir_paths$uncertainty_coef)
@@ -255,7 +275,6 @@ wrap.precip.pluvio.stats <- function(DirIn,
     precipNumPts = ifelse(is.na(accu_nrt), 0L, 1L), # 1 if data exists, 0 if NA
     nullQF = nullQF,
     extremePrecipQF = rangeQF,
-    gapQF = gapQF,
     sensorErrorQF = sensorErrorQF,
     heaterErrorQF = heaterErrorQF,
     validCalQF = validCalQF,
@@ -263,7 +282,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
   )]
   
   # Calculate finalQF for 1-minute data
-  stats_01min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, na.rm = TRUE)]
+  stats_01min[, finalQF := pmax(nullQF, extremePrecipQF, sensorErrorQF, heaterErrorQF, suspectCalQF, na.rm = TRUE)]
   
   # Create 30-minute time groups
   stats_01min[, time_group := floor_date(startDateTime, "30 mins")]
@@ -272,15 +291,13 @@ wrap.precip.pluvio.stats <- function(DirIn,
   stats_30min <- stats_01min[, .(
     startDateTime = min(startDateTime),
     endDateTime = max(endDateTime),
-    precipBulk = sum(precipBulk, na.rm = TRUE),
-    precipBulkExpUncert = sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2, # Quadrature sum with 2x multiplier
+    precipBulk =  ifelse(all(is.na(precipBulk)), NA_real_, sum(precipBulk, na.rm = TRUE)),
+    precipBulkExpUncert = ifelse(all(is.na(precipBulkExpUncert)), NA_real_, sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2), # Quadrature sum with 2x multiplier
     precipNumPts = sum(precipNumPts, na.rm = TRUE), # Sum the counts from 1-minute intervals
     nullQF = as.integer(ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                ifelse(all(is.na(nullQF)), NA_integer_, min(nullQF, na.rm = TRUE)))),
     extremePrecipQF = as.integer(ifelse(mean(extremePrecipQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                         ifelse(all(is.na(extremePrecipQF)), NA_integer_, min(extremePrecipQF, na.rm = TRUE)))),
-    gapQF = as.integer(ifelse(mean(gapQF == 1, na.rm = TRUE) >= 0.1, 1L, 
-                              ifelse(all(is.na(gapQF)), NA_integer_, min(gapQF, na.rm = TRUE)))),
     sensorErrorQF = as.integer(ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                       ifelse(all(is.na(sensorErrorQF)), NA_integer_, min(sensorErrorQF, na.rm = TRUE)))),
     validCalQF = as.integer(ifelse(mean(validCalQF == 1, na.rm = TRUE) >= 0.1, 1L, 
@@ -292,40 +309,47 @@ wrap.precip.pluvio.stats <- function(DirIn,
                                       ifelse(all(is.na(heaterErrorQF)), NA_integer_, min(heaterErrorQF, na.rm = TRUE))))
   ), by = time_group]
   
-  # Update finalQF based on the aggregated flags
-  stats_30min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, validCalQF, suspectCalQF, na.rm = TRUE)]
+  # Compute insuffDataQF for 30-minute data:
+  # Flag when null QF has not triggered but data is incomplete AND measurable precip was recorded.
+  # insuffDataQF = 1: nullQF=0 (pass), precipNumPts < 30, and precipBulk > 0 (potential missed precip)
+  # insuffDataQF = 0: full data (precipNumPts >= 30), or no measurable precip
+  # insuffDataQF = -1: null flag already triggered (redundant to flag insufficiency separately)
+  stats_30min[, insuffDataQF := as.integer(
+    fifelse(nullQF == 1L, -1L,
+    fifelse(precipNumPts >= 30L, 0L,
+    fifelse(is.na(precipBulk) | precipBulk <= 0, 0L, 1L)))
+  )]
+
+  # Update finalQF based on the aggregated flags, including insuffDataQF
+  stats_30min[, finalQF := pmax(nullQF, extremePrecipQF, sensorErrorQF, heaterErrorQF, suspectCalQF, insuffDataQF, na.rm = TRUE)]
   
   # Clean up temporary columns
   stats_01min[, time_group := NULL]
   stats_30min[, time_group := NULL]
-  # Clean up
-  stats_01min[, startDateTime_1min := NULL]
-  stats_30min[, startDateTime_1min := NULL]
   
-  # Clean up
-  stats_01min[, endDateTime_1min := NULL]
-  stats_30min[, endDateTime_1min := NULL]
-  
- # Reorder columns to match schema requirements
-  col_order <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
-                 'nullQF', 'gapQF', 'extremePrecipQF', 'heaterErrorQF',
-                 'sensorErrorQF', 'validCalQF', 'suspectCalQF', 'finalQF')
-  
-  stats_aggr01 <- stats_01min[, ..col_order]
-  stats_aggr30 <- stats_30min[, ..col_order]
+  # Reorder columns to match schema requirements
+  col_order_01 <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
+                    'nullQF','extremePrecipQF', 'heaterErrorQF',
+                    'sensorErrorQF', 'validCalQF', 'suspectCalQF', 'finalQF')
+  col_order_30 <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
+                    'insuffDataQF', 'nullQF', 'extremePrecipQF', 'heaterErrorQF',
+                    'sensorErrorQF', 'validCalQF', 'suspectCalQF', 'finalQF')
+
+  stats_aggr01 <- stats_01min[, ..col_order_01]
+  stats_aggr30 <- stats_30min[, ..col_order_30]
   
   # Convert back to data.frame if needed for writing
   setDF(stats_aggr01)
   setDF(stats_aggr30)
   
   # Write output files
-  write_output_files(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData, log)
+  write_output_files_pluvio(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData01, SchmData30, log)
   
   return()
 }
 
 # Helper function for file writing
-write_output_files <- function(stats_01, stats_30, fileData, dirOutStat, SchmData, log) {
+write_output_files_pluvio <- function(stats_01, stats_30, fileData, dirOutStat, SchmData01, SchmData30, log = NULL) {
   if (is.na(fileData)) return()
   
   # Create output filenames
@@ -340,7 +364,8 @@ write_output_files <- function(stats_01, stats_30, fileData, dirOutStat, SchmDat
   
   file_paths <- fs::path(dirOutStat, file_names)
   datasets <- list(stats_01, stats_30)
-  
+  schm_list <- list(SchmData01, SchmData30)
+
   # Write files
   for (i in seq_along(file_paths)) {
     rptWrte <- base::try(
@@ -348,7 +373,7 @@ write_output_files <- function(stats_01, stats_30, fileData, dirOutStat, SchmDat
         data = datasets[[i]],
         NameFile = file_paths[i],
         NameFileSchm = NULL,
-        Schm = SchmData,
+        Schm = schm_list[[i]],
         log = log
       ),
       silent = TRUE

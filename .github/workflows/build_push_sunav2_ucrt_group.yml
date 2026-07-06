@@ -10,6 +10,7 @@ on:
       - 'modules/common/**'
       - 'flow/flow.sunav2.exp.uncert/**'
       - 'flow/flow.qf.insuff.data/**'
+      - 'flow/flow.sunav2.config.qf/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

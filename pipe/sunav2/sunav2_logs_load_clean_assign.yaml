@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_logs_load_clean_assign
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-load-clean-assign:v1.1.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-load-clean-assign:v1.1.5
   cmd:
   - sh
   - "-c"
@@ -52,14 +52,14 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 3.3
+  memory: 2.2G
+  cpu: 1.5
 resource_limits:
   memory: 3G
   cpu: 4.5
 sidecar_resource_requests:
   memory: 4G
-  cpu: 2
+  cpu: 1.5
 datum_set_spec:
   number: 1
 scheduling_spec:

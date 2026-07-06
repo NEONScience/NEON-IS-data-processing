@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.2.1
   cmd:
   - sh
   - "-c"
@@ -126,13 +126,13 @@ input:
         joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    - pfs:
-        name: KAFKA_UNMERGED_DATA
-        repo: aepg600m_data_source_kafka
-        glob: /(*)/(*)/(*)/(*)
-        joinOn: $1/$2/$3/$4
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    # - pfs:
+    #     name: KAFKA_UNMERGED_DATA
+    #     repo: aepg600m_data_source_kafka
+    #     glob: /(*)/(*)/(*)/(*)
+    #     joinOn: $1/$2/$3/$4
+    #     outer_join: true
+    #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 5
 autoscaling: true #set back to true after testing
