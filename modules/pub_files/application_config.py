@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import environs
 
@@ -25,6 +25,10 @@ class ApplicationConfig(NamedTuple):
     eml_intellectual_rights_path: str
     eml_unit_types_path: str
     eml_units_path: str
+    # Optional: root of a pfs input carrying per-CFGLOC position_history JSONs
+    # (from concH2oSoilSalinity_position_history_loader). When set, sensor_positions
+    # reads history from these files instead of hitting the DB per publish month.
+    position_history_path: Optional[Path] = None
 
 
 def configure_from_environment() -> ApplicationConfig:
@@ -33,6 +37,7 @@ def configure_from_environment() -> ApplicationConfig:
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     location_path: Path = env.path('LOCATION_PATH')
     out_path: Path = env.path('OUT_PATH')
+    position_history_path: Optional[Path] = env.path('POSITION_HISTORY_PATH', None)
     db_secrets_path: Path = env.path('DB_SECRETS_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     certificate_path: Path = env.path('GITHUB_PEM_PATH')
@@ -68,4 +73,5 @@ def configure_from_environment() -> ApplicationConfig:
                              eml_contact_path=eml_contact_path,
                              eml_intellectual_rights_path=eml_intellectual_rights_path,
                              eml_unit_types_path=eml_unit_types_path,
-                             eml_units_path=eml_units_path)
+                             eml_units_path=eml_units_path,
+                             position_history_path=position_history_path)
