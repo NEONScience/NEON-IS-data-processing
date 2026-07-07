@@ -6,6 +6,8 @@ on:
       - 'master'
     paths:
       - 'modules/concH2oSoilSalinity_position_history_loader/**'
+      - 'modules/data_access/**'
+      - 'modules/common/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
