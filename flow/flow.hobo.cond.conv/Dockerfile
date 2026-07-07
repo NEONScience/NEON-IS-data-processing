@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing -Hobo Conductivity Conversion
 
 # Start with the neon-is-base-r image.
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v2.0.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v2.1.0
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.hobo.cond.conv"
