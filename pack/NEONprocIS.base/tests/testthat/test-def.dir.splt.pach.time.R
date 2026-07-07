@@ -41,6 +41,16 @@ test_that(" without date in the directory structue",
 
 test_that(" Path structure does not conform to expectations",
           {
+            
+            idxRelativeOld <- base::Sys.getenv('RELATIVE_PATH_INDEX', unset='')
+            base::Sys.unsetenv('RELATIVE_PATH_INDEX')
+            on.exit({
+              if(base::nzchar(idxRelativeOld)){
+                base::Sys.setenv(RELATIVE_PATH_INDEX=idxRelativeOld)
+              }
+            }, add=TRUE)
+            
+            
             # No pfs in path structure
             nameFile <-
               "def.dir.splt.pach.time/test_input/testFolder/prt/prt_16247_location.json"
