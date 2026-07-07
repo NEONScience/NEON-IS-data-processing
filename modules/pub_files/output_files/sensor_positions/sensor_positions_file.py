@@ -1,5 +1,4 @@
 import csv
-import json
 from datetime import datetime
 from pathlib import Path
 from typing import Tuple, List, Dict, Optional
@@ -23,10 +22,6 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
         writer = csv.writer(file)
         writer.writerow(get_column_names())
         file_rows = []
-        # EnviroSCAN features accumulate across the monthly datum's days;
-        # merged into rows after the glob loop so day-adjacent same-depth
-        # segments collapse into contiguous ranges.
-        enviroscan_features = []
         # Parse location file path for the datum elements. Assume we end at site (**/site/location/*/location_file.json)
         site = location_path.parts[-1]
         for path in location_path.parent.parent.rglob(f'*/{site}/location/*/*.json'):
@@ -35,48 +30,23 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                 location = database.get_named_location(named_location_name)
                 (row_hor_ver, row_location_id, row_description) = get_named_location_data(database, named_location_name)
                 geolocations = database.get_geolocations(named_location_name)
-
-                # Read the JSON contents to detect per-VER overrides (e.g. EnviroSCAN
-                # writes one JSON per depth under distinct split-group dirs; the same
-                # CFGLOC name yields one DB row, so JSON contents differentiate rows).
-                location_json = None
-                try:
-                    if path.stat().st_size > 0:
-                        with open(path) as f:
-                            location_json = json.load(f)
-                except (json.JSONDecodeError, OSError):
-                    location_json = None
-
-                if sensor_specific_processors.is_enviroscan_sensor(location_json):
-                    sensor_specific_processors.collect_enviroscan_features(
-                        location_json, named_location_name,
-                        row_location_id, row_description, geolocations,
-                        enviroscan_features)
-                    continue
-
+                
                 for geolocation in geolocations:
+                    # Use the specified processing method
                     if sensor_specific_processors.is_tchain_sensor(location):
                         rows = sensor_specific_processors.create_tchain_rows(
-                            database, location, geolocation, row_hor_ver,
+                            database, location, geolocation, row_hor_ver, 
                             row_location_id, row_description,
                             _create_base_row_data, _add_reference_position_data)
                     else:
-                        rows = _create_standard_rows(database, geolocation, row_hor_ver,
+                        rows = _create_standard_rows(database, geolocation, row_hor_ver, 
                                                    row_location_id, row_description)
-
+                    
                     # Add rows, preventing duplicates
                     for row in rows:
                         if row not in file_rows:
                             file_rows.append(row)
-
-        # Merge collected enviroscan features across days and emit rows.
-        enviro_rows = sensor_specific_processors.aggregate_enviroscan_rows(
-            enviroscan_features, database,
-            _create_base_row_data, _add_reference_position_data)
-        for row in enviro_rows:
-            if row not in file_rows:
-                file_rows.append(row)
-
+        
         writer.writerows(file_rows)
     return file_path
 
