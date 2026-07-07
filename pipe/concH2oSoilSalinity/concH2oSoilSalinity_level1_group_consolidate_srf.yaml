@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_level1_group_consolidate_srf
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.5
   cmd:
   - sh
   - "-c"
@@ -24,6 +24,7 @@ transform:
     #
     # Run filter-joiner to bring in SRF (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
+  
     # Set some environment variables for the 3rd module
     export OUT_PATH=$OUT_PATH_3
     #
@@ -109,20 +110,19 @@ transform:
             join_indices: [6]
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
     OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for filter-joiner module
 
 # Environment variables for level 1 consolidation
     IN_PATH: /tmp/interimB
     OUT_PATH_3: /tmp/pfs/interimC # This will be transfered to OUT_PATH for the second module
     GROUP_INDEX: "6" # path index of names of group-level metadata to include in the output
-    # Input data carries an intermediate CFGLOC segment at index 7, so
-    # group metadata folders (group, science_review_flags) are at index 8.
-    GROUP_METADATA_INDEX: "8"
+    # group_split saves the group JSON above the CFGLOC level, so group metadata
+    # folders (group, science_review_flags) sit directly under the group at index 7.
+    GROUP_METADATA_INDEX: "7"
     GROUP_METADATA_NAMES: group,science_review_flags
-    # path index of names of directories to include in the output
-    # Input data carries an intermediate CFGLOC segment at index 7, so
-    # data types (stats, quality_metrics) are at index 8.
+    # Data types (stats, quality_metrics) remain nested under the CFGLOC level,
+    # one deeper than the group metadata, at index 8.
     DATA_TYPE_INDEX: "8"
     DATA_TYPE_NAMES: stats,quality_metrics
     
@@ -132,7 +132,7 @@ transform:
   
 # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /tmp/pub_workbooks
-    PARALLELIZATION_INTERNAL: '2'
+    PARALLELIZATION_INTERNAL: '5'
 
 # Environment variables for the L1 archiver
     GROUP_PREFIX: conc-h2o-soil-salinity-split # no ending "_"
@@ -160,17 +160,17 @@ input:
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
-  memory: 1G
-  cpu: 2.2
+  memory: 4G
+  cpu: 5
 resource_limits:
-  memory: 2G
-  cpu: 3.5
+  memory: 5G
+  cpu: 6
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 0.5
+  memory: 4G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
