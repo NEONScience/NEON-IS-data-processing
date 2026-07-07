@@ -12,10 +12,10 @@
 #' follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number (including zero) of 
 #' parent and child directories of any name, so long as they are not 'pfs' or recognizable as the '/yyyy/mm/dd' structure which 
 #' indicates the 4-digit year, 2-digit month, and 2-digit day. If 'pfs' is absent, the function will
-#' fall back to environment variable \code{RELATIVE_PATH_INDEX} (Python pathlib-style, zero-based)
-#' and use the parent of that indexed directory as the repository name. In the example structure above,
-#' / is index 0, pfs is 1, BASE_REPO is 2
-#' 
+#' fall back to environment variable \code{RELATIVE_PATH_INDEX} (Python pathlib \code{Path$parts} indexing, zero-based).
+#' \code{RELATIVE_PATH_INDEX} should point to the first directory *within* the repo (e.g., product type); the repo is inferred as its parent.
+#' Example: / is index 0, pfs is 1, BASE_REPO is 2, prt is 3; set \code{RELATIVE_PATH_INDEX=3} to infer repo BASE_REPO.
+#'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -66,8 +66,8 @@ def.dir.splt.pach.time <- function(dir,
   idxRepo <- base::which(dirSplt=='pfs')+1
 
   # Fallback to RELATIVE_PATH_INDEX if 'pfs' is not present.
-  # RELATIVE_PATH_INDEX follows Python pathlib parts indexing (zero-based).
-  # If idxRel is the indexed directory, repository is its parent.
+  # RELATIVE_PATH_INDEX follows Python pathlib parts indexing (zero-based) for the *repo child* directory.
+  # If idxRel is the index of the first directory inside the repo (e.g., product type), infer the repo as its parent.
   if(base::length(idxRepo) == 0){
     idxRelTxt <- base::trimws(base::Sys.getenv('RELATIVE_PATH_INDEX',unset=''))
     if(base::nzchar(idxRelTxt)){
