@@ -56,6 +56,7 @@ def write_files(*,
     if generated_at is None:
         generated_at = datetime.now(tz=timezone.utc)
     generated_at_str = _fmt_dt(generated_at)
+    now_naive = _naive(generated_at)
 
     installs = get_asset_installs()
     calibrations = get_calibrations()
@@ -100,6 +101,7 @@ def write_files(*,
             cals_by_asset_period=cals_by_asset_period,
             allowed_vers=allowed_vers,
             hor=hor,
+            now_naive=now_naive,
         )
 
         if not rows:
@@ -122,10 +124,16 @@ def _build_rows(*,
                 geolocations:    List[Dict[str, Any]],
                 cals_by_asset_period: Dict[Tuple[int, Optional[datetime], Optional[datetime]], List[Cvald1Calibration]],
                 allowed_vers:    Set[str],
-                hor:             str) -> List[Dict[str, Any]]:
+                hor:             str,
+                now_naive:       datetime) -> List[Dict[str, Any]]:
     """
     For a single CFGLOC, produce the full list of (install × geolocation × cal-period × VER)
     intersection rows.
+
+    :param now_naive: 'Generated-at' timestamp (tz-naive). Any window end that
+                      falls after this is treated as open-ended — PDR uses
+                      placeholder future dates (e.g. 2031-12-31) for still-valid
+                      records, and downstream consumers expect a blank end.
     """
     rows: List[Dict[str, Any]] = []
     for install in cfgloc_installs:
@@ -142,6 +150,9 @@ def _build_rows(*,
                 if window is None:
                     continue
                 win_start, win_end = window
+                # Collapse placeholder-future end dates to open-ended.
+                if win_end is not None and win_end > now_naive:
+                    win_end = None
                 for stream in streams:
                     ver = _stream_to_ver(stream.schema_field_name)
                     if ver is None or str(ver) not in allowed_vers:
@@ -150,8 +161,9 @@ def _build_rows(*,
                     rows.append({
                         'hor': hor,
                         'ver': str(ver),
-                        'position_start_date': _fmt_dt(win_start),
-                        'position_end_date':   _fmt_dt(win_end),
+                        # Keep raw datetimes for the merge pass below; formatted later.
+                        '_win_start': win_start,
+                        '_win_end':   win_end,
                         'x_offset': geo['x_offset'],
                         'y_offset': geo['y_offset'],
                         'z_offset': z_offset_adjusted,
@@ -171,7 +183,78 @@ def _build_rows(*,
                         'source_stream':   stream.schema_field_name,
                         'cert_filename':   stream.cert_filename,
                     })
-    return rows
+    return _merge_time_ranges(rows)
+
+
+def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Consolidate rows that differ only in time range. The loader's intersection
+    (install × geolocation × calibration) legitimately produces N sub-windows
+    even when the physical position doesn't change between them (e.g. a
+    recalibration that leaves cvald1_cm unchanged, or successive asset installs
+    at the same offsets). We collapse those into a single row per contiguous or
+    overlapping stretch where the depth-relevant fields are identical.
+
+    Rows with different physical values (any of x/y/z, pitch/roll/azimuth,
+    reference location, or reference-location time range) stay separate and
+    keep their own intervals — even if they overlap in time, which surfaces
+    real data anomalies rather than hiding them.
+    """
+    key_fields = (
+        'hor', 'ver',
+        'x_offset', 'y_offset', 'z_offset',
+        'pitch', 'roll', 'azimuth',
+        'reference_location_id',
+        'reference_location_start_date', 'reference_location_end_date',
+        'reference_location_latitude', 'reference_location_longitude',
+        'reference_location_elevation',
+    )
+    NEG_INF = datetime.min
+    POS_INF = datetime.max
+
+    groups: Dict[Tuple, List[Dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        groups[tuple(row.get(f) for f in key_fields)].append(row)
+
+    merged: List[Dict[str, Any]] = []
+    for _, group_rows in groups.items():
+        intervals = []
+        for r in group_rows:
+            s = _naive(r['_win_start']) if r['_win_start'] is not None else NEG_INF
+            e = _naive(r['_win_end'])   if r['_win_end']   is not None else POS_INF
+            intervals.append((s, e, r))
+        intervals.sort(key=lambda x: x[0])
+
+        cur_start, cur_end, cur_row = intervals[0]
+        for s, e, r in intervals[1:]:
+            if s <= cur_end:
+                if e > cur_end:
+                    cur_end = e
+            else:
+                merged.append(_finalize_row(cur_row, cur_start, cur_end, NEG_INF, POS_INF))
+                cur_start, cur_end, cur_row = s, e, r
+        merged.append(_finalize_row(cur_row, cur_start, cur_end, NEG_INF, POS_INF))
+    return merged
+
+
+def _finalize_row(row: Dict[str, Any], start: datetime, end: datetime,
+                  neg_inf: datetime, pos_inf: datetime) -> Dict[str, Any]:
+    """Format the merged interval back into ISO strings; preserve field order."""
+    out: Dict[str, Any] = {
+        'hor': row['hor'],
+        'ver': row['ver'],
+        'position_start_date': '' if start == neg_inf else _fmt_dt(start),
+        'position_end_date':   '' if end   == pos_inf else _fmt_dt(end),
+    }
+    for k, v in row.items():
+        if k in ('hor', 'ver') or k.startswith('_'):
+            continue
+        out[k] = v
+    # Provenance (asset_uid, cvald1_cm, cal_valid_start/end, source_stream,
+    # cert_filename) is taken from the FIRST sub-interval — a merged row spans
+    # multiple asset installs / cal periods, so a single value here isn't
+    # authoritative. Consumers care about position, not provenance.
+    return out
 
 
 def _flatten_geolocations(feature_collection: Any) -> List[Dict[str, Any]]:
