@@ -20,8 +20,13 @@ def get_enviroscan_cvald1_calibrations(connector: DbConnector) -> List[Cvald1Cal
     """
     connection = connector.get_connection()
     schema = connector.get_schema()
+    # DISTINCT: is_ingest_term can carry multiple historical rows per
+    # (asset_definition_uuid, stream_id) when the asset_definition has been
+    # versioned. Assets on a repeatedly-updated definition would otherwise
+    # fan out N-fold. See CFGLOC112096 asset 33113 (3 rows) vs assets 17834/7524
+    # (1 row each) for a real-world example.
     sql = f'''
-        select
+        select distinct
             cal.asset_uid,
             cal.calibration_id,
             cal.sensor_stream_num,
