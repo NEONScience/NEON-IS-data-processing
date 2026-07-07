@@ -228,11 +228,19 @@ def _flatten_geolocations(feature_collection: Any) -> List[Dict[str, Any]]:
 
 
 def _extract_point(geometry: Any) -> Tuple[Optional[float], Optional[float], Optional[float]]:
-    """Return (lon, lat, elevation) from a geojson Point-like structure."""
+    """Return (lon, lat, elevation) from a geojson Point-like structure.
+
+    PDR reference-location geometries sometimes come back as MultiPoint
+    ([[lon, lat, elev]]) instead of Point ([lon, lat, elev]); unwrap one level.
+    """
     if geometry is None:
         return None, None, None
     coords = geometry.get('coordinates') if isinstance(geometry, dict) else getattr(geometry, 'coordinates', None)
-    if not coords or len(coords) < 2:
+    if not coords:
+        return None, None, None
+    if isinstance(coords[0], (list, tuple)):
+        coords = coords[0]
+    if len(coords) < 2:
         return None, None, None
     lon = float(coords[0])
     lat = float(coords[1])
