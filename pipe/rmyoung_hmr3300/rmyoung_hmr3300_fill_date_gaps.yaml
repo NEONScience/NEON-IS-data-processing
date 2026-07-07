@@ -28,8 +28,10 @@ transform:
     # Get empty file path based on source type
     if [ $source_type = "rmyoung" ]; then 
       export EMPTY_FILE_PATH="/pfs/EMPTY_FILES/rmyoung"
+      export OUTPUT_DIRECTORIES="data,location,uncertainty_data,uncertainty_coef,flags"
     elif [ $source_type = "hmr3300" ]; then 
       export EMPTY_FILE_PATH="/pfs/EMPTY_FILES/hmr3300"
+      export OUTPUT_DIRECTORIES="data,location"
     else
       echo "No source type determined. Check inputs."
       exit 1
@@ -57,12 +59,12 @@ transform:
         WndwFill="01" \
         "DirSubCopy=location" \
         "FileSchm=data:$SCHEMA_DATA_HMR3300"
+    fi
     EOF
   env:
     # Environment variables for date gap filler
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     OUT_PATH: /tmp/pfs/date_filled
-    OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
     DATA_MONTH_INDEX: '5'

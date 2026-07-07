@@ -74,17 +74,17 @@ input:
       name: DATA_PATH
       repo: rmyoung_hmr3300_calibration_group_and_convert
       glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      joinOn: $1/$2/$3/$4
       outer_join: true
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - pfs:
       name: LOCATION_PATH
       repo: rmyoung_hmr3300_location_asset_assignment
       glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      joinOn: $1/$2/$3/$4
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 5
+  constant: 6
 autoscaling: true
 resource_requests:
   memory: 2.2G
