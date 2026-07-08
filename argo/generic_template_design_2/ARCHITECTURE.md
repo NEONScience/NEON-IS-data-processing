@@ -1,5 +1,3 @@
-# Architecture Diagrams
-
 ## High-Level Architecture
 
 ```
@@ -52,7 +50,8 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │  Kustomize Generates (merged YAML):                                 │
 │  • WorkflowTemplate: calibration-group-and-convert                  │
-│  • ConfigMap: cmp22-calibration-group-convert-config                │
+│  • ConfigMap: sensor parameters configmap                           │
+│  • ConfigMap: sensor processing configmap                           │
 └────────────────────────┬──────────────────────────────────────────┘
                          │
                          ▼
@@ -66,7 +65,8 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │  Workflow Submission (Argo)                                         │
 │  $ argo submit --from workflowtemplate/calibration-group-and-      │
-│    convert -p config-map-name=cmp22-calibration-group-convert...   │
+│    convert -p config-map-parameters-name=...                        │
+│    -p config-map-processing-name=...                                │
 └────────────────────────┬──────────────────────────────────────────┘
                          │
                          ▼
@@ -80,12 +80,14 @@
 ┌──────────────────────────────────────────────────────────────────────┐
 │                    INIT CONTAINER: config-normalizer                │
 │                                                                      │
-│  1. Read: /etc/config-in/config.yaml                               │
+│  1. Read: /etc/config-in/parameters/config-env.yaml                │
+│  2. Read: /etc/config-in/processing/config-env.yaml                │
 │     ├─ Parse YAML                                                  │
 │     └─ Extract configuration sections                              │
 │                                                                      │
-│  2. Generate environment files:                                     │
+│  3. Generate environment files and instruction fragments:           │
 │     ├─ /etc/config-out/load-data.env                               │
+│     ├─ /etc/config-out/processing.env                              │
 │     ├─ /etc/config-out/calibration-group-and-convert.env           │
 │     └─ /etc/config-out/data-upload.env                             │
 │                                                                      │
@@ -143,39 +145,33 @@
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│    ConfigMap: cmp22-calibration-group-convert-config      │
-│    (/etc/config-in/config.yaml inside container)           │
+│    ConfigMap 1: parameters configmap                        │
+│    (/etc/config-in/parameters/config-env.yaml)             │
+│    ConfigMap 2: processing configmap                        │
+│    (/etc/config-in/processing/config-env.yaml)             │
 └────────────────────────────┬───────────────────────────────┘
                              │
                              │ YAML Structure:
                              │
-                             ├─ workflow:
-                             │   ├─ log_level
-                             │   └─ error_path
+                             ├─ parameters:
+                             │   ├─ workflow values
+                             │   ├─ data_loading values
+                             │   └─ data_output values
                              │
-                             ├─ data_loading:
-                             │   ├─ l0_bucket_name
-                             │   ├─ calibration_bucket_name
-                             │   └─ ...
-                             │
-                             ├─ processing:
-                             │   ├─ filter_joiner_config
-                             │   ├─ kafka_combine_r_args
-                             │   ├─ calibration_conversion_r_args
-                             │   └─ ...
-                             │
-                             └─ data_output:
-                                 ├─ output_bucket_name
-                                 └─ output_bucket_prefix
+                             └─ processing:
+                                 ├─ step sequence / flags
+                                 ├─ filter_joiner_config
+                                 ├─ r script arguments
+                                 └─ optional sensor-specific instructions
                              │
                              ▼
 ┌────────────────────────────────────────────────────────────┐
-│     Init Container: config-normalizer (Python script)     │
+│     Init Container: config-normalizer / script creator    │
 │                                                            │
-│  1. Parse YAML                                             │
-│  2. Extract sections                                       │
+│  1. Parse parameter YAML                                   │
+│  2. Parse processing YAML                                  │
 │  3. Map to environment variables                           │
-│  4. Generate environment files                             │
+│  4. Generate environment files and/or step fragments       │
 └────────────┬─────────────────────────────────────┬─────────┘
              │                                     │
              ▼                                     ▼
@@ -232,13 +228,13 @@
 │  workflows/overlays/                                     │
 │  ├─ cmp22/                                               │
 │  │  ├─ kustomization.yaml (patches)                     │
-│  │  └─ configmap.yaml (structured)                      │
+│  │  └─ configmap-parameters.yaml (structured)                      │
 │  ├─ aepg600m/                                            │
 │  │  ├─ kustomization.yaml (patches)                     │
-│  │  └─ configmap.yaml (structured)                      │
+│  │  └─ configmap-parameters.yaml (structured)                      │
 │  └─ aepg600m_heated/                                     │
 │     ├─ kustomization.yaml (patches)                     │
-│     └─ configmap.yaml (structured)                      │
+│     └─ configmap-parameters.yaml (structured)                      │
 │                                                          │
 │  ConfigMap (structured YAML):                            │
 │  ├─ config.yaml: |                                       │
@@ -258,6 +254,7 @@
 │  Benefits:                                               │
 │  ✓ Clean, minimal template                              │
 │  ✓ Hierarchical configuration                           │
+│  ✓ Separate control of parameters and processing logic    │
 │  ✓ Easy to read and maintain                            │
 │  ✓ Sensor variants via Kustomize                        │
 │  ✓ Platform logic isolated to init container            │

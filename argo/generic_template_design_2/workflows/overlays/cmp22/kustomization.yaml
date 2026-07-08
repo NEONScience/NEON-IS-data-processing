@@ -5,7 +5,8 @@ namespace: argo-workflows-dev
 
 resources:
   - ../../base/calibration-group-and-convert.yaml
-  - configmap.yaml
+  - ../../base/configmap-processing.yaml
+  - configmap-parameters.yaml
 
 # Patch the WorkflowTemplate to use cmp22-specific ConfigMap name
 patchesStrategicMerge:
@@ -17,8 +18,10 @@ patchesStrategicMerge:
     spec:
       arguments:
         parameters:
-          - name: config-map-name
-            value: cmp22-calibration-group-convert-config
+          - name: config-map-parameter-name
+            value: cmp22-calibration-group-convert-parameter-config
+          - name: config-map-processing-name
+            value: calibration-group-convert-processing-config
 
 commonLabels:
   sensor: cmp22

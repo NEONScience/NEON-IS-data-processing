@@ -18,15 +18,20 @@ spec:
       - name: datum-manifest
         value: |
           {"paths": ["cmp22/2025/10/01/11185","cmp22/2026/05/01/11185","cmp22/2026/05/02/11183"]}
-      - name: config-map-name
-        value: calibration-group-convert-config
+      - name: config-map-parameter-name
+        value: calibration-group-convert-parameter-config
+      - name: config-map-processing-name
+        value: calibration-group-convert-processing-config
 
   templates:
     - name: run
       volumes:
         - name: config-vol
           configMap:
-            name: "{{workflow.parameters.config-map-name}}"
+            name: "{{workflow.parameters.config-map-parameter-name}}"
+        - name: config-processing-vol
+          configMap:
+            name: "{{workflow.parameters.config-map-processing-name}}"
         - name: config-output-vol
           emptyDir: { }
         - name: data-vol
@@ -37,26 +42,27 @@ spec:
       inputs:
         parameters:
           - name: datum-manifest
-          - name: config-map-name
+          - name: config-map-parameter-name
+          - name: config-map-processing-name
           - name: schema-repo-eng-url
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-name}}"
+                name: "{{workflow.parameters.config-map-parameter-name}}"
                 key: schema-repo-eng-url
           - name: schema-repo-eng-revision
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-name}}"
+                name: "{{workflow.parameters.config-map-parameter-name}}"
                 key: schema-repo-eng-revision
           - name: schema-repo-sci-url
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-name}}"
+                name: "{{workflow.parameters.config-map-parameter-name}}"
                 key: schema-repo-sci-url
           - name: schema-repo-sci-revision
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-name}}"
+                name: "{{workflow.parameters.config-map-parameter-name}}"
                 key: schema-repo-sci-revision
         artifacts:
           - name: schemas-eng
@@ -87,7 +93,7 @@ spec:
               mountPath: /config/config-out
           command:
             - python3
-            - /usr/src/app/config_env_file_creator/config-env-file-creator.py
+            - /usr/src/app/config_file_creator/config-env-file-creator.py
           env:
             - name: CONFIG_INPUT_FILE
               value: /config/config-in/config-env.yaml
@@ -101,10 +107,36 @@ spec:
               memory: "256Mi"
               cpu: "500m"
 
+        # This container renders sourceable processing instructions from YAML.
+        - name: processing-instructions-file-creator
+          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-658a13b"
+          volumeMounts:
+            - name: config-processing-vol
+              mountPath: /config/processing-in
+            - name: config-output-vol
+              mountPath: /config/config-out
+          command:
+            - python3
+            - /usr/src/app/config_file_creator/processing-instructions-file-creator.py
+          env:
+            - name: PROCESSING_INPUT_FILE
+              value: /config/processing-in/processing-instructions.yaml
+            - name: PROCESSING_OUTPUT_FILE
+              value: /config/config-out/processing-instructions.sh
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+
       containerSet:
         volumeMounts:
           - name: config-vol
             mountPath: /config/config-in
+          - name: config-processing-vol
+            mountPath: /config/processing-in
           - name: config-output-vol
             mountPath: /config/config-out
           - name: data-vol
@@ -175,7 +207,7 @@ spec:
               - name: MANIFEST
                 value: "{{inputs.parameters.datum-manifest}}"
 
-          - name: calibration-group-and-convert
+          - name: processing
             dependencies:
               - load-data
             image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-33f7182
@@ -196,23 +228,12 @@ spec:
                 set -euo pipefail
                 IFS=$'\n\t'
 
-                # Source the normalized configuration
-                source /config/config-out/workflow.env
-                source /config/config-out/processing.env
-
-                # Join files from the archive and from Kafka
-                export OUT_PATH=$OUT_PATH_JOINER
-                python3 -m filter_joiner.filter_joiner_main
-
-                # Combine data from Kafka and the archive
-                eval "Rscript ./flow.kfka.comb.R $KFKA_COMB_R_ARGS"
-
-                # Run calibration conversion module
-                eval "Rscript ./flow.cal.conv.R $CAL_CONV_R_ARGS"
+                # Source the processing instructions
+                source /config/config-out/processing-instructions.sh
 
           - name: main
             dependencies:
-              - calibration-group-and-convert
+              - processing
             image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
             securityContext:
               runAsUser: 1001

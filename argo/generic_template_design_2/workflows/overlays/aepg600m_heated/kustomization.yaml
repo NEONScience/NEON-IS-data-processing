@@ -5,7 +5,8 @@ namespace: argo-workflows-dev
 
 resources:
   - ../../base/calibration-group-and-convert.yaml
-  - configmap.yaml
+  - ../../base/configmap-processing.yaml
+  - configmap-parameters.yaml
 
 # Patch the WorkflowTemplate to use aepg600m_heated-specific ConfigMap name
 patchesStrategicMerge:
@@ -17,8 +18,10 @@ patchesStrategicMerge:
     spec:
       arguments:
         parameters:
-          - name: config-map-name
-            value: aepg600m-heated-calibration-group-convert-config
+          - name: config-map-parameter-name
+            value: aepg600m-heated-calibration-group-convert-parameter-config
+          - name: config-map-processing-name
+            value: calibration-group-convert-processing-config
 
 commonLabels:
   sensor: aepg600m_heated

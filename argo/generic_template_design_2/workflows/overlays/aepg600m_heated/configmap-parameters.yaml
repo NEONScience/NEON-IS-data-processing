@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: calibration-group-convert-config
+  name: calibration-group-convert-parameter-config
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
@@ -13,7 +13,7 @@ data:
   
   config-env.yaml: |
     ---
-    # Structured configuration for AEPG600M sensor calibration group and convert workflow
+    # Structured configuration for AEPG600M_HEATED sensor calibration group and convert workflow
     # All of the key-value pairs in each top-level section will be loadable from an env file named <section>.env (e.g. workflow.env).
 
     # Environment vars for all processes in the workflow
@@ -26,7 +26,7 @@ data:
       L0_BUCKET_NAME: neon-dev-l0-ingest
       L0_BUCKET_VERSION_PATH: v2
       CAL_BUCKET_NAME: neon-dev-argo-workflow-test
-      CAL_BUCKET_PREFIX: aepg600m_calibration_assignment
+      CAL_BUCKET_PREFIX: aepg600m_heated_calibration_assignment
       MANIFEST_SOURCE_TYPE_INDEX: 0
       MANIFEST_YEAR_INDEX: 1
       MANIFEST_MONTH_INDEX: 2
@@ -34,7 +34,7 @@ data:
       MANIFEST_SOURCE_ID_INDEX: 4
       OUT_PATH: /data/DATA_PATH_ARCHIVE
       OUT_PATH_CAL: /data/CALIBRATION_PATH
-    
+
     # Environment vars for processing
     processing:
       # Filter-joiner configuration for merging data and calibrations
@@ -43,12 +43,12 @@ data:
         input_paths:
         - path:
             name: DATA_PATH_ARCHIVE
-            glob_pattern: /data/DATA_PATH_ARCHIVE/aepg600m/*/*/*/*/**
+            glob_pattern: /data/DATA_PATH_ARCHIVE/aepg600m_heated/*/*/*/*/**
             join_indices: [7]
             outer_join: true
         - path:
             name: CALIBRATION_PATH
-            glob_pattern: /data/CALIBRATION_PATH/aepg600m/*/*/*/*/**
+            glob_pattern: /data/CALIBRATION_PATH/aepg600m_heated/*/*/*/*/**
             join_indices: [7]
             outer_join: true
       
@@ -58,14 +58,14 @@ data:
       
       OUT_PATH_JOINER: /data/data_cal_joined
       OUT_PATH_KAFKA_COMB: /data/kafka_combined
-      OUT_PATH_CAL_CONV: /data/aepg600m_calibration_group_and_convert
+      OUT_PATH_CAL_CONV: /data/aepg600m_heated_calibration_group_and_convert
       
       # R arguments for kafka combine step
       KFKA_COMB_R_ARGS: |
         DirIn=$OUT_PATH_JOINER \
         DirOut=$OUT_PATH_KAFKA_COMB \
         DirErr=$ERR_PATH \
-        FileSchmL0=/data/schemas-eng/schemas/aepg600m/aepg600m.avsc \
+        FileSchmL0=/data/schemas-eng/schemas/aepg600m/aepg600m_heated.avsc \
         DirSubCopy=calibration
       
       # R arguments for calibration conversion step
@@ -73,7 +73,7 @@ data:
         DirIn=$OUT_PATH_KAFKA_COMB \
         DirOut=$OUT_PATH_CAL_CONV \
         DirErr=$ERR_PATH \
-        FileSchmData=/data/schemas-sci/avro_schemas/aepg600m/aepg600m_calibrated.avsc \
+        FileSchmData=/data/schemas-sci/avro_schemas/aepg600m/aepg600m_heated_calibrated.avsc \
         FileSchmQf=/data/schemas-sci/avro_schemas/aepg600m/flags_calibration_aepg600m.avsc \
         ConvFuncTerm1=def.cal.conv.poly.aepg600m:strain_gauge1_frequency_raw \
         ConvFuncTerm2=def.cal.conv.poly.aepg600m:strain_gauge2_frequency_raw \
@@ -82,6 +82,6 @@ data:
     
     # Environment vars for data upload
     data-upload:
-      OUT_PATH: /data/aepg600m_calibration_group_and_convert
+      OUT_PATH: /data/aepg600m_heated_calibration_group_and_convert
       OUTPUT_BUCKET_NAME: neon-dev-argo-workflow-test
-      OUTPUT_BUCKET_PREFIX: aepg600m_calibration_group_and_convert
+      OUTPUT_BUCKET_PREFIX: aepg600m_heated_calibration_group_and_convert
