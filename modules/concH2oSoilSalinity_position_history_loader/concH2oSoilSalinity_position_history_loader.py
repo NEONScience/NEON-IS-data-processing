@@ -188,17 +188,16 @@ def _build_rows(*,
 
 def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Consolidate rows that differ only in time range. The loader's intersection
-    (install × geolocation × calibration) legitimately produces N sub-windows
-    even when the physical position doesn't change between them (e.g. a
-    recalibration that leaves cvald1_cm unchanged, or successive asset installs
-    at the same offsets). We collapse those into a single row per contiguous or
-    overlapping stretch where the depth-relevant fields are identical.
+    Consolidate rows that differ only in time range into one row per unique
+    physical position (HOR/VER, offsets, orientation, reference-location).
+    Each group emits a single row spanning the earliest start to the latest
+    end across all its sub-windows — even across removal/reinstall gaps,
+    since a re-installed sensor at the same offsets is the same position
+    from a sensor_positions.csv consumer's point of view.
 
-    Rows with different physical values (any of x/y/z, pitch/roll/azimuth,
-    reference location, or reference-location time range) stay separate and
-    keep their own intervals — even if they overlap in time, which surfaces
-    real data anomalies rather than hiding them.
+    Rows in DIFFERENT groups (e.g. a brief cvald1 anomaly that put a depth at
+    z=-0.36 for 20 days while the rest of the timeline had z=-0.46) stay
+    separate, so real position changes still surface.
     """
     key_fields = (
         'hor', 'ver',
@@ -218,22 +217,18 @@ def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     merged: List[Dict[str, Any]] = []
     for _, group_rows in groups.items():
-        intervals = []
+        earliest_start = POS_INF
+        latest_end = NEG_INF
+        earliest_row = group_rows[0]
         for r in group_rows:
             s = _naive(r['_win_start']) if r['_win_start'] is not None else NEG_INF
             e = _naive(r['_win_end'])   if r['_win_end']   is not None else POS_INF
-            intervals.append((s, e, r))
-        intervals.sort(key=lambda x: x[0])
-
-        cur_start, cur_end, cur_row = intervals[0]
-        for s, e, r in intervals[1:]:
-            if s <= cur_end:
-                if e > cur_end:
-                    cur_end = e
-            else:
-                merged.append(_finalize_row(cur_row, cur_start, cur_end, NEG_INF, POS_INF))
-                cur_start, cur_end, cur_row = s, e, r
-        merged.append(_finalize_row(cur_row, cur_start, cur_end, NEG_INF, POS_INF))
+            if s < earliest_start:
+                earliest_start = s
+                earliest_row = r
+            if e > latest_end:
+                latest_end = e
+        merged.append(_finalize_row(earliest_row, earliest_start, latest_end, NEG_INF, POS_INF))
     return merged
 
 
