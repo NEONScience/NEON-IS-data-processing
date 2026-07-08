@@ -15,9 +15,9 @@ set -euo pipefail
 #   ./merge-deployment-candidates.sh --dry-run
 
 REMOTE="origin"
-PREFIX_GLOB="origin/deployment-candidate-*files*"
-TARGET_BRANCH="deployment-candidate-consolidated-early"
-RESET_TARGET=false
+PREFIX_GLOB="origin/deployment-candidate-neon-is-*"
+TARGET_BRANCH="deployment-candidate-consolidated"
+RESET_TARGET=true
 DRY_RUN=false
 BASE_REF=""
 
