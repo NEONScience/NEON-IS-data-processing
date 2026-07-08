@@ -18,7 +18,7 @@ data:
 
     # Environment vars for all processes in the workflow
     workflow:
-      LOG_LEVEL: INFO
+      LOG_LEVEL: DEBUG
       ERR_PATH: /data/errored_datums
     
     # Environment vars for loading data
@@ -61,25 +61,24 @@ data:
       OUT_PATH_CAL_CONV: /data/aepg600m_calibration_group_and_convert
       
       # R arguments for kafka combine step
-      KFKA_COMB_R_ARGS: |
-        DirIn=$OUT_PATH_JOINER \
-        DirOut=$OUT_PATH_KAFKA_COMB \
-        DirErr=$ERR_PATH \
-        FileSchmL0=/data/schemas-eng/schemas/aepg600m/aepg600m.avsc \
-        DirSubCopy=calibration
-      
-      # R arguments for calibration conversion step
-      CAL_CONV_R_ARGS: |
-        DirIn=$OUT_PATH_KAFKA_COMB \
-        DirOut=$OUT_PATH_CAL_CONV \
-        DirErr=$ERR_PATH \
-        FileSchmData=/data/schemas-sci/avro_schemas/aepg600m/aepg600m_calibrated.avsc \
-        FileSchmQf=/data/schemas-sci/avro_schemas/aepg600m/flags_calibration_aepg600m.avsc \
-        ConvFuncTerm1=def.cal.conv.poly.aepg600m:strain_gauge1_frequency_raw \
-        ConvFuncTerm2=def.cal.conv.poly.aepg600m:strain_gauge2_frequency_raw \
-        ConvFuncTerm3=def.cal.conv.poly.aepg600m:strain_gauge3_frequency_raw \
-        TermQf=strain_gauge1_frequency_raw|strain_gauge2_frequency_raw|strain_gauge3_frequency_raw
-    
+      KFKA_COMB_R_ARGS: >-
+        "DirIn=$OUT_PATH_JOINER"
+        "DirOut=$OUT_PATH_KAFKA_COMB"
+        "DirErr=$ERR_PATH"
+        "FileSchmL0=/data/schemas-eng/schemas/aepg600m/aepg600m.avsc"
+        "DirSubCopy=calibration"
+
+      CAL_CONV_R_ARGS: >-
+        "DirIn=$OUT_PATH_KAFKA_COMB"
+        "DirOut=$OUT_PATH_CAL_CONV"
+        "DirErr=$ERR_PATH"
+        "FileSchmData=/data/schemas-sci/avro_schemas/aepg600m/aepg600m_calibrated.avsc"
+        "FileSchmQf=/data/schemas-sci/avro_schemas/aepg600m/flags_calibration_aepg600m.avsc"
+        "ConvFuncTerm1=def.cal.conv.poly.aepg600m:strain_gauge1_frequency_raw"
+        "ConvFuncTerm2=def.cal.conv.poly.aepg600m:strain_gauge2_frequency_raw"
+        "ConvFuncTerm3=def.cal.conv.poly.aepg600m:strain_gauge3_frequency_raw"
+        "TermQf=strain_gauge1_frequency_raw|strain_gauge2_frequency_raw|strain_gauge3_frequency_raw"
+
     # Environment vars for data upload
     data-upload:
       OUT_PATH: /data/aepg600m_calibration_group_and_convert

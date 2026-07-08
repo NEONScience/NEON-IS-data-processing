@@ -26,7 +26,7 @@ spec:
   templates:
     - name: run
       volumes:
-        - name: config-vol
+        - name: config-env-vol
           configMap:
             name: "{{workflow.parameters.config-map-parameter-name}}"
         - name: config-processing-vol
@@ -85,10 +85,10 @@ spec:
         # This container normalizes the configuration from the mounted ConfigMap
         # into environment variables and config files that the workflow containers expect.
         - name: config-env-file-creator
-          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-658a13b"
+          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-a0b5cd7"
           volumeMounts:
-            - name: config-vol
-              mountPath: /config/config-in
+            - name: config-env-vol
+              mountPath: /config/config-env-in
             - name: config-output-vol
               mountPath: /config/config-out
           command:
@@ -96,7 +96,7 @@ spec:
             - /usr/src/app/config_file_creator/config-env-file-creator.py
           env:
             - name: CONFIG_INPUT_FILE
-              value: /config/config-in/config-env.yaml
+              value: /config/config-env-in/config-env.yaml
             - name: CONFIG_OUTPUT_DIR
               value: /config/config-out
           resources:
@@ -109,7 +109,7 @@ spec:
 
         # This container renders sourceable processing instructions from YAML.
         - name: processing-instructions-file-creator
-          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-658a13b"
+          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-a0b5cd7"
           volumeMounts:
             - name: config-processing-vol
               mountPath: /config/processing-in
@@ -133,8 +133,8 @@ spec:
 
       containerSet:
         volumeMounts:
-          - name: config-vol
-            mountPath: /config/config-in
+          - name: config-env-vol
+            mountPath: /config/config-env-in
           - name: config-processing-vol
             mountPath: /config/processing-in
           - name: config-output-vol
