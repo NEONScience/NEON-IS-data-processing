@@ -31,7 +31,7 @@ transform:
       export OUTPUT_DIRECTORIES="data,location,uncertainty_data,uncertainty_coef,flags"
     elif [ $source_type = "hmr3300" ]; then 
       export EMPTY_FILE_PATH="/pfs/EMPTY_FILES/hmr3300"
-      export OUTPUT_DIRECTORIES="data,location"
+      export OUTPUT_DIRECTORIES="data"
     else
       echo "No source type determined. Check inputs."
       exit 1
@@ -57,8 +57,8 @@ transform:
         DirErr=/pfs/out/errored_datums \
         "DirFill=data" \
         WndwFill="01" \
-        "DirSubCopy=location" \
-        "FileSchm=data:$SCHEMA_DATA_HMR3300"
+        "FileSchm=data:$SCHEMA_DATA_HMR3300" \
+        "DirSubCopy=location"
     fi
     EOF
   env:

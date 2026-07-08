@@ -1,0 +1,109 @@
+---
+pipeline:
+  name: rmyoung_calibration_group_and_convert
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-1c9356d
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    rm -rf $OUT_PATH
+    mkdir -p /tmp/pfs/filter_joined
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+
+    # Run filter-joiner for data (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+
+    # Run calibration conversion module
+    #hmr3300 not calibrated, so only run for rmyoung
+    Rscript ./flow.cal.conv.R \
+        DirIn=/tmp/pfs/filter_joined \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums\
+        ConvFuncTerm1=def.cal.conv.nmnl:speed \
+        ConvFuncTerm2=def.cal.conv.nmnl:direction \
+        "nomVal=speed:0.1666667|direction:355" \
+        "nomCalID=speed:CVALB1|direction:CVALA1" \
+        "TermQf=speed|direction" \
+        UcrtFuncTerm1=def.ucrt.meas.cnst:speed \
+        UcrtFuncTerm1=def.ucrt.meas.cnst:direction \
+        FileSchmData=$SCHEMA_CAL_RMYOUNG \
+        FileSchmQf=$SCHEMA_FLAGS_RMYOUNG
+
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH/rmyoung/*/*/*/*/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            glob_pattern: /pfs/CALIBRATION_PATH/rmyoung/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    LOG_LEVEL: INFO
+    OUT_PATH: /tmp/pfs/filter_joined
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. 
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+    # Environment variables for bash code
+input:
+  cross:
+  - pfs:
+      name: SCHEMA_CAL_RMYOUNG
+      repo: rmyoung_hmr3300_avro_schemas
+      glob: /rmyoung/rmyoung_calibrated.avsc
+  - pfs:
+      name: SCHEMA_FLAGS_RMYOUNG
+      repo: rmyoung_hmr3300_avro_schemas
+      glob: /rmyoung/rmyoung_calibration_flags.avsc
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: rmyoung_calibration_assignment
+        glob: /rmyoung/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH
+        repo: rmyoung_hmr3300_data_source_trino
+        glob: /rmyoung/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.2G
+  cpu: 1.3
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
