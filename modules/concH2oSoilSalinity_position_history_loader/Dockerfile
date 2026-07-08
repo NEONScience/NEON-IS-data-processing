@@ -4,7 +4,7 @@
 # Must be built from the project root so common/ and data_access/ are in context:
 #   docker build --no-cache \
 #     -t concH2oSoilSalinity_position_history_loader:latest \
-#     -f modules/concH2oSoilSalinity_position_history_loader/Dockerfile modules
+#     -f modules/concH2oSoilSalinity_position_history_loader/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
