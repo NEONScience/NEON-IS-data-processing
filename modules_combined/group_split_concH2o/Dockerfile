@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-group-split-conc-h2o-salinity -f ./modules_combined/group_split_concH2o/Dockerfile .
 
 # Start with the base R image.
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v2.0.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v2.1.0
 
 # maintainer handle
 MAINTAINER "Teresa Burlingame" tburlingame@battelleecology.org
