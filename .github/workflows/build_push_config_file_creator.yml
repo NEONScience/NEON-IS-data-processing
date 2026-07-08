@@ -1,11 +1,11 @@
-name: "Build-push_config_env_file_creator"
+name: "Build-push_config_file_creator"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'modules/config_env_file_creator/**'
+      - 'modules/config_file_creator/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,7 +22,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./modules/config_env_file_creator
+  MODULE_PATH: ./modules/config_file_creator
   IMAGE_NAME: neon-is-cfg-env-file-crea
 
 jobs:
