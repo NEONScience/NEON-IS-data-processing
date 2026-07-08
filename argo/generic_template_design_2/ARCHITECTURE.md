@@ -23,8 +23,7 @@
 │                                                │                │   │
 │                                                │ Volumes:       │   │
 │                                                │  • config-vol  │   │
-│                                                │  • in-vol      │   │
-│                                                │  • out-vol     │   │
+│                                                │  • data-vol    │   │
 │                                                │  • tmp-vol     │   │
 │                                                │                │   │
 │                                                │ InitContainers:│   │
@@ -101,8 +100,8 @@
 │  2. Run: python3 -m l0_gcs_loader_by_manifest            │
 │  3. Download L0 data from GCS                            │
 │  4. Download calibrations from GCS                       │
-│  5. Output → /inputs/DATA_PATH_ARCHIVE                   │
-│  6. Output → /inputs/CALIBRATION_PATH                    │
+│  5. Output → /data/DATA_PATH_ARCHIVE                   │
+│  6. Output → /data/CALIBRATION_PATH                    │
 └────────────────┬─────────────────────────────────────────┘
                  │
                  ▼
@@ -114,7 +113,7 @@
 │  2. Run: filter_joiner (join data and calibrations)       │
 │  3. Run: Rscript flow.kfka.comb.R (kafka combine)         │
 │  4. Run: Rscript flow.cal.conv.R (calibration conversion) │
-│  5. Output → /pfs/cmp22_calibration_group_and_convert     │
+│  5. Output → /data/cmp22_calibration_group_and_convert     │
 └────────────────┬─────────────────────────────────────────┘
                  │
                  ▼
@@ -159,14 +158,6 @@
                              │   ├─ calibration_bucket_name
                              │   └─ ...
                              │
-                             ├─ schemas:
-                             │   ├─ engineering:
-                             │   │   ├─ url
-                             │   │   └─ revision
-                             │   └─ scientific:
-                             │       ├─ url
-                             │       └─ revision
-                             │
                              ├─ processing:
                              │   ├─ filter_joiner_config
                              │   ├─ kafka_combine_r_args
@@ -193,11 +184,11 @@
      ├──────────────────┤                │ group-and-       │
      │BUCKET_NAME=...   │                │ convert.env      │
      │BUCKET_VERSION... │                ├──────────────────┤
-     │CAL_BUCKET_NAME..│                │CONFIG=...        │
-     │CAL_BUCKET_PREF..│                │OUT_PATH_JOINER..│
-     │LOG_LEVEL=...    │                │KFKA_COMB_R_ARGS │
-     │...              │                │CAL_CONV_R_ARGS  │
-     └──────────────────┘                │...              │
+     │CAL_BUCKET_NAME.. │                │CONFIG=...        │
+     │CAL_BUCKET_PREF.. │                │OUT_PATH_JOINER.. │
+     │LOG_LEVEL=...     │                │KFKA_COMB_R_ARGS  │
+     │...               │                │CAL_CONV_R_ARGS   │
+     └──────────────────┘                │...               │
                                          └──────────────────┘
                                                   │
                                                   ▼
@@ -228,43 +219,10 @@
 └────────────────────────────────────────────────────────────┘
 ```
 
-## Comparison: Old vs New
-
-### Old Architecture (Monolithic)
+### Architecture (Modular)
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  Single Template File (per sensor)                       │
-│  calibration_group_and_convert.yaml                      │
-│                                                          │
-│  ├─ Template logic                                       │
-│  ├─ 40+ ConfigMap parameter extractions                 │
-│  ├─ Container definitions                               │
-│  └─ Volume definitions                                  │
-│                                                          │
-│  ConfigMap (flat key-value):                             │
-│  ├─ log-level: INFO                                     │
-│  ├─ l0-bucket-name: ...                                 │
-│  ├─ cal-bucket-name: ...                                │
-│  ├─ filter-joiner-config: |                             │
-│  │   (inline YAML string)                                │
-│  ├─ kfka-comb-r-args: >                                 │
-│  │   (inline arguments string)                           │
-│  └─ ... 30+ more keys ...                                │
-│                                                          │
-│  Problems:                                               │
-│  ✗ Boilerplate parameter extraction                      │
-│  ✗ Mixed configuration formats                          │
-│  ✗ Difficult to read and maintain                       │
-│  ✗ Sensor variants duplicated                           │
-│  ✗ Platform-specific paths hardcoded                    │
-│  ✗ Hard to migrate to other orchestrators               │
-└──────────────────────────────────────────────────────────┘
-```
-
-### New Architecture (Modular)
-```
-┌──────────────────────────────────────────────────────────┐
-│  Base Template + Overlays                                │
+│  Base Template + Kustomize Overlays                                │
 │                                                          │
 │  workflows/base/                                         │
 │  ├─ calibration-group-and-convert.yaml (clean!)         │
@@ -320,15 +278,13 @@ Pod Volumes During Workflow Execution:
 ├─ calibration-group-and-convert.env  ← Sourced by cal-grp container
 └─ data-upload.env      ← Sourced by main container
 
-/inputs/                ← emptyDir volume
+/data/                ← emptyDir volume
 ├─ DATA_PATH_ARCHIVE/   ← Created by load-data, read by filter-joiner
 │  └─ cmp22/2025/10/01/11185/
 │     └─ [raw data files]
-└─ CALIBRATION_PATH/    ← Created by load-data, read by filter-joiner
-   └─ cmp22/2025/10/01/11185/
-      └─ [calibration files]
-
-/pfs/                   ← emptyDir volume
+│─ CALIBRATION_PATH/    ← Created by load-data, read by filter-joiner
+│  └─ cmp22/2025/10/01/11185/
+│     └─ [calibration files]
 ├─ data_cal_joined/     ← Output from filter-joiner
 ├─ kafka_combined/      ← Output from kafka combine step
 └─ cmp22_calibration_group_and_convert/  ← Final output, uploaded to GCS
