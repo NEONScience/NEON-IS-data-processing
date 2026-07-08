@@ -61,25 +61,25 @@ data:
       OUT_PATH_CAL_CONV: /data/cmp22_calibration_group_and_convert
       
       # R arguments for kafka combine step
-      KFKA_COMB_R_ARGS: |
-        DirIn=$OUT_PATH_JOINER \
-        DirOut=$OUT_PATH_KAFKA_COMB \
-        DirErr=$ERR_PATH \
-        FileSchmL0=/data/schemas-eng/schemas/cmp22/cmp22.avsc \
-        DirSubCopy=calibration
+      KFKA_COMB_R_ARGS: >-
+        "DirIn=$OUT_PATH_JOINER"
+        "DirOut=$OUT_PATH_KAFKA_COMB"
+        "DirErr=$ERR_PATH"
+        "FileSchmL0=/data/schemas-eng/schemas/cmp22/cmp22.avsc"
+        "DirSubCopy=calibration"
       
       # R arguments for calibration conversion step
-      CAL_CONV_R_ARGS: |
-        DirIn=$OUT_PATH_KAFKA_COMB \
-        DirOut=$OUT_PATH_CAL_CONV \
-        DirErr=$ERR_PATH \
-        FileSchmData=/data/schemas-sci/avro_schemas/cmp22/cmp22_calibrated.avsc \
-        FileSchmQf=/data/schemas-sci/avro_schemas/cmp22/flags_calibration_cmp22.avsc \
-        ConvFuncTerm1=def.cal.conv.poly:voltage \
-        TermQf=voltage \
-        UcrtFuncTerm1=def.ucrt.meas.mult:voltage \
-        UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage \
-        FileUcrtFdas=/data/schemas-sci/uncertainty_fdas/fdas_calibration_uncertainty_general.json
+      CAL_CONV_R_ARGS: >-
+        "DirIn=$OUT_PATH_KAFKA_COMB"
+        "DirOut=$OUT_PATH_CAL_CONV"
+        "DirErr=$ERR_PATH"
+        "FileSchmData=/data/schemas-sci/avro_schemas/cmp22/cmp22_calibrated.avsc"
+        "FileSchmQf=/data/schemas-sci/avro_schemas/cmp22/flags_calibration_cmp22.avsc"
+        "ConvFuncTerm1=def.cal.conv.poly:voltage"
+        "TermQf=voltage"
+        "UcrtFuncTerm1=def.ucrt.meas.mult:voltage"
+        "UcrtFuncTerm2=def.ucrt.fdas.volt.poly:voltage"
+        "FileUcrtFdas=/data/schemas-sci/uncertainty_fdas/fdas_calibration_uncertainty_general.json"
     
     # Environment vars for data upload
     data-upload:
