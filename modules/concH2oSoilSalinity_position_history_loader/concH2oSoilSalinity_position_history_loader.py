@@ -3,12 +3,16 @@
 concH2oSoilSalinity position-history loader.
 
 Queries PDR for the full CFGLOC × asset × calibration × geolocation history for
-every enviroscan probe, stitches the intersections, applies the CVALD1 depth
-correction (depth_m = z_offset + CVALD1_cm / -100) per VER, and writes one JSON
-file per CFGLOC. Consumers (pub_files sensor_positions) read these files instead
-of hitting the DB per publish month, so every downloaded month contains the
-complete position history — including moves that happened outside that month's
-sensor operation window.
+every enviroscan probe, picks the authoritative cvald1_cm per (asset_uid, stream)
+(highest calibration_id wins — DB insertion order, so newest-inserted supersedes
+older/phantom cal records), then stitches (install × geolocation) intersections
+and applies the CVALD1 depth correction (depth_m = z_offset + CVALD1_cm / -100)
+per VER. Cvald1 is treated as a hardware/depth property that shouldn't slice
+position windows — a re-issued cert with a corrected value applies across the
+whole install period. Writes one JSON file per CFGLOC. Consumers (pub_files
+sensor_positions) read these files instead of hitting the DB per publish month,
+so every downloaded month contains the complete position history — including
+moves that happened outside that month's sensor operation window.
 """
 import json
 import sys
@@ -66,10 +70,24 @@ def write_files(*,
     for install in installs:
         installs_by_cfgloc[install.cfgloc].append(install)
 
-    # (asset_uid, valid_start, valid_end) -> [stream calibrations at that period]
-    cals_by_asset_period: Dict[Tuple[int, Optional[datetime], Optional[datetime]], List[Cvald1Calibration]] = defaultdict(list)
+    # Pick ONE authoritative cal per (asset_uid, stream): the row with the highest
+    # calibration_id (the DB's insertion sequence, so newest-inserted wins). cvald1
+    # is a hardware/depth property that shouldn't change across recalibrations for
+    # the same sensor slot; if it does change, the newer cert is the corrected
+    # value and applies across the whole install window. This intentionally drops
+    # cal-validity windowing from the position output — position windows come
+    # from (install × geo) only, so phantom/superseded cal records with overlapping
+    # validity periods can't slice the output anymore.
+    latest_cal_by_asset_stream: Dict[Tuple[int, str], Cvald1Calibration] = {}
     for cal in calibrations:
-        cals_by_asset_period[(cal.asset_uid, cal.valid_start_time, cal.valid_end_time)].append(cal)
+        key = (cal.asset_uid, cal.schema_field_name)
+        existing = latest_cal_by_asset_stream.get(key)
+        if existing is None or cal.calibration_id > existing.calibration_id:
+            latest_cal_by_asset_stream[key] = cal
+
+    streams_by_asset: Dict[int, List[Cvald1Calibration]] = defaultdict(list)
+    for cal in latest_cal_by_asset_stream.values():
+        streams_by_asset[cal.asset_uid].append(cal)
 
     allowed_vers_by_cfgloc: Dict[str, Set[str]] = defaultdict(set)
     hor_by_cfgloc: Dict[str, str] = {}
@@ -98,7 +116,7 @@ def write_files(*,
         rows = _build_rows(
             cfgloc_installs=cfgloc_installs,
             geolocations=geolocations,
-            cals_by_asset_period=cals_by_asset_period,
+            streams_by_asset=streams_by_asset,
             allowed_vers=allowed_vers,
             hor=hor,
             now_naive=now_naive,
@@ -122,14 +140,16 @@ def write_files(*,
 def _build_rows(*,
                 cfgloc_installs: List[AssetInstall],
                 geolocations:    List[Dict[str, Any]],
-                cals_by_asset_period: Dict[Tuple[int, Optional[datetime], Optional[datetime]], List[Cvald1Calibration]],
+                streams_by_asset: Dict[int, List[Cvald1Calibration]],
                 allowed_vers:    Set[str],
                 hor:             str,
                 now_naive:       datetime) -> List[Dict[str, Any]]:
     """
-    For a single CFGLOC, produce the full list of (install × geolocation × cal-period × VER)
-    intersection rows.
+    For a single CFGLOC, produce the (install × geolocation × VER) intersection rows.
+    Cal-validity dates no longer slice the output — the authoritative cvald1_cm per
+    (asset_uid, stream) is picked upstream and applied across the entire install window.
 
+    :param streams_by_asset: asset_uid -> list of authoritative cals (one per stream).
     :param now_naive: 'Generated-at' timestamp (tz-naive). Any window end that
                       falls after this is treated as open-ended — PDR uses
                       placeholder future dates (e.g. 2031-12-31) for still-valid
@@ -137,52 +157,48 @@ def _build_rows(*,
     """
     rows: List[Dict[str, Any]] = []
     for install in cfgloc_installs:
-        asset_periods = [(period, streams)
-                         for period, streams in cals_by_asset_period.items()
-                         if period[0] == install.asset_uid]
+        streams = streams_by_asset.get(install.asset_uid, [])
+        if not streams:
+            continue
         for geo in geolocations:
-            for (_, cal_start, cal_end), streams in asset_periods:
-                window = _intersect(
-                    (install.install_date, install.remove_date),
-                    (geo['start_date'], geo['end_date']),
-                    (cal_start, cal_end),
-                )
-                if window is None:
+            window = _intersect(
+                (install.install_date, install.remove_date),
+                (geo['start_date'], geo['end_date']),
+            )
+            if window is None:
+                continue
+            win_start, win_end = window
+            # Collapse placeholder-future end dates to open-ended.
+            if win_end is not None and win_end > now_naive:
+                win_end = None
+            for stream in streams:
+                ver = _stream_to_ver(stream.schema_field_name)
+                if ver is None or str(ver) not in allowed_vers:
                     continue
-                win_start, win_end = window
-                # Collapse placeholder-future end dates to open-ended.
-                if win_end is not None and win_end > now_naive:
-                    win_end = None
-                for stream in streams:
-                    ver = _stream_to_ver(stream.schema_field_name)
-                    if ver is None or str(ver) not in allowed_vers:
-                        continue
-                    z_offset_adjusted = round(geo['z_offset'] + stream.cvald1_cm / -100.0, 4)
-                    rows.append({
-                        'hor': hor,
-                        'ver': str(ver),
-                        # Keep raw datetimes for the merge pass below; formatted later.
-                        '_win_start': win_start,
-                        '_win_end':   win_end,
-                        'x_offset': geo['x_offset'],
-                        'y_offset': geo['y_offset'],
-                        'z_offset': z_offset_adjusted,
-                        'pitch':    geo['pitch'],
-                        'roll':     geo['roll'],
-                        'azimuth':  geo['azimuth'],
-                        'reference_location_id':         geo['reference_location_id'],
-                        'reference_location_start_date': geo['reference_location_start_date'],
-                        'reference_location_end_date':   geo['reference_location_end_date'],
-                        'reference_location_latitude':   geo['reference_location_latitude'],
-                        'reference_location_longitude':  geo['reference_location_longitude'],
-                        'reference_location_elevation':  geo['reference_location_elevation'],
-                        'asset_uid':       install.asset_uid,
-                        'cvald1_cm':       stream.cvald1_cm,
-                        'cal_valid_start': _fmt_dt(cal_start),
-                        'cal_valid_end':   _fmt_dt(cal_end),
-                        'source_stream':   stream.schema_field_name,
-                        'cert_filename':   stream.cert_filename,
-                    })
+                z_offset_adjusted = round(geo['z_offset'] + stream.cvald1_cm / -100.0, 4)
+                rows.append({
+                    'hor': hor,
+                    'ver': str(ver),
+                    # Keep raw datetimes for the merge pass below; formatted later.
+                    '_win_start': win_start,
+                    '_win_end':   win_end,
+                    'x_offset': geo['x_offset'],
+                    'y_offset': geo['y_offset'],
+                    'z_offset': z_offset_adjusted,
+                    'pitch':    geo['pitch'],
+                    'roll':     geo['roll'],
+                    'azimuth':  geo['azimuth'],
+                    'reference_location_id':         geo['reference_location_id'],
+                    'reference_location_start_date': geo['reference_location_start_date'],
+                    'reference_location_end_date':   geo['reference_location_end_date'],
+                    'reference_location_latitude':   geo['reference_location_latitude'],
+                    'reference_location_longitude':  geo['reference_location_longitude'],
+                    'reference_location_elevation':  geo['reference_location_elevation'],
+                    'asset_uid':       install.asset_uid,
+                    'cvald1_cm':       stream.cvald1_cm,
+                    'source_stream':   stream.schema_field_name,
+                    'cert_filename':   stream.cert_filename,
+                })
     return _merge_time_ranges(rows)
 
 
