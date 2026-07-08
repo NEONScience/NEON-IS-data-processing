@@ -44,7 +44,8 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmStats=$FILE_SCHEMA_STATS \
-      FileSchmQm=$FILE_SCHEMA_QM 
+      FileSchmQm=$FILE_SCHEMA_QM \
+      "DirSubCopy=location"
 
     echo "=== flow.concH2oSalinity.grp.split complete ==="
     EOF

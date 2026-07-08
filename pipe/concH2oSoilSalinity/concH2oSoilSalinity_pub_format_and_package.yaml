@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-f5b2bdc
   cmd:
   - sh
   - "-c"
@@ -116,20 +116,29 @@ transform:
       mount_path: /var/github_secret
 
 input:
-  pfs:
-    name: GROUPED_PATH
-    repo: concH2oSoilSalinity_pub_group
-    # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
-    # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
-    glob: /*/*/*/*
+  cross:
+  - pfs:
+      name: GROUPED_PATH
+      repo: concH2oSoilSalinity_pub_group
+      # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
+      # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
+      glob: /*/*/*/*
+  - pfs:
+      name: POSITION_HISTORY_PATH
+      repo: concH2oSoilSalinity_position_history_loader
+      # Full repo as one blob per commit. Crossed with monthly datums so every
+      # month gets the complete CFGLOC position history. pub_files reads
+      # enviroscan/<CFGLOC>/position_history/<CFGLOC>_history.json per CFGLOC.
+      glob: /
+      empty_files: false
 parallelism_spec:
   constant: 10
 autoscaling: true
 resource_requests:
-  memory: 400M
+  memory: 800M
   cpu: 1
 resource_limits:
-  memory: 800M
+  memory: 1G
   cpu: 1.2
 sidecar_resource_requests:
   memory: 2G

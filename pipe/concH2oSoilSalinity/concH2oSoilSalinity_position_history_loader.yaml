@@ -1,0 +1,45 @@
+---
+# Production concH2oSoilSalinity position-history loader.
+# Queries PDR directly for the full CFGLOC × asset × calibration × geolocation
+# history for every enviroscan probe, applies CVALD1-derived depth adjustment
+# per VER (501-508), and emits one JSON per CFGLOC. Time-invariant output —
+# a Feb 2015 CSV, a June 2023 CSV, and a today CSV all contain the same rows.
+#
+# Loader is unfiltered by site (PDR query is cheap enough at ~200 CFGLOCs).
+# pub_format_and_package crosses this repo with monthly pub_group datums so
+# every monthly sensor_positions.csv gets the complete CFGLOC history tree.
+pipeline:
+  name: concH2oSoilSalinity_position_history_loader
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-conc-h2o-salinity-position-history-loader:sha-fb1172f
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m concH2oSoilSalinity_position_history_loader.concH2oSoilSalinity_position_history_loader_main
+  env:
+    OUT_PATH: /pfs/out
+    ERR_PATH: /pfs/out/errored_datums
+    LOG_LEVEL: INFO
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    repo: enviroscan_ingest_days
+    glob: /tick/
+    branch: master
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 0.2
+resource_limits:
+  memory: 800M
+  cpu: 1
+sidecar_resource_requests:
+  memory: 300M
+  cpu: 0.3
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

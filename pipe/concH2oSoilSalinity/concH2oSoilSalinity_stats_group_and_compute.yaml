@@ -24,6 +24,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       FileSchmStat=$FILE_SCHEMA_STATS \
       "WndwAgr=005|030" \
+      "DirSubCopy=location" \
       "TermStat1=VSWCsoilSpecificDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
       "TermStat2=VSWCsoilSpecificDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
       "TermStat3=VSWCsoilSpecificDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
@@ -62,6 +63,12 @@ transform:
             # Filter for data & uncertainty_data directories
             glob_pattern: /pfs/QAQC_PATH/*/*/*/*/*/*/data/**
             # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: QAQC_PATH
+            # Location JSONs — carried through via DirSubCopy so pub_files
+            # can discover CFGLOCs downstream in the pub_group output.
+            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/*/*/location/**
             join_indices: [6]
         - path:
             name: UNCERTAINTY_PATH

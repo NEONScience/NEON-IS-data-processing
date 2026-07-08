@@ -33,6 +33,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "WndwAgr=005|030" \
       "WghtAlphBeta=1|2" \
+      "DirSubCopy=location" \
       FileSchmQm=$FILE_SCHEMA_QM \
       Thsh=0.6 \
       "GrpQfAlph1=VSWCsoilSpecificDepth01:VSWCsoilSpecificDepth01NullQF|VSWCsoilSpecificDepth01GapQF|VSWCsoilSpecificDepth01RangeQF|VSWCsoilSpecificDepth01StepQF|VSWCsoilSpecificDepth01PersistenceQF|VSWCsoilSpecificDepth01SpikeQF|VSWCDepth01SuspectCalQF|tempTestDepth01QF" \
@@ -145,6 +146,12 @@ transform:
             # Filter for flags directory
             glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
             # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            # Location JSONs — carried through via DirSubCopy so pub_files
+            # can discover CFGLOCs downstream in the pub_group output.
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/location/**
             join_indices: [6]
         - path:
             name: REGULARIZED_FLAGS_PATH
