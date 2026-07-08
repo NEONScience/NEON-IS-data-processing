@@ -116,15 +116,24 @@ wrap.concH2oSalinity.grp.split <- function(DirIn,
   dirInStats <- fs::path(DirIn, 'stats')
   dirInQm    <- fs::path(DirIn, 'quality_metrics')
 
-  # Set up output directory, preserving the full path structure under DirOutBase
+  # Set up output directories. Stats and quality_metrics are written under the
+  # CFGLOC-level directory (preserving the full input path structure), but the
+  # group JSON is written one level up, directly under the group directory
   dirOut    <- fs::path(DirOutBase, InfoDirIn$dirRepo)
   dirOutStats <- fs::path(dirOut, 'stats')
   dirOutQm    <- fs::path(dirOut, 'quality_metrics')
-  dirOutGroup <- fs::path(dirOut, 'group')
+  dirOutGroup <- fs::path(base::dirname(dirOut), 'group')
 
+  # Create the CFGLOC-level data directories
   NEONprocIS.base::def.dir.crea(
     DirBgn = dirOut,
-    DirSub = c('stats', 'quality_metrics', 'group'),
+    DirSub = c('stats', 'quality_metrics'),
+    log = log
+  )
+  # Create the group directory one level up (above the CFGLOC identity)
+  NEONprocIS.base::def.dir.crea(
+    DirBgn = base::dirname(dirOut),
+    DirSub = c('group'),
     log = log
   )
 
