@@ -139,13 +139,55 @@ def.cal.conv.nmnl <- function(data = data.frame(data=base::numeric(0)),
     calSlctIdx <- base::data.frame()
   }
 
-  #extract nomVal and nomCalCoef from Meta list
-  nomVal <- base::data.frame(term=base::sapply(Meta, function(x) x[1]), value=base::sapply(Meta, function(x) x[2]), stringsAsFactors = FALSE)
-  nomCalCoef <- base::data.frame(term=base::sapply(Meta, function(x) x[1]), ID=base::sapply(Meta, function(x) x[3]), stringsAsFactors = FALSE)
+  # Parse Meta into term-specific nominal values and calibration coefficients.
+  # Expected serialized form is Meta="term:nomVal,nomCalCoef|...".
+  # Legacy vector values c(term, nomVal, nomCalCoef) are also supported.
+  parseMetaEntry <- function(termName, entryVal) {
+    if (base::is.atomic(entryVal) && base::length(entryVal) >= 3) {
+      return(base::list(term = as.character(entryVal[1]),
+                        nomVal = as.character(entryVal[2]),
+                        nomCalCoef = as.character(entryVal[3])))
+    }
+    if (base::is.atomic(entryVal) && base::length(entryVal) == 1) {
+      part <- as.character(entryVal)
+      # If no explicit term prefix is present, fall back to list element name.
+      if (base::grepl(':', part, fixed = TRUE)) {
+        splitTerm <- base::strsplit(part, ':', fixed = TRUE)[[1]]
+        if (base::length(splitTerm) != 2) {
+          return(NULL)
+        }
+        termParsed <- splitTerm[1]
+        coefPart <- splitTerm[2]
+      } else {
+        termParsed <- termName
+        coefPart <- part
+      }
+      splitCoef <- base::strsplit(coefPart, ',', fixed = TRUE)[[1]]
+      if (base::length(splitCoef) != 2) {
+        return(NULL)
+      }
+      return(base::list(term = termParsed,
+                        nomVal = splitCoef[1],
+                        nomCalCoef = splitCoef[2]))
+    }
+    NULL
+  }
+
+  metaParsed <- base::lapply(base::names(Meta), function(nm) parseMetaEntry(nm, Meta[[nm]]))
+  metaParsed <- metaParsed[!base::vapply(metaParsed, base::is.null, logical(1))]
+  if (base::length(metaParsed) == 0) {
+    log$error('Meta must contain term-specific nominal calibration info (e.g. Meta=speed:0.1666667,CVAL_B1|direction:355,CVAL_A1).')
+    stop()
+  }
+  metaDf <- base::do.call(base::rbind, base::lapply(metaParsed, base::as.data.frame, stringsAsFactors = FALSE))
 
   #retrieve appropriate nominal value and cal coef where term matches varConv
-  nomValIdx <- as.numeric(nomVal$value[nomVal$term==varConv])
-  nomCalCoefIdx <- nomCalCoef$ID[nomCalCoef$term==varConv]
+  nomValIdx <- as.numeric(metaDf$nomVal[metaDf$term == varConv][1])
+  nomCalCoefIdx <- as.character(metaDf$nomCalCoef[metaDf$term == varConv][1])
+  if (base::is.na(nomValIdx) || base::is.na(nomCalCoefIdx) || base::identical(nomCalCoefIdx, "NA")) {
+    log$error(base::paste0('Meta is missing nominal value or nominal calibration coefficient for term ', varConv, '.'))
+    stop()
+  }
   log$debug(base::paste0('Nominal value for ',varConv,': ',nomValIdx))
   log$debug(base::paste0('Nominal calibration coefficient for ',varConv,': ',nomCalCoefIdx))
   
