@@ -20,14 +20,8 @@
 #' information about the calibration files and time periods that apply to the variable, 
 #' as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
 #' 
-#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
-#' NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.
-#' 
-#' @param nomVal Unused in this function. Defaults to NULL. See the inputs to 
-#' NEONprocIS.cal::def.cal.conv.nmnl for what this input is.
-#' 
-#' @param nomCalID Unused in this function. Defaults to NULL. See the inputs to 
-#' NEONprocIS.cal::def.cal.conv.nmnl for what this input is.
+#' @param Meta (Optional) List object containing additional metadata for use in 
+#' this function as needed. Defaults to an empty list. 
 #'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -57,15 +51,11 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2025-08-08)
 #     original creation
-#   Nora Catolico (2026-05-05)
-#     Add nomVal and nomCalID - unused in this function
 ##############################################################################################
 def.cal.conv.swc.test <- function(data = data.frame(data=base::numeric(0)),
                                   varConv = base::names(data)[1],
                                   calSlct=NULL,
                                   Meta=list(),
-                                  nomVal=NULL,
-                                  nomCalID=NULL,
                                   log = NULL) {
   # Intialize logging if needed
   if (base::is.null(log)) {

@@ -22,12 +22,6 @@
 #' 
 #' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
 #' NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.
-#' 
-#' @param nomVal Unused in this function. Defaults to NULL. See the inputs to 
-#' NEONprocIS.cal::def.cal.conv.nmnl for what this input is.
-#' 
-#' @param nomCalID Unused in this function. Defaults to NULL. See the inputs to 
-#' NEONprocIS.cal::def.cal.conv.nmnl for what this input is.
 #'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -66,15 +60,11 @@
 #   Cove Sturtevant (2025-08-10)
 #     Refactor to loop through applicable calibration files within this function
 #     Also enable multiple variables to be calibrated with this function call
-#   Nora Catolico (2026-05-05)
-#     Add nomVal and nomCalID - unused in this function
 ##############################################################################################
 def.cal.conv.poly.l <- function(data = data.frame(data=base::numeric(0)),
                                 varConv = base::names(data)[1],
                                 calSlct=NULL,
                                 Meta=list(),
-                                nomVal=NULL,
-                                nomCalID=NULL,
                                 log = NULL) {
   # Intialize logging if needed
   if (base::is.null(log)) {

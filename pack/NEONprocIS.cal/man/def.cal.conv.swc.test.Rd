@@ -9,8 +9,6 @@ def.cal.conv.swc.test(
   varConv = base::names(data)[1],
   calSlct = NULL,
   Meta = list(),
-  nomVal = NULL,
-  nomCalID = NULL,
   log = NULL
 )
 }
@@ -27,14 +25,8 @@ variable (column) to calibrate. The data frame in each list element holds
 information about the calibration files and time periods that apply to the variable, 
 as returned from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
 
-\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
-NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.}
-
-\item{nomVal}{Unused in this function. Defaults to NULL. See the inputs to 
-NEONprocIS.cal::def.cal.conv.nmnl for what this input is.}
-
-\item{nomCalID}{Unused in this function. Defaults to NULL. See the inputs to 
-NEONprocIS.cal::def.cal.conv.nmnl for what this input is.}
+\item{Meta}{(Optional) List object containing additional metadata for use in 
+this function as needed. Defaults to an empty list.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be

@@ -190,14 +190,6 @@
 #' 12. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
 #' the same level as the data folder in the input path that are to be copied with a symbolic link to the
 #' output path.
-#' 
-#' 13. "nomVal=value" (optional). A named list of term-nominal value pairs that will be passed to the nominal calibration 
-#' function def.cal.conv.nmnl.R., e.g. "nomVal:CVAL_B1".
-#' Multiple values separated by pipes (|). Use the format: "nomVal=name1:value1|name2:value2|name3:value3", etc. 
-#'
-#' 14. "nomCalID=value" (optional). A named list of term-calibration ID pairs that will be passed to the nominal calibration 
-#' function def.cal.conv.nmnl.R., e.g. "speed:CVAL_B1".
-#' Multiple values separated by pipes (|). Use the format: "nomCalID=term1:CalID1|term2:CalID2", etc. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -222,12 +214,10 @@
 #' Rscript flow.cal.conv.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" ConvFuncTerm1=def.cal.conv.poly:resistance" "NumDayExpiMax=NA" "UcrtFuncTerm1=def.ucrt.meas.cnst:resistance","UcrtFuncTerm2=def.ucrt.fdas.rstc.poly:resistance"
 #'
 #' Stepping through the code in Rstudio
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# Sys.setenv(DIR_IN='~/pfs/rmyoung_calibration_group_and_convert_test/rmyoung/2025/12/18')
-# arg <- c("DirIn=$DIR_IN", "DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","ConvFuncTerm1=def.cal.conv.nmnl:speed","ConvFuncTerm2=def.cal.conv.nmnl:direction",
-#          "TermQf=speed|direction","UcrtFuncTerm1=def.ucrt.meas.cnst:speed","UcrtFuncTerm1=def.ucrt.meas.cnst:direction","nomVal=speed:0.1666667|direction:355",
-#          "nomCalID=speed:CVALB1|direction:CVALA1","FileSchmData=~/pfs/rmyoung_avro_schemas/rmyoung/rmyoung_calibrated.avsc" )
-
+#' Sys.setenv(DIR_IN='/scratch/pfs/prt_calibration_filter')
+#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/prt_calibrated.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_calibration.avsc", ConvFuncTerm1=def.cal.conv.poly:resistance", "NumDayExpiMax=NA", "UcrtFuncTerm1=def.ucrt.meas.cnst:resistance,"UcrtFuncTerm2=def.ucrt.fdas.rstc.poly:resistance")
+#' # Then copy and paste rest of workflow into the command window
 
 #' @seealso None currently
 
@@ -288,8 +278,6 @@
 #     in as metadata to specified calibration and uncertainty functions
 #     Refactor to allow greater flexibility in custom functions, like calibrating multiple 
 #       variables in a single function call, creating new variables, etc.
-#   Nora Catolico (2026-05-05)
-#     Incorporate an optional input nomVal and nomCalID to use with the nominal calibration function
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -325,8 +313,6 @@ Para <-
       "FileSchmQf",
       base::paste0("ConvFuncTerm",1:100),
       "NumDayExpiMax",
-      "nomVal",
-      "nomCalID",
       "TermQf",
       base::paste0("UcrtFuncTerm",1:100),
       "FileUcrtFdas",
@@ -352,7 +338,6 @@ log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
 log$debug(base::paste0('Terms to output calibration flags: ',
                        base::paste0(Para$TermQf, collapse = ',')
 ))
-
 
 # Read in the schemas so we only have to do it once and not every
 # time in the avro writer.
@@ -499,62 +484,6 @@ if (!base::is.null(Para$Meta) &&
 # Add any FDAS uncertainty coefs to Meta
 Meta$ucrtCoefFdas <- ucrtCoefFdas
 
-
-# Nominal calibration values
-if(!base::is.null(Para$nomVal) && 
-   base::length(Para$nomVal) %% 2 > 0){
-  log$fatal('Input argument PathnomVal must contain name:path pairs, separated by pipes.')
-  stop()
-}
-if (!base::is.null(Para$nomVal) &&
-    base::length(Para$nomVal) > 0) {
-  nomVal <-
-    NEONprocIS.base::def.vect.pars.pair(
-      vect = Para$nomVal,
-      NameCol = c('term', 'value'),
-      log = log
-    )
-  if(base::any(base::duplicated(nomVal$term))){
-    log$fatal('Names of nomVal argument must be unique (e.g. nomVal=term1:value1|term2:value2).')
-    stop()
-  }
-  log$debug(base::paste0(
-    'Additional nomValdata for use in nominal calibration function: ',
-    paste0(Para$nomVal)
-  ))
-} else {
-  nomVal <- NULL
-  log$debug('Additional nomValdata for use in nominal calibration function: None')
-}
-
-#Nominal calibration IDs
-if(!base::is.null(Para$nomCalID) && 
-   base::length(Para$nomCalID) %% 2 > 0){
-  log$fatal('Input argument PathnomCalID must contain name:path pairs, separated by pipes.')
-  stop()
-}
-if (!base::is.null(Para$nomCalID) &&
-    base::length(Para$nomCalID) > 0) {
-  nomCalID <-
-    NEONprocIS.base::def.vect.pars.pair(
-      vect = Para$nomCalID,
-      NameCol = c('term', 'ID'),
-      log = log
-    )
-  if(base::any(base::duplicated(nomCalID$term))){
-    log$fatal('Names of nomCalID argument must be unique (e.g. nomCalID=term1:ID1|term2:ID2).')
-    stop()
-  }
-  log$debug(base::paste0(
-    'Additional nomCalID data for use in nominal calibration function: ',
-    paste0(Para$nomCalID)
-  ))
-} else {
-  nomCalID <- NULL
-  log$debug('Additional nomCalID data for use in nominal calibration function: None')
-}
-
-
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
@@ -592,8 +521,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                     FuncConv=FuncConv,
                     FuncUcrt=FuncUcrt,
                     TermQf=Para$TermQf,
-                    nomVal=nomVal,
-                    nomCalID=nomCalID,
                     NumDayExpiMax=NumDayExpiMax,
                     SchmDataOutList=SchmDataOutList,
                     SchmQf=SchmQf,

@@ -26,15 +26,6 @@
 #' as the calibration conversion function is able to handle the case, for example if multiple L0 terms are used to create 
 #' a single calibrated output. \cr
 #' 
-#' @param nomVal (optional). Parsed nominal calibration value table forwarded from
-#' \code{flow.cal.conv}. This is not limited to a single numeric value; it should be
-#' provided in the tabular form expected by downstream nominal calibration functions.
-#'
-#' @param nomCalID (optional). Parsed nominal calibration identifier table forwarded
-#' from \code{flow.cal.conv}. This is not limited to a single character string; it
-#' should be provided in the tabular form expected by downstream nominal calibration
-#' functions.
-#' 
 #' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
 #' calibration and uncertainty functions. This can contain whatever information might be needed in the
 #' calibration and/or uncertainty functions in addition to calibration and uncertainty information. 
@@ -77,8 +68,6 @@
 wrap.cal.conv.dp0p <- function(data,
                                calSlct,
                                FuncConv,
-                               nomVal=NULL,
-                               nomCalID=NULL,
                                Meta=list(),
                                log=NULL){
   # initialize logging if necessary
@@ -100,8 +89,6 @@ wrap.cal.conv.dp0p <- function(data,
     data <- base::do.call(FuncConvIdx,args=base::list(data=data,
                                                       varConv=varConvIdx,
                                                       calSlct=calSlct,
-                                                      nomVal=nomVal,
-                                                      nomCalID=nomCalID,
                                                       Meta=Meta,
                                                       log=log)
     )

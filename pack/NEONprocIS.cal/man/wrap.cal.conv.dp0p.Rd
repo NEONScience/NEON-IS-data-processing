@@ -4,15 +4,7 @@
 \alias{wrap.cal.conv.dp0p}
 \title{Wrapper for applying calibration conversion to NEON L0 data}
 \usage{
-wrap.cal.conv.dp0p(
-  data,
-  calSlct,
-  FuncConv,
-  nomVal = NULL,
-  nomCalID = NULL,
-  Meta = list(),
-  log = NULL
-)
+wrap.cal.conv.dp0p(data, calSlct, FuncConv, Meta = list(), log = NULL)
 }
 \arguments{
 \item{data}{Data frame of L0 data. Must include POSIXct time variable readout_time.}
@@ -32,15 +24,6 @@ a column in the input data frame. However, it can be a term not found in the inp
 by pipes (e.g. "resistance|voltage") or no term at all (indicated by an NA). These uncommon cases are acceptable so long 
 as the calibration conversion function is able to handle the case, for example if multiple L0 terms are used to create 
 a single calibrated output. \cr}
-
-\item{nomVal}{(optional). Parsed nominal calibration value table forwarded from
-\code{flow.cal.conv}. This is not limited to a single numeric value; it should be
-provided in the tabular form expected by downstream nominal calibration functions.}
-
-\item{nomCalID}{(optional). Parsed nominal calibration identifier table forwarded
-from \code{flow.cal.conv}. This is not limited to a single character string; it
-should be provided in the tabular form expected by downstream nominal calibration
-functions.}
 
 \item{Meta}{(optional). A named list (default is an empty list) containing additional metadata to pass to 
 calibration and uncertainty functions. This can contain whatever information might be needed in the

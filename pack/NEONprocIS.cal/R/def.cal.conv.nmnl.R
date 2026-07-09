@@ -9,13 +9,9 @@
 
 #' @param data Data frame of nominally calibrated sensor readings. This data frame must have 
 #' a column called "readout_time" with POSIXct timestamps
-
-#' @param nomVal A numeric value used for nominal calibration.
-
-#' @param nomCalID A character string that identifies the calibration value that should be used, e.g. CVAL_B1
 #' 
-#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to
-#' NEONprocIS.cal::wrap.cal.conv.dp0p for what this input is.
+#' @param Meta A named list (default is an empty list) containing additional metadata to pass to 
+#' calibration and uncertainty functions. For this function it should include nomVal and nomCalCoef.
 
 #' @param varConv A character string of the target variables (columns) in the data frame \code{data} for 
 #' which calibrated output will be computed (all other columns will be ignored). Defaults to the first
@@ -48,7 +44,7 @@
 #'                TimeBgn = as.POSIXct('2025-01-01'),
 #'                TimeEnd = as.POSIXct('2025-01-04'),
 #'                )
-#' dataCal <- def.cal.conv.nmnl(data=data,nomVal=c(15/90,355),nomCalID=c(CVAL_A1,CVAL_B1),varConv=c('var1','var2'),calSlct=calSlct)
+#' dataCal <- def.cal.conv.nmnl(data=data,Meta=list(nomVal=c(15/90,355),nomCalCoef=c(CVAL_A1,CVAL_B1)),varConv=c('var1','var2'),calSlct=calSlct)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly}
@@ -87,12 +83,12 @@
 # 
 # # For Testing speed calibration
 # data = NEONprocIS.base::def.read.parq(NameFile = '~/pfs/rmyoung_data_source_trino/rmyoung/2025/12/14/32356/data/rmyoung_32356_2025-12-14.parquet')
-# nomVal = 15/90
-# nomCalID = 'CVAL_B1'
+# Meta = list(c("term=speed", "nomVal=15/90", "nomCalCoef=CVAL_B1"),
+#            c("term=direction", "nomVal=355", "nomCalCoef=CVAL_A1"))
 # varConv = base::names(data)[4] #speed
 # 
 # calSlct <- NEONprocIS.cal::wrap.cal.slct(
-#                DirCal = '~/pfs/rmyoung_calibration_group_and_convert_test/rmyoung/2025/12/14/32356/calibration',
+#                DirCal = '~Git/pfs/rmyoung_calibration_group_and_convert_test/rmyoung/2025/12/14/32356/calibration',
 #                NameVarExpc = c('speed'),
 #                TimeBgn = as.POSIXct('2025-12-13'),
 #                TimeEnd = as.POSIXct('2025-12-15'),
@@ -101,8 +97,6 @@
 # log = NULL
 ##############################################################################################
 def.cal.conv.nmnl <- function(data = data.frame(data=base::numeric(0)),
-                                nomVal,
-                                nomCalID,
                                 varConv = base::names(data)[1],
                                 calSlct = NULL,
                                 Meta=list(),
@@ -144,10 +138,16 @@ def.cal.conv.nmnl <- function(data = data.frame(data=base::numeric(0)),
     log$warn(base::paste0('No applicable calibration files available for ',varConv, '. Returning NA for calibrated output.'))
     calSlctIdx <- base::data.frame()
   }
-  
-  #retrieve appropriate nominal value and cal ID
+
+  #extract nomVal and nomCalCoef from Meta list
+  nomVal <- base::data.frame(term=base::sapply(Meta, function(x) x[1]), value=base::sapply(Meta, function(x) x[2]), stringsAsFactors = FALSE)
+  nomCalCoef <- base::data.frame(term=base::sapply(Meta, function(x) x[1]), ID=base::sapply(Meta, function(x) x[3]), stringsAsFactors = FALSE)
+
+  #retrieve appropriate nominal value and cal coef where term matches varConv
   nomValIdx <- as.numeric(nomVal$value[nomVal$term==varConv])
-  nomCalIDIdx <- nomCalID$ID[nomCalID$term==varConv]
+  nomCalCoefIdx <- nomCalCoef$ID[nomCalCoef$term==varConv]
+  log$debug(base::paste0('Nominal value for ',varConv,': ',nomValIdx))
+  log$debug(base::paste0('Nominal calibration coefficient for ',varConv,': ',nomCalCoefIdx))
   
   # Run through each calibration file and apply the calibration function for the applicable time period
   for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
@@ -172,9 +172,9 @@ def.cal.conv.nmnl <- function(data = data.frame(data=base::numeric(0)),
     # Remove the nominal value only for records covered by this calibration file
     dataConvOutIdx[setCal] <- data[[varConv]][setCal]/nomValIdx
     
-    # Apply the value associated with the nomCalID only to this calibration period
+    # Apply the value associated with the nomCalCoef only to this calibration period
     dataConvOutIdx[setCal] <- dataConvOutIdx[setCal] *
-      as.numeric(infoCal$cal$Value[infoCal$cal$Name==nomCalIDIdx])
+      as.numeric(infoCal$cal$Value[infoCal$cal$Name==nomCalCoefIdx])
     
   } # End loop around calibration files
   
