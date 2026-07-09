@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-1c9356d
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-87002e5
   cmd:
   - sh
   - "-c"
@@ -29,8 +29,7 @@ transform:
         DirErr=/pfs/out/errored_datums\
         ConvFuncTerm1=def.cal.conv.nmnl:speed \
         ConvFuncTerm2=def.cal.conv.nmnl:direction \
-        "nomVal=speed:0.1666667|direction:355" \
-        "nomCalID=speed:CVALB1|direction:CVALA1" \
+        Meta = list(c("term=speed", "nomVal=0.1666667", "nomCalCoef=CVAL_B1"),c("term=direction", "nomVal=355", "nomCalCoef=CVAL_A1")) \
         "TermQf=speed|direction" \
         UcrtFuncTerm1=def.ucrt.meas.cnst:speed \
         UcrtFuncTerm1=def.ucrt.meas.cnst:direction \
