@@ -27,12 +27,12 @@ transform:
         DirIn=/tmp/pfs/filter_joined \
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
-        ConvFuncTerm1=def.cal.conv.nmnl:speed \
-        ConvFuncTerm2=def.cal.conv.nmnl:direction \
-        "Meta=speed:0.1666667,CVAL_B1|direction:355,CVAL_A1" \
+        "ConvFuncTerm1=def.cal.conv.nmnl:speed" \
+        "ConvFuncTerm2=def.cal.conv.nmnl:direction" \
+        "Meta=speed:0.1666667,CVALB1|direction:355,CVALA1" \
         "TermQf=speed|direction" \
-        UcrtFuncTerm1=def.ucrt.meas.cnst:speed \
-        UcrtFuncTerm2=def.ucrt.meas.cnst:direction \
+        "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" \
+        "UcrtFuncTerm2=def.ucrt.meas.cnst:direction" \
         FileSchmData=$SCHEMA_CAL_RMYOUNG \
         FileSchmQf=$SCHEMA_FLAGS_RMYOUNG
 
@@ -78,14 +78,14 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: rmyoung_calibration_assignment
-        glob: /rmyoung/(*)/(*)/(*)
+        glob: /rmyoung/2025/12/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH
         repo: rmyoung_hmr3300_data_source_trino
-        glob: /rmyoung/(*)/(*)/(*)
+        glob: /rmyoung/2025/12/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
