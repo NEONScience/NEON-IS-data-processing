@@ -1,0 +1,54 @@
+---
+pipeline:
+  name: windBuoy_threshold_select
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.3.3
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Run first module - threshold_select
+    Rscript ./flow.thsh.slct.R \
+      DirIn=$REPO_LOCATIONS \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileThsh=$FILE_THRESHOLDS \
+      "TermCtxt1=vectorAverageHeading|buoy-wind" \
+      "TermCtxt2=windSpeedMean|buoy-wind" \
+      "TermCtxt3=windDirMean|buoy-wind" \
+      "DirSubCopy=location|data"
+    
+    EOF
+output_branch: master
+input:
+  cross:
+  - pfs:
+      name: REPO_LOCATIONS
+      repo: windBuoy_group_path
+      glob: /*/*/*/*/*
+  - pfs:
+      name: FILE_THRESHOLDS
+      repo: windBuoy_threshold
+      glob: /thresholds.json
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 800M
+  cpu: 3.3
+resource_limits:
+  memory: 2G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
