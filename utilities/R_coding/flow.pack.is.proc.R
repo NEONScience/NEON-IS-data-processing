@@ -17,7 +17,7 @@ DirWrk00 <-
   # Ed
   #"/home/NEON/ayres/R/NEON-IS-data-processing"
   # Nora
-  "/home/NEON/ncatolico/R/NEON-IS-data-processing"
+  #"/home/NEON/ncatolico/R/NEON-IS-data-processing"
   #Dave
   #"~/code/NEON-IS-data-processing-ddurden"
 
@@ -33,11 +33,11 @@ namePack <- c("NEONprocIS.base",
               "NEONprocIS.qaqc",
               "NEONprocIS.stat",
               "NEONprocIS.wq",
-              "NEONprocIS.pub")[1]
+              "NEONprocIS.pub")[2]
 
 
 # Do you want to run the unit tests for the package? Additionally, want to compute and show test coverage?
-RunTest <- TRUE
+RunTest <- False
 ShowTestCovr <- TRUE
 
 ###
