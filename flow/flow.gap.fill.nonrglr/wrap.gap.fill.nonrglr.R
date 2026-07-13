@@ -75,7 +75,8 @@
 #     original creation
 #   Nora Catolico (2026-05-29)
 #     remove duplicate timestamps
-##############################################################################################
+#   Nora Catolico (2026-07-13)
+#     fixed bug for when no output schema is provided##############################################################################################
 wrap.gap.fill.nonrglr <- function(DirIn,
                                   DirOutBase,
                                   DirFill,
@@ -177,7 +178,7 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       
       # select output schema
       if(typeof(SchmFill) == "list"){
-        FileSchmFill<-SchmFill$FileSchmFill[grepl(subDir,SchmFill$DirFill)]
+        FileSchmFill<-SchmFill$FileSchmFill[grepl(subDir,SchmFill$DirFill) & SchmFill$FileSchmFill!="NA"]
         if(length(FileSchmFill)>1){
           #specific to suna for now. can be updated if needed down the road
           if(grepl("log",fileName,ignore.case = TRUE)){
@@ -187,7 +188,10 @@ wrap.gap.fill.nonrglr <- function(DirIn,
             FileSchmFill<-FileSchmFill[grepl("cal",FileSchmFill,ignore.case = TRUE)]
           }
         }
-        if (base::is.na(FileSchmFill)|FileSchmFill=="NA"|length(FileSchmFill)>1) {
+        if (length(FileSchmFill)==0){
+          # use the output data to generate a schema
+          idxSchmFill <- base::attr(df_filled, 'schema')
+        }else if(base::is.na(FileSchmFill)||FileSchmFill=="NA"||length(FileSchmFill)>1) {
           # use the output data to generate a schema
           idxSchmFill <- base::attr(df_filled, 'schema')
         } else {
@@ -196,8 +200,7 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       }else{
         # use the output data to generate a schema
         idxSchmFill <- base::attr(df_filled, 'schema')
-      }
-      
+      }      
       
       # write out data
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = df_filled,

@@ -79,15 +79,15 @@
 
 #' @keywords Currently none
 
-#' @examples
+#' @examples``
 #' Stepping through the code in R studio
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg<-c(      "DirIn=~/pfs/sunav2_fill_date_gaps/sunav2/2025/06/23/CFGLOC110819",
+# arg<-c(      "DirIn=~/Git/pfs/rmyoung_hmr3300_filler/rmyoung/2025/12/17/CFGLOC112528",
 #              "DirOut=~/pfs/out ",
 #              "DirErr=~/pfs/out/errored_datums ",
-#              "DirFill=data|flags",
-#              "WndwFill=015",
-#              "FileSchm=data:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_logfilled.avsc|flags:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_calibration_flags.avsc|flags:/home/NEON/ncatolico/pfs/sunav2_avro_schemas/sunav2/sunav2_log_flags.avsc",
+#              "DirFill=data|uncertainty_data|flags",
+#              "WndwFill=01",
+#              "FileSchm=data:~/Git/pfs/rmyoung_hmr3300_avro_schemas/rmyoung/rmyoung_calibrated.avsc|flags:~/Git/pfs/rmyoung_hmr3300_avro_schemas/rmyoung/rmyoung_calibration_flags.avsc",
 #              "DirSubCopy=location|uncertainty_coef")
 #' @seealso \code{\link[eddy4R.base]{def.rglr}}
 
@@ -96,6 +96,8 @@
 #     original creation 
 #   Nora Catolico (2026-05-29)
 #     remove duplicate timestamps
+#   Nora Catolico (2026-07-13)
+#     fixed bug for when no output schema is provided
 ##############################################################################################
 library(foreach)
 library(doParallel)
