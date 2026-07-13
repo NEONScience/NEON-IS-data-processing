@@ -1,0 +1,135 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: location-asset-assignment-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  "config": |
+    [
+      {
+        "key": "aepg600m",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate'"
+      },
+      {
+        "key": "cmp22",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|location_properties:LatTow|location_properties:LonTow'"
+      },
+      {
+        "key": "csat3",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "dualfan",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate'"
+      },
+      {
+        "key": "enviroscan",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|locationMetadata:DistZaxsLvlMeasSoil|locationMetadata:LvlMeasSoil'"
+      },
+      {
+        "key": "exo2",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "exoconductivity",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "exodissolvedoxygen",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH  FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "exofdom",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "exophorp",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "exototalalgae",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "exoturbidity",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "gascylinder",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "hmp155",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "lt400_hu24",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations'"
+      },
+      {
+        "key": "li191r",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate'"
+      },
+      {
+        "key": "li840a",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "li7200",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "mcseries",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "metone370380",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|context'"
+      },
+      {
+        "key": "mt300ahrs",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "pluvio",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate'"
+      },
+      {
+        "key": "pqs1",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|context'"
+      },
+      {
+        "key": "pressuretransducer",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "prt",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "ptb330a",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations'"
+      },
+      {
+        "key": "pump",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
+      },
+      {
+        "key": "sunav2",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate'"
+      },
+      {
+        "key": "tchain",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|ThermistorDepth501|ThermistorDepth502|ThermistorDepth503|ThermistorDepth504|ThermistorDepth505|ThermistorDepth506|ThermistorDepth507|ThermistorDepth508|ThermistorDepth509|ThermistorDepth510|ThermistorDepth511'"
+      },
+      {
+        "key": "troll",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|context|location_properties:Coordinate uncertainty|location_properties:Coordinate source|location_properties:Elevation uncertainty|location_properties:Real world coordinate uncertainty|location_properties:Real world elevation uncertainty|location_properties:Survey horizontal uncertainty|location_properties:Survey vertical uncertainty|location_properties:Transformation RMSE'"
+      },
+      {
+        "key": "windobserverii",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations'"
+      }
+    ]
