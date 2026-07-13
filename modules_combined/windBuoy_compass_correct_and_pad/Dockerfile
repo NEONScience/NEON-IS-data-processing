@@ -30,7 +30,7 @@ RUN apt update && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* && \
     groupadd -g 9999 appuser && \
-    useradd -r -u 9999 -g appuser appuser
+    useradd -r -u 9999 -g appuser appuser 
 
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
@@ -38,7 +38,7 @@ COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 # Build in the threshold selection module
 ARG MODULE_DIR="flow"
-ARG APP_DIR="flow.windBuoy.compass.correction"
+ARG APP_DIR="flow.wind.buoy.compass.correction"
 
 
 # Copy the lockfile and restore known working versions of R dependency packages
@@ -50,8 +50,8 @@ RUN groupadd appuser && \
     useradd appuser -g appuser
 
 # Copy in application code
-COPY ./${MODULE_DIR}/${APP_DIR}/flow.windBuoy.compass.correction.R .
-COPY ./${MODULE_DIR}/${APP_DIR}/wrap.windBuoy.compass.correction.R .
+COPY ./${MODULE_DIR}/${APP_DIR}/flow.wind.buoy.compass.correction.R .
+COPY ./${MODULE_DIR}/${APP_DIR}/wrap.wind.buoy.compass.correction.R .
 
 # Run as app user
 USER appuser
