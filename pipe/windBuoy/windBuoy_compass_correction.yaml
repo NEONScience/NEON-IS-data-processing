@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_compass_correction
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correction:sha-e5c3d6a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correction:sha-bed519f
   cmd:
   - sh
   - "-c"
@@ -16,7 +16,8 @@ transform:
     Rscript ./flow.wind.buoy.compass.correction.R \
       DirIn=$DIR_IN \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums
+      DirErr=/pfs/out/errored_datums \
+      "DirSubCopy=location|flags|uncertainty_coef|uncertainty_data"
     
     EOF
 output_branch: master
