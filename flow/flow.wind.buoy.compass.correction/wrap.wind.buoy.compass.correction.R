@@ -11,6 +11,10 @@
 #'  
 #' @param DirOutBase Character value. The base file path for the output data.
 #' 
+#' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
+#' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
+#' output path (i.e. not combined but carried through as-is).
+#' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
 #' 
@@ -36,6 +40,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
                                   DirOutBase,
                                   SchmDataOut=NULL,
                                   SchmFlagsOut=NULL,
+                                  DirSubCopy=NULL,
                                   log=NULL
 ){
   
@@ -72,6 +77,20 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   DirOutFlags_rmyoung <- base::paste0(DirOut,"/rmyoung/",config[1],"/flags") 
   base::dir.create(DirOutData_rmyoung,recursive=TRUE)
   base::dir.create(DirOutFlags_rmyoung,recursive=TRUE)
+
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirSubCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,"/rmyoung/",config[1],"/",DirSubCopy),
+                                       DirDest=base::paste0(DirOut,"/rmyoung/",config[1]),
+                                       LnkSubObj=TRUE,
+                                       log=log)
+  }
+  if(base::length(DirSubCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,"/hmr3300/",config[1],"/",DirSubCopy),
+                                       DirDest=base::paste0(DirOut,"/hmr3300/",config[1]),
+                                       LnkSubObj=TRUE,
+                                       log=log)
+  }
   
   #' Read in parquet file of buoy wind data.
   dataFileName_rmyoung<-base::list.files(DirInData_rmyoung,full.names=FALSE)
@@ -121,7 +140,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
 
 
   #3. Magnetic declination and compass offset from thresholds
-  if(length(dataFileName_hmr3300)>0){
+  if(length(dataFileName_hmr3300)>0 & length(fileThsh) > 0){
     #read in hmr3300 thresholds
     fileThsh <- base::dir(DirInThresholds_hmr3300,full.names=TRUE)
     
@@ -174,12 +193,14 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   data_rmyoung$azimuth <- NA
   
   #Could be multiple source IDs in a day. Account for all.
-  sources <- unique(data_rmyoung$source_id[!is.na(data_rmyoung$source_id)])
+  data_rmyoung_blank <- data_rmyoung[is.na(data_rmyoung$source_id) | data_rmyoung$source_id == "99999", ]
+  data_rmyoung_notblank<-data_rmyoung[!is.na(data_rmyoung$source_id) & data_rmyoung$source_id!= "99999",]
+  sources <- unique(data_rmyoung_notblank$source_id)
 
   if(length(sources)>0){
     for(n in 1:length(sources)){
       source_n<-sources[n]
-      data_rmyoung_n<-data_rmyoung[!is.na(data_rmyoung$source_id) & data_rmyoung$source_id==source_n,]
+      data_rmyoung_n <- data_rmyoung_notblank[data_rmyoung_notblank$source_id == source_n, ]
       #get location history
       if(!is.null(dirLocLocation) && any(grepl(source_n,dirLocLocation))){
         # Choose the _locations.json file
@@ -193,29 +214,29 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
       }
       
       # Which location history matches each readout_time
-      if(length(data_rmyoung_n$readout_time) > 0){
-        rmyoung_all_n <- NULL
-        if(!is.null(LocationHist) && length(LocationHist$CFGLOC)>0){
-          for(i in 1:length(LocationHist$CFGLOC)){
-            startDate<-LocationHist$CFGLOC[[i]]$start_date
-            endDate<-LocationHist$CFGLOC[[i]]$end_date
-            rmyoung_subset<-data_rmyoung_n[data_rmyoung_n$readout_time>=startDate & data_rmyoung_n$readout_time<endDate,]
-            if(length(rmyoung_subset$readout_time) > 0){
-              if(is.null(LocationHist$CFGLOC[[i]]$gamma) || is.na(LocationHist$CFGLOC[[i]]$gamma)){
-                rmyoung_subset$azimuth <- 0
-              }else{
-                rmyoung_subset$azimuth <- LocationHist$CFGLOC[[i]]$gamma
-              }
-            }
-            if(i==1){
-              rmyoung_all_n <- rmyoung_subset
+      rmyoung_all_n <- NULL
+      if(!is.null(LocationHist) && length(LocationHist$CFGLOC)>0){
+        for(i in 1:length(LocationHist$CFGLOC)){
+          startDate<-LocationHist$CFGLOC[[i]]$start_date
+          endDate<-LocationHist$CFGLOC[[i]]$end_date
+          rmyoung_subset<-data_rmyoung_n[data_rmyoung_n$readout_time>=startDate & data_rmyoung_n$readout_time<endDate,]
+          if(length(rmyoung_subset$readout_time) > 0){
+            if(is.null(LocationHist$CFGLOC[[i]]$gamma) || is.na(LocationHist$CFGLOC[[i]]$gamma)){
+              rmyoung_subset$azimuth <- 0
             }else{
-              rmyoung_all_n <- rbind(rmyoung_all_n,rmyoung_subset)
+              rmyoung_subset$azimuth <- LocationHist$CFGLOC[[i]]$gamma
             }
           }
-          rmyoung_n <- rmyoung_all_n
+          if(i==1){
+            rmyoung_all_n <- rmyoung_subset
+          }else{
+            rmyoung_all_n <- rbind(rmyoung_all_n,rmyoung_subset)
+          }
         }
-      }
+          rmyoung_n <- rmyoung_all_n
+        }else {
+          rmyoung_n <- data_rmyoung_n  # no azimuth info, keep data as-is
+        }
       
       if(n==1){
         rmyoung_all <- rmyoung_n
@@ -225,13 +246,20 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
     }
     
     #add back in NA data
-    rmyoungData <- rbind(rmyoung_all,data_rmyoung[is.na(data_rmyoung$source_id),])
+    rmyoungData <- rbind(rmyoung_all, data_rmyoung_blank)
     rmyoungData <- rmyoungData[order(rmyoungData$readout_time),]
+  }else{
+    rmyoungData <- data_rmyoung_notblank
   }
 
   # Merge the buoy compass adjusted direction with the rmyoung data based on readout_time
-  wind_data <- merge(rmyoungData, data_hmr3300[, c("readout_time", "compass_direction_adjusted")], by="readout_time", all=TRUE)
-
+  if(length(data_hmr3300$readout_time)>0){
+    wind_data <- merge(rmyoungData, data_hmr3300[, c("readout_time", "compass_direction_adjusted")], by="readout_time", all=TRUE)
+  }else{
+    wind_data <- rmyoungData
+    wind_data$compass_direction_adjusted <- NA
+  }
+  
   #The wind direction measurements corrected by buoy compass data is calculated by summing the uncorrected 
   #but calibrated wind direction measurements, the declination-adjusted compass measurements,
   #and the wind-monitor on-mast offset (azimuth) from the Named Location Database

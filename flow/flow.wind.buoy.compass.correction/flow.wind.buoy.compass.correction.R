@@ -20,6 +20,8 @@
 #' 
 #' 5. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
 #' 
+#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' pipes, that are to be copied with a symbolic link to the output path. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -77,7 +79,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),
-                                      NameParaOptn = c("FileSchmData","FileSchmQf"),
+                                      NameParaOptn = c("FileSchmData","FileSchmQf","DirSubCopy"),
                                       log = log)
 
 
@@ -87,6 +89,11 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+log$debug(base::paste0('Director to copy: ', Para$DirSubCopy))
+
+# Retrieve optional subdirectories to copy over
+DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'data'))
+log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
@@ -118,6 +125,7 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
         DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
         SchmFlagsOut=SchmFlagsOut,
+        DirSubCopy=DirSubCopy,
         log=log
       ),
       error = function(err) {
