@@ -140,7 +140,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
 
 
   #3. Magnetic declination and compass offset from thresholds
-  if(length(dataFileName_hmr3300)>0 & length(fileThsh) > 0){
+  if(length(dataFileName_hmr3300)>0 && length(DirInThresholds_hmr3300) > 0){
     #read in hmr3300 thresholds
     fileThsh <- base::dir(DirInThresholds_hmr3300,full.names=TRUE)
     
