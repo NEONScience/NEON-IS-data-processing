@@ -1,10 +1,10 @@
 ##############################################################################################
-#' @title Workflow for buoy wind-specific quality flags and compasscorrection
+#' @title Workflow for buoy wind SCI statistics
 
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
-#' @description Workflow. Applies buoy wind-specific quality flags and performs compass correction on the buoy wind data.
+#' @description Workflow. Applies buoy wind-specific quality flags and performs SCI statistics on the buoy wind data.
 #'
 #' The arguments are: 
 #' 
@@ -15,10 +15,12 @@
 #' 
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
+#'  
+#' 4. "WndwAgr=value", The window aggregation period for the buoy wind data (e.g., "002" for 2-minute averages, "030" for 30-minute averages).
 #' 
-#' 4. "FileSchmData=value" (optional), The avro schema for the input and output data file.
+#' 5. "FileSchmData=value" (optional), The avro schema for the input and output data file.
 #' 
-#' 5. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
+#' 6. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
 #' 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -32,20 +34,20 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.wind.buoy.compass.correction <- function(DirIn="~/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100",                        
+#' flow.wind.buoy.sci.stats <- function(DirIn="~/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100",                        
 #'                               DirOut="~/pfs/wind_buoy_specific_flags",
 #'                               log=log)
 #' Stepping through the code in R studio                               
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100",
 #          "DirOut=/home/ncatolico/Git/pfs/wind_buoy_specific_flags",
-#          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums")
-# rm(list=setdiff(ls(),c('arg','log')))
+#          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums", "WndwAgr=002|030")
+#' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
 
 # changelog and author contributions / copyrights
-#' Nora Catolico (2026-07-10)
+#' Nora Catolico (2026-07-13)
 #' Initial creation
 
 ##############################################################################################
@@ -56,7 +58,7 @@ library(lubridate)
 library(dplyr)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.wind.buoy.compass.correction.R")
+source("./wrap.wind.buoy.sci.stats.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -76,7 +78,7 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr","WndwAgr"),
                                       NameParaOptn = c("FileSchmData","FileSchmQf"),
                                       log = log)
 
@@ -87,6 +89,7 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+log$debug(base::paste0('Window aggregation: ', Para$WndwAgr))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
 if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
@@ -113,9 +116,10 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.wind.buoy.compass.correction(
+      wrap.wind.buoy.sci.stats(
         DirIn=idxFileIn,
         DirOutBase=Para$DirOut,
+        WndwAgr=Para$WndwAgr,
         SchmDataOut=SchmDataOut,
         SchmFlagsOut=SchmFlagsOut,
         log=log

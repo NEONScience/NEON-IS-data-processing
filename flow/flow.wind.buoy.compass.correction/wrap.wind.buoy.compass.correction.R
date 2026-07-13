@@ -9,9 +9,7 @@
 #'
 #' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
 #'  
-#' @param DirOutBase Character value. The base file path for the output data. 
-#' 
-#' @param WndwAgr Character value. The window aggregation period for the buoy wind data (e.g., "002" for 2-minute averages, "030" for 30-minute averages).
+#' @param DirOutBase Character value. The base file path for the output data.
 #' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
@@ -36,7 +34,6 @@
 ##############################################################################################
 wrap.wind.buoy.compass.correction <- function(DirIn,
                                   DirOutBase,
-                                  WndwAgr,
                                   SchmDataOut=NULL,
                                   SchmFlagsOut=NULL,
                                   log=NULL
@@ -250,124 +247,34 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   wind_data$direction_corrected_rad <- wind_data$direction_corrected * (pi / 180)
 
   ###############
-  #7. Calculate the mean and variance with analytical two-pass method
-  #In the first pass, the components of the average distance vector over an observation period with sample size n are calculated 
-  # The first window begins at the nearest whole minute <= first timestamp in the series.
-  anchor_time <- lubridate::floor_date(base::min(wind_data_avg$readout_time, na.rm = TRUE), unit = 'minute')
-
-  safe_mean <- function(x) {
-    if (base::all(base::is.na(x))) {
-      return(NA_real_)
-    }
-    base::mean(x, na.rm = TRUE)
+  # Write out files
+  #only keep the necessary columns for further analysis
+  dataOut <- wind_data[, c("readout_time", "source_id", "site_id", "speed_calibrated","direction_corrected_rad")]
+  flagsOut <- wind_data[, c("readout_time", "source_id", "site_id", "buoyWindDirDeadZone")]
+    
+    
+  #' Write out data file
+  dataFilePathOut<-paste0(DirOutData_rmyoung,"/",dataFileName_rmyoung)
+  rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
+                                                    NameFile = dataFilePathOut,
+                                                    Schm = SchmDataOut),silent=TRUE)
+  if(class(rptOutData)[1] == 'try-error'){
+    log$error(base::paste0('Cannot write Data to ',dataFilePathOut,'. ',attr(rptOutData, "condition")))
+    stop()
+  } else {
+    log$info(base::paste0('Data written successfully in ', dataFilePathOut))
   }
-
-  # Build anchored window starts.
-  dt_secs <- as.numeric(base::difftime(wind_data_avg$readout_time, anchor_time, units = 'secs'))
-  
-  for(j in 1:length(WndwAgr)){
-    Wndw <- as.numeric(WndwAgr[j])
-    wind_data_avg<- wind_data
-    wind_data_avg$windowStart <- anchor_time + base::floor(dt_secs / (Wndw*60)) * (Wndw*60)    
-
-    # Compute first-pass vector components for each averaging period.
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::group_by(windowStart) %>%
-      dplyr::mutate(
-        yBar = safe_mean(base::sin(direction_corrected_rad)),
-        xBar = safe_mean(base::cos(direction_corrected_rad)),
-        n = base::sum(!base::is.na(direction_corrected_rad))
-      ) %>%
-      dplyr::ungroup()
-
-    # Second pass — Eq (10): mean unit-vector wind direction (radians)
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::mutate(
-        direction_unit_vector_mean = dplyr::case_when(
-          xBar > 0 & yBar == 0 ~ 2 * pi,
-          TRUE ~ (2 * pi + base::atan2(yBar, xBar)) %% (2 * pi)
-        )
-      )
-
-    # Eq (12): minimum angular distance between each observation and the window mean
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::mutate(
-        min_angular_distance = 2 * base::atan(base::tan(0.5 * (direction_corrected_rad - direction_unit_vector_mean)))
-      )
-
-    # Eq (13): mean of minimum angular distances over the window
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::group_by(windowStart) %>%
-      dplyr::mutate(
-        A_Tbar = safe_mean(min_angular_distance)
-      ) %>%
-      dplyr::ungroup()
-
-    # Eq (14): arithmetic mean wind direction (radians)
-    # theta_T = [2*pi + theta_bar + A_Tbar] %% (2*pi)
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::mutate(
-        windDirMean = (2 * pi + direction_unit_vector_mean + A_Tbar) %% (2 * pi)
-      )
-
-    # Eq (15): sample variance of wind direction
-    # s^2 = n^{-1} * sum(A_i^2) - A_Tbar^2
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::group_by(windowStart) %>%
-      dplyr::mutate(
-        windDirVar = safe_mean(min_angular_distance^2) - A_Tbar^2
-      ) %>%
-      dplyr::ungroup()
-
-    # Eq (16): convert mean wind direction from radians to degrees
-    # theta_T_deg = theta_T_rad * (180 / pi)
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::mutate(
-        windDirMean = windDirMean * (180 / pi)
-      )
-
-    # Eq (17): convert sample variance from rad^2 to deg^2
-    # s^2_deg = s^2_rad * (180/pi)^2
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::mutate(
-        windDirVar = windDirVar * (180 / pi)^2
-      )
-
-    #reduce file to one row per observation window
-    wind_data_avg <- wind_data_avg %>%
-      dplyr::group_by(windowStart) %>%
-      dplyr::slice(1) %>%
-      dplyr::ungroup()
-
-    #only keep the necessary columns for further analysis
-    dataOut <- wind_data_avg[, c("readout_time", "source_id", "site_id", "windDirMean", "windDirVar", "n")]
-    flagsOut <- wind_data_avg[, c("readout_time", "source_id", "site_id", "buoyWindDirDeadZone")]
     
-    
-    #' Write out data file
-    dataFileName<-paste0(DirOutData_rmyoung,"/",tools::file_path_sans_ext(dataFileName_rmyoung), "_", WndwAgr[j], ".parquet")
-    rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
-                                                      NameFile = dataFileName,
-                                                      Schm = SchmDataOut),silent=TRUE)
-    if(class(rptOutData)[1] == 'try-error'){
-      log$error(base::paste0('Cannot write Data to ',dataFileName,'. ',attr(rptOutData, "condition")))
-      stop()
-    } else {
-      log$info(base::paste0('Data written successfully in ', dataFileName))
-    }
-    
-    #' Write out flags file
-    flagFileName<-paste0(DirOutFlags_rmyoung,"/",tools::file_path_sans_ext(dataFileName_rmyoung), "_", WndwAgr[j], "_deadband.parquet")    
-    rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
-                                                      NameFile = flagFileName,
-                                                      Schm = SchmFlagsOut),silent=TRUE)
-    if(class(rptOutFlags)[1] == 'try-error'){
-      log$error(base::paste0('Cannot write Flags to ',flagFileName,'. ',attr(rptOutFlags, "condition")))
-      stop()
-    } else {
-      log$info(base::paste0('Flags written successfully in ', flagFileName))
-    }
-
+  #' Write out flags file
+  flagFilePathOut<-paste0(DirOutFlags_rmyoung,"/",tools::file_path_sans_ext(dataFileName_rmyoung),"_deadband.parquet")    
+  rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
+                                                    NameFile = flagFilePathOut,
+                                                    Schm = SchmFlagsOut),silent=TRUE)
+  if(class(rptOutFlags)[1] == 'try-error'){
+    log$error(base::paste0('Cannot write Flags to ',flagFilePathOut,'. ',attr(rptOutFlags, "condition")))
+    stop()
+  } else {
+    log$info(base::paste0('Flags written successfully in ', flagFilePathOut))
   }  
 }
 
