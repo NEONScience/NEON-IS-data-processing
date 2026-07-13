@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_compass_correction
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correction:sha-8ed2cf3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correction:sha-e5c3d6a
   cmd:
   - sh
   - "-c"

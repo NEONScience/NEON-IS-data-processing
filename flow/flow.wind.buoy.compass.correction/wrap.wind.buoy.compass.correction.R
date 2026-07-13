@@ -254,10 +254,13 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
 
   # Merge the buoy compass adjusted direction with the rmyoung data based on readout_time
   if(length(data_hmr3300$readout_time)>0){
-    wind_data <- merge(rmyoungData, data_hmr3300[, c("readout_time", "compass_direction_adjusted")], by="readout_time", all=TRUE)
+    # rename column hmr3300$direction to compass_direction_raw
+    names(data_hmr3300)[names(data_hmr3300) == "direction"] <- "compass_direction_raw"
+    wind_data <- merge(rmyoungData, data_hmr3300[, c("readout_time", "compass_direction_raw", "compass_direction_adjusted")], by="readout_time", all=TRUE)
   }else{
     wind_data <- rmyoungData
     wind_data$compass_direction_adjusted <- NA
+    wind_data$compass_direction_raw <- NA
   }
   
   #The wind direction measurements corrected by buoy compass data is calculated by summing the uncorrected 
@@ -277,7 +280,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   ###############
   # Write out files
   #only keep the necessary columns for further analysis
-  dataOut <- wind_data[, c("readout_time", "source_id", "site_id", "speed_calibrated","direction_corrected_rad")]
+  dataOut <- wind_data[, c("readout_time", "source_id", "site_id", "speed_calibrated","compass_direction_raw","direction_calibrated","direction_corrected_rad")]
   flagsOut <- wind_data[, c("readout_time", "source_id", "site_id", "buoyWindDirDeadZone")]
     
     
