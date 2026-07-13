@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_compass_correct_and_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correction:sha-bed519f
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correct-and-pad:sha-
   cmd:
   - sh
   - "-c"

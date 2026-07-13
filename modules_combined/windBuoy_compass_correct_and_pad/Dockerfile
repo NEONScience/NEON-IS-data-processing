@@ -36,7 +36,7 @@ RUN apt update && \
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
-# Build in the threshold selection module
+# Build in the threshold selection module 
 ARG MODULE_DIR="flow"
 ARG APP_DIR="flow.wind.buoy.compass.correction"
 
@@ -44,10 +44,6 @@ ARG APP_DIR="flow.wind.buoy.compass.correction"
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ./${MODULE_DIR}/${APP_DIR}/renv.lock ./renv.lock
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
-
-# Create app user
-RUN groupadd appuser && \
-    useradd appuser -g appuser
 
 # Copy in application code
 COPY ./${MODULE_DIR}/${APP_DIR}/flow.wind.buoy.compass.correction.R .
