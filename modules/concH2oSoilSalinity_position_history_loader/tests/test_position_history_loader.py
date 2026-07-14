@@ -6,9 +6,11 @@ Cover the pieces the loader logic hinges on:
   - stream -> VER mapping
   - date-range intersection
   - MultiPoint / Point unwrap for reference-location geometry
-  - authoritative-cal selection (highest calibration_id per (asset, stream))
+  - install-window-scoped cal selection (overlap between cal valid period and
+    this install; in-force-at-install-start preferred, tiebreak by cal_id)
   - future-date placeholder collapse
-  - extent-based row merge (same physical position collapses across gaps)
+  - adjacency-based row merge (consecutive same-position rows collapse;
+    an intervening different-position row breaks the run)
   - end-to-end write_files against mocked PDR callables
 """
 import json
@@ -118,10 +120,11 @@ class ExtractPointTest(TestCase):
 
 
 class MergeTimeRangesTest(TestCase):
-    """`_merge_time_ranges` is the piece that keeps the CSV from listing every
-    install/reinstall boundary as its own row when the physical position hasn't
-    changed. The behavior we want is *extent-based*: min(start), max(end)
-    across all rows in a group."""
+    """`_merge_time_ranges` walks each (HOR, VER) chronologically and collapses
+    consecutive same-position rows; a different-position row breaks the run.
+    This preserves the sensor_positions invariant that per-VER windows don't
+    overlap, and that an ABA sequence (A, then B, then A again) surfaces as
+    three rows instead of one merged A."""
 
     @staticmethod
     def _base_row(**overrides):
@@ -164,6 +167,27 @@ class MergeTimeRangesTest(TestCase):
         z_values = sorted(r['z_offset'] for r in merged)
         self.assertEqual(z_values, [-0.055, -0.045])
 
+    def test_aba_sequence_stays_three_rows(self):
+        # Position A -> B -> A must NOT collapse into a single A row spanning
+        # the whole timeline; the intermediate B breaks the run, so we emit
+        # three chronologically ordered rows. This is what protects the
+        # cross-CFGLOC GRSM case: a stale cvald1 that briefly picks a different
+        # z_offset can't retroactively fuse the neighboring true-A periods.
+        rows = [
+            self._base_row(_win_start=dt(2020, 1, 1), _win_end=dt(2021, 1, 1), z_offset=-0.045),
+            self._base_row(_win_start=dt(2021, 1, 1), _win_end=dt(2022, 1, 1), z_offset=-0.145),
+            self._base_row(_win_start=dt(2022, 1, 1), _win_end=dt(2023, 1, 1), z_offset=-0.045),
+        ]
+        merged = loader._merge_time_ranges(rows)
+        self.assertEqual(len(merged), 3)
+        z_values = [r['z_offset'] for r in merged]
+        self.assertEqual(z_values, [-0.045, -0.145, -0.045])
+        # Verify chronological order in output
+        starts = [r['position_start_date'] for r in merged]
+        self.assertEqual(starts, ['2020-01-01T00:00:00Z',
+                                  '2021-01-01T00:00:00Z',
+                                  '2022-01-01T00:00:00Z'])
+
     def test_open_start_and_open_end_map_to_blank(self):
         rows = [
             self._base_row(_win_start=None, _win_end=None),
@@ -199,9 +223,9 @@ class MergeTimeRangesTest(TestCase):
 
 
 class BuildRowsTest(TestCase):
-    """`_build_rows` is the (install × geo) intersection + cvald1-depth-adjust
-    + future-date collapse. We stub out streams_by_asset so this exercises the
-    row construction logic without needing the full PDR fake."""
+    """`_build_rows` is the (install × geo) intersection + per-install cvald1
+    selection + depth-adjust + future-date collapse. We pass explicit cal maps
+    so each test can exercise a different selection scenario."""
 
     @staticmethod
     def _install(asset_uid=1, install_date=dt(2020, 1, 1), remove_date=None):
@@ -229,25 +253,42 @@ class BuildRowsTest(TestCase):
         }
 
     @staticmethod
-    def _cal(asset_uid=1, cid=100, stream='rawVSWC0', cvald1=5.0):
+    def _cal(asset_uid=1, cid=100, stream='rawVSWC0', cvald1=5.0,
+             valid_start=dt(2010, 1, 1), valid_end=None):
         return Cvald1Calibration(
             asset_uid=asset_uid,
             calibration_id=cid,
             sensor_stream_num=0,
             schema_field_name=stream,
-            valid_start_time=dt(2010, 1, 1),
-            valid_end_time=None,
+            valid_start_time=valid_start,
+            valid_end_time=valid_end,
             cert_filename='CERT.xml',
             cvald1_cm=cvald1,
         )
 
+    @classmethod
+    def _cal_map(cls, cals, streams_by_asset=None):
+        """Group a flat cal list into cals_by_asset_stream + streams_by_asset."""
+        from collections import defaultdict
+        cals_by_asset_stream = defaultdict(list)
+        for c in cals:
+            cals_by_asset_stream[(c.asset_uid, c.schema_field_name)].append(c)
+        if streams_by_asset is None:
+            streams_by_asset = defaultdict(list)
+            for (asset_uid, stream_name) in cals_by_asset_stream.keys():
+                streams_by_asset[asset_uid].append(stream_name)
+        return dict(cals_by_asset_stream), dict(streams_by_asset)
+
     def test_z_offset_adjusted_by_cvald1(self):
         install = self._install(remove_date=dt(2024, 1, 1))
         geo = self._geo(z=0.008)
+        cbas, sba = self._cal_map([self._cal(cvald1=7.0)])
         rows = loader._build_rows(
+            cfgloc='CFGLOC999999',
             cfgloc_installs=[install],
             geolocations=[geo],
-            streams_by_asset={1: [self._cal(cvald1=7.0)]},
+            cals_by_asset_stream=cbas,
+            streams_by_asset=sba,
             allowed_vers={'501'},
             hor='004',
             now_naive=dt(2026, 7, 8),
@@ -260,10 +301,13 @@ class BuildRowsTest(TestCase):
         # PDR placeholder future dates (2031-12-31) should render as open-ended.
         install = self._install(remove_date=dt(2031, 12, 31))
         geo = self._geo(end=dt(2031, 12, 31))
+        cbas, sba = self._cal_map([self._cal()])
         rows = loader._build_rows(
+            cfgloc='CFGLOC999999',
             cfgloc_installs=[install],
             geolocations=[geo],
-            streams_by_asset={1: [self._cal()]},
+            cals_by_asset_stream=cbas,
+            streams_by_asset=sba,
             allowed_vers={'501'},
             hor='004',
             now_naive=dt(2026, 7, 8),
@@ -274,10 +318,13 @@ class BuildRowsTest(TestCase):
     def test_ver_not_in_allowed_set_is_skipped(self):
         install = self._install()
         geo = self._geo()
+        cbas, sba = self._cal_map([self._cal(stream='rawVSWC7')])   # -> VER 508
         rows = loader._build_rows(
+            cfgloc='CFGLOC999999',
             cfgloc_installs=[install],
             geolocations=[geo],
-            streams_by_asset={1: [self._cal(stream='rawVSWC7')]},   # -> VER 508
+            cals_by_asset_stream=cbas,
+            streams_by_asset=sba,
             allowed_vers={'501', '502'},                             # 508 not allowed
             hor='004',
             now_naive=dt(2026, 7, 8),
@@ -286,10 +333,13 @@ class BuildRowsTest(TestCase):
 
     def test_asset_with_no_streams_is_skipped(self):
         install = self._install(asset_uid=999)
+        cbas, sba = self._cal_map([self._cal()])
         rows = loader._build_rows(
+            cfgloc='CFGLOC999999',
             cfgloc_installs=[install],
             geolocations=[self._geo()],
-            streams_by_asset={1: [self._cal()]},   # no key for 999
+            cals_by_asset_stream=cbas,
+            streams_by_asset=sba,   # no key for 999
             allowed_vers={'501'},
             hor='004',
             now_naive=dt(2026, 7, 8),
@@ -299,10 +349,35 @@ class BuildRowsTest(TestCase):
     def test_disjoint_install_and_geo_produces_no_rows(self):
         install = self._install(install_date=dt(2020, 1, 1), remove_date=dt(2020, 6, 30))
         geo = self._geo(start=dt(2021, 1, 1), end=dt(2022, 1, 1))
+        cbas, sba = self._cal_map([self._cal()])
         rows = loader._build_rows(
+            cfgloc='CFGLOC999999',
             cfgloc_installs=[install],
             geolocations=[geo],
-            streams_by_asset={1: [self._cal()]},
+            cals_by_asset_stream=cbas,
+            streams_by_asset=sba,
+            allowed_vers={'501'},
+            hor='004',
+            now_naive=dt(2026, 7, 8),
+        )
+        self.assertEqual(rows, [])
+
+    def test_install_with_no_overlapping_cal_produces_no_rows(self):
+        # This is the cross-CFGLOC bug scenario in miniature: install period
+        # (2017 -> 2018) and only cal record is valid 2020 -> 2021. No overlap
+        # -> skip that install/stream. Previously Option B would silently apply
+        # the mismatched cal.
+        install = self._install(install_date=dt(2017, 4, 24), remove_date=dt(2018, 7, 5))
+        geo = self._geo(start=dt(2010, 1, 1))
+        cbas, sba = self._cal_map([self._cal(valid_start=dt(2020, 11, 4),
+                                              valid_end=dt(2021, 12, 29),
+                                              cvald1=166.0)])
+        rows = loader._build_rows(
+            cfgloc='CFGLOC999999',
+            cfgloc_installs=[install],
+            geolocations=[geo],
+            cals_by_asset_stream=cbas,
+            streams_by_asset=sba,
             allowed_vers={'501'},
             hor='004',
             now_naive=dt(2026, 7, 8),
@@ -317,14 +392,16 @@ class BuildRowsTest(TestCase):
             self._geo(start=dt(2010, 1, 1), end=dt(2023, 1, 1), z=0.005),
             self._geo(start=dt(2023, 1, 1), end=None,           z=0.008),
         ]
-        streams = [
+        cbas, sba = self._cal_map([
             self._cal(cid=1, stream='rawVSWC0', cvald1=5.0),
             self._cal(cid=2, stream='rawVSWC1', cvald1=15.0),  # VER 502
-        ]
+        ])
         rows = loader._build_rows(
+            cfgloc='CFGLOC999999',
             cfgloc_installs=[install],
             geolocations=geos,
-            streams_by_asset={1: streams},
+            cals_by_asset_stream=cbas,
+            streams_by_asset=sba,
             allowed_vers={'501', '502'},
             hor='004',
             now_naive=dt(2026, 7, 8),
@@ -335,11 +412,84 @@ class BuildRowsTest(TestCase):
         self.assertEqual(vers, ['501', '501', '502', '502'])
 
 
-class AuthoritativeCalSelectionTest(TestCase):
-    """`write_files` reduces multiple Cvald1Calibration rows for the same
-    (asset_uid, schema_field_name) to the single row with the highest
-    calibration_id. This is Option B: the newer-inserted cert wins across the
-    whole install window; older/phantom records don't slice output."""
+class SelectCalForInstallTest(TestCase):
+    """Direct tests for `_select_cal_for_install`: the install-window-scoped
+    picker that replaced Option B. The rule is: pick the cal whose valid
+    period overlaps [install_start, install_end], preferring the one in
+    force at install_start (latest valid_start ≤ install_start), then
+    falling back to earliest-overlapping. Tiebreak by highest calibration_id.
+    Return None if no overlap — the caller then skips that install/stream.
+    """
+
+    @staticmethod
+    def _cal(cid, valid_start, valid_end, cvald1=86.0):
+        return Cvald1Calibration(
+            asset_uid=1, calibration_id=cid, sensor_stream_num=0,
+            schema_field_name='rawVSWC0',
+            valid_start_time=valid_start, valid_end_time=valid_end,
+            cert_filename=f'CERT_{cid}.xml', cvald1_cm=cvald1,
+        )
+
+    def test_no_overlap_returns_none(self):
+        # Cross-CFGLOC scenario: install (2017 -> 2018), cal (2020 -> 2021).
+        # This is exactly what let asset 40784's San Joaquin cert leak into
+        # its earlier SP5 install under Option B.
+        cals = [self._cal(1113348, dt(2020, 11, 4), dt(2021, 12, 29), cvald1=166.0)]
+        result = loader._select_cal_for_install(cals, dt(2017, 4, 24), dt(2018, 7, 5))
+        self.assertIsNone(result)
+
+    def test_single_overlapping_cal_wins(self):
+        # Real 40784 SP5 case: only cal 1080335 (valid 2017-03 -> 2018-11)
+        # overlaps install (2017-04 -> 2018-07). Others don't.
+        cals = [
+            self._cal(1018291, dt(2018, 9, 13), dt(2020, 5, 14), cvald1=186.0),
+            self._cal(1080335, dt(2017, 3, 31), dt(2018, 11, 30), cvald1=86.0),
+            self._cal(1113348, dt(2020, 11, 4), dt(2021, 12, 29), cvald1=166.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2017, 4, 24), dt(2018, 7, 5))
+        self.assertIsNotNone(result)
+        self.assertEqual(result.calibration_id, 1080335)
+        self.assertEqual(result.cvald1_cm, 86.0)
+
+    def test_in_force_at_install_start_beats_later_overlapping(self):
+        # 46446 SP5 case: install (2020-03-11 -> open), three cals overlap
+        # (one starts before install, two after). The one in force at install
+        # start wins regardless of calibration_id.
+        cals = [
+            self._cal(1096994, dt(2020, 2, 19), dt(2021, 4, 14), cvald1=86.0),  # in force
+            self._cal(1140848, dt(2021, 10, 13), dt(2031, 12, 31), cvald1=86.0),
+            self._cal(1201723, dt(2021, 10, 13), dt(2031, 12, 31), cvald1=86.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2020, 3, 11), None)
+        self.assertEqual(result.calibration_id, 1096994)
+
+    def test_tiebreak_by_highest_calibration_id_when_multiple_in_force(self):
+        # 42820 SP5 case: two cals with the same valid_start both in force at
+        # install start. Tiebreak picks the higher calibration_id.
+        cals = [
+            self._cal(1028951, dt(2019, 4, 4), dt(2020, 5, 28), cvald1=86.0),
+            self._cal(1034725, dt(2019, 4, 4), dt(2020, 4, 2), cvald1=86.0),
+            self._cal(1080563, dt(2017, 6, 20), dt(2019, 2, 19), cvald1=136.0),  # no overlap
+        ]
+        result = loader._select_cal_for_install(cals, dt(2019, 4, 22), dt(2020, 3, 11))
+        self.assertEqual(result.calibration_id, 1034725)
+
+    def test_no_in_force_falls_back_to_earliest_overlapping(self):
+        # Install starts before any cal, but a cal starts inside the install
+        # window. Nothing is "in force at install start" -> earliest-overlapping.
+        cals = [
+            self._cal(20, dt(2022, 6, 1), dt(2023, 6, 1), cvald1=86.0),  # earliest overlap
+            self._cal(30, dt(2022, 9, 1), dt(2024, 1, 1), cvald1=86.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2022, 1, 1), dt(2024, 1, 1))
+        self.assertEqual(result.calibration_id, 20)
+
+
+class WriteFilesCalSelectionTest(TestCase):
+    """End-to-end verification that `write_files` threads install-window-scoped
+    cal selection all the way through: given multiple cals for the same
+    (asset, stream), the output row's cvald1 comes from the one whose valid
+    period overlaps the install period, NOT the globally highest calibration_id."""
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -348,67 +498,77 @@ class AuthoritativeCalSelectionTest(TestCase):
         self.fs.create_dir(self.out_path)
         self.fs.create_dir(self.err_path)
 
-    def _run_loader(self, calibrations):
+    def _run_loader(self, calibrations, install_start, install_end=None):
         installs = [AssetInstall(
-            cfgloc='CFGLOC105360', cfgloc_description='BONA SP1',
-            nam_locn_id=105360, asset_uid=46446,
-            install_date=dt(2020, 3, 11), remove_date=None,
+            cfgloc='CFGLOC105360', cfgloc_description='GRSM SP5',
+            nam_locn_id=105360, asset_uid=40784,
+            install_date=install_start, remove_date=install_end,
         )]
-        cfgloc_vers = [CfglocVer(cfgloc='CFGLOC105360', hor='004', ver='501',
-                                 group_name='conc-h2o-soil-salinity-split_BONA004501')]
+        cfgloc_vers = [CfglocVer(cfgloc='CFGLOC105360', hor='005', ver='501',
+                                 group_name='conc-h2o-soil-salinity-split_GRSM005501')]
         geolocations = _feature_collection([_feature(x_offset=0.0, y_offset=0.0, z_offset=0.005,
-                                                     start_date='2020-03-11T00:00:00Z')])
+                                                     start_date='2010-01-01T00:00:00Z')])
         loader.write_files(
             get_asset_installs=lambda: installs,
             get_calibrations=lambda: calibrations,
             get_cfgloc_vers=lambda: cfgloc_vers,
             get_geolocations=lambda _nam_id: geolocations,
-            get_parents=lambda _nam_id: {'site': (1, 'BONA')},
+            get_parents=lambda _nam_id: {'site': (1, 'GRSM')},
             out_path=self.out_path,
             err_path=self.err_path,
             generated_at=datetime(2026, 7, 8, tzinfo=timezone.utc),
         )
         json_path = self.out_path / 'enviroscan' / 'CFGLOC105360' / 'position_history' / 'CFGLOC105360_history.json'
+        if not json_path.exists():
+            return None
         with open(json_path) as fp:
             return json.load(fp)
 
-    def test_highest_calibration_id_wins(self):
-        # Real scenario from CFGLOC105360: two cal records for the same
-        # (asset, stream). The older one has cvald1=5.0 (correct value), the newer
-        # one has cvald1=99.0. Highest calibration_id must win.
-        calibrations = [
-            Cvald1Calibration(asset_uid=46446, calibration_id=100,
-                              sensor_stream_num=0, schema_field_name='rawVSWC0',
-                              valid_start_time=dt(2020, 2, 19), valid_end_time=dt(2021, 4, 14),
-                              cert_filename='OLD.xml', cvald1_cm=5.0),
-            Cvald1Calibration(asset_uid=46446, calibration_id=200,
-                              sensor_stream_num=0, schema_field_name='rawVSWC0',
-                              valid_start_time=dt(2021, 10, 13), valid_end_time=dt(2031, 12, 31),
-                              cert_filename='NEW.xml', cvald1_cm=99.0),
-        ]
-        payload = self._run_loader(calibrations)
-        # 0.005 + 99/-100 = -0.985
-        self.assertEqual(len(payload['rows']), 1)
-        self.assertEqual(payload['rows'][0]['cvald1_cm'], 99.0)
-        self.assertEqual(payload['rows'][0]['z_offset'], -0.985)
-        self.assertEqual(payload['rows'][0]['cert_filename'], 'NEW.xml')
+    def test_cross_deployment_cal_is_not_picked(self):
+        # Faithful reproduction of the GRSM asset 40784 bug: only cal in PDR
+        # is from its LATER San Joaquin deployment (2020-11 -> 2021-12), but
+        # the install at SP5 is 2017-04 -> 2018-07. Under the fix, no cal
+        # overlaps the SP5 install -> no output row (safer than emitting the
+        # physically impossible z_offset=-1.66 the old Option B produced).
+        cals = [Cvald1Calibration(
+            asset_uid=40784, calibration_id=1113348, sensor_stream_num=0,
+            schema_field_name='rawVSWC0',
+            valid_start_time=dt(2020, 11, 4), valid_end_time=dt(2021, 12, 29),
+            cert_filename='SANJOAQUIN.xml', cvald1_cm=166.0,
+        )]
+        payload = self._run_loader(cals,
+                                    install_start=dt(2017, 4, 24),
+                                    install_end=dt(2018, 7, 5))
+        # Loader skipped this install/stream -> no rows -> no JSON emitted
+        self.assertIsNone(payload)
 
-    def test_single_row_per_stream_produces_one_span(self):
-        # Two cal records with the same cvald1 value must not slice the output.
-        # Pre-Option-B this would produce two rows split on the cal boundary.
-        calibrations = [
-            Cvald1Calibration(asset_uid=46446, calibration_id=100,
-                              sensor_stream_num=0, schema_field_name='rawVSWC0',
-                              valid_start_time=dt(2020, 2, 19), valid_end_time=dt(2021, 4, 14),
-                              cert_filename='OLD.xml', cvald1_cm=5.0),
-            Cvald1Calibration(asset_uid=46446, calibration_id=200,
-                              sensor_stream_num=0, schema_field_name='rawVSWC0',
-                              valid_start_time=dt(2021, 10, 13), valid_end_time=dt(2031, 12, 31),
-                              cert_filename='NEW.xml', cvald1_cm=5.0),
+    def test_in_force_cal_beats_higher_id_out_of_window(self):
+        # Two cals for the same (asset, stream). The older one is in force at
+        # install start; the newer one has a higher calibration_id but is from
+        # a later deployment. The in-force cal must win.
+        cals = [
+            Cvald1Calibration(
+                asset_uid=40784, calibration_id=1080335, sensor_stream_num=0,
+                schema_field_name='rawVSWC0',
+                valid_start_time=dt(2017, 3, 31), valid_end_time=dt(2018, 11, 30),
+                cert_filename='SP5.xml', cvald1_cm=86.0,
+            ),
+            Cvald1Calibration(
+                asset_uid=40784, calibration_id=1113348, sensor_stream_num=0,
+                schema_field_name='rawVSWC0',
+                valid_start_time=dt(2020, 11, 4), valid_end_time=dt(2021, 12, 29),
+                cert_filename='SANJOAQUIN.xml', cvald1_cm=166.0,
+            ),
         ]
-        payload = self._run_loader(calibrations)
+        payload = self._run_loader(cals,
+                                    install_start=dt(2017, 4, 24),
+                                    install_end=dt(2018, 7, 5))
+        self.assertIsNotNone(payload)
         self.assertEqual(len(payload['rows']), 1)
-        self.assertEqual(payload['rows'][0]['position_end_date'], '')  # future end -> blank
+        # 0.005 + 86/-100 = -0.855 — the SP5-appropriate value, not -1.655
+        self.assertEqual(payload['rows'][0]['cvald1_cm'], 86.0)
+        self.assertEqual(payload['rows'][0]['z_offset'], -0.855)
+        self.assertEqual(payload['rows'][0]['cert_filename'], 'SP5.xml')
 
 
 class EndToEndWriteFilesTest(TestCase):

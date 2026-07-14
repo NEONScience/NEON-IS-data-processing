@@ -3,13 +3,15 @@
 concH2oSoilSalinity position-history loader.
 
 Queries PDR for the full CFGLOC × asset × calibration × geolocation history for
-every enviroscan probe, picks the authoritative cvald1_cm per (asset_uid, stream)
-(highest calibration_id wins — DB insertion order, so newest-inserted supersedes
-older/phantom cal records), then stitches (install × geolocation) intersections
-and applies the CVALD1 depth correction (depth_m = z_offset + CVALD1_cm / -100)
-per VER. Cvald1 is treated as a hardware/depth property that shouldn't slice
-position windows — a re-issued cert with a corrected value applies across the
-whole install period. Writes one JSON file per CFGLOC. Consumers (pub_files
+every enviroscan probe. For each install period at each CFGLOC, picks the cvald1
+record whose validity window overlaps that install (asset+stream+install-scoped,
+not global per asset+stream) — cvald1 depends on physical install geometry and
+can differ between the same sensor's deployments at different CFGLOCs, so a
+newer cert from a later deployment must not shadow the cert that was in force
+at THIS install. Then stitches (install × geolocation) intersections and applies
+the CVALD1 depth correction (depth_m = z_offset + CVALD1_cm / -100) per VER.
+Consecutive same-position rows collapse into one; any intervening position
+change breaks the run. Writes one JSON file per CFGLOC. Consumers (pub_files
 sensor_positions) read these files instead of hitting the DB per publish month,
 so every downloaded month contains the complete position history — including
 moves that happened outside that month's sensor operation window.
@@ -70,24 +72,19 @@ def write_files(*,
     for install in installs:
         installs_by_cfgloc[install.cfgloc].append(install)
 
-    # Pick ONE authoritative cal per (asset_uid, stream): the row with the highest
-    # calibration_id (the DB's insertion sequence, so newest-inserted wins). cvald1
-    # is a hardware/depth property that shouldn't change across recalibrations for
-    # the same sensor slot; if it does change, the newer cert is the corrected
-    # value and applies across the whole install window. This intentionally drops
-    # cal-validity windowing from the position output — position windows come
-    # from (install × geo) only, so phantom/superseded cal records with overlapping
-    # validity periods can't slice the output anymore.
-    latest_cal_by_asset_stream: Dict[Tuple[int, str], Cvald1Calibration] = {}
+    # Keep ALL cvald1 records per (asset_uid, stream); the per-install selection
+    # in _build_rows filters to the cal whose valid period overlaps THIS install.
+    # A globally "latest calibration_id per asset+stream" pick is wrong because
+    # cvald1 depends on the physical install (pipe depth, ground reference), so
+    # the newest cert from a later deployment at a different CFGLOC would shadow
+    # the cert that was actually in force during this install here.
+    cals_by_asset_stream: Dict[Tuple[int, str], List[Cvald1Calibration]] = defaultdict(list)
     for cal in calibrations:
-        key = (cal.asset_uid, cal.schema_field_name)
-        existing = latest_cal_by_asset_stream.get(key)
-        if existing is None or cal.calibration_id > existing.calibration_id:
-            latest_cal_by_asset_stream[key] = cal
+        cals_by_asset_stream[(cal.asset_uid, cal.schema_field_name)].append(cal)
 
-    streams_by_asset: Dict[int, List[Cvald1Calibration]] = defaultdict(list)
-    for cal in latest_cal_by_asset_stream.values():
-        streams_by_asset[cal.asset_uid].append(cal)
+    streams_by_asset: Dict[int, List[str]] = defaultdict(list)
+    for (asset_uid, stream_name) in cals_by_asset_stream.keys():
+        streams_by_asset[asset_uid].append(stream_name)
 
     allowed_vers_by_cfgloc: Dict[str, Set[str]] = defaultdict(set)
     hor_by_cfgloc: Dict[str, str] = {}
@@ -114,8 +111,10 @@ def write_files(*,
         geolocations = _flatten_geolocations(geo_collection)
 
         rows = _build_rows(
+            cfgloc=cfgloc,
             cfgloc_installs=cfgloc_installs,
             geolocations=geolocations,
+            cals_by_asset_stream=cals_by_asset_stream,
             streams_by_asset=streams_by_asset,
             allowed_vers=allowed_vers,
             hor=hor,
@@ -138,18 +137,22 @@ def write_files(*,
 
 
 def _build_rows(*,
+                cfgloc:          str,
                 cfgloc_installs: List[AssetInstall],
                 geolocations:    List[Dict[str, Any]],
-                streams_by_asset: Dict[int, List[Cvald1Calibration]],
+                cals_by_asset_stream: Dict[Tuple[int, str], List[Cvald1Calibration]],
+                streams_by_asset: Dict[int, List[str]],
                 allowed_vers:    Set[str],
                 hor:             str,
                 now_naive:       datetime) -> List[Dict[str, Any]]:
     """
     For a single CFGLOC, produce the (install × geolocation × VER) intersection rows.
-    Cal-validity dates no longer slice the output — the authoritative cvald1_cm per
-    (asset_uid, stream) is picked upstream and applied across the entire install window.
+    For each (install, stream), pick the cvald1 record whose valid period overlaps
+    that install; if none overlaps, skip that stream for that install and log.
 
-    :param streams_by_asset: asset_uid -> list of authoritative cals (one per stream).
+    :param cals_by_asset_stream: (asset_uid, stream_name) -> all cvald1 rows for
+                                 that asset+stream. Selection happens per install.
+    :param streams_by_asset: asset_uid -> list of stream names seen in the cal set.
     :param now_naive: 'Generated-at' timestamp (tz-naive). Any window end that
                       falls after this is treated as open-ended — PDR uses
                       placeholder future dates (e.g. 2031-12-31) for still-valid
@@ -157,8 +160,8 @@ def _build_rows(*,
     """
     rows: List[Dict[str, Any]] = []
     for install in cfgloc_installs:
-        streams = streams_by_asset.get(install.asset_uid, [])
-        if not streams:
+        stream_names = streams_by_asset.get(install.asset_uid, [])
+        if not stream_names:
             continue
         for geo in geolocations:
             window = _intersect(
@@ -171,9 +174,22 @@ def _build_rows(*,
             # Collapse placeholder-future end dates to open-ended.
             if win_end is not None and win_end > now_naive:
                 win_end = None
-            for stream in streams:
-                ver = _stream_to_ver(stream.schema_field_name)
+            for stream_name in stream_names:
+                ver = _stream_to_ver(stream_name)
                 if ver is None or str(ver) not in allowed_vers:
+                    continue
+                cal_candidates = cals_by_asset_stream.get((install.asset_uid, stream_name), [])
+                stream = _select_cal_for_install(cal_candidates,
+                                                 install.install_date,
+                                                 install.remove_date)
+                if stream is None:
+                    log.warning(
+                        'no cvald1 record overlaps install period; skipping row',
+                        cfgloc=cfgloc, asset_uid=install.asset_uid,
+                        stream=stream_name, ver=str(ver),
+                        install_start=install.install_date,
+                        install_end=install.remove_date,
+                    )
                     continue
                 z_offset_adjusted = round(geo['z_offset'] + stream.cvald1_cm / -100.0, 4)
                 rows.append({
@@ -202,21 +218,55 @@ def _build_rows(*,
     return _merge_time_ranges(rows)
 
 
+def _select_cal_for_install(cals: List[Cvald1Calibration],
+                            install_start: Optional[datetime],
+                            install_end: Optional[datetime]) -> Optional[Cvald1Calibration]:
+    """
+    Pick the cvald1 record whose validity window overlaps this install period at
+    this CFGLOC. Prefer the cal in force at install start (latest valid_start ≤
+    install_start); if none, prefer the earliest-starting overlapping cal.
+    Tiebreak by highest calibration_id.
+
+    Returns None if no cal overlaps the install — the caller skips that install/
+    stream rather than apply a cross-deployment cal (e.g. asset 40784's cert
+    measured at CFGLOC113339 must NOT be used for its earlier CFGLOC105360 stint).
+    """
+    install_start_n = _naive(install_start) if install_start is not None else None
+    install_end_n = _naive(install_end) if install_end is not None else None
+
+    def overlaps(cal: Cvald1Calibration) -> bool:
+        return _intersect(
+            (install_start_n, install_end_n),
+            (cal.valid_start_time, cal.valid_end_time),
+        ) is not None
+
+    candidates = [c for c in cals if overlaps(c)]
+    if not candidates:
+        return None
+
+    if install_start_n is not None:
+        in_force = [c for c in candidates
+                    if _naive(c.valid_start_time) <= install_start_n]
+        if in_force:
+            return max(in_force, key=lambda c: (_naive(c.valid_start_time),
+                                                c.calibration_id))
+    return min(candidates,
+               key=lambda c: (_naive(c.valid_start_time), -c.calibration_id))
+
+
 def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Consolidate rows that differ only in time range into one row per unique
-    physical position (HOR/VER, offsets, orientation, reference-location).
-    Each group emits a single row spanning the earliest start to the latest
-    end across all its sub-windows — even across removal/reinstall gaps,
-    since a re-installed sensor at the same offsets is the same position
-    from a sensor_positions.csv consumer's point of view.
+    Consolidate rows chronologically per (HOR, VER). Consecutive same-position
+    rows collapse into one; any position change breaks the run. This preserves
+    the invariant that a sensor_positions file has no overlapping time windows
+    per (CFGLOC, VER), and that a real position change surfaces as a new row.
 
-    Rows in DIFFERENT groups (e.g. a brief cvald1 anomaly that put a depth at
-    z=-0.36 for 20 days while the rest of the timeline had z=-0.46) stay
-    separate, so real position changes still surface.
+    An A-B-A sequence (position A, then B, then A again) stays as three rows —
+    the intermediate B breaks the A run, matching the physical reality that
+    the sensor was moved between two same-position deployments. Two adjacent
+    A rows (no intervening B) collapse into one spanning both windows.
     """
     key_fields = (
-        'hor', 'ver',
         'x_offset', 'y_offset', 'z_offset',
         'pitch', 'roll', 'azimuth',
         'reference_location_id',
@@ -227,24 +277,39 @@ def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     NEG_INF = datetime.min
     POS_INF = datetime.max
 
-    groups: Dict[Tuple, List[Dict[str, Any]]] = defaultdict(list)
+    def norm_start(r: Dict[str, Any]) -> datetime:
+        return _naive(r['_win_start']) if r['_win_start'] is not None else NEG_INF
+
+    def norm_end(r: Dict[str, Any]) -> datetime:
+        return _naive(r['_win_end']) if r['_win_end'] is not None else POS_INF
+
+    def pos_key(r: Dict[str, Any]) -> Tuple:
+        return tuple(r.get(f) for f in key_fields)
+
+    by_ver: Dict[Tuple[str, str], List[Dict[str, Any]]] = defaultdict(list)
     for row in rows:
-        groups[tuple(row.get(f) for f in key_fields)].append(row)
+        by_ver[(row['hor'], row['ver'])].append(row)
 
     merged: List[Dict[str, Any]] = []
-    for _, group_rows in groups.items():
-        earliest_start = POS_INF
-        latest_end = NEG_INF
-        earliest_row = group_rows[0]
-        for r in group_rows:
-            s = _naive(r['_win_start']) if r['_win_start'] is not None else NEG_INF
-            e = _naive(r['_win_end'])   if r['_win_end']   is not None else POS_INF
-            if s < earliest_start:
-                earliest_start = s
-                earliest_row = r
-            if e > latest_end:
-                latest_end = e
-        merged.append(_finalize_row(earliest_row, earliest_start, latest_end, NEG_INF, POS_INF))
+    for _, ver_rows in by_ver.items():
+        ver_rows.sort(key=norm_start)
+        cur = ver_rows[0]
+        cur_start = norm_start(cur)
+        cur_end = norm_end(cur)
+        cur_key = pos_key(cur)
+        for r in ver_rows[1:]:
+            r_key = pos_key(r)
+            r_end = norm_end(r)
+            if r_key == cur_key:
+                if r_end > cur_end:
+                    cur_end = r_end
+            else:
+                merged.append(_finalize_row(cur, cur_start, cur_end, NEG_INF, POS_INF))
+                cur = r
+                cur_start = norm_start(r)
+                cur_end = r_end
+                cur_key = r_key
+        merged.append(_finalize_row(cur, cur_start, cur_end, NEG_INF, POS_INF))
     return merged
 
 
