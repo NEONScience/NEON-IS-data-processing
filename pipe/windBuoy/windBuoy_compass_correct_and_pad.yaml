@@ -22,7 +22,8 @@ transform:
       DirIn=$DIR_IN \
       DirOut=/tmp/compass_correction \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCopy=location|threshold"
+      "DirSubCopy=location|threshold" \
+      FileSchmData=$SCHEMA_DATA
 
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/compass_correction /tmp/compass_correction_copy || : # Allow to fail without exit code (happens if step above produced no output) 
@@ -42,10 +43,15 @@ transform:
     PARALLELIZATION_INTERNAL: '1' # For threshold select module
 output_branch: master
 input:
-  pfs:
-    name: DIR_IN
-    repo: windBuoy_threshold_select
-    glob: /*/*/*/*
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: windBuoy_threshold_select
+      glob: /*/*/*/*
+  - pfs:
+      name: SCHEMA_DATA
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_compass_corrected.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

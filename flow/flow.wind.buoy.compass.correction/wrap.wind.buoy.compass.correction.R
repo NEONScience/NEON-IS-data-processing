@@ -67,7 +67,6 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
 
   DirInData_rmyoung <- paste0(DirIn,"/rmyoung/",config[1],"/data")
   DirInData_hmr3300 <- paste0(DirIn,"/hmr3300/",config[1],"/data")
-  DirInFlags_rmyoung <- paste0(DirIn,"/rmyoung/",config[1],"/flags")
   DirInThresholds_hmr3300 <- paste0(DirIn,"/hmr3300/",config[1],"/threshold")
   DirInLocations_rmyoung <- paste0(DirIn,"/rmyoung/",config[1],"/location")
   
@@ -280,7 +279,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   ###############
   # Write out files
   #only keep the necessary columns for further analysis
-  dataOut <- wind_data[, c("readout_time", "source_id", "site_id", "speed_calibrated","compass_direction_raw","direction_calibrated","direction_corrected_rad")]
+  dataOut <- wind_data[, c("readout_time", "source_id", "site_id", "speed_calibrated","compass_direction_raw","direction_calibrated","direction_corrected","direction_corrected_rad")]
   flagsOut <- wind_data[, c("readout_time", "source_id", "site_id", "buoyWindDirDeadZone")]
     
     

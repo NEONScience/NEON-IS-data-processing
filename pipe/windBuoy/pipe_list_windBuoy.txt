@@ -4,9 +4,10 @@ windBuoy_srf_loader.yaml
 windBuoy_srf_assignment.yaml
 windBuoy_group_path.yaml
 windBuoy_threshold.yaml
-windBuoy_thresh_select_ts_pad.yaml
+windBuoy_thresh_select.yaml
+windBuoy_windBuoy_compass_correct_and_pad.yaml
 windBuoy_analyze_pad_and_qaqc_plau.yaml
-windBuoy_flags_specific.yaml
+
 windBuoy_stats_group_and_compute.yaml
 windBuoy_qm_group_and_compute.yaml
 windBuoy_null_gap_ucrt.yaml
