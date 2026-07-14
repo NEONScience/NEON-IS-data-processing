@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_compass_correct_and_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correct-and-pad:sha-
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correct-and-pad:sha-16b25e1
   cmd:
   - sh
   - "-c"
@@ -14,23 +14,26 @@ transform:
 
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/compass_correction
-    rm -rf /tmp/filter_joined
+    rm -rf /tmp/compass_correction_copy
     mkdir -p /tmp/compass_correction
-    mkdir -p /tmp/filter_joined    
     
     # Run first module - compass correction
     Rscript ./flow.wind.buoy.compass.correction.R \
       DirIn=$DIR_IN \
       DirOut=/tmp/compass_correction \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCopy=location"
+      "DirSubCopy=location|threshold"
+
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/compass_correction /tmp/compass_correction_copy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/compass_correction 
 
     # Run second module - timeseries_padder
     python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
     
     EOF
   env:
-    DATA_PATH: /tmp/compass_correction
+    DATA_PATH: /tmp/compass_correction_copy
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     PAD_DIR: data
