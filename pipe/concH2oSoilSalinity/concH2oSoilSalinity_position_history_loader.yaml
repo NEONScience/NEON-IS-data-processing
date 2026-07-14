@@ -11,7 +11,7 @@
 pipeline:
   name: concH2oSoilSalinity_position_history_loader
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-conc-h2o-salinity-position-history-loader:sha-fb1172f
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-conc-h2o-salinity-position-history-loader:sha-dae837d
   cmd:
   - /bin/bash
   stdin:
