@@ -130,7 +130,8 @@ class MergeTimeRangesTest(TestCase):
     def _base_row(**overrides):
         row = {
             'hor': '004', 'ver': '501',
-            '_win_start': None, '_win_end': None,
+            '_eff_start': None, '_eff_end': None,
+            '_pos_start': None, '_pos_end': None,
             'x_offset': 0.0, 'y_offset': 0.0, 'z_offset': -0.045,
             'pitch': 1.0, 'roll': 0.0, 'azimuth': 130.0,
             'reference_location_id': 'SOILPL999',
@@ -144,23 +145,29 @@ class MergeTimeRangesTest(TestCase):
             'source_stream': 'rawVSWC0',
             'cert_filename': 'A.xml',
         }
+        # Default position window to match effective when not explicitly overridden.
+        for eff_key, pos_key in (('_eff_start', '_pos_start'), ('_eff_end', '_pos_end')):
+            if pos_key not in overrides and eff_key in overrides:
+                overrides[pos_key] = overrides[eff_key]
         row.update(overrides)
         return row
 
     def test_two_rows_same_position_collapse_across_gap(self):
         rows = [
-            self._base_row(_win_start=dt(2020, 1, 1), _win_end=dt(2021, 6, 30)),
-            self._base_row(_win_start=dt(2021, 7, 1), _win_end=dt(2024, 1, 1)),
+            self._base_row(_eff_start=dt(2020, 1, 1), _eff_end=dt(2021, 6, 30)),
+            self._base_row(_eff_start=dt(2021, 7, 1), _eff_end=dt(2024, 1, 1)),
         ]
         merged = loader._merge_time_ranges(rows)
         self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0]['effective_start_date'], '2020-01-01T00:00:00Z')
+        self.assertEqual(merged[0]['effective_end_date'], '2024-01-01T00:00:00Z')
         self.assertEqual(merged[0]['position_start_date'], '2020-01-01T00:00:00Z')
         self.assertEqual(merged[0]['position_end_date'], '2024-01-01T00:00:00Z')
 
     def test_different_z_offset_stays_separate(self):
         rows = [
-            self._base_row(_win_start=dt(2020, 1, 1), _win_end=dt(2021, 6, 30), z_offset=-0.045),
-            self._base_row(_win_start=dt(2021, 7, 1), _win_end=dt(2024, 1, 1), z_offset=-0.055),
+            self._base_row(_eff_start=dt(2020, 1, 1), _eff_end=dt(2021, 6, 30), z_offset=-0.045),
+            self._base_row(_eff_start=dt(2021, 7, 1), _eff_end=dt(2024, 1, 1), z_offset=-0.055),
         ]
         merged = loader._merge_time_ranges(rows)
         self.assertEqual(len(merged), 2)
@@ -174,25 +181,27 @@ class MergeTimeRangesTest(TestCase):
         # cross-CFGLOC GRSM case: a stale cvald1 that briefly picks a different
         # z_offset can't retroactively fuse the neighboring true-A periods.
         rows = [
-            self._base_row(_win_start=dt(2020, 1, 1), _win_end=dt(2021, 1, 1), z_offset=-0.045),
-            self._base_row(_win_start=dt(2021, 1, 1), _win_end=dt(2022, 1, 1), z_offset=-0.145),
-            self._base_row(_win_start=dt(2022, 1, 1), _win_end=dt(2023, 1, 1), z_offset=-0.045),
+            self._base_row(_eff_start=dt(2020, 1, 1), _eff_end=dt(2021, 1, 1), z_offset=-0.045),
+            self._base_row(_eff_start=dt(2021, 1, 1), _eff_end=dt(2022, 1, 1), z_offset=-0.145),
+            self._base_row(_eff_start=dt(2022, 1, 1), _eff_end=dt(2023, 1, 1), z_offset=-0.045),
         ]
         merged = loader._merge_time_ranges(rows)
         self.assertEqual(len(merged), 3)
         z_values = [r['z_offset'] for r in merged]
         self.assertEqual(z_values, [-0.045, -0.145, -0.045])
         # Verify chronological order in output
-        starts = [r['position_start_date'] for r in merged]
+        starts = [r['effective_start_date'] for r in merged]
         self.assertEqual(starts, ['2020-01-01T00:00:00Z',
                                   '2021-01-01T00:00:00Z',
                                   '2022-01-01T00:00:00Z'])
 
     def test_open_start_and_open_end_map_to_blank(self):
         rows = [
-            self._base_row(_win_start=None, _win_end=None),
+            self._base_row(_eff_start=None, _eff_end=None),
         ]
         merged = loader._merge_time_ranges(rows)
+        self.assertEqual(merged[0]['effective_start_date'], '')
+        self.assertEqual(merged[0]['effective_end_date'], '')
         self.assertEqual(merged[0]['position_start_date'], '')
         self.assertEqual(merged[0]['position_end_date'], '')
 
@@ -201,9 +210,9 @@ class MergeTimeRangesTest(TestCase):
         # carry (asset_uid, cvald1_cm, cert_filename) come from the earliest row.
         # If we ever want per-window provenance, this test will catch the change.
         rows = [
-            self._base_row(_win_start=dt(2020, 1, 1), _win_end=dt(2021, 6, 30),
+            self._base_row(_eff_start=dt(2020, 1, 1), _eff_end=dt(2021, 6, 30),
                            asset_uid=100, cert_filename='OLD.xml'),
-            self._base_row(_win_start=dt(2021, 7, 1), _win_end=dt(2024, 1, 1),
+            self._base_row(_eff_start=dt(2021, 7, 1), _eff_end=dt(2024, 1, 1),
                            asset_uid=200, cert_filename='NEW.xml'),
         ]
         merged = loader._merge_time_ranges(rows)
@@ -212,14 +221,70 @@ class MergeTimeRangesTest(TestCase):
         self.assertEqual(merged[0]['cert_filename'], 'OLD.xml')
 
     def test_finalize_row_field_order(self):
-        # position_start_date and position_end_date must come right after hor/ver
-        # so the emitted JSON reads naturally. Everything else preserves input order.
-        row = self._base_row(_win_start=dt(2020, 1, 1), _win_end=dt(2021, 6, 30))
+        # The three date sets come right after hor/ver in effective/position order so
+        # the emitted JSON reads naturally. Everything else preserves input order.
+        row = self._base_row(_eff_start=dt(2020, 1, 1), _eff_end=dt(2021, 6, 30))
         merged = loader._merge_time_ranges([row])
         keys = list(merged[0].keys())
-        self.assertEqual(keys[:4], ['hor', 'ver', 'position_start_date', 'position_end_date'])
-        self.assertNotIn('_win_start', keys)
-        self.assertNotIn('_win_end', keys)
+        self.assertEqual(keys[:6], ['hor', 'ver',
+                                     'effective_start_date', 'effective_end_date',
+                                     'position_start_date', 'position_end_date'])
+        self.assertNotIn('_eff_start', keys)
+        self.assertNotIn('_eff_end', keys)
+        self.assertNotIn('_pos_start', keys)
+        self.assertNotIn('_pos_end', keys)
+
+    def test_ref_location_change_splits_row_but_shares_position_dates(self):
+        # Same install/position at same offsets, but the reference location has two
+        # time slices (e.g. elevation shifted a few cm at 2024-06-25). The merge must
+        # emit two rows keyed on ref-locn identity, each carrying its own effective
+        # and refLocn dates. Both rows share the same position dates — the sensor
+        # never moved. This is the enviroscan analogue of the RMNP tempSoil case
+        # Teresa's boss designed the effective schema around.
+        rows = [
+            self._base_row(_eff_start=dt(2022, 5, 5), _eff_end=dt(2024, 6, 25),
+                           _pos_start=dt(2022, 5, 5), _pos_end=None,
+                           reference_location_start_date='2010-01-01T00:00:00Z',
+                           reference_location_end_date='2024-06-25T00:00:00Z',
+                           reference_location_elevation=100.00),
+            self._base_row(_eff_start=dt(2024, 6, 25), _eff_end=None,
+                           _pos_start=dt(2022, 5, 5), _pos_end=None,
+                           reference_location_start_date='2024-06-25T00:00:00Z',
+                           reference_location_end_date=None,
+                           reference_location_elevation=100.05),
+        ]
+        merged = loader._merge_time_ranges(rows)
+        self.assertEqual(len(merged), 2)
+        # Both rows show the same position dates — the position never changed
+        self.assertEqual(merged[0]['position_start_date'], '2022-05-05T00:00:00Z')
+        self.assertEqual(merged[0]['position_end_date'], '')
+        self.assertEqual(merged[1]['position_start_date'], '2022-05-05T00:00:00Z')
+        self.assertEqual(merged[1]['position_end_date'], '')
+        # Effective and refLocn dates split at the elevation-change boundary
+        self.assertEqual(merged[0]['effective_start_date'], '2022-05-05T00:00:00Z')
+        self.assertEqual(merged[0]['effective_end_date'],   '2024-06-25T00:00:00Z')
+        self.assertEqual(merged[1]['effective_start_date'], '2024-06-25T00:00:00Z')
+        self.assertEqual(merged[1]['effective_end_date'],   '')
+        self.assertEqual(merged[0]['reference_location_elevation'], 100.00)
+        self.assertEqual(merged[1]['reference_location_elevation'], 100.05)
+
+    def test_same_key_extends_position_across_install_gap(self):
+        # Two rows same offsets and same ref-locn identity but with an install gap
+        # between them (adjacent installs of the same asset). The merged row's
+        # position dates extend from the earliest install start to the latest end,
+        # matching effective. This is how a consecutive-install run collapses.
+        rows = [
+            self._base_row(_eff_start=dt(2020, 1, 1), _eff_end=dt(2021, 6, 30),
+                           _pos_start=dt(2020, 1, 1), _pos_end=dt(2021, 6, 30)),
+            self._base_row(_eff_start=dt(2021, 7, 1), _eff_end=dt(2024, 1, 1),
+                           _pos_start=dt(2021, 7, 1), _pos_end=dt(2024, 1, 1)),
+        ]
+        merged = loader._merge_time_ranges(rows)
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0]['position_start_date'], '2020-01-01T00:00:00Z')
+        self.assertEqual(merged[0]['position_end_date'],   '2024-01-01T00:00:00Z')
+        self.assertEqual(merged[0]['effective_start_date'], '2020-01-01T00:00:00Z')
+        self.assertEqual(merged[0]['effective_end_date'],   '2024-01-01T00:00:00Z')
 
 
 class BuildRowsTest(TestCase):
@@ -638,6 +703,67 @@ class EndToEndWriteFilesTest(TestCase):
             self.assertIn('position_start_date', row)
             self.assertIn('position_end_date', row)
 
+    def test_multi_ref_feat_splits_effective_but_shares_position(self):
+        # One install, one cfgloc-geo, two ref-locn time slices (e.g. an elevation
+        # revision at 2024-06-25). Loader must emit two rows: same position dates
+        # (the sensor never moved), different effective + refLocn dates.
+        installs = [AssetInstall(
+            cfgloc='CFGLOC777777', cfgloc_description='XYZ SP2 EnviroSCAN',
+            nam_locn_id=77, asset_uid=99,
+            install_date=dt(2022, 5, 5), remove_date=None,
+        )]
+        cfgloc_vers = [
+            CfglocVer(cfgloc='CFGLOC777777', hor='004', ver='508',
+                      group_name='conc-h2o-soil-salinity-split_XYZ004508'),
+        ]
+        calibrations = [
+            Cvald1Calibration(asset_uid=99, calibration_id=1,
+                              sensor_stream_num=7, schema_field_name='rawVSWC7',
+                              valid_start_time=dt(2020, 1, 1), valid_end_time=None,
+                              cert_filename='CERT.xml', cvald1_cm=86.0),
+        ]
+        geolocations = _feature_collection([
+            _feature(start_date='2010-01-01T00:00:00Z', end_date=None,
+                     x_offset=0.0, y_offset=0.0, z_offset=0.005,
+                     ref_feats=[
+                         {'start_date': '2010-01-01T00:00:00Z',
+                          'end_date':   '2024-06-25T00:00:00Z',
+                          'lon': -105.545955, 'lat': 40.275903, 'elev': 2741.57},
+                         {'start_date': '2024-06-25T00:00:00Z',
+                          'end_date':   None,
+                          'lon': -105.545955, 'lat': 40.275903, 'elev': 2741.62},
+                     ]),
+        ])
+        loader.write_files(
+            get_asset_installs=lambda: installs,
+            get_calibrations=lambda: calibrations,
+            get_cfgloc_vers=lambda: cfgloc_vers,
+            get_geolocations=lambda _id: geolocations,
+            get_parents=lambda _id: {'site': (1, 'XYZ')},
+            out_path=self.out_path,
+            err_path=self.err_path,
+            generated_at=datetime(2026, 7, 15, tzinfo=timezone.utc),
+        )
+        json_path = (self.out_path / 'enviroscan' / 'CFGLOC777777'
+                     / 'position_history' / 'CFGLOC777777_history.json')
+        payload = json.loads(json_path.read_text())
+        rows = payload['rows']
+        self.assertEqual(len(rows), 2)
+        # Row order after merge is chronological on effective_start
+        r_before, r_after = rows[0], rows[1]
+        # Position dates identical across both rows — the sensor never moved
+        self.assertEqual(r_before['position_start_date'], '2022-05-05T00:00:00Z')
+        self.assertEqual(r_before['position_end_date'],   '')
+        self.assertEqual(r_after['position_start_date'],  '2022-05-05T00:00:00Z')
+        self.assertEqual(r_after['position_end_date'],    '')
+        # Effective and refLocn dates split at the elevation revision boundary
+        self.assertEqual(r_before['effective_start_date'], '2022-05-05T00:00:00Z')
+        self.assertEqual(r_before['effective_end_date'],   '2024-06-25T00:00:00Z')
+        self.assertEqual(r_after['effective_start_date'],  '2024-06-25T00:00:00Z')
+        self.assertEqual(r_after['effective_end_date'],    '')
+        self.assertEqual(r_before['reference_location_elevation'], 2741.57)
+        self.assertEqual(r_after['reference_location_elevation'],  2741.62)
+
     def test_cfgloc_with_no_configured_ver_is_skipped(self):
         installs = [AssetInstall(
             cfgloc='CFGLOC_NOVER', cfgloc_description='decommissioned',
@@ -668,8 +794,25 @@ class EndToEndWriteFilesTest(TestCase):
 # --- helpers -----------------------------------------------------------------
 
 def _feature(*, start_date, end_date=None, x_offset=0.0, y_offset=0.0, z_offset=0.0,
-             alpha=1.0, beta=0.0, gamma=130.0):
-    """Build a Feature dict shaped like get_named_location_geolocations' output."""
+             alpha=1.0, beta=0.0, gamma=130.0, ref_feats=None, ref_name='SOILPL999'):
+    """Build a Feature dict shaped like get_named_location_geolocations' output.
+
+    `ref_feats` is a list of dicts describing each reference-location time slice; each
+    dict may set `start_date`, `end_date`, `lon`, `lat`, `elev`. Defaults to a single
+    open-ended slice — matching the shape most existing tests expect.
+    """
+    if ref_feats is None:
+        ref_feats = [{'start_date': '2010-01-01T00:00:00Z', 'end_date': None,
+                      'lon': -83.5, 'lat': 35.68, 'elev': 573.32}]
+    ref_feat_features = [
+        {
+            'type': 'Feature',
+            'geometry': {'type': 'Point',
+                         'coordinates': [r.get('lon', -83.5), r.get('lat', 35.68), r.get('elev', 573.32)]},
+            'properties': {'start_date': r.get('start_date'), 'end_date': r.get('end_date')},
+        }
+        for r in ref_feats
+    ]
     return {
         'type': 'Feature',
         'geometry': {'type': 'Point', 'coordinates': [0.0, 0.0, 0.0]},
@@ -680,14 +823,10 @@ def _feature(*, start_date, end_date=None, x_offset=0.0, y_offset=0.0, z_offset=
             'reference_location': {
                 'type': 'Feature', 'geometry': None,
                 'properties': {
-                    'name': 'SOILPL999',
+                    'name': ref_name,
                     'locations': {
                         'type': 'FeatureCollection',
-                        'features': [{
-                            'type': 'Feature',
-                            'geometry': {'type': 'Point', 'coordinates': [-83.5, 35.68, 573.32]},
-                            'properties': {'start_date': '2010-01-01T00:00:00Z', 'end_date': None},
-                        }],
+                        'features': ref_feat_features,
                     },
                 },
             },

@@ -118,6 +118,8 @@ def _read_position_history_rows(position_history_path: Optional[Path],
             f"{entry['hor']}.{entry['ver']}",
             row_location_id,
             row_description,
+            entry.get('effective_start_date', ''),
+            entry.get('effective_end_date', ''),
             entry.get('position_start_date', ''),
             entry.get('position_end_date', ''),
             ref_name or '',
@@ -254,6 +256,11 @@ def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
                 row_data['row_hor_ver'],
                 row_data['row_location_id'],
                 row_data['row_description'],
+                # effectiveStart/End left blank until the DB codepath computes the
+                # cfgloc-geo × ref_geolocation intersection; the JSON-driven codepath
+                # (concH2oSoilSalinity loader) already fills these.
+                '',
+                '',
                 row_data['row_position_start_date'],
                 row_data['row_position_end_date'],
                 row_data['row_reference_location_id'],
@@ -279,9 +286,15 @@ def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
 
 
 def get_column_names() -> List[str]:
+    # effectiveStartDateTime / effectiveEndDateTime are the non-overlapping timeline
+    # that combines position and reference-location date ranges. The JSON-driven
+    # codepath (concH2oSoilSalinity loader) populates them. The DB codepath leaves
+    # them blank until it is separately updated to compute the intersection.
     return ['HOR.VER',
             'sensorLocationID',
             'sensorLocationDescription',
+            'effectiveStartDateTime',
+            'effectiveEndDateTime',
             'positionStartDateTime',
             'positionEndDateTime',
             'referenceLocationID',

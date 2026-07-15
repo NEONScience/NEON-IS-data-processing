@@ -45,6 +45,10 @@ def create_tchain_rows(database: SensorPositionsDatabase, location, geolocation,
                     modified_hor_ver,
                     complete_row_data['row_location_id'],
                     complete_row_data['row_description'],
+                    # effectiveStart/End left blank; the DB codepath doesn't yet
+                    # compute the cfgloc-geo × ref_geolocation intersection.
+                    '',
+                    '',
                     complete_row_data['row_position_start_date'],
                     complete_row_data['row_position_end_date'],
                     complete_row_data['row_reference_location_id'],

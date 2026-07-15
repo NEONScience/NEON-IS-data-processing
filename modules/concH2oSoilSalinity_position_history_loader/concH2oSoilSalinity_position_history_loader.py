@@ -164,16 +164,30 @@ def _build_rows(*,
         if not stream_names:
             continue
         for geo in geolocations:
-            window = _intersect(
+            # Position window is the install × cfgloc-geo intersection — the true period
+            # the sensor was physically at these offsets, independent of ref-location
+            # time slicing. Effective window narrows that with the ref_feat's own dates.
+            pos_window = _intersect(
                 (install.install_date, install.remove_date),
                 (geo['start_date'], geo['end_date']),
             )
-            if window is None:
+            if pos_window is None:
                 continue
-            win_start, win_end = window
-            # Collapse placeholder-future end dates to open-ended.
-            if win_end is not None and win_end > now_naive:
-                win_end = None
+            ref_start_dt = _parse_dt(geo.get('reference_location_start_date'))
+            ref_end_dt = _parse_dt(geo.get('reference_location_end_date'))
+            eff_window = _intersect(
+                pos_window,
+                (ref_start_dt, ref_end_dt),
+            )
+            if eff_window is None:
+                continue
+            pos_start, pos_end = pos_window
+            eff_start, eff_end = eff_window
+            # Collapse placeholder-future end dates to open-ended for both windows.
+            if pos_end is not None and pos_end > now_naive:
+                pos_end = None
+            if eff_end is not None and eff_end > now_naive:
+                eff_end = None
             for stream_name in stream_names:
                 ver = _stream_to_ver(stream_name)
                 if ver is None or str(ver) not in allowed_vers:
@@ -196,8 +210,10 @@ def _build_rows(*,
                     'hor': hor,
                     'ver': str(ver),
                     # Keep raw datetimes for the merge pass below; formatted later.
-                    '_win_start': win_start,
-                    '_win_end':   win_end,
+                    '_eff_start': eff_start,
+                    '_eff_end':   eff_end,
+                    '_pos_start': pos_start,
+                    '_pos_end':   pos_end,
                     'x_offset': geo['x_offset'],
                     'y_offset': geo['y_offset'],
                     'z_offset': z_offset_adjusted,
@@ -256,15 +272,24 @@ def _select_cal_for_install(cals: List[Cvald1Calibration],
 
 def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Consolidate rows chronologically per (HOR, VER). Consecutive same-position
-    rows collapse into one; any position change breaks the run. This preserves
-    the invariant that a sensor_positions file has no overlapping time windows
-    per (CFGLOC, VER), and that a real position change surfaces as a new row.
+    Consolidate rows chronologically per (HOR, VER) by effective start. Rows sharing
+    the same full identity key (position offsets + ref-location identity) collapse when
+    adjacent in time; any change in either breaks the run.
 
-    An A-B-A sequence (position A, then B, then A again) stays as three rows —
-    the intermediate B breaks the A run, matching the physical reality that
-    the sensor was moved between two same-position deployments. Two adjacent
-    A rows (no intervening B) collapse into one spanning both windows.
+    Three date sets are tracked per merged row:
+      - effective (`_eff_start`/`_eff_end`)  — the 3-way intersect of install × cfgloc-geo
+        × ref_feat. Merged rows form a non-overlapping timeline; consumers key on this.
+      - position  (`_pos_start`/`_pos_end`)  — install × cfgloc-geo. Reflects when the
+        physical sensor position existed regardless of ref-location time slicing. When
+        merging same-key rows, position extends across adjacent installs.
+      - refLocn                              — the ref_feat's own start/end (in the key
+        fields already, so consistent within a merged run).
+
+    An A-B-A sequence (position A, then B, then A again) stays as three rows — the
+    intermediate B breaks the A run, matching the physical reality that the sensor was
+    moved between two same-position deployments. A same-position row that only changes
+    its reference-location time slice also stays separate, so consumers can distinguish
+    a sensor move from a ref-location change on the effective timeline.
     """
     key_fields = (
         'x_offset', 'y_offset', 'z_offset',
@@ -277,13 +302,27 @@ def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     NEG_INF = datetime.min
     POS_INF = datetime.max
 
-    def norm_start(r: Dict[str, Any]) -> datetime:
-        return _naive(r['_win_start']) if r['_win_start'] is not None else NEG_INF
+    def norm_start(dt_val: Any) -> datetime:
+        return _naive(dt_val) if dt_val is not None else NEG_INF
 
-    def norm_end(r: Dict[str, Any]) -> datetime:
-        return _naive(r['_win_end']) if r['_win_end'] is not None else POS_INF
+    def norm_end(dt_val: Any) -> datetime:
+        return _naive(dt_val) if dt_val is not None else POS_INF
 
-    def pos_key(r: Dict[str, Any]) -> Tuple:
+    def eff_start(r: Dict[str, Any]) -> datetime:
+        return norm_start(r.get('_eff_start'))
+
+    def eff_end(r: Dict[str, Any]) -> datetime:
+        return norm_end(r.get('_eff_end'))
+
+    def pos_start(r: Dict[str, Any]) -> datetime:
+        val = r.get('_pos_start', r.get('_eff_start'))
+        return norm_start(val)
+
+    def pos_end(r: Dict[str, Any]) -> datetime:
+        val = r.get('_pos_end', r.get('_eff_end'))
+        return norm_end(val)
+
+    def key(r: Dict[str, Any]) -> Tuple:
         return tuple(r.get(f) for f in key_fields)
 
     by_ver: Dict[Tuple[str, str], List[Dict[str, Any]]] = defaultdict(list)
@@ -292,35 +331,49 @@ def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     merged: List[Dict[str, Any]] = []
     for _, ver_rows in by_ver.items():
-        ver_rows.sort(key=norm_start)
+        ver_rows.sort(key=eff_start)
         cur = ver_rows[0]
-        cur_start = norm_start(cur)
-        cur_end = norm_end(cur)
-        cur_key = pos_key(cur)
+        cur_eff_s = eff_start(cur)
+        cur_eff_e = eff_end(cur)
+        cur_pos_s = pos_start(cur)
+        cur_pos_e = pos_end(cur)
+        cur_key = key(cur)
         for r in ver_rows[1:]:
-            r_key = pos_key(r)
-            r_end = norm_end(r)
+            r_key = key(r)
             if r_key == cur_key:
-                if r_end > cur_end:
-                    cur_end = r_end
+                cur_eff_e = max(cur_eff_e, eff_end(r))
+                cur_pos_s = min(cur_pos_s, pos_start(r))
+                cur_pos_e = max(cur_pos_e, pos_end(r))
             else:
-                merged.append(_finalize_row(cur, cur_start, cur_end, NEG_INF, POS_INF))
+                merged.append(_finalize_row(cur, cur_eff_s, cur_eff_e,
+                                            cur_pos_s, cur_pos_e, NEG_INF, POS_INF))
                 cur = r
-                cur_start = norm_start(r)
-                cur_end = r_end
+                cur_eff_s = eff_start(r)
+                cur_eff_e = eff_end(r)
+                cur_pos_s = pos_start(r)
+                cur_pos_e = pos_end(r)
                 cur_key = r_key
-        merged.append(_finalize_row(cur, cur_start, cur_end, NEG_INF, POS_INF))
+        merged.append(_finalize_row(cur, cur_eff_s, cur_eff_e,
+                                    cur_pos_s, cur_pos_e, NEG_INF, POS_INF))
     return merged
 
 
-def _finalize_row(row: Dict[str, Any], start: datetime, end: datetime,
+def _finalize_row(row: Dict[str, Any],
+                  eff_s: datetime, eff_e: datetime,
+                  pos_s: datetime, pos_e: datetime,
                   neg_inf: datetime, pos_inf: datetime) -> Dict[str, Any]:
-    """Format the merged interval back into ISO strings; preserve field order."""
+    """Format the merged interval back into ISO strings; preserve field order.
+
+    Emits three date sets: effective (non-overlapping timeline consumers key on),
+    position (install × cfgloc-geo), and reference-location dates (already in `row`).
+    """
     out: Dict[str, Any] = {
         'hor': row['hor'],
         'ver': row['ver'],
-        'position_start_date': '' if start == neg_inf else _fmt_dt(start),
-        'position_end_date':   '' if end   == pos_inf else _fmt_dt(end),
+        'effective_start_date': '' if eff_s == neg_inf else _fmt_dt(eff_s),
+        'effective_end_date':   '' if eff_e == pos_inf else _fmt_dt(eff_e),
+        'position_start_date':  '' if pos_s == neg_inf else _fmt_dt(pos_s),
+        'position_end_date':    '' if pos_e == pos_inf else _fmt_dt(pos_e),
     }
     for k, v in row.items():
         if k in ('hor', 'ver') or k.startswith('_'):
@@ -337,10 +390,14 @@ def _flatten_geolocations(feature_collection: Any) -> List[Dict[str, Any]]:
     """
     Unpack the FeatureCollection returned by get_named_location_geolocations into a flat list of dicts.
 
-    Each feature in the top-level collection is one row from `locn` for this CFGLOC.
-    `properties.reference_location` is a nested Feature carrying the reference (e.g. SOILPL...)
-    nam_locn_name and its own recursive geolocations. The reference's first geolocation
-    row is where lat/lon/elevation live.
+    Each feature in the top-level collection is one row from `locn` for this CFGLOC. Its
+    `properties.reference_location` carries a nested Feature whose `locations` are the
+    reference-location's own time-sliced geolocations (lat/lon/elevation per time slice).
+
+    Emits one flat entry per (cfgloc-geo × ref_feat) pair — a ref location that changed
+    (e.g. elevation shifted) surfaces as multiple entries so the caller can split rows on
+    the ref_feat boundary. Falls back to one entry with null ref fields when a cfgloc-geo
+    has no reference feature or the reference has no time slices.
     """
     flat: List[Dict[str, Any]] = []
     if feature_collection is None:
@@ -350,24 +407,7 @@ def _flatten_geolocations(feature_collection: Any) -> List[Dict[str, Any]]:
         props = feature.get('properties') if isinstance(feature, dict) else feature.properties
         if props is None:
             continue
-        ref_feature = props.get('reference_location')
-        ref_name = ref_lat = ref_lon = ref_elev = None
-        ref_start = ref_end = None
-        if ref_feature is not None:
-            ref_props = ref_feature.get('properties') if isinstance(ref_feature, dict) else ref_feature.properties
-            if ref_props is not None:
-                ref_name = ref_props.get('name')
-                ref_locations = ref_props.get('locations') or {}
-                ref_feats = ref_locations.get('features') if isinstance(ref_locations, dict) else getattr(ref_locations, 'features', [])
-                if ref_feats:
-                    ref_geo_feat = ref_feats[0]
-                    ref_geo_props = ref_geo_feat.get('properties') if isinstance(ref_geo_feat, dict) else ref_geo_feat.properties
-                    ref_geometry = ref_geo_feat.get('geometry') if isinstance(ref_geo_feat, dict) else ref_geo_feat.geometry
-                    ref_lon, ref_lat, ref_elev = _extract_point(ref_geometry)
-                    if ref_geo_props is not None:
-                        ref_start = ref_geo_props.get('start_date')
-                        ref_end = ref_geo_props.get('end_date')
-        flat.append({
+        base = {
             'start_date': _parse_dt(props.get('start_date')),
             'end_date':   _parse_dt(props.get('end_date')),
             'x_offset':   props.get('x_offset'),
@@ -376,6 +416,41 @@ def _flatten_geolocations(feature_collection: Any) -> List[Dict[str, Any]]:
             'pitch':      props.get('alpha'),
             'roll':       props.get('beta'),
             'azimuth':    props.get('gamma'),
+        }
+        ref_slices = _ref_feat_slices(props.get('reference_location'))
+        for ref in ref_slices:
+            entry = dict(base)
+            entry.update(ref)
+            flat.append(entry)
+    return flat
+
+
+def _ref_feat_slices(ref_feature: Any) -> List[Dict[str, Any]]:
+    """
+    Return one dict per reference-location time slice (ref_feat). Each dict carries
+    the ref name, that slice's start/end dates, and its lat/lon/elevation.
+
+    A CFGLOC with no ref feature (or a ref feature with no time slices) still produces
+    one entry with all fields None so `_build_rows` can still emit a row.
+    """
+    if ref_feature is None:
+        return [_null_ref_slice()]
+    ref_props = ref_feature.get('properties') if isinstance(ref_feature, dict) else ref_feature.properties
+    if ref_props is None:
+        return [_null_ref_slice()]
+    ref_name = ref_props.get('name')
+    ref_locations = ref_props.get('locations') or {}
+    ref_feats = ref_locations.get('features') if isinstance(ref_locations, dict) else getattr(ref_locations, 'features', [])
+    if not ref_feats:
+        return [_null_ref_slice(ref_name=ref_name)]
+    slices: List[Dict[str, Any]] = []
+    for ref_geo_feat in ref_feats:
+        ref_geo_props = ref_geo_feat.get('properties') if isinstance(ref_geo_feat, dict) else ref_geo_feat.properties
+        ref_geometry = ref_geo_feat.get('geometry') if isinstance(ref_geo_feat, dict) else ref_geo_feat.geometry
+        ref_lon, ref_lat, ref_elev = _extract_point(ref_geometry)
+        ref_start = ref_geo_props.get('start_date') if ref_geo_props is not None else None
+        ref_end = ref_geo_props.get('end_date') if ref_geo_props is not None else None
+        slices.append({
             'reference_location_id':         ref_name,
             'reference_location_start_date': ref_start,
             'reference_location_end_date':   ref_end,
@@ -383,7 +458,18 @@ def _flatten_geolocations(feature_collection: Any) -> List[Dict[str, Any]]:
             'reference_location_longitude':  ref_lon,
             'reference_location_elevation':  ref_elev,
         })
-    return flat
+    return slices
+
+
+def _null_ref_slice(ref_name: Optional[str] = None) -> Dict[str, Any]:
+    return {
+        'reference_location_id':         ref_name,
+        'reference_location_start_date': None,
+        'reference_location_end_date':   None,
+        'reference_location_latitude':   None,
+        'reference_location_longitude':  None,
+        'reference_location_elevation':  None,
+    }
 
 
 def _extract_point(geometry: Any) -> Tuple[Optional[float], Optional[float], Optional[float]]:
