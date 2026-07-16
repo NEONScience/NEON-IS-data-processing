@@ -144,11 +144,6 @@ spec:
           gcs:
             bucket: "{{inputs.parameters.data_year_bucket}}"
             key: "{{inputs.parameters.data_year_bucket_prefix}}"
-        # - name: calibrations
-        #   path: "{{inputs.parameters.in_path}}/{{inputs.parameters.calibration_dir}}"
-        #   gcs:
-        #     bucket: "{{inputs.parameters.calibration_bucket}}"
-        #     key: "files/{{inputs.parameteers.source_type}}/8125/voltage/"  # TODO: testing.
 
       volumes:
       - name: in-vol
@@ -212,7 +207,6 @@ spec:
             mkdir -p ${download_dir}
             cd ${download_dir}
             echo "Copying files from GCS bucket..."
-            #gcloud storage cp --recursive $url ${download_dir}/
             if gcloud storage cp --recursive $url ${download_dir}/; then
               echo "Copy succeeded."
             else
