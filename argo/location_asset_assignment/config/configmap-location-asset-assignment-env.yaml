@@ -1,0 +1,35 @@
+---
+# Environment variables for the location asset assignment workflow.
+# To load this configmap in kubernetes:
+#   kubectl config set-context --current --namespace=argo-workflows-dev
+#   kubectl apply -f <configmapFile> -n argo-workflows-dev
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: location-asset-assignment-env
+  namespace: argo-workflows-dev
+  labels:
+    # Note: This label is required for the informer to detect this ConfigMap.
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  log_level: DEBUG
+  # R code
+  relative_path_index: "2"
+  parallelization_internal: "4"  # Internal R parallelization for all R modules.
+  # Git configuration.
+  git_secret_name: git-data-processing-metadata-key
+  git_secret_file_name: ssh-private-key
+  git_repo_url: git@github.com:BattelleEcology/data-processing-metadata.git
+  git_branch: main
+  git_repo_name: data-processing-metadata
+  git_repo_dir: location-assets
+  # Bucket for saving manifests.
+  output_bucket: neon-dev-argo-workflow-test
+  output_bucket_prefix: location_assignment
+  # Data year file config to restrict processing window.
+  data_year_file: data_year_2026.txt
+  data_year_bucket: neon-dev-argo-workflow-test
+  data_year_bucket_prefix: data_years/data_year_2026.txt
+  # Manifests for changed files.
+  manifest_file_name: manifest.json
+  change_manifest_file_name: change_manifest.json
