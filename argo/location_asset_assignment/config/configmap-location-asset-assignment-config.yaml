@@ -38,7 +38,7 @@ data:
       },
       {
         "key": "exodissolvedoxygen",
-        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH  FileYear=$FILE_YEAR TypeFile=asset"
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset"
       },
       {
         "key": "exofdom",
