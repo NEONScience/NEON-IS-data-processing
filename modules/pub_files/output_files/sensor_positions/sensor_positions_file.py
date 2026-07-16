@@ -25,11 +25,17 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
     history into every monthly sensor_positions.csv.
     """
 
+    # Effective-dates columns are emitted only when the loader-driven JSON codepath is in
+    # play (i.e. this pipeline is concH2oSoilSalinity today). The DB codepath doesn't yet
+    # compute the cfgloc-geo × ref_geolocation intersection needed to fill them, so other
+    # DPs keep their pre-change schema until that follow-up lands.
+    include_effective_dates = position_history_path is not None
+
     filename = get_filename(elements, timestamp=timestamp, file_type='sensor_positions', extension='csv')
     file_path = Path(out_path, filename)
     with open(file_path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(get_column_names())
+        writer.writerow(get_column_names(include_effective_dates=include_effective_dates))
         file_rows = []
         # Parse location file path for the datum elements. Assume we end at site (**/site/location/*/location_file.json)
         site = location_path.parts[-1]
@@ -55,10 +61,12 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                         rows = sensor_specific_processors.create_tchain_rows(
                             database, location, geolocation, row_hor_ver,
                             row_location_id, row_description,
-                            _create_base_row_data, _add_reference_position_data)
+                            _create_base_row_data, _add_reference_position_data,
+                            include_effective_dates=include_effective_dates)
                     else:
                         rows = _create_standard_rows(database, geolocation, row_hor_ver,
-                                                   row_location_id, row_description)
+                                                   row_location_id, row_description,
+                                                   include_effective_dates=include_effective_dates)
 
                     # Add rows, preventing duplicates
                     for row in rows:
@@ -242,25 +250,31 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     return complete_rows
 
 
-def _create_standard_rows(database: SensorPositionsDatabase, geolocation, 
-                        row_hor_ver: str, row_location_id: str, row_description: str) -> List[List]:
-    """Create a standard sensor rows."""
+def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
+                        row_hor_ver: str, row_location_id: str, row_description: str,
+                        include_effective_dates: bool = False) -> List[List]:
+    """Create a standard sensor rows.
+
+    When `include_effective_dates` is True, the row leaves two blank cells for
+    `effectiveStartDateTime` / `effectiveEndDateTime` so it aligns with the header the
+    JSON codepath emits. The DB codepath doesn't yet compute the intersection needed to
+    populate them; when it does, this parameter's default can flip.
+    """
     base_data = _create_base_row_data(database, geolocation, row_hor_ver, row_location_id, row_description)
     complete_rows = _add_reference_position_data(database, base_data, geolocation, geolocation.offset_name)
-    
+
     # Convert to list format (assuming we take the first reference location for standard sensors)
     rows=[]
     if complete_rows:
         for row_data in complete_rows:
-            row = [
+            leading = [
                 row_data['row_hor_ver'],
                 row_data['row_location_id'],
                 row_data['row_description'],
-                # effectiveStart/End left blank until the DB codepath computes the
-                # cfgloc-geo × ref_geolocation intersection; the JSON-driven codepath
-                # (concH2oSoilSalinity loader) already fills these.
-                '',
-                '',
+            ]
+            if include_effective_dates:
+                leading.extend(['', ''])
+            row = leading + [
                 row_data['row_position_start_date'],
                 row_data['row_position_end_date'],
                 row_data['row_reference_location_id'],
@@ -285,35 +299,42 @@ def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
     return rows
 
 
-def get_column_names() -> List[str]:
-    # effectiveStartDateTime / effectiveEndDateTime are the non-overlapping timeline
-    # that combines position and reference-location date ranges. The JSON-driven
-    # codepath (concH2oSoilSalinity loader) populates them. The DB codepath leaves
-    # them blank until it is separately updated to compute the intersection.
-    return ['HOR.VER',
-            'sensorLocationID',
-            'sensorLocationDescription',
-            'effectiveStartDateTime',
-            'effectiveEndDateTime',
-            'positionStartDateTime',
-            'positionEndDateTime',
-            'referenceLocationID',
-            'referenceLocationIDDescription',
-            'referenceLocationIDStartDateTime',
-            'referenceLocationIDEndDateTime',
-            'xOffset',
-            'yOffset',
-            'zOffset',
-            'pitch',
-            'roll',
-            'azimuth',
-            'locationReferenceLatitude',
-            'locationReferenceLongitude',
-            'locationReferenceElevation',
-            'eastOffset',
-            'northOffset',
-            'xAzimuth',
-            'yAzimuth']
+def get_column_names(include_effective_dates: bool = False) -> List[str]:
+    """Return the CSV header for sensor_positions.csv.
+
+    When `include_effective_dates` is True, two extra columns
+    (`effectiveStartDateTime` / `effectiveEndDateTime`) are inserted between
+    `sensorLocationDescription` and `positionStartDateTime`. These carry the
+    non-overlapping timeline that combines position and reference-location date
+    ranges; only the JSON codepath (concH2oSoilSalinity loader) populates them
+    today. The DB codepath keeps the pre-change schema until it's separately
+    updated to compute the cfgloc-geo × ref_geolocation intersection.
+    """
+    columns = ['HOR.VER',
+               'sensorLocationID',
+               'sensorLocationDescription']
+    if include_effective_dates:
+        columns.extend(['effectiveStartDateTime', 'effectiveEndDateTime'])
+    columns.extend(['positionStartDateTime',
+                    'positionEndDateTime',
+                    'referenceLocationID',
+                    'referenceLocationIDDescription',
+                    'referenceLocationIDStartDateTime',
+                    'referenceLocationIDEndDateTime',
+                    'xOffset',
+                    'yOffset',
+                    'zOffset',
+                    'pitch',
+                    'roll',
+                    'azimuth',
+                    'locationReferenceLatitude',
+                    'locationReferenceLongitude',
+                    'locationReferenceElevation',
+                    'eastOffset',
+                    'northOffset',
+                    'xAzimuth',
+                    'yAzimuth'])
+    return columns
 
 
 def format_date(date: datetime) -> str:
