@@ -268,6 +268,47 @@ class MergeTimeRangesTest(TestCase):
         self.assertEqual(merged[0]['reference_location_elevation'], 100.00)
         self.assertEqual(merged[1]['reference_location_elevation'], 100.05)
 
+    def test_ref_locn_split_shares_position_across_asymmetric_installs(self):
+        # HEAL SP1 shape: two consecutive installs at the same z, and a ref-locn slice
+        # boundary that lands INSIDE the second install. Phase A merges the two installs
+        # in slice 1 (pos_start = earlier install's start), but only the second install
+        # crosses into slice 2 (pos_start = later install's start). Without Phase B,
+        # the two output rows would show different position_start_date values despite
+        # sharing the exact same physical z. Phase B reunions them.
+        rows = [
+            # Install 4 × slice 1: eff & pos both bounded by the install.
+            self._base_row(_eff_start=dt(2021, 6, 8), _eff_end=dt(2021, 7, 30),
+                           _pos_start=dt(2021, 6, 8), _pos_end=dt(2021, 7, 30),
+                           z_offset=0.22,
+                           reference_location_start_date='2010-01-01T00:00:00Z',
+                           reference_location_end_date='2026-01-01T00:00:00Z'),
+            # Install 5 × slice 1: eff bounded by slice 1's end, pos runs to install end.
+            self._base_row(_eff_start=dt(2021, 7, 30), _eff_end=dt(2026, 1, 1),
+                           _pos_start=dt(2021, 7, 30), _pos_end=None,
+                           z_offset=0.22,
+                           reference_location_start_date='2010-01-01T00:00:00Z',
+                           reference_location_end_date='2026-01-01T00:00:00Z'),
+            # Install 5 × slice 2: install 4 doesn't intersect slice 2 (ends 2021-07-30).
+            self._base_row(_eff_start=dt(2026, 1, 1), _eff_end=None,
+                           _pos_start=dt(2021, 7, 30), _pos_end=None,
+                           z_offset=0.22,
+                           reference_location_start_date='2026-01-01T00:00:00Z',
+                           reference_location_end_date=None),
+        ]
+        merged = loader._merge_time_ranges(rows)
+        # Phase A collapses the two slice-1 rows into one; slice-2 stays separate.
+        self.assertEqual(len(merged), 2)
+        # Both surviving rows share the same reunioned position window — the sensor
+        # was continuously at z=0.22 from 2021-06-08 forward.
+        for row in merged:
+            self.assertEqual(row['position_start_date'], '2021-06-08T00:00:00Z')
+            self.assertEqual(row['position_end_date'],   '')
+        # Effective and refLocn dates still split at the slice boundary.
+        self.assertEqual(merged[0]['effective_start_date'], '2021-06-08T00:00:00Z')
+        self.assertEqual(merged[0]['effective_end_date'],   '2026-01-01T00:00:00Z')
+        self.assertEqual(merged[1]['effective_start_date'], '2026-01-01T00:00:00Z')
+        self.assertEqual(merged[1]['effective_end_date'],   '')
+
     def test_same_key_extends_position_across_install_gap(self):
         # Two rows same offsets and same ref-locn identity but with an install gap
         # between them (adjacent installs of the same asset). The merged row's

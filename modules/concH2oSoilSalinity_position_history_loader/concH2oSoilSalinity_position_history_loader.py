@@ -272,24 +272,31 @@ def _select_cal_for_install(cals: List[Cvald1Calibration],
 
 def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Consolidate rows chronologically per (HOR, VER) by effective start. Rows sharing
-    the same full identity key (position offsets + ref-location identity) collapse when
-    adjacent in time; any change in either breaks the run.
+    Consolidate rows chronologically per (HOR, VER) by effective start.
 
     Three date sets are tracked per merged row:
       - effective (`_eff_start`/`_eff_end`)  — the 3-way intersect of install × cfgloc-geo
         × ref_feat. Merged rows form a non-overlapping timeline; consumers key on this.
       - position  (`_pos_start`/`_pos_end`)  — install × cfgloc-geo. Reflects when the
-        physical sensor position existed regardless of ref-location time slicing. When
-        merging same-key rows, position extends across adjacent installs.
+        physical sensor position existed regardless of ref-location time slicing.
       - refLocn                              — the ref_feat's own start/end (in the key
         fields already, so consistent within a merged run).
 
+    Two passes:
+
+      Phase A — merge on the FULL identity key (position offsets + ref-location identity).
+      Rows sharing the same full key collapse when adjacent in effective time.
+
+      Phase B — reunion position dates across ref-locn splits at the same position. Rows
+      sharing the same position-offsets identity, contiguous in effective time (no gap
+      to the previous row, no intervening different-offsets row), share the same
+      position_start/end. Without this, two rows differing only in ref-locn slice would
+      show different position dates depending on which installs each slice happened to
+      intersect — even though the physical position never moved.
+
     An A-B-A sequence (position A, then B, then A again) stays as three rows — the
-    intermediate B breaks the A run, matching the physical reality that the sensor was
-    moved between two same-position deployments. A same-position row that only changes
-    its reference-location time slice also stays separate, so consumers can distinguish
-    a sensor move from a ref-location change on the effective timeline.
+    intermediate B breaks BOTH the full-key run and the position-only run, matching the
+    physical reality that the sensor was moved between two same-position deployments.
     """
     key_fields = (
         'x_offset', 'y_offset', 'z_offset',
@@ -299,6 +306,7 @@ def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         'reference_location_latitude', 'reference_location_longitude',
         'reference_location_elevation',
     )
+    pos_only_fields = ('x_offset', 'y_offset', 'z_offset', 'pitch', 'roll', 'azimuth')
     NEG_INF = datetime.min
     POS_INF = datetime.max
 
@@ -325,6 +333,9 @@ def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     def key(r: Dict[str, Any]) -> Tuple:
         return tuple(r.get(f) for f in key_fields)
 
+    def pos_key(r: Dict[str, Any]) -> Tuple:
+        return tuple(r.get(f) for f in pos_only_fields)
+
     by_ver: Dict[Tuple[str, str], List[Dict[str, Any]]] = defaultdict(list)
     for row in rows:
         by_ver[(row['hor'], row['ver'])].append(row)
@@ -332,6 +343,9 @@ def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     merged: List[Dict[str, Any]] = []
     for _, ver_rows in by_ver.items():
         ver_rows.sort(key=eff_start)
+
+        # Phase A: collapse full-key adjacent runs.
+        phase_a: List[Dict[str, Any]] = []
         cur = ver_rows[0]
         cur_eff_s = eff_start(cur)
         cur_eff_e = eff_end(cur)
@@ -345,16 +359,46 @@ def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 cur_pos_s = min(cur_pos_s, pos_start(r))
                 cur_pos_e = max(cur_pos_e, pos_end(r))
             else:
-                merged.append(_finalize_row(cur, cur_eff_s, cur_eff_e,
-                                            cur_pos_s, cur_pos_e, NEG_INF, POS_INF))
+                phase_a.append({'row': cur, 'eff_s': cur_eff_s, 'eff_e': cur_eff_e,
+                                'pos_s': cur_pos_s, 'pos_e': cur_pos_e})
                 cur = r
                 cur_eff_s = eff_start(r)
                 cur_eff_e = eff_end(r)
                 cur_pos_s = pos_start(r)
                 cur_pos_e = pos_end(r)
                 cur_key = r_key
-        merged.append(_finalize_row(cur, cur_eff_s, cur_eff_e,
-                                    cur_pos_s, cur_pos_e, NEG_INF, POS_INF))
+        phase_a.append({'row': cur, 'eff_s': cur_eff_s, 'eff_e': cur_eff_e,
+                        'pos_s': cur_pos_s, 'pos_e': cur_pos_e})
+
+        # Phase B: within same position-offsets identity, contiguous in effective time
+        # (no gap, no intervening different-offsets row), reunion position_start/end so
+        # ref-locn splits at the same position surface consistent position dates.
+        run: List[Dict[str, Any]] = []
+        prev_pos_key: Optional[Tuple] = None
+        prev_eff_e: Optional[datetime] = None
+
+        def close_run() -> None:
+            if not run:
+                return
+            run_pos_s = min(e['pos_s'] for e in run)
+            run_pos_e = max(e['pos_e'] for e in run)
+            for e in run:
+                merged.append(_finalize_row(e['row'], e['eff_s'], e['eff_e'],
+                                            run_pos_s, run_pos_e, NEG_INF, POS_INF))
+
+        for entry in phase_a:
+            pk = pos_key(entry['row'])
+            same_offsets = (prev_pos_key is not None and pk == prev_pos_key)
+            no_gap = (prev_eff_e is not None and entry['eff_s'] <= prev_eff_e)
+            if same_offsets and no_gap:
+                run.append(entry)
+            else:
+                close_run()
+                run = [entry]
+            prev_pos_key = pk
+            prev_eff_e = entry['eff_e']
+        close_run()
+
     return merged
 
 
