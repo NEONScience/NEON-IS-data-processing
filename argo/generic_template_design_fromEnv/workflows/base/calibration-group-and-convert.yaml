@@ -80,39 +80,16 @@ spec:
               revision: "{{inputs.parameters.schema-repo-sci-revision}}"
               depth: 1
 
-      initContainers:
-        # This container renders sourceable processing instructions from YAML.
-        - name: processing-instructions-file-creator
-          image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cfg-env-file-crea:sha-a0b5cd7"
-          volumeMounts:
-            - name: config-processing-vol
-              mountPath: /config/processing-in
-            - name: config-output-vol
-              mountPath: /config/config-out
-          command:
-            - python3
-            - /usr/src/app/config_file_creator/processing-instructions-file-creator.py
-          env:
-            - name: PROCESSING_INPUT_FILE
-              value: /config/processing-in/processing-instructions.yaml
-            - name: PROCESSING_OUTPUT_FILE
-              value: /config/config-out/processing-instructions.sh
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "500m"
-
       containerSet:
         volumeMounts:
-          - name: config-output-vol
-            mountPath: /config/config-out
           - name: data-vol
             mountPath: /data
+          - name: config-processing-vol
+            mountPath: /scripts
+          - name: config-output-vol
+            mountPath: /config/config-out
           - name: tmp-vol
-            mountPath: /tmp
+            mountPath: /tmp            
 
         containers:
           - name: load-data
@@ -183,6 +160,8 @@ spec:
             envFrom:
               - configMapRef:
                   name: "{{inputs.parameters.config-map-env-name}}"
+            command: ["/bin/bash"]
+            args: ["/scripts/processing-instructions.sh"]
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
@@ -193,17 +172,6 @@ spec:
               limits:
                 memory: "1Gi"
                 cpu: "1.25"
-            command:
-              - bash
-              - -c
-              - |
-                set -euo pipefail
-                IFS=$'\n\t'
-
-                # Source the processing instructions
-                cat /config/config-out/processing-instructions.sh
-                source /config/config-out/processing-instructions.sh
-
           - name: main
             dependencies:
               - processing
