@@ -24,20 +24,12 @@ spec:
       - name: env_config
         value: calibration-assignment-env
       - name: assignment_config
-        value: |
-          [
-            {
-              "key": "li191r",
-              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR"
-            }
-          ]
-        # valueFrom:
-        #   configMapKeyRef:
-        #     name: calibration-assignment-config
-        #     key: config
+        valueFrom:
+          configMapKeyRef:
+            name: calibration-assignment-config
+            key: config
 
     templates:
-
     # Loop over source types and r code config.
     - name: main
       steps:
@@ -213,14 +205,19 @@ spec:
             in_dir={{inputs.parameters.in_path}}
             calibration_dir={{inputs.parameters.calibration_dir}}
 
-            url="gs://${bucket}/${prefix}/${source_type}"
+            url="gs://${bucket}/${prefix}/${source_type}/"
 
             download_dir=${in_dir}/${calibration_dir}
 
             mkdir -p ${download_dir}
             cd ${download_dir}
-            echo "Downloading files from GCS bucket..."
-            gcloud storage cp --recursive $url ${download_dir}/
+            echo "Copying files from GCS bucket..."
+            #gcloud storage cp --recursive $url ${download_dir}/
+            if gcloud storage cp --recursive $url ${download_dir}/; then
+              echo "Copy succeeded."
+            else
+              echo "No matching files for $url (or another error occurred). Continuing..."
+            fi
 
         # Assign the calibrations
         - name: calibration-assignment
