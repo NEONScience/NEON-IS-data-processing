@@ -7,7 +7,7 @@
 pipeline:
   name: concH2oSoilSalinity_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-1706438
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.3.0
   cmd:
   - sh
   - "-c"
