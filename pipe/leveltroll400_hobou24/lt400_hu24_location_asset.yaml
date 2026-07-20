@@ -2,7 +2,7 @@
 pipeline:
   name: lt400_hu24_location_asset
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-asset-loader:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-asset-loader:v1.1.1
   cmd:
   - /bin/bash
   stdin:
