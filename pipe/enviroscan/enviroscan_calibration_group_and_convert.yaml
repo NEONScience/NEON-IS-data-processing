@@ -12,6 +12,9 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
+    # Download the calibration metadata file from the NEON-IS-data-processing-inputs repo.
+    python3 -c "import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/NEONScience/NEON-IS-data-processing-inputs/refs/heads/main/enviroscan/soilSpecCalDepth.csv', '$FILE_META_CALIBRATION')"
+
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH_JOINER
     rm -rf /tmp/pfs/kafka_merged
@@ -96,6 +99,7 @@ transform:
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     OUT_PATH_JOINER: /tmp/pfs/filter_joined 
+    FILE_META_CALIBRATION: "/tmp/soilSpecCalDepth.csv"
 
     # Environment variables for array parser
     PARSE_CALIBRATION: 'True'
@@ -121,10 +125,6 @@ input:
       name: FILE_SCHEMA_PARSED
       repo: enviroscan_avro_schemas
       glob: /enviroscan/enviroscan_parsed.avsc
-  - pfs:
-      name: FILE_META_CALIBRATION
-      repo: enviroscan_metadata_calibrations
-      glob: /enviroscan/soilSpecCalDepths.csv
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: enviroscan_avro_schemas
@@ -179,4 +179,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

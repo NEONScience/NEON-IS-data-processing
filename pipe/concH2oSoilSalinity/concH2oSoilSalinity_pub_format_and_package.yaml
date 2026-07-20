@@ -1,4 +1,9 @@
 ---
+# Position-history JSONs are generated INLINE per-datum by the loader step
+# below (into /tmp/position_history) and passed to pub_files via
+# POSITION_HISTORY_PATH. The loader walks IN_PATH ($GROUPED_PATH) to derive
+# the site set (one site per datum under the /*/*/*/* glob) and site-scopes
+# its PDR queries accordingly.
 pipeline:
   name: concH2oSoilSalinity_pub_format_and_package
 transform:
@@ -16,9 +21,11 @@ transform:
     rm -rf $OUT_PATH_TRANSFORMER
     rm -rf $OUT_PATH_PACKAGER
     rm -rf $OUT_PATH_PUBFILES
+    rm -rf $POSITION_HISTORY_PATH
     mkdir $OUT_PATH_TRANSFORMER
     mkdir $OUT_PATH_PACKAGER
     mkdir $OUT_PATH_PUBFILES
+    mkdir $POSITION_HISTORY_PATH
     
     # Set some environment variables for the second module
     export DATA_PATH=$GROUPED_PATH
@@ -41,7 +48,18 @@ transform:
     
     # Clean up after pub_transformer.
     rm -rf $OUT_PATH_TRANSFORMER
-    
+
+    # Build per-CFGLOC position-history JSONs for the sites present in this datum.
+    # The loader walks IN_PATH to derive the site set and site-scopes its PDR queries,
+    # then writes <POSITION_HISTORY_PATH>/enviroscan/<CFGLOC>/position_history/<CFGLOC>_history.json
+    # for every enviroscan CFGLOC configured in the concH2oSoilSalinity split group at those sites.
+    # pub_files consumes these via the same POSITION_HISTORY_PATH env var; when unset (every
+    # other DP's pub_format_and_package), pub_files falls back to the pre-existing per-row DB codepath.
+    export IN_PATH=$GROUPED_PATH
+    export OUT_PATH=$POSITION_HISTORY_PATH
+    export ERR_PATH=/pfs/out/loader_errored_datums
+    python3 -m concH2oSoilSalinity_position_history_loader.concH2oSoilSalinity_position_history_loader_main
+
     # Run pub_files.
     export OUT_PATH=$OUT_PATH_PUBFILES
     export IN_PATH=$OUT_PATH_PACKAGER
@@ -92,6 +110,9 @@ transform:
     
     # Environment variables for 3rd module: pub_files.
     OUT_PATH_PUBFILES: "/tmp/pub_files"
+    # Scratch dir where the inline position_history_loader writes per-CFGLOC JSONs
+    # for pub_files to consume. Refreshed per-datum by the transform preamble.
+    POSITION_HISTORY_PATH: "/tmp/position_history"
     RELATIVE_PATH_INDEX: '3'
     DB_SECRETS_PATH: /var/db_secret
     GITHUB_PEM_PATH: /var/github_secret/key
@@ -119,17 +140,19 @@ input:
   pfs:
     name: GROUPED_PATH
     repo: concH2oSoilSalinity_pub_group
-    # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
+    # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unnecessary republication.
     # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
+    # Site here scopes both pub_files AND the inline position_history_loader (which
+    # walks IN_PATH=$GROUPED_PATH to derive its site filter).
     glob: /*/*/*/*
 parallelism_spec:
   constant: 10
 autoscaling: true
 resource_requests:
-  memory: 400M
+  memory: 800M
   cpu: 1
 resource_limits:
-  memory: 800M
+  memory: 1G
   cpu: 1.2
 sidecar_resource_requests:
   memory: 2G
@@ -138,4 +161,4 @@ datum_set_spec:
   number: 5
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

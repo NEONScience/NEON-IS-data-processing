@@ -44,7 +44,8 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmStats=$FILE_SCHEMA_STATS \
-      FileSchmQm=$FILE_SCHEMA_QM 
+      FileSchmQm=$FILE_SCHEMA_QM \
+      "DirSubCopy=location"
 
     echo "=== flow.concH2oSalinity.grp.split complete ==="
     EOF
@@ -105,5 +106,5 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
 
