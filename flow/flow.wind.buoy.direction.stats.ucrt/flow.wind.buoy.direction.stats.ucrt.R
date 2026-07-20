@@ -1,15 +1,15 @@
 ##############################################################################################
-#' @title Workflow for buoy wind SCI statistics
+#' @title Workflow for buoy wind-specific direction statistics and uncertainty calculations
 
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
-#' @description Workflow. Applies buoy wind-specific quality flags and performs SCI statistics on the buoy wind data.
+#' @description Workflow. Uses thresholds to apply wind direction statistics and uncertainty calculations to buoy wind data.
 #'
 #' The arguments are: 
 #' 
 #' 1. "DirIn=value", The base file path to the input data, QA/QC plausibility flags and quality flag thresholds. 
-#' #/pfs/BASE_REPO/date/location/sunav2/cfgloc, where files will then be in /data, /flags and /threshold sub-folders.
+#' #/pfs/BASE_REPO/date/location/cfgloc, where files will then be in /data, /flags and /threshold sub-folders.
 #' 
 #' 2. "DirOut=value", The base file path for the output data.
 #' 
@@ -18,7 +18,7 @@
 #'  
 #' 4. "WndwAgr=value", The window aggregation period for the buoy wind data (e.g., "002" for 2-minute averages, "030" for 30-minute averages).
 #' 
-#' 5. "FileSchmData=value" (optional), The avro schema for the input and output data file.
+#' 5. "FileSchmStats=value" (optional), The avro schema for the input and output data file.
 #' 
 #' 6. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
 #' 
@@ -34,15 +34,15 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.wind.buoy.sci.stats <- function(DirIn="~/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100",                        
-#'                               DirOut="~/pfs/wind_buoy_specific_flags",
+#' flow.wind.buoy.direction.stats.ucrt <- function(DirIn="~/pfs/windBuoy_analyze_pad_and_qaqc_plau/2025/12/17/wind-buoy_BARC103100",                        
+#'                               DirOut="~/pfs/wind_buoy_direction_stats_ucrt",
 #'                               log=log)
 #' Stepping through the code in R studio                               
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100",
-#          "DirOut=/home/ncatolico/Git/pfs/wind_buoy_specific_flags",
-#          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums", "WndwAgr=002|030")
-#' rm(list=setdiff(ls(),c('arg','log')))
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_analyze_pad_and_qaqc_plau/2025/12/17/wind-buoy_BARC103100",
+         "DirOut=/home/ncatolico/Git/pfs/wind_buoy_direction_stats_ucrt",
+         "DirErr=/home/ncatolico/Git/pfs/out/errored_datums", "WndwAgr=002|030")
+# rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
 
@@ -58,7 +58,7 @@ library(lubridate)
 library(dplyr)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.wind.buoy.sci.stats.R")
+source("./wrap.wind.buoy.direction.stats.ucrt.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -79,7 +79,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr","WndwAgr"),
-                                      NameParaOptn = c("FileSchmData","FileSchmQf"),
+                                      NameParaOptn = c("FileSchmStats","FileSchmQf"),
                                       log = log)
 
 
@@ -87,15 +87,15 @@ Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut
 log$debug(base::paste0('Input data directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
+log$debug(base::paste0('Schema for output data: ', Para$FileSchmStats))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
 log$debug(base::paste0('Window aggregation: ', Para$WndwAgr))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
-if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
-  SchmDataOut <- NULL
+if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
+  SchmStatsOut <- NULL
 } else {
-  SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
+  SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
 }
 if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
   SchmFlagsOut <- NULL
@@ -106,7 +106,7 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
 # Find all the input paths (datums). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
-                              nameDirSub = c('rmyoung'),
+                              nameDirSub = c('data'),
                               log = log)
 
 # Process each datum path
@@ -116,11 +116,11 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.wind.buoy.sci.stats(
+      wrap.wind.buoy.direction.stats.ucrt(
         DirIn=idxFileIn,
         DirOutBase=Para$DirOut,
         WndwAgr=Para$WndwAgr,
-        SchmDataOut=SchmDataOut,
+        SchmStatsOut=SchmStatsOut,
         SchmFlagsOut=SchmFlagsOut,
         log=log
       ),
