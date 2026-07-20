@@ -205,4 +205,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
