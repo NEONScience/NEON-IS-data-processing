@@ -25,7 +25,7 @@ class ApplicationConfig(NamedTuple):
     eml_intellectual_rights_path: str
     eml_unit_types_path: str
     eml_units_path: str
-    # Optional: root of a pfs input carrying per-CFGLOC position_history JSONs
+    # Optional: root of a file path input carrying per-CFGLOC position_history JSONs
     # (from concH2oSoilSalinity_position_history_loader). When set, sensor_positions
     # reads history from these files instead of hitting the DB per publish month.
     position_history_path: Optional[Path] = None
