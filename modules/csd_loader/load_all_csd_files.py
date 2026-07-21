@@ -81,6 +81,16 @@ def load() -> None:
                     output_path = Path(output_directory, year, month, day, group, folder, filename)
                     output_path.parent.mkdir(parents=True, exist_ok=True)
                     print(f'Output path: {output_path}')
+
+                    try:
+                        # Download blob contents to the local output path                        
+                        blob.download_to_filename(str(output_path))
+                        print(f"Wrote file: {gcs_path} -> {output_path} ({output_path.stat().st_size} bytes)")    
+                    except Exception:
+                        exc_type, exc_obj, exc_tb = sys.exc_info()
+                        print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
+
+                    
                     
                 except IndexError as e:
                     print(f"ERROR: Path structure incorrect for {path}: {e}")
