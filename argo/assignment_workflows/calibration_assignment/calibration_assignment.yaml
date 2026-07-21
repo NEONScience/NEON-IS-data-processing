@@ -1,12 +1,12 @@
 ---
-# Default workflow for assigning locations to sensor data.
-# The location data is loaded to a local shared volume.
-# The location assignment module processes whatever is in the volume.
-# The final output is written to a specified path in the specified output bucket.
+# Default workflow for assigning calibrations to data days.
+# The calibration data is loaded to a local shared volume.
+# The calibration assignment module processes whatever is in the volume.
+# The final output is written to a specified prefix in the output bucket.
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
 metadata:
-  name: location-asset-assignment
+  name: calibration-assignment
 spec:
   schedules:
   - "* * 31 2 *"
@@ -22,22 +22,15 @@ spec:
       - name: run_date
         value: "{{=sprig.date('2006/01/02', workflow.creationTimestamp)}}"
       - name: env_config
-        value: location-asset-assignment-env
+        value: calibration-assignment-env
       - name: assignment_config
-        value: |
-          [
-            {
-              "key": "cmp22",
-              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=asset 'Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|location_properties:LatTow|location_properties:LonTow'"
-            }
-          ]
-        # TODO: testing
-        # valueFrom:
-        #   configMapKeyRef:
-        #     name: location-asset-assignment-config
-        #     key: config
+        valueFrom:
+          configMapKeyRef:
+            name: calibration-assignment-config
+            key: config
 
     templates:
+    # Loop over source types and r code config.
     - name: main
       steps:
       - - name: run-step
@@ -45,14 +38,16 @@ spec:
           arguments:
             parameters:
             - name: source_type
-              value: '{{item.key}}'
+              value: "{{item.key}}"
             - name: r_args
-              value: '{{item.value}}'
-          withParam: '{{workflow.parameters.assignment_config}}'
+              value: "{{item.value}}"
+          withParam: "{{workflow.parameters.assignment_config}}"
 
+    # Process each source type.
     - name: run
       inputs:
         parameters:
+
         # Required input parameters.
         - name: source_type
         - name: r_args
@@ -66,8 +61,8 @@ spec:
           value: /tmp
         - name: error_path
           value: /errors
-        - name: location_data_dir
-          value: location_data
+        - name: calibration_dir
+          value: calibrations
         - name: data_year_dir
           value: data_year
 
@@ -77,37 +72,19 @@ spec:
             configMapKeyRef:
               name: "{{workflow.parameters.env_config}}"
               key: log_level
-        # Git
-        - name: git_secret_name
+
+        # Calibration source bucket
+        - name: calibration_bucket
           valueFrom:
             configMapKeyRef:
               name: "{{workflow.parameters.env_config}}"
-              key: git_secret_name
-        - name: git_secret_file_name
+              key: calibration_bucket
+        - name: calibration_bucket_prefix
           valueFrom:
             configMapKeyRef:
               name: "{{workflow.parameters.env_config}}"
-              key: git_secret_file_name
-        - name: git_repo_url
-          valueFrom:
-            configMapKeyRef:
-              name: "{{workflow.parameters.env_config}}"
-              key: git_repo_url
-        - name: git_branch
-          valueFrom:
-            configMapKeyRef:
-              name: "{{workflow.parameters.env_config}}"
-              key: git_branch
-        - name: git_repo_name
-          valueFrom:
-            configMapKeyRef:
-              name: "{{workflow.parameters.env_config}}"
-              key: git_repo_name
-        - name: git_repo_dir
-          valueFrom:
-            configMapKeyRef:
-              name: "{{workflow.parameters.env_config}}"
-              key: git_repo_dir
+              key: calibration_bucket_prefix
+
         # Output bucket
         - name: output_bucket
           valueFrom:
@@ -119,6 +96,7 @@ spec:
             configMapKeyRef:
               name: "{{workflow.parameters.env_config}}"
               key: output_bucket_prefix
+
         # Data year
         - name: data_year_file
           valueFrom:
@@ -135,6 +113,7 @@ spec:
             configMapKeyRef:
               name: "{{workflow.parameters.env_config}}"
               key: data_year_bucket_prefix
+
         # Manifests
         - name: manifest_file_name
           valueFrom:
@@ -146,6 +125,7 @@ spec:
             configMapKeyRef:
               name: "{{workflow.parameters.env_config}}"
               key: change_manifest_file_name
+
         # R Code
         - name: parallelization_internal
           valueFrom:
@@ -157,12 +137,14 @@ spec:
             configMapKeyRef:
               name: "{{workflow.parameters.env_config}}"
               key: relative_path_index
+
         artifacts: 
         - name: data-year
           path: "{{inputs.parameters.in_path}}/{{inputs.parameters.data_year_dir}}/{{inputs.parameters.data_year_file}}"
           gcs:
             bucket: "{{inputs.parameters.data_year_bucket}}"
             key: "{{inputs.parameters.data_year_bucket_prefix}}"
+
       volumes:
       - name: in-vol
         emptyDir: { }
@@ -172,12 +154,14 @@ spec:
         emptyDir: { }
       - name: err-vol
         emptyDir: { }
-      - name: git-secret-vol
-        secret:
-          secretName: "{{inputs.parameters.git_secret_name}}"
+      # A writable volume to run gcloud command, which tries to write to HOME/config
+      - name: gcloud-volume
+        emptyDir: {}
+
       containerSet:
         # Must mount volumes to make them accessible to all containers 
         # (otherwise they are only accessible to the "main" container).
+
         volumeMounts:
         - name: in-vol
           mountPath: "{{inputs.parameters.in_path}}"
@@ -187,53 +171,53 @@ spec:
           mountPath: "{{inputs.parameters.tmp_path}}"  # Required to run R code that creates a temp directory
         - name: err-vol
           mountPath: "{{inputs.parameters.error_path}}"
-        containers:
+        - name: gcloud-volume
+          mountPath: /mnt/gcloud
 
-        # Read all the location files from Git that have changed in the latest commit.
-        - name: load-location-files
-          image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-argo-workflows-data-change-manifest:sha-461c14b
+        containers:
+        # Download the calibration files
+        - name: download
+          image: gcr.io/google.com/cloudsdktool/google-cloud-cli:slim
           securityContext:
             runAsUser: 1001 
             runAsGroup: 1001
-          volumeMounts:
-          - name: git-secret-vol
-            mountPath: /key
           resources:
             requests:
-              memory: 1.5Gi
+              memory: 2Gi
               cpu: 1
             limits:
-              memory: 2.5Gi
+              memory: 3Gi
               cpu: 1.25
-          env:
-          - name: OUTPUT_PATH
-            value: "{{inputs.parameters.in_path}}/{{inputs.parameters.location_data_dir}}"
-          - name: KEY_PATH
-            value: "/key/{{inputs.parameters.git_secret_file_name}}"
-          - name: DOWNLOAD_PATH
-            value: "{{inputs.parameters.tmp_path}}/{{inputs.parameters.git_repo_name}}"
-          - name: GIT_REPO_URL
-            value: "{{inputs.parameters.git_repo_url}}"
-          - name: GIT_REPO_NAME
-            value: "{{inputs.parameters.git_repo_name}}"
-          - name: GIT_BRANCH_NAME
-            value: "{{inputs.parameters.git_branch}}"
-          - name: GIT_REPO_DIR
-            value: location-assets/cmp22/11183
-            # value: "{{inputs.parameters.git_repo_dir}}" TODO: testing
-          - name: LOGURU_LEVEL
-            value: "{{inputs.parameters.log_level}}"
-          command:
-          - sh
+          command: 
+          - sh 
           - -c
           - |
-            python3 /app/clone_changed_files.py
+            export HOME=/mnt/gcloud
 
-        # Assign the assets and locations
-        - name: location-assignment
+            bucket={{inputs.parameters.calibration_bucket}}
+            prefix={{inputs.parameters.calibration_bucket_prefix}}
+            source_type={{inputs.parameters.source_type}}
+            in_dir={{inputs.parameters.in_path}}
+            calibration_dir={{inputs.parameters.calibration_dir}}
+
+            url="gs://${bucket}/${prefix}/${source_type}/"
+
+            download_dir=${in_dir}/${calibration_dir}
+
+            mkdir -p ${download_dir}
+            cd ${download_dir}
+            echo "Copying files from GCS bucket..."
+            if gcloud storage cp --recursive $url ${download_dir}/; then
+              echo "Copy succeeded."
+            else
+              echo "No matching files for $url (or another error occurred). Continuing..."
+            fi
+
+        # Assign the calibrations
+        - name: assign
           dependencies:
-          - load-location-files
-          image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.4
+          - download
+          image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.0.7
           # Need to run as user 1001 because the gcs input is loaded as 
           # this user and group, as controlled by the helm chart.
           # Note that the image sets the user and group as 9999, but this 
@@ -254,7 +238,7 @@ spec:
               cpu: 1.25
           env:
           - name: DIR_IN
-            value: "{{inputs.parameters.in_path}}/{{inputs.parameters.location_data_dir}}"
+            value: "{{inputs.parameters.in_path}}/{{inputs.parameters.calibration_dir}}"
           - name: DIR_OUT
             value: "{{inputs.parameters.out_path}}"
           - name: ERR_PATH
@@ -276,16 +260,12 @@ spec:
             # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
             set -euo pipefail
             IFS=$'\n\t'
-            echo "Input files:"
-            find {{inputs.parameters.in_path}} -type f
-            # Run location assignment module
-            echo "R_ARGS: $R_ARGS"
-            eval "Rscript ./flow.loc.grp.asgn.R $R_ARGS"
+            eval "Rscript ./flow.cal.asgn.R $R_ARGS"
 
-        # Generated the change manifest and write it to a bucket.
+        # Generate the change manifest and save to a bucket
         - name: main
           dependencies:
-          - location-assignment
+          - assign
           image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-argo-workflows-data-change-manifest:sha-461c14b
           resources:
             requests:
@@ -296,7 +276,7 @@ spec:
               cpu: 1
           env:
           - name: SOURCE_PATH
-            value: "{{inputs.parameters.out_path}}/{{inputs.parameters.source_type}}"
+            value: "{{inputs.parameters.out_path}}"
           - name: SOURCE_TYPE
             value: "{{inputs.parameters.source_type}}"
           - name: RUN_DATE
@@ -313,5 +293,7 @@ spec:
             value: "{{inputs.parameters.change_manifest_file_name}}"
           - name: LOGURU_LEVEL
             value: "{{inputs.parameters.log_level}}"
-          command: [sh, -c]
-          args: ["python3 /app/main.py"]
+          command: 
+          - sh
+          - -c
+          - python3 /app/main.py
