@@ -1,5 +1,5 @@
 ---
-# Default workflow for assigning data to dates.
+# Default workflow for assigning metadata to dates.
 # The data is loaded to a shared volume.
 # The assignment module processes whatever is in the volume.
 # The final output is written to a specified path in the specified output bucket.
@@ -13,16 +13,12 @@ spec:
   securityContext:
     fsGroup: 1001
     fsGroupChangePolicy: OnRootMismatch
-  arguments:
-    parameters:
-
   templates:
   - name: main
     inputs:
       parameters:
-      - name: source_type # NOTE: this could be a source_type or a group_prefix, how to name?
+      - name: source_type
       - name: r_args
-
       # Define constant paths for use across container mounted volumes.
       - name: in_path
         value: /inputs
@@ -36,7 +32,6 @@ spec:
         value: download_data
       - name: data_year_dir
         value: data_year
-
       # ConfigMap constants.
       - name: log_level
         valueFrom:
@@ -154,8 +149,7 @@ spec:
       - name: err-vol
         mountPath: "{{inputs.parameters.error_path}}"
       containers:
-
-      # Read all the location files from Git that have changed in the latest commit.
+      # Read all the metadata files from Git that have changed in the latest commit.
       - name: load
         image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-argo-workflows-data-change-manifest:sha-461c14b
         securityContext:
@@ -192,7 +186,6 @@ spec:
         - sh
         - -c
         - python3 /app/clone_changed_files.py
-
       # Assign the assets and locations
       - name: assign
         dependencies:
@@ -230,7 +223,7 @@ spec:
         - name: R_ARGS
           value: "{{inputs.parameters.r_args}}"
         - name: FILE_YEAR
-          value: "{{inputs.parameters.in_path}}/{{inputs.parameters.data_year_dir}}/data_year_2026.txt"
+          value: "{{inputs.parameters.in_path}}/{{inputs.parameters.data_year_dir}}/{{inputs.parameters.data_year_file}}"
         - name: PARALLELIZATION_INTERNAL
           value: "{{inputs.parameters.parallelization_internal}}"
         command:
@@ -245,7 +238,6 @@ spec:
           # Run location assignment module
           echo "R_ARGS: $R_ARGS"
           eval "Rscript ./flow.loc.grp.asgn.R $R_ARGS"
-
       # Generated the change manifest and write it to a bucket.
       - name: main
         dependencies:
