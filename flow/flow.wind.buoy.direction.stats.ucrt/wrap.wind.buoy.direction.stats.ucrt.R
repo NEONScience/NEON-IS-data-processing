@@ -148,6 +148,11 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
   }
 
 
+  testfile <- "NEON.D03.BARC.DP1.20059.001.103.100.002.WSDBuoy_2min.2025-12.expanded.20260504T185356Z.csv"
+  data_wind<-read.csv(file=base::paste0("/home/ncatolico/Git/pfs/test/", testfile),header=TRUE,stringsAsFactors=FALSE)
+  data_wind$readout_time<-as.POSIXct(data_wind$startDateTime,format="%Y-%m-%dT%H:%M:%OSZ",tz="GMT")
+  data_wind<-data_wind[data_wind$readout_time>="2025-12-17 00:00:00" & data_wind$readout_time<"2025-12-18 00:00:00",]
+
   ################
   # Calculate the mean and variance with analytical two-pass method
   # In the first pass, the components of the average distance vector over an observation period with sample size n are calculated 
@@ -169,7 +174,27 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     Wndw <- as.numeric(WndwAgr[j])
     data_wind_avg <- data_wind
     data_wind_avg$windowStart <- anchor_time + base::floor(dt_secs / (Wndw*60)) * (Wndw*60)    
+    data_wind_avg$expUncert <- NA_real_
 
+    # Uncertainty calculations for wind direction statistics by time bin
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::group_by(windowStart) %>%
+      dplyr::group_modify(~{
+        log$debug(base::paste0(
+          'Calculating uncertainty for window aggregation period: ',
+          WndwAgr[j],
+          ' and time bin: ',
+          .y$windowStart
+        ))
+        .x$expUncert <- NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(
+          data = .x,
+          VarUcrt = 'buoyWindDirMean',
+          ucrtCoef = ucrtCoef
+        )
+        .x
+      }) %>%
+      dplyr::ungroup()
+    
     # Compute first-pass vector components for each averaging period.
     data_wind_avg <- data_wind_avg %>%
       dplyr::group_by(windowStart) %>%
@@ -244,18 +269,6 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
       dplyr::group_by(windowStart) %>%
       dplyr::slice(1) %>%
       dplyr::ungroup()
-
-    
-
-    #### Uncertianty calculations for wind direction statistics
-    
-
-
-
-
-
-
-
 
     # only keep the necessary columns for further analysis
     statsOut <- data_wind_avg[, c("readout_time", "source_id", "site_id", "windDirMean", "windDirVar", "n","windDirSE")]
