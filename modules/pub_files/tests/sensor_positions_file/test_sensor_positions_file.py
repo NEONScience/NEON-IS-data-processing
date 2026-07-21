@@ -16,7 +16,9 @@ from pub_files.geometry import build_geometry
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.main import get_timestamp
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsDatabase
+from pub_files.output_files.sensor_positions.sensor_positions_file import get_column_names
 from pub_files.output_files.sensor_positions.sensor_positions_file import write_file
+from pub_files.output_files.sensor_positions.sensor_specific_processors import create_tchain_rows
 from pub_files.tests.file_date_converter import to_datetime
 
 
@@ -197,3 +199,102 @@ class PositionsFileTest(TestCase):
                                  name='SOILPL101755',
                                  description='Central Plains Soil Plot, SP2',
                                  properties=properties)
+
+
+class _FakeLocation:
+    """Minimal stand-in for the NamedLocation that create_tchain_rows inspects
+    via `is_tchain_sensor(location)` -> checks for ThermistorDepth{i} properties."""
+    def __init__(self, properties):
+        self.properties = properties
+
+
+class _FakeGeolocation:
+    """Minimal stand-in — create_tchain_rows reads `.offset_name` before it hands
+    the geolocation to add_reference_position_data_func."""
+    def __init__(self, offset_name='REFLOC001'):
+        self.offset_name = offset_name
+
+
+class TchainRowShapeTest(TestCase):
+    """create_tchain_rows produces one row per thermistor depth. When
+    include_effective_dates is False (the default all pipelines hit today), the row
+    shape matches the pre-change 22-column schema exactly. When True (the shape the
+    follow-up DB-codepath effective-dates work will flip to), two blank cells appear
+    between description and positionStart, aligning with get_column_names(True).
+    """
+
+    @staticmethod
+    def _base_row_stub(_database, _geolocation, row_hor_ver, row_location_id, row_description):
+        return {
+            'row_hor_ver': row_hor_ver,
+            'row_location_id': row_location_id,
+            'row_description': row_description,
+            'row_position_start_date': '2020-01-01T00:00:00Z',
+            'row_position_end_date':   '',
+            'row_x_offset': 0.0, 'row_y_offset': 0.0, 'row_z_offset': 0.0,
+            'row_pitch': 0.0, 'row_roll': 0.0, 'row_azimuth': 0.0,
+            'row_reference_location_id': 'REFLOC001',
+            'row_reference_location_description': 'ref desc',
+            'row_reference_location_latitude': 40.0,
+            'row_reference_location_longitude': -104.0,
+            'row_reference_location_elevation': 1500.0,
+        }
+
+    @staticmethod
+    def _ref_position_stub(_database, base_data, _geolocation, _offset_name):
+        row = dict(base_data)
+        row.update({
+            'row_x_azimuth': 0.0, 'row_y_azimuth': 0.0,
+            'row_east_offset': 0.0, 'row_north_offset': 0.0,
+            'row_reference_location_start_date': '2010-01-01T00:00:00Z',
+            'row_reference_location_end_date':   '',
+        })
+        return [row]
+
+    @staticmethod
+    def _tchain_location():
+        return _FakeLocation(properties=[
+            Property(name='ThermistorDepth501', value='0.06'),
+            Property(name='ThermistorDepth502', value='0.16'),
+        ])
+
+    def _run(self, include_effective_dates: bool):
+        return create_tchain_rows(
+            database=None, location=self._tchain_location(),
+            geolocation=_FakeGeolocation(),
+            row_hor_ver='000.010', row_location_id='CFGLOC000001',
+            row_description='Test Soil Temp',
+            create_base_row_data_func=self._base_row_stub,
+            add_reference_position_data_func=self._ref_position_stub,
+            include_effective_dates=include_effective_dates,
+        )
+
+    def test_default_flag_omits_effective_cells(self):
+        rows = self._run(include_effective_dates=False)
+        self.assertEqual(len(rows), 2)  # one per thermistor depth
+        header = get_column_names(include_effective_dates=False)
+        self.assertEqual(len(header), 22)
+        # Thermistor ids substitute into the VER slot of HOR.VER
+        self.assertEqual({row[0] for row in rows}, {'000.501', '000.502'})
+        for row in rows:
+            self.assertEqual(len(row), 22)
+            # Position dates land right after description; no blank cells between.
+            self.assertEqual(row[3], '2020-01-01T00:00:00Z')
+            self.assertEqual(row[4], '')
+
+    def test_flag_true_inserts_two_blank_cells_matching_header(self):
+        rows = self._run(include_effective_dates=True)
+        self.assertEqual(len(rows), 2)
+        header = get_column_names(include_effective_dates=True)
+        self.assertEqual(len(header), 24)
+        self.assertEqual(header[3], 'effectiveStartDateTime')
+        self.assertEqual(header[4], 'effectiveEndDateTime')
+        self.assertEqual({row[0] for row in rows}, {'000.501', '000.502'})
+        for row in rows:
+            self.assertEqual(len(row), 24)
+            # Two blank cells for effective land between description and positionStart.
+            # DB codepath doesn't compute the intersection yet; follow-up PR fills these.
+            self.assertEqual(row[3], '')
+            self.assertEqual(row[4], '')
+            self.assertEqual(row[5], '2020-01-01T00:00:00Z')  # positionStart
+            self.assertEqual(row[6], '')                      # positionEnd
