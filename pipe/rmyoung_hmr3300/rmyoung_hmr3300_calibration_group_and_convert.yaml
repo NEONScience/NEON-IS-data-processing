@@ -38,7 +38,7 @@ transform:
         "UcrtFuncTerm1=def.ucrt.meas.cnst:speed" \
         "UcrtFuncTerm2=def.ucrt.meas.cnst:direction" \
         FileSchmData=$SCHEMA_CAL_RMYOUNG \
-        FileSchmQf=$SCHEMA_FLAGS_RMYOUNG
+        FileSchmQf=$SCHEMA_FLAGS_RMYOUNG 
     
     # Set some environment variables for the second filter joiner
     export OUT_PATH=$OUT_PATH_2

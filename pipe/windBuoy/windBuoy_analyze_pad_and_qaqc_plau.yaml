@@ -36,7 +36,8 @@ transform:
       "TermTest2=windDirMean:null|gap|range|persistence" \
       "TermTest3=vectorAverageHeading:null|gap|range|persistence" \
       "DirSubCopy=location|flags" \
-      FileSchmQf=$SCHEMA_FLAGS
+      FileSchmQf=$SCHEMA_FLAGS \
+      FileSchmData=$SCHEMA_DATA
     EOF
   env:
     # Environment variables for padded timeseries analyzer
@@ -56,6 +57,10 @@ input:
       name: SCHEMA_FLAGS
       repo: windBuoy_avro_schemas
       glob: /windBuoy/windBuoy_flags_plausibility.avsc
+  - pfs:
+      name: SCHEMA_DATA
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_analyzed.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

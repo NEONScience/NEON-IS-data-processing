@@ -39,7 +39,7 @@
 #'                               log=log)
 #' Stepping through the code in R studio                               
 log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_analyze_pad_and_qaqc_plau/2025/12/17/wind-buoy_BARC103100",
+arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_analyze_pad_and_qaqc_plau_group/2025/12/17/wind-buoy_BARC103100",
          "DirOut=/home/ncatolico/Git/pfs/wind_buoy_direction_stats_ucrt",
          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums", "WndwAgr=002|030")
 # rm(list=setdiff(ls(),c('arg','log')))

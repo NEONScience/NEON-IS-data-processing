@@ -23,9 +23,9 @@ transform:
       DirOut=/tmp/compass_correction \
       DirErr=/pfs/out/errored_datums \
       "DirSubCopy=location|threshold" \
-      FileSchmData=$SCHEMA_DATA
-
-    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+      FileSchmData=$SCHEMA_DATA \
+      FileSchmQf=$SCHEMA_QF
+      
     cp -rL /tmp/compass_correction /tmp/compass_correction_copy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/compass_correction 
 
@@ -52,6 +52,10 @@ input:
       name: SCHEMA_DATA
       repo: windBuoy_avro_schemas
       glob: /windBuoy/windBuoy_compass_corrected.avsc
+  - pfs:
+      name: SCHEMA_QF
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_flags_deadband.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

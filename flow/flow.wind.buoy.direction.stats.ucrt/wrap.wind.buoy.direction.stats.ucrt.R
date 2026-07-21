@@ -50,7 +50,8 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
 
   DirInData <- paste0(DirIn,"/data")
   DirInFlags<- paste0(DirIn,"/flags")
-  DirInLocations <- paste0(DirIn,"/location")
+  DirInThresholds <- paste0(DirIn,"/threshold")
+  DirInUncert <- paste0(DirIn,"/uncertainty_data")
   
   # Create output directories
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
@@ -80,6 +81,28 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     log$debug(base::paste0('Successfully read in file: ',flags_plauName))
   }
 
+  #read in buoy wind uncertainty coefficients and data
+  uncert_data<- NEONprocIS.base::def.read.parq(NameFile=base::paste0(DirInUncert, '/', base::list.files(DirInUncert, full.names=FALSE)), log=log)
+  #merge with the buoy wind data
+  data_wind <- merge(data_wind, uncert_data[, c("readout_time", "direction_ucrtMeas", "direction_ucrtComb","direction_ucrtExpn")], by="readout_time", all.x=TRUE)
+
+
+  #read in compass thresholds
+  thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
+  windThresholds<-base::try(NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = base::paste0(DirInThresholds, '/', thresholdFileName)),silent = FALSE)
+  if(class(windThresholds)[1] == 'try-error'){
+    log$warn(base::paste0('Failed to read threshold file: ',thresholdFileName))
+    data_wind$magDecUcrtValue<-NA_real_
+    data_wind$compassUcrtValue<-NA_real_
+  }else{
+    magDecUcrt <- windThresholds[(windThresholds$threshold_name=="2D Wind Direction Buoy Magnetic declination uncertainty"),]
+    data_wind$magDecUcrtValue<-magDecUcrt$number_value[1]
+    compassUcrt <- windThresholds[(windThresholds$threshold_name=="2D Wind Direction Buoy compass uncertainty"),]
+    data_wind$compassUcrtValue<-compassUcrt$number_value[1]
+  }
+
+
+  ################
   # Calculate the mean and variance with analytical two-pass method
   # In the first pass, the components of the average distance vector over an observation period with sample size n are calculated 
   # The first window begins at the nearest whole minute <= first timestamp in the series.
@@ -164,14 +187,34 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
         windDirVar = windDirVar * (180 / pi)^2
       )
 
+    # calculate standard error of the mean wind direction for each observation window
+    # SE = sqrt(s^2 / n)
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::mutate(
+        windDirSE = base::sqrt(windDirMean / n)
+      )
+    
+
     # reduce file to one row per observation window
     data_wind_avg <- data_wind_avg %>%
       dplyr::group_by(windowStart) %>%
       dplyr::slice(1) %>%
       dplyr::ungroup()
 
+    
+
+    #### Uncertianty calculations for wind direction statistics
+    
+
+
+
+
+
+
+
+
     # only keep the necessary columns for further analysis
-    statsOut <- data_wind_avg[, c("readout_time", "source_id", "site_id", "windDirMean", "windDirVar", "n")]
+    statsOut <- data_wind_avg[, c("readout_time", "source_id", "site_id", "windDirMean", "windDirVar", "n","windDirSE")]
 
 
     # Write out stats file

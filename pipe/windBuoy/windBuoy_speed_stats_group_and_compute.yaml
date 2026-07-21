@@ -22,7 +22,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       "WndwAgr=002|030" \
-      "TermStat1=windSpeedMean:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
+      "TermStat1=speed:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
     EOF
   env:
     # Environment variables for filter-joiner

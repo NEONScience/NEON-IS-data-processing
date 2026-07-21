@@ -34,14 +34,17 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.wind.buoy.compass.correction <- function(DirIn="~/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100",                        
+#' flow.wind.buoy.compass.correction <- function(DirIn="~/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BLWA103100",                        
 #'                               DirOut="~/pfs/wind_buoy_specific_flags",
 #'                               log=log)
 #' Stepping through the code in R studio                               
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100",
+# arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BLWA103100",
 #          "DirOut=/home/ncatolico/Git/pfs/wind_buoy_specific_flags",
-#          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums")
+#          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums",
+#          "DirSubCopy=location|threshold",
+#          "FileSchmQf=/home/ncatolico/Git/pfs/windBuoy_avro_schemas/windBuoy/windBuoy_flags_deadband.avsc",
+#          "FileSchmData=/home/ncatolico/Git/pfs/windBuoy_avro_schemas/windBuoy/windBuoy_compass_corrected.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently

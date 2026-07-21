@@ -91,7 +91,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
                                        log=log)
   }
   
-  #' Read in parquet file of buoy wind data.
+  # Read in parquet file of buoy wind data.
   dataFileName_rmyoung<-base::list.files(DirInData_rmyoung,full.names=FALSE)
   if(length(dataFileName_rmyoung)==0){
     log$error(base::paste0('Data file not found in ', DirInData_rmyoung)) 
@@ -99,15 +99,28 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   } else {
     data_rmyoung<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData_rmyoung, '/', dataFileName_rmyoung),
                                                        log = log),silent = FALSE)
-    log$debug(base::paste0('Successfully read in file: ',dataFileName_rmyoung))
+    if(class(data_rmyoung)[1] == 'try-error'){
+      log$error(base::paste0('Error reading in data file: ', DirInData_rmyoung, '/', dataFileName_rmyoung)) 
+      stop()
+    }else{
+      log$debug(base::paste0('Successfully read in file: ',dataFileName_rmyoung))
+      data_rmyoung$readout_time <- as.POSIXct(data_rmyoung$readout_time, origin="1970-01-01", tz="GMT")
+    }    
   }
   dataFileName_hmr3300<-base::list.files(DirInData_hmr3300,full.names=FALSE)
   if(length(dataFileName_hmr3300)==0){
     log$debug(base::paste0('HMR3300 file not found in ', DirInData_hmr3300))
   } else {
     data_hmr3300<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData_hmr3300, '/', dataFileName_hmr3300),
-                                                       log = log),silent = FALSE)
-    log$debug(base::paste0('Successfully read in file: ',dataFileName_hmr3300))
+                                                       log = log),silent = FALSE)    
+    if(class(data_hmr3300)[1] == 'try-error'){
+      log$error(base::paste0('Error reading in data file: ', DirInData_hmr3300, '/', dataFileName_hmr3300)) 
+      stop()
+    }else{
+      log$debug(base::paste0('Successfully read in file: ',dataFileName_hmr3300))
+      data_hmr3300$readout_time <- as.POSIXct(data_hmr3300$readout_time, origin="1970-01-01", tz="GMT")
+    }
+    
   }
 
   

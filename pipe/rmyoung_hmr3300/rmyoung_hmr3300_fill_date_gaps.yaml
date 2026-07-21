@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_hmr3300_fill_date_gaps
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:sha-83fca76
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:v1.0.4
   cmd:
   - sh
   - "-c"
@@ -49,7 +49,7 @@ transform:
         "DirFill=data|uncertainty_data|flags" \
         WndwFill="01" \
         "DirSubCopy=location|uncertainty_coef" \
-        "FileSchm=data:$SCHEMA_DATA_RMYOUNG|flags:$SCHEMA_FLAGS_RMYOUNG"
+        "FileSchm=data:$SCHEMA_DATA_RMYOUNG|flags:$SCHEMA_FLAGS_RMYOUNG|uncertainty_data:$SCHEMA_UCRT_RMYOUNG"
     elif [ $source_type = "hmr3300" ]; then
       Rscript ./flow.gap.fill.nonrglr.R \
         DirIn=/tmp/pfs/date_filled \
@@ -91,6 +91,10 @@ input:
       name: SCHEMA_DATA_RMYOUNG
       repo: rmyoung_hmr3300_avro_schemas
       glob: /rmyoung/rmyoung_calibrated.avsc
+  - pfs:
+      name: SCHEMA_UCRT_RMYOUNG
+      repo: rmyoung_hmr3300_avro_schemas
+      glob: /rmyoung/rmyoung_uncertainty_data.avsc
   - pfs:
       name: SCHEMA_FLAGS_RMYOUNG
       repo: rmyoung_hmr3300_avro_schemas
