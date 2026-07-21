@@ -175,25 +175,31 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     data_wind_avg <- data_wind
     data_wind_avg$windowStart <- anchor_time + base::floor(dt_secs / (Wndw*60)) * (Wndw*60)    
     data_wind_avg$expUncert <- NA_real_
+    # data<-data_wind_avg[data_wind_avg$windowStart==data_wind_avg$windowStart[1],]
+    # #rename column buoy windMEan to direction 
+    # names(data_wind_avg)[names(data_wind_avg) == 'buoyWindDirMean'] <- 'direction'
 
-    # Uncertainty calculations for wind direction statistics by time bin
-    data_wind_avg <- data_wind_avg %>%
-      dplyr::group_by(windowStart) %>%
-      dplyr::group_modify(~{
-        log$debug(base::paste0(
-          'Calculating uncertainty for window aggregation period: ',
-          WndwAgr[j],
-          ' and time bin: ',
-          .y$windowStart
-        ))
-        .x$expUncert <- NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(
-          data = .x,
-          VarUcrt = 'buoyWindDirMean',
-          ucrtCoef = ucrtCoef
-        )
-        .x
-      }) %>%
-      dplyr::ungroup()
+    # # Uncertainty calculations for wind direction statistics by time bin
+    # data_wind_avg <- data_wind_avg %>%
+    #   dplyr::group_by(windowStart) %>%
+    #   dplyr::group_modify(~{
+    #     log$debug(base::paste0(
+    #       'Calculating uncertainty for window aggregation period: ',
+    #       WndwAgr[j],
+    #       ' and time bin: ',
+    #       .y$windowStart
+    #     ))
+    #     .x$expUncert <- NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(
+    #       data = .x,
+    #       VarUcrt = 'direction',
+    #       ucrtCoef = ucrtCoef
+    #     )
+    #     .x
+    #   }) %>%
+    #   dplyr::ungroup()
+    
+
+
     
     # Compute first-pass vector components for each averaging period.
     data_wind_avg <- data_wind_avg %>%
