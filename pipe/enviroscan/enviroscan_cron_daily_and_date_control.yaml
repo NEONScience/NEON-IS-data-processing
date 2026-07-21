@@ -11,7 +11,7 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2025-11-20" # Inclusive
+    START_DATE: "2026-04-28" # Inclusive
     #END_DATE: "2025-12-02" # Inclusive
     SOURCE_TYPE: "enviroscan"
   stdin:
@@ -31,8 +31,8 @@ input:
       empty_files: True
       branch: master
       trigger: 
-        cronSpec: "@never"
-        #cronSpec: "0 6 * * *" # Run at most every 6 hours (6 hours after an ingest trigger)
+        #cronSpec: "@never"
+        cronSpec: "0 6 * * *" # Run at most every 6 hours (6 hours after an ingest trigger)
         branch: "staging"
   - pfs:
       name: SITE_FILE
