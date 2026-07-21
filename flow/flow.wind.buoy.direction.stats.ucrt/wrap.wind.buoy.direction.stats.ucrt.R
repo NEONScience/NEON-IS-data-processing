@@ -51,7 +51,8 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
   DirInData <- paste0(DirIn,"/data")
   DirInFlags<- paste0(DirIn,"/flags")
   DirInThresholds <- paste0(DirIn,"/threshold")
-  DirInUncert <- paste0(DirIn,"/uncertainty_data")
+  DirInUcrt <- paste0(DirIn,"/uncertainty_data")
+  DirInUcrtCoef <- base::paste0(DirIn,'/uncertainty_coef')
   
   # Create output directories
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
@@ -94,18 +95,41 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
   }
 
   #read in buoy wind uncertainty coefficients and data
-  uncertFileName <- base::list.files(DirInUncert,full.names=FALSE)
-  uncertFileName <- uncertFileName[!base::grepl("zone.identifier", tolower(uncertFileName))]
-  uncert_data<- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(DirInUncert, '/', uncertFileName), log=log), silent = FALSE)
-  if(class(uncert_data)[1] == 'try-error'){
-    log$error(base::paste0('Error reading in uncertainty data file: ', DirInUncert, '/', uncertFileName)) 
+  ucrtFileName <- base::list.files(DirInUcrt,full.names=FALSE)
+  ucrtFileName <- ucrtFileName[!base::grepl("zone.identifier", tolower(ucrtFileName))]
+  ucrt_data<- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(DirInUcrt, '/', ucrtFileName), log=log), silent = FALSE)
+  if(class(ucrt_data)[1] == 'try-error'){
+    log$error(base::paste0('Error reading in uncertainty data file: ', DirInUcrt, '/', ucrtFileName)) 
     stop()
   }else{
-    log$debug(base::paste0('Successfully read in uncertainty data file: ', uncertFileName))
+    log$debug(base::paste0('Successfully read in uncertainty data file: ', ucrtFileName))
   }
+  
+  ucrtCoefFileName <- base::list.files(DirInUcrtCoef,full.names=FALSE)
+  ucrtCoefFileName <- ucrtCoefFileName[!base::grepl("zone.identifier", tolower(ucrtCoefFileName))]
+  if(base::length(ucrtCoefFileName) != 1){
+      log$warn(base::paste0("There are either zero or more than one uncertainty coefficient files in path: ",DirInUcrtCoef,"... Uncertainty coefs will not be read in. This is fine if the uncertainty function doesn't need it, but you should check..."))
+      ucrtCoef <- base::list()
+    } else {
+      
+      # Open the uncertainty file
+      ucrtCoef  <- base::try(rjson::fromJSON(file=base::paste0(DirInUcrtCoef, '/', ucrtCoefFileName),simplify=TRUE),silent=FALSE)
+      if(base::class(ucrtCoef) == 'try-error'){
+        # Generate error and stop execution
+        log$error(base::paste0('File: ', ucrtCoefFileName, ' is unreadable.')) 
+        stop()
+      }
+      # Turn times to POSIX
+      ucrtCoef <- base::lapply(ucrtCoef,FUN=function(idxUcrt){
+        idxUcrt$start_date <- base::strptime(idxUcrt$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+        idxUcrt$end_date <- base::strptime(idxUcrt$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+        return(idxUcrt)
+      })
+      log$debug(base::paste0('Successfully read uncertainty coefficients from file: ',ucrtCoefFileName))
+    }
 
   #merge with the buoy wind data
-  data_wind <- merge(data_wind, uncert_data[, c("readout_time", "direction_ucrtMeas", "direction_ucrtComb","direction_ucrtExpn")], by="readout_time", all.x=TRUE)
+  data_wind <- merge(data_wind, ucrt_data[, c("readout_time", "direction_ucrtMeas", "direction_ucrtComb","direction_ucrtExpn")], by="readout_time", all.x=TRUE)
 
 
   #read in compass thresholds
@@ -150,9 +174,9 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     data_wind_avg <- data_wind_avg %>%
       dplyr::group_by(windowStart) %>%
       dplyr::mutate(
-        yBar = safe_mean(base::sin(direction_corrected_rad)),
-        xBar = safe_mean(base::cos(direction_corrected_rad)),
-        n = base::sum(!base::is.na(direction_corrected_rad))
+        yBar = safe_mean(base::sin(direction_rad)),
+        xBar = safe_mean(base::cos(direction_rad)),
+        n = base::sum(!base::is.na(direction_rad))
       ) %>%
       dplyr::ungroup()
 
@@ -168,7 +192,7 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     # Eq (12): minimum angular distance between each observation and the window mean
     data_wind_avg <- data_wind_avg %>%
       dplyr::mutate(
-        min_angular_distance = 2 * base::atan(base::tan(0.5 * (direction_corrected_rad - direction_unit_vector_mean)))
+        min_angular_distance = 2 * base::atan(base::tan(0.5 * (direction_rad - direction_unit_vector_mean)))
       )
 
     # Eq (13): mean of minimum angular distances over the window
@@ -210,12 +234,10 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
       )
 
     # calculate standard error of the mean wind direction for each observation window
-    # SE = sqrt(s^2 / n)
     data_wind_avg <- data_wind_avg %>%
       dplyr::mutate(
-        windDirSE = base::sqrt(windDirMean / n)
-      )
-    
+        windDirSE = base::sqrt(windDirVar / n)
+      )    
 
     # reduce file to one row per observation window
     data_wind_avg <- data_wind_avg %>%
