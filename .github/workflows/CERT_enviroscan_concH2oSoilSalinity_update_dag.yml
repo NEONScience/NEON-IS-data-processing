@@ -2,7 +2,7 @@ name: CERT-enviroscan-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'cert'
     paths:
       - 'pipe/enviroscan/*.yaml'
       - 'pipe/enviroscan/pipe_list_enviroscan.txt'
