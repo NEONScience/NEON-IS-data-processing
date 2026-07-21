@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_compass_correct_and_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correct-and-pad:sha-5f8183b
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correct-and-pad:sha-5a0b5ef
   cmd:
   - sh
   - "-c"
@@ -25,7 +25,7 @@ transform:
       "DirSubCopy=location|threshold" \
       FileSchmData=$SCHEMA_DATA \
       FileSchmQf=$SCHEMA_QF
-      
+
     cp -rL /tmp/compass_correction /tmp/compass_correction_copy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/compass_correction 
 

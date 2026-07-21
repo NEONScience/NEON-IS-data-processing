@@ -59,36 +59,58 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
   base::dir.create(DirOutStats,recursive=TRUE)
   
   # Read in parquet file of buoy wind data.
-  dataFileName <- base::list.files(DirInData,full.names=FALSE)
+  dataFileName <- base::list.files(DirInData,full.names=FALSE) 
+  dataFileName <- dataFileName[!base::grepl("zone.identifier", tolower(dataFileName))]
   if(length(dataFileName)==0){
     log$error(base::paste0('Data file not found in ', DirInData)) 
     stop()
   } else {
     data_wind <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', dataFileName),
                                                        log = log),silent = FALSE)
-    log$debug(base::paste0('Successfully read in file: ',dataFileName))
+    if(class(data_wind)[1] == 'try-error'){
+      log$error(base::paste0('Error reading in data file: ', DirInData, '/', dataFileName)) 
+      stop()
+    }else{
+      log$debug(base::paste0('Successfully read in file: ',dataFileName))
+      data_wind$readout_time <- as.POSIXct(data_wind$readout_time, origin="1970-01-01", tz="GMT")
+    } 
   }
   
   # Read in plausibility flag file
   flagFileName <- base::list.files(DirInFlags,full.names=FALSE)
-  flags_plauName <- flagFileName[base::grepl("plausibility", tolower(flagFileName))]
+  flags_plauName <- flagFileName[base::grepl("plausibility", tolower(flagFileName)) & !base::grepl("zone.identifier", tolower(flagFileName))]
   if(length(flags_plauName)==0){
     log$error(base::paste0('Plausibility flag file not found in ', DirInFlags)) 
     stop()
   } else {
     flags_plau <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInFlags, '/', flags_plauName),
                                                        log = log),silent = FALSE)
-    log$debug(base::paste0('Successfully read in file: ',flags_plauName))
+    if(class(flags_plau)[1] == 'try-error'){
+      log$error(base::paste0('Error reading in plausibility flag file: ', DirInFlags, '/', flags_plauName)) 
+      stop()
+    }else{
+      log$debug(base::paste0('Successfully read in file: ',flags_plauName))
+    }
   }
 
   #read in buoy wind uncertainty coefficients and data
-  uncert_data<- NEONprocIS.base::def.read.parq(NameFile=base::paste0(DirInUncert, '/', base::list.files(DirInUncert, full.names=FALSE)), log=log)
+  uncertFileName <- base::list.files(DirInUncert,full.names=FALSE)
+  uncertFileName <- uncertFileName[!base::grepl("zone.identifier", tolower(uncertFileName))]
+  uncert_data<- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(DirInUncert, '/', uncertFileName), log=log), silent = FALSE)
+  if(class(uncert_data)[1] == 'try-error'){
+    log$error(base::paste0('Error reading in uncertainty data file: ', DirInUncert, '/', uncertFileName)) 
+    stop()
+  }else{
+    log$debug(base::paste0('Successfully read in uncertainty data file: ', uncertFileName))
+  }
+
   #merge with the buoy wind data
   data_wind <- merge(data_wind, uncert_data[, c("readout_time", "direction_ucrtMeas", "direction_ucrtComb","direction_ucrtExpn")], by="readout_time", all.x=TRUE)
 
 
   #read in compass thresholds
   thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
+  thresholdFileName <- thresholdFileName[!base::grepl("zone.identifier", tolower(thresholdFileName))]
   windThresholds<-base::try(NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = base::paste0(DirInThresholds, '/', thresholdFileName)),silent = FALSE)
   if(class(windThresholds)[1] == 'try-error'){
     log$warn(base::paste0('Failed to read threshold file: ',thresholdFileName))
