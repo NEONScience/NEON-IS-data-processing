@@ -44,6 +44,8 @@ def load() -> None:
                     print("path_split is: ", path_split)
                     
                     # Extract path components
+                    subfolder1 = path_split[-8]
+                    subfolder2 = path_split[-7]
                     year = path_split[-6]
                     month = path_split[-5]
                     day = path_split[-4]
@@ -64,7 +66,7 @@ def load() -> None:
                     print(f"Target filename: {filename}")
                     
                     # Construct GCS path
-                    gcs_path = os.path.join(year, month, day, group, folder, filename)
+                    gcs_path = os.path.join(subfolder1, subfolder2, year, month, day, group, folder, filename)
                     print(f"GCS path: {gcs_path}")
                     
                     # Download from GCS
