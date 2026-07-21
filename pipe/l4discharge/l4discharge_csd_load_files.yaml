@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_csd_load_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-d759f56
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-928c1f5
   cmd:
   - /bin/bash
   stdin:
