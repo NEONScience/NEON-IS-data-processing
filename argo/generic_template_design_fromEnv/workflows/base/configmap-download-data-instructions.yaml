@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: calibration-group-convert-download-data-instructions-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  download-data-instructions.sh: |
+    #!/bin/bash
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Get L0 data from GCS
+    python3 -m l0_gcs_loader_by_manifest
+
+    # Get assigned calibrations
+    CAL_REPO="${CAL_BUCKET_PREFIX#/}"
+    CAL_REPO="${CAL_REPO%/}"
+    CAL_ROOT=":gcs://${CAL_BUCKET_NAME}/${CAL_REPO}"
+
+    mkdir -p "$OUT_PATH_CAL"
+
+    # Convert manifest records into a normalized {"paths": [...]} object
+    # consumed by the calibration download loop.
+    MANIFEST_PATHS="$(python3 -m manifest_paths_builder)"
+
+    echo "Datum Manifest:        $MANIFEST_PATHS"
+    echo "Cal Root:              $CAL_ROOT"
+    echo "Cal Dest:              $OUT_PATH_CAL"
+    echo
+
+    for datum_path in $(printf '%s' "$MANIFEST_PATHS" | jq -r '.paths[]'); do
+      echo "DATUM: $datum_path"
+      echo "Getting calibration datum: $datum_path"
+
+      src="${CAL_ROOT}/${datum_path}"
+      dst="${OUT_PATH_CAL}/${datum_path}"
+      mkdir -p "$dst"
+
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        copy \
+        --progress \
+        "${src}" "${dst}"
+    done
+
+    echo "Done getting data and calibrations."
