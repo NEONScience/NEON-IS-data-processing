@@ -27,7 +27,7 @@ spec:
       - name: config-map-processing-instructions-name
         value: calibration-group-convert-processing-instructions-config
       - name: config-map-resource-request-name
-        value: resource-request
+        value: calibration-group-convert-resource-config
 
   templates:
     - name: run
@@ -132,7 +132,7 @@ spec:
 
         containers:
           - name: load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-2997119
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-0842388
             envFrom:
               - configMapRef:
                   name: "{{inputs.parameters.config-map-env-name}}"
