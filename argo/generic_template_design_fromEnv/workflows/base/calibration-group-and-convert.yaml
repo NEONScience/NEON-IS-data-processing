@@ -54,8 +54,6 @@ spec:
         - name: config-upload-output-vol
           configMap:
             name: "{{workflow.parameters.config-map-upload-output-instructions-name}}"
-        - name: config-output-vol
-          emptyDir: { }
         - name: data-vol
           emptyDir: { }
         - name: tmp-vol
@@ -147,8 +145,6 @@ spec:
             mountPath: /scripts
           - name: config-upload-output-vol
             mountPath: /scripts-upload-output
-          - name: config-output-vol
-            mountPath: /config/config-out
           - name: tmp-vol
             mountPath: /tmp            
 
