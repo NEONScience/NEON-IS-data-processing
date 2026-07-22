@@ -22,16 +22,16 @@ input:
       glob: /*/*/*/*
   - pfs:
       name: DIR_IN_OS
-      repo: l4discharge_os_table_group
+      repo: l4discharge_os_table_loader
       glob: /
 parallelism_spec:
   constant: 6
 autoscaling: true
 resource_requests:
-  memory: 500M
+  memory: 1.5G
   cpu: 1.2
 resource_limits:
-  memory: 1G
+  memory: 3G
   cpu: 2
 sidecar_resource_requests:
   memory: 2G
