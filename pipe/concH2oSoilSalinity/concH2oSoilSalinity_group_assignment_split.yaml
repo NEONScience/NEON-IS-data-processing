@@ -13,11 +13,11 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=group
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.4
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 input:
   cross:
   - pfs:
@@ -44,4 +44,4 @@ datum_set_spec:
   number: 5
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

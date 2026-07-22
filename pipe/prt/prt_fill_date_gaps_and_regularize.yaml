@@ -2,7 +2,7 @@
 pipeline:
   name: prt_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.4
   cmd:
   - sh
   - "-c"
@@ -100,4 +100,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

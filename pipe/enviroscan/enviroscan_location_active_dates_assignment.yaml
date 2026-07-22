@@ -14,7 +14,7 @@ transform:
       FileYear=$FILE_YEAR
       TypeFile=namedLocation
       "Prop=HOR|VER|name|description|site|Data Rate|active_periods"
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.3.4
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
@@ -45,4 +45,4 @@ datum_set_spec:
   number: 5
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

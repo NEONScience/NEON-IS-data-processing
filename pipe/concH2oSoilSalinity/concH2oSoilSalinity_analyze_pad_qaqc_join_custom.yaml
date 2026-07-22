@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau-envscn:v1.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau-envscn:v1.2.2
 
   cmd:
   - sh
@@ -110,6 +110,7 @@ transform:
     ERR_PATH: /pfs/out/errored_datums
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY
+    PARALLELIZATION_INTERNAL: '5' 
     # Environment variables for filter-joiner
     CONFIG: |
       ---
@@ -147,14 +148,14 @@ input:
         joinOn: $1/$2/$3
         empty_files: false
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 5.5
+  memory: 8G
+  cpu: 8.5
 resource_limits:
-  memory: 4G
-  cpu: 7
+  memory: 10G
+  cpu: 10
 sidecar_resource_requests:
   memory: 3G
   cpu: 0.3
@@ -162,4 +163,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

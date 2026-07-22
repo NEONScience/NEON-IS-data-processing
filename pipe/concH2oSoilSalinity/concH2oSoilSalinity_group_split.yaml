@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_group_split
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:v1.0.3
   cmd:
   - sh
   - "-c"
@@ -44,12 +44,13 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmStats=$FILE_SCHEMA_STATS \
-      FileSchmQm=$FILE_SCHEMA_QM 
+      FileSchmQm=$FILE_SCHEMA_QM \
+      "DirSubCopy=location"
 
     echo "=== flow.concH2oSalinity.grp.split complete ==="
     EOF
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     ERR_PATH: /pfs/out/errored_datums
     # group_path settings
     GROUP: conc-h2o-soil-salinity-split_
@@ -65,6 +66,7 @@ transform:
     GROUP_FOCUS_MONTH_INDEX: '4'
     GROUP_FOCUS_DAY_INDEX: '5'
     GROUP_FOCUS_GROUP_INDEX: '8'
+    PARALLELIZATION_INTERNAL: '5'
 input:
   cross:
   - pfs:
@@ -89,14 +91,14 @@ input:
         glob: /(*/*/*)
         joinOn: $1
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
-  memory: 600M
-  cpu: 0.4
+  memory: 4G
+  cpu: 5
 resource_limits:
-  memory: 2G
-  cpu: 1.2
+  memory: 5G
+  cpu: 6
 sidecar_resource_requests:
   memory: 3G
   cpu: 1
@@ -104,4 +106,5 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
+

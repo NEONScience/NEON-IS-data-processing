@@ -37,11 +37,11 @@ transform:
     DAY_INDEX: "6"
     SOURCE_TYPE: enviroscan
     SOURCE_TYPE_OUT: enviroscan
-    # BUCKET_NAME: neon-l0-ingest # Always pull from prod bucket
-  secrets:
-  - name: l0-bucket # Using this secret will use the dev/cert/prod bucket linked to the Pachyderm environment
-    env_var: BUCKET_NAME
-    key: LO_BUCKET
+    BUCKET_NAME: neon-l0-ingest # Always pull from prod bucket
+  # secrets:
+  # - name: l0-bucket # Using this secret will use the dev/cert/prod bucket linked to the Pachyderm environment
+  #   env_var: BUCKET_NAME
+  #   key: LO_BUCKET
 
 input:
   join:
@@ -77,4 +77,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

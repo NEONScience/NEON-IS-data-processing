@@ -68,7 +68,8 @@ def main() -> None:
                                                                  out_path=file_metadata.package_output_path,
                                                                  elements=file_metadata.path_elements,
                                                                  timestamp=timestamp,
-                                                                 database=sensor_positions_database)
+                                                                 database=sensor_positions_database,
+                                                                 position_history_path=config.position_history_path)
                     # write eml file
                     eml_file_config = EmlFileConfig(out_path=file_metadata.package_output_path,
                                                     metadata=file_metadata,
