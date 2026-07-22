@@ -105,6 +105,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
     }else{
       log$debug(base::paste0('Successfully read in file: ',dataFileName_rmyoung))
       data_rmyoung$readout_time <- as.POSIXct(data_rmyoung$readout_time, origin="1970-01-01", tz="GMT")
+      data_rmyoung <- data_rmyoung[!duplicated(data_rmyoung), ]
     }    
   }
   dataFileName_hmr3300<-base::list.files(DirInData_hmr3300,full.names=FALSE)
@@ -119,6 +120,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
     }else{
       log$debug(base::paste0('Successfully read in file: ',dataFileName_hmr3300))
       data_hmr3300$readout_time <- as.POSIXct(data_hmr3300$readout_time, origin="1970-01-01", tz="GMT")
+      data_hmr3300 <- data_hmr3300[!duplicated(data_hmr3300), ]
     }
     
   }
@@ -142,11 +144,9 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
 
   ###############
   #2. Apply dead band flag on uncorrected but calibrated wind data. Flag is informational only, does not go into final QF.
-  data_rmyoung$buoyWindDirDeadZone <- ifelse(
-    is.na(data_rmyoung$direction_calibrated),
-    -1,
-    ifelse(data_rmyoung$direction_calibrated >= 355 | data_rmyoung$direction_calibrated == 0, 1, 0)
-  )
+  data_rmyoung$buoyWindDirDeadZone <- -1
+  data_rmyoung$buoyWindDirDeadZone[data_rmyoung$direction_calibrated >= 355] <- 1
+  data_rmyoung$buoyWindDirDeadZone[data_rmyoung$direction_calibrated < 355] <- 0
   data_rmyoung$direction_calibrated[data_rmyoung$buoyWindDirDeadZone == 1] <- 357.5
   log$debug(base::paste0('Applied dead band flag on rmyoung wind data.'))
 
@@ -261,7 +261,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
     rmyoungData <- rbind(rmyoung_all, data_rmyoung_blank)
     rmyoungData <- rmyoungData[order(rmyoungData$readout_time),]
   }else{
-    rmyoungData <- data_rmyoung_notblank
+    rmyoungData <- data_rmyoung_blank
   }
 
   # Merge the buoy compass adjusted direction with the rmyoung data based on readout_time
@@ -269,6 +269,9 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
     # rename column hmr3300$direction to compass_direction_raw
     names(data_hmr3300)[names(data_hmr3300) == "direction"] <- "compass_direction_raw"
     wind_data <- merge(rmyoungData, data_hmr3300[, c("readout_time", "compass_direction_raw", "compass_direction_adjusted")], by="readout_time", all=TRUE)
+    if(nrow(wind_data) != nrow(rmyoungData)){
+      log$error(base::paste0('The number of rows in the merged wind data (',nrow(wind_data),') does not match the number of rows in the rmyoung data (',nrow(rmyoungData),').'))
+    }
   }else{
     wind_data <- rmyoungData
     wind_data$compass_direction_adjusted <- NA
@@ -282,7 +285,10 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
 
   ###############
   #5. set to 0 when no wind
-  wind_data$direction_corrected[wind_data$speed_calibrated == 0] <- 0
+  wind_data$direction_corrected[wind_data$speed_calibrated <= 0.5] <- 0
+  wind_data$buoyWindDirCalmWind <- -1
+  wind_data$buoyWindDirCalmWind[wind_data$speed_calibrated <= 0.5] <- 1
+  wind_data$buoyWindDirCalmWind[wind_data$speed_calibrated > 0.5] <- 0
 
   ###############
   #6. Unit-vector mean wind direction must be converted from degrees to radians,
@@ -293,7 +299,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   # Write out files
   #only keep the necessary columns for further analysis
   dataOut <- wind_data[, c("readout_time", "source_id", "site_id", "speed_calibrated","compass_direction_raw","direction_calibrated","direction_corrected","direction_corrected_rad")]
-  flagsOut <- wind_data[, c("readout_time", "source_id", "site_id", "buoyWindDirDeadZone")]
+  flagsOut <- wind_data[, c("readout_time", "source_id", "site_id", "buoyWindDirDeadZone","buoyWindDirCalmWind")]
     
     
   #' Write out data file
