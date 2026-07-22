@@ -180,6 +180,7 @@ spec:
               runAsUser: 1001
               runAsGroup: 1001
 
+          # One container must be named "main".
           - name: main
             dependencies:
               - processing
