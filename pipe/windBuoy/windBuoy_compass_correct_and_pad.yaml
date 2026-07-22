@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_compass_correct_and_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correct-and-pad:sha-5a0b5ef
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correct-and-pad:sha-288e019
   cmd:
   - sh
   - "-c"
@@ -55,7 +55,7 @@ input:
   - pfs:
       name: SCHEMA_QF
       repo: windBuoy_avro_schemas
-      glob: /windBuoy/windBuoy_flags_deadband.avsc
+      glob: /windBuoy/windBuoy_flags_deadcalm.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

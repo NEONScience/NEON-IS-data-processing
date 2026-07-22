@@ -130,7 +130,8 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
 
   #merge with the buoy wind data
   data_wind <- merge(data_wind, ucrt_data[, c("readout_time", "direction_ucrtMeas", "direction_ucrtComb","direction_ucrtExpn")], by="readout_time", all.x=TRUE)
-
+  data_wind$U_CVALA1 <- as.numeric(ucrtCoef[[which(sapply(ucrtCoef, function(x) x$Name == "U_CVALA1" & x$term == "direction"))[1]]]$Value)
+  data_wind$U_CVALA3 <- as.numeric(ucrtCoef[[which(sapply(ucrtCoef, function(x) x$Name == "U_CVALA3" & x$term == "direction"))[1]]]$Value)
 
   #read in compass thresholds
   thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
@@ -148,10 +149,10 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
   }
 
 
-  testfile <- "NEON.D03.BARC.DP1.20059.001.103.100.002.WSDBuoy_2min.2025-12.expanded.20260504T185356Z.csv"
-  data_wind<-read.csv(file=base::paste0("/home/ncatolico/Git/pfs/test/", testfile),header=TRUE,stringsAsFactors=FALSE)
-  data_wind$readout_time<-as.POSIXct(data_wind$startDateTime,format="%Y-%m-%dT%H:%M:%OSZ",tz="GMT")
-  data_wind<-data_wind[data_wind$readout_time>="2025-12-17 00:00:00" & data_wind$readout_time<"2025-12-18 00:00:00",]
+  # testfile <- "NEON.D03.BARC.DP1.20059.001.103.100.002.WSDBuoy_2min.2025-12.expanded.20260504T185356Z.csv"
+  # data_wind<-read.csv(file=base::paste0("/home/ncatolico/Git/pfs/test/", testfile),header=TRUE,stringsAsFactors=FALSE)
+  # data_wind$readout_time<-as.POSIXct(data_wind$startDateTime,format="%Y-%m-%dT%H:%M:%OSZ",tz="GMT")
+  # data_wind<-data_wind[data_wind$readout_time>="2025-12-17 00:00:00" & data_wind$readout_time<"2025-12-18 00:00:00",]
 
   ################
   # Calculate the mean and variance with analytical two-pass method
@@ -174,32 +175,18 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     Wndw <- as.numeric(WndwAgr[j])
     data_wind_avg <- data_wind
     data_wind_avg$windowStart <- anchor_time + base::floor(dt_secs / (Wndw*60)) * (Wndw*60)    
-    data_wind_avg$expUncert <- NA_real_
-    # data<-data_wind_avg[data_wind_avg$windowStart==data_wind_avg$windowStart[1],]
-    # #rename column buoy windMEan to direction 
-    # names(data_wind_avg)[names(data_wind_avg) == 'buoyWindDirMean'] <- 'direction'
-
-    # # Uncertainty calculations for wind direction statistics by time bin
-    # data_wind_avg <- data_wind_avg %>%
-    #   dplyr::group_by(windowStart) %>%
-    #   dplyr::group_modify(~{
-    #     log$debug(base::paste0(
-    #       'Calculating uncertainty for window aggregation period: ',
-    #       WndwAgr[j],
-    #       ' and time bin: ',
-    #       .y$windowStart
-    #     ))
-    #     .x$expUncert <- NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(
-    #       data = .x,
-    #       VarUcrt = 'direction',
-    #       ucrtCoef = ucrtCoef
-    #     )
-    #     .x
-    #   }) %>%
-    #   dplyr::ungroup()
-    
 
 
+    # The uncertainty associated with the compass measurements, u_c1, and the declination correction, u_d1, are in the thresholds file
+    # The combined measurement uncertainty of individual wind direction measurements, u_c (θ_i ), 
+    # is computed by summing the individual uncertainties from CVAL, the compass, the declination correction, 
+    # and the orientation of the monitor atop the mast in quadrature (Eq. 20)
+    data_wind_avg$combUcrtMeas <- NA_real_
+    data_wind_avg$combUcrtMeas <- base::sqrt(data_wind_avg$U_CVALA1^2 + data_wind_avg$compassUcrtValue^2 + data_wind_avg$magDecUcrtValue^2)
+
+    # expanded measurement uncertainty 
+    data_wind_avg$expUncertMeas <- NA_real_
+    data_wind_avg$expUncertMeas <- 2 * data_wind_avg$combUcrtMeas
     
     # Compute first-pass vector components for each averaging period.
     data_wind_avg <- data_wind_avg %>%
@@ -276,8 +263,14 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
       dplyr::slice(1) %>%
       dplyr::ungroup()
 
+    #The uncertainty L1 mean wind direction (eq 25)
+    data_wind_avg$combUncertMean <- NA_real_
+    data_wind_avg$expUncertMean <- NA_real_
+    data_wind_avg$combUncertMean <- base::sqrt(data_wind_avg$U_CVALA3^2 + data_wind_avg$windDirSE^2 + data_wind_avg$compassUcrtValue^2 + data_wind_avg$magDecUcrtValue^2)
+    data_wind_avg$expUncertMean <- 2 * data_wind_avg$combUncertMean
+
     # only keep the necessary columns for further analysis
-    statsOut <- data_wind_avg[, c("readout_time", "source_id", "site_id", "windDirMean", "windDirVar", "n","windDirSE")]
+    statsOut <- data_wind_avg[, c("readout_time", "source_id", "site_id", "windDirMean", "windDirVar", "n","windDirSE","expUncertMean")]
 
 
     # Write out stats file

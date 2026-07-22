@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - buoy wind-specific direction statistics and uncertainty calculations
 
-# Start with the neon-is-pack-qaqc-r image.
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.14
+# Start with the neon-is-pack-stat-r image.
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-stat-r:v1.1.2
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.wind.buoy.direction.stats.ucrt"
