@@ -276,7 +276,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
     startDateTime = round_date(readout_time, '1 minute'),
     endDateTime = round_date(readout_time, '1 minute') + minutes(1),
     precipBulk = accu_nrt,
-    precipBulkExpUncert = combinedUcrt,
+    precipBulkExpUncert = combinedUcrt * 2, # Convert to expanded uncertainty (2x standard uncertainty)
     precipNumPts = ifelse(is.na(accu_nrt), 0L, 1L), # 1 if data exists, 0 if NA
     nullQF = nullQF,
     extremePrecipQF = rangeQF,
@@ -297,7 +297,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
     startDateTime = min(startDateTime),
     endDateTime = max(endDateTime),
     precipBulk =  ifelse(all(is.na(precipBulk)), NA_real_, sum(precipBulk, na.rm = TRUE)),
-    precipBulkExpUncert = ifelse(all(is.na(precipBulkExpUncert)), NA_real_, sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2), # Quadrature sum with 2x multiplier
+    precipBulkExpUncert = ifelse(all(is.na(precipBulkExpUncert)), NA_real_, sqrt(sum((precipBulkExpUncert / 2)^2, na.rm = TRUE)) * 2), # RSS on standard uncertainties (divide out k=2), then re-apply k=2
     precipNumPts = sum(precipNumPts, na.rm = TRUE), # Sum the counts from 1-minute intervals
     nullQF = as.integer(ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                ifelse(all(is.na(nullQF)), NA_integer_, min(nullQF, na.rm = TRUE)))),
