@@ -191,7 +191,7 @@ spec:
             image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-33f7182
             envFrom:
               - configMapRef:
-                  name: "{{inputs.parameters.config-map-env-name}}"              
+                  name: "{{inputs.parameters.config-map-env-name}}"
             command: ["/bin/bash"]
             args: ["/scripts/processing-instructions.sh"]
             securityContext:
