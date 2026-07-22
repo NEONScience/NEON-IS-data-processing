@@ -5,6 +5,7 @@ metadata:
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
   upload-output-instructions.sh: |
     #!/bin/bash
     set -euo pipefail

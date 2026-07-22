@@ -85,6 +85,21 @@ spec:
               configMapKeyRef:
                 name: "{{workflow.parameters.config-map-resource-request-name}}"
                 key: memory_limit
+          - name: load-data-image
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-load-data-instructions-name}}"
+                key: image
+          - name: processing-image
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-processing-instructions-name}}"
+                key: image
+          - name: upload-output-image
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-upload-output-instructions-name}}"
+                key: image
           - name: schema-repo-eng-url
             valueFrom:
               configMapKeyRef:
@@ -139,7 +154,7 @@ spec:
 
         containers:
           - name: load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-0842388
+            image: "{{inputs.parameters.load-data-image}}"
             env:
               - name: MANIFEST
                 value: "{{inputs.parameters.datum-manifest}}"
@@ -155,7 +170,7 @@ spec:
           - name: processing
             dependencies:
               - load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-33f7182
+            image: "{{inputs.parameters.processing-image}}"
             envFrom:
               - configMapRef:
                   name: "{{inputs.parameters.config-map-env-name}}"
@@ -168,7 +183,7 @@ spec:
           - name: main
             dependencies:
               - processing
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
+            image: "{{inputs.parameters.upload-output-image}}"
             envFrom:
               - configMapRef:
                   name: "{{inputs.parameters.config-map-env-name}}"
