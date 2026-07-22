@@ -168,7 +168,22 @@ def _build_path(record: dict, index_map: dict[str, int]) -> str:
             if source_id_str:
                 values["source_id"] = source_id_str
 
-    indexed_values = [(index_map[key], value) for key, value in values.items()]
+    # Determine the cutoff index: exclude any component whose index is larger
+    # than the deepest available date component (i.e., when data_date is truncated).
+    if "source_id" in values:
+        cutoff = index_map["source_id"]
+    elif day is not None:
+        cutoff = index_map["day"]
+    elif month is not None:
+        cutoff = index_map["month"]
+    else:
+        cutoff = index_map["year"]
+
+    indexed_values = [
+        (index_map[key], value)
+        for key, value in values.items()
+        if index_map[key] <= cutoff
+    ]
     indexed_values.sort(key=lambda item: item[0])
 
     return "/".join(value for _, value in indexed_values)
