@@ -1,4 +1,3 @@
----
 pipeline:
   name: l4discharge_csd_swe_group
 transform:
@@ -17,8 +16,7 @@ transform:
     
     EOF
   env:
-    # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
-    # these repos in order to pull them in with or without the SRF
+    # Environment variables for 1st filter-joiner.
     CONFIG: |
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
@@ -27,15 +25,15 @@ transform:
       input_paths:
         - path:
             name: CSD_DATA
-            glob_pattern: /pfs/CSD_DATA/*/*/*/*/**
+            glob_pattern: /pfs/CSD_DATA/*/*/*/**
             # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
+            join_indices: [6]
             outer_join: True
         - path:
             name: SWE_DATA
-            glob_pattern: /pfs/SWE_DATA/*/*/*/*/**
+            glob_pattern: /pfs/SWE_DATA/*/*/*/**
             # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
+            join_indices: [6]
             outer_join: True
         
     OUT_PATH: /pfs/out # Transfered to OUT_PATH for the first module
@@ -48,25 +46,25 @@ input:
   - pfs:
       name: CSD_DATA
       repo: l4discharge_csd_load_files
-      glob: /2025/*/*
-      joinOn: $1/$2/$3
+      glob: /(*/*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: SWE_DATA
       repo: l4discharge_group_path
-      glob: /2025/*/*
-      joinOn: $1/$2/$3
+      glob: /(2025/09/29/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 1G
+  memory: 1.5G
   cpu: 2.2
 resource_limits:
-  memory: 2G
+  memory: 3G
   cpu: 3.5
 sidecar_resource_requests:
   memory: 3G

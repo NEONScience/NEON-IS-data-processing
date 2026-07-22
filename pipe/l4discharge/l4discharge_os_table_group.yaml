@@ -13,14 +13,14 @@ transform:
     IFS=$'\n\t'
     
 
-    # Run first module - filter-joiner (using environment variables below as input parameters). Join CSD and SWE tables.
+    # Run first module - filter-joiner (using environment variables below as input parameters).
     python3 -m filter_joiner.filter_joiner_main
     
     EOF
   env:
     # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
     # these repos in order to pull them in with or without the SRF
-  # Below are the environment variables for 2nd filter-joiner for the OS tables
+    # Below are the environment variables for filter-joiner for the OS tables
     CONFIG: |
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
