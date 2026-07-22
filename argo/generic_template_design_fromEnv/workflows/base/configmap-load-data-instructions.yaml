@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: calibration-group-convert-download-data-instructions-config
+  name: calibration-group-convert-load-data-instructions-config
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
-  download-data-instructions.sh: |
+  load-data-instructions.sh: |
     #!/bin/bash
     set -euo pipefail
     IFS=$'\n\t'

@@ -17,11 +17,13 @@ spec:
     parameters:
       - name: datum-manifest
         value: |
-          {"paths": ["aepg600m/2026/05/03","aepg600m/2026/05/01"]}
+          [{"source_type": "aepg600m", "data_date": "2026-05-03","source_id": "16768"},{"source_type": "aepg600m", "data_date": "2026-05-01"}]
       - name: config-map-schemas-name
         value: schemas-config
       - name: config-map-env-name
         value: calibration-group-convert-env-config
+      - name: config-map-load-data-instructions-name
+        value: calibration-group-convert-load-data-instructions-config
       - name: config-map-processing-instructions-name
         value: calibration-group-convert-processing-instructions-config
       - name: config-map-resource-request-name
@@ -41,6 +43,9 @@ spec:
                 memory: "{{inputs.parameters.memory-limit}}"
 
       volumes:
+        - name: config-load-data-vol
+          configMap:
+            name: "{{workflow.parameters.config-map-load-data-instructions-name}}"
         - name: config-processing-vol
           configMap:
             name: "{{workflow.parameters.config-map-processing-instructions-name}}"
@@ -116,6 +121,8 @@ spec:
         volumeMounts:
           - name: data-vol
             mountPath: /data
+          - name: config-load-data-vol
+            mountPath: /scripts-load-data
           - name: config-processing-vol
             mountPath: /scripts
           - name: config-output-vol
@@ -125,7 +132,7 @@ spec:
 
         containers:
           - name: load-data
-            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-37b2af5
+            image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-2997119
             envFrom:
               - configMapRef:
                   name: "{{inputs.parameters.config-map-env-name}}"
@@ -139,47 +146,8 @@ spec:
             #   limits:
             #     memory: "500Mi"
             #     cpu: "1"
-            command:
-              - bash
-              - -c
-              - |
-                set -euo pipefail
-                IFS=$'\n\t'
-
-                # Get L0 data from GCS
-                python3 -m l0_gcs_loader_by_manifest
-
-                # Get assigned calibrations
-                CAL_REPO="${CAL_BUCKET_PREFIX#/}"
-                CAL_REPO="${CAL_REPO%/}"
-                CAL_ROOT=":gcs://${CAL_BUCKET_NAME}/${CAL_REPO}"
-
-                mkdir -p "$OUT_PATH_CAL"
-
-                echo "Datum Manifest:        $MANIFEST"
-                echo "Cal Root:              $CAL_ROOT"
-                echo "Cal Dest:              $OUT_PATH_CAL"
-                echo
-
-                for datum_path in $(printf '%s' "$MANIFEST" | jq -r '.paths[]'); do
-                  echo "DATUM: $datum_path"
-                  echo "Getting calibration datum: $datum_path"
-
-                  src="${CAL_ROOT}/${datum_path}"
-                  dst="${OUT_PATH_CAL}/${datum_path}"
-                  mkdir -p "$dst"
-
-                  rclone \
-                    --no-check-dest \
-                    --copy-links \
-                    --gcs-bucket-policy-only \
-                    --gcs-no-check-bucket \
-                    copy \
-                    --progress \
-                    "${src}" "${dst}"
-                done
-
-                echo "Done getting data and calibrations."
+            command: ["/bin/bash"]
+            args: ["/scripts-load-data/load-data-instructions.sh"]
 
             env:
               - name: MANIFEST
