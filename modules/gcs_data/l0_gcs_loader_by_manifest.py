@@ -1,5 +1,5 @@
 
-"""Load L0 parquet files from GCS using manifest-driven path selectors.
+"""Load L0 parquet files from GCS using manifest-driven record selectors.
 
 Manifest input can be provided by either:
 1. MANIFEST: JSON-formatted string.
@@ -7,41 +7,25 @@ Manifest input can be provided by either:
 
 If both are set, MANIFEST is used.
 
-Accepted JSON formats for either input:
-1. JSON object containing a "paths" array.
-2. JSON array of strings.
+Accepted JSON format: a JSON array of objects. Each object must contain the
+keys "source_type" and "data_date". The optional "source_id" key narrows the
+query to a specific source; when omitted it is wildcarded. Any additional keys
+in a record are ignored.
 
-Example object form:
-{
-    "paths": [
-        "cmp22/2025/10/01/11185",
-        "cmp22/2025/10/02/11185",
-        "cmp22/2025/10/03",
-        "cmp22/2026"
-    ]
-}
+The "data_date" value may be:
+- "YYYY-mm-dd": filters to an exact day.
+- "YYYY-mm": filters to a month (day wildcarded).
+- "YYYY": filters to a year (month and day wildcarded).
 
-Example array form:
+Example manifest:
 [
-    "cmp22/2025/10/01/11185",
-    "cmp22/2025/10/02/11185",
-    "cmp22/2025/10/03",
-    "cmp22/2026"
+    {"source_type": "cmp22", "data_date": "2025-10-01", "source_id": "11185"},
+    {"source_type": "cmp22", "data_date": "2025-10-02", "source_id": "11185"},
+    {"source_type": "cmp22", "data_date": "2025-10"},
+    {"source_type": "cmp22", "data_date": "2026"}
 ]
 
-Each string in the manifest is split on '/'. Index environment variables map
-positions in that split path:
-- MANIFEST_SOURCE_TYPE_INDEX
-- MANIFEST_YEAR_INDEX
-- MANIFEST_MONTH_INDEX
-- MANIFEST_DAY_INDEX
-- MANIFEST_SOURCE_ID_INDEX
-
-Paths may be partial. Only one path element is required. Missing indexed
-elements are treated as wildcards for listing/filtering, except SOURCE_TYPE,
-which must be available from MANIFEST_SOURCE_TYPE_INDEX for each processed path.
-
-When MANIFEST_SOURCE_ID_INDEX is present, the bucket prefix includes:
+When source_id is present, the bucket prefix includes:
 {L0_BUCKET_VERSION_PATH}/{source_type}/ms={download_year}-{download_month}/source_id={source_id}
 """
 
@@ -58,20 +42,24 @@ import structlog
 import common.log_config as log_config
 
 
-def _parse_manifest_data(manifest_data: object, log) -> list[str]:
-    if isinstance(manifest_data, dict):
-        manifest_paths = manifest_data.get('paths', [])
-    elif isinstance(manifest_data, list):
-        manifest_paths = manifest_data
-    else:
+def _parse_manifest_data(manifest_data: object, log) -> list[dict]:
+    if not isinstance(manifest_data, list):
         log.error('Invalid manifest format', manifest_type=type(manifest_data).__name__)
-        sys.exit('Manifest must contain a JSON array or an object with a "paths" array.')
+        sys.exit('Manifest must be a JSON array of objects with "source_type" and "data_date" keys.')
 
-    if not isinstance(manifest_paths, list):
-        log.error('Invalid manifest paths entry')
-        sys.exit('Manifest "paths" entry must be a JSON array of strings.')
-
-    return [path for path in manifest_paths if isinstance(path, str) and path.strip()]
+    records = []
+    for i, record in enumerate(manifest_data):
+        if not isinstance(record, dict):
+            log.warning('Skipping non-object manifest entry', index=i)
+            continue
+        if 'source_type' not in record:
+            log.warning('Skipping manifest record missing required key "source_type"', index=i)
+            continue
+        if 'data_date' not in record:
+            log.warning('Skipping manifest record missing required key "data_date"', index=i)
+            continue
+        records.append(record)
+    return records
 
 
 def l0_gcs_loader_by_manifest() -> None:
@@ -83,28 +71,14 @@ def l0_gcs_loader_by_manifest() -> None:
     
     ingest_bucket_name = env.str('L0_BUCKET_NAME')
     bucket_version_path = env.str('L0_BUCKET_VERSION_PATH')
-    source_type_index = env.int('MANIFEST_SOURCE_TYPE_INDEX', None)
     source_type_out = env.str('SOURCE_TYPE_OUT', None)
-    year_index = env.int('MANIFEST_YEAR_INDEX', None)
-    month_index = env.int('MANIFEST_MONTH_INDEX', None)
-    day_index = env.int('MANIFEST_DAY_INDEX', None)
-    source_id_index = env.int('MANIFEST_SOURCE_ID_INDEX', None)
     manifest_inline = env.str('MANIFEST', None)
     manifest_file_raw = env.str('MANIFEST_FILE', None)
     output_directory: Path = env.path('OUT_PATH')
 
-    log.debug('Configuration loaded', 
+    log.debug('Configuration loaded',
               bucket_name=ingest_bucket_name,
-              output_directory=output_directory,
-              source_type_index=source_type_index,
-              year_index=year_index,
-              month_index=month_index,
-              day_index=day_index,
-              source_id_index=source_id_index)
-
-    if source_type_index is None:
-        log.error('MANIFEST_SOURCE_TYPE_INDEX environment variable is required')
-        sys.exit('MANIFEST_SOURCE_TYPE_INDEX environment variable is required.')
+              output_directory=output_directory)
 
     if manifest_inline and manifest_inline.strip():
         try:
@@ -113,7 +87,7 @@ def l0_gcs_loader_by_manifest() -> None:
         except json.JSONDecodeError as exc:
             log.error('Invalid JSON in MANIFEST', error=str(exc))
             sys.exit(f'Invalid JSON in MANIFEST: {exc}')
-        manifest_paths = _parse_manifest_data(manifest_data, log)
+        manifest_records = _parse_manifest_data(manifest_data, log)
     else:
         if not manifest_file_raw:
             log.error('One of MANIFEST or MANIFEST_FILE environment variables is required')
@@ -131,24 +105,17 @@ def l0_gcs_loader_by_manifest() -> None:
             except json.JSONDecodeError as exc:
                 log.error('Invalid JSON in MANIFEST_FILE', manifest_file=str(manifest_file), error=str(exc))
                 sys.exit(f'Invalid JSON in MANIFEST_FILE {manifest_file}: {exc}')
-        manifest_paths = _parse_manifest_data(manifest_data, log)
+        manifest_records = _parse_manifest_data(manifest_data, log)
 
-    if not manifest_paths:
-        log.warning('No valid paths found in MANIFEST input')
+    if not manifest_records:
+        log.warning('No valid records found in MANIFEST input')
         return
 
-    log.info('Processing manifest paths', path_count=len(manifest_paths))
+    log.info('Processing manifest records', record_count=len(manifest_records))
 
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
     log.debug('Connected to GCS bucket', bucket_name=ingest_bucket_name)
-
-    def get_part(parts: list[str], index: int | None) -> str | None:
-        if index is None:
-            return None
-        if index < 0 or index >= len(parts):
-            return None
-        return parts[index]
 
     def parse_blob_metadata(blob_name: str) -> tuple[str | None, str | None, str | None, str | None]:
         blob_pattern = re.compile(
@@ -161,18 +128,17 @@ def l0_gcs_loader_by_manifest() -> None:
 
     downloaded_blob_names = set()
 
-    for manifest_path in manifest_paths:
-        parts = [part for part in manifest_path.strip('/').split('/') if part]
-        if not parts:
-            continue
+    for record in manifest_records:
+        source_type = record['source_type']
+        data_date = record['data_date']
+        manifest_source_id = record.get('source_id', None)
 
-        log.debug('Processing manifest path', manifest_path=manifest_path)
+        log.debug('Processing manifest record', source_type=source_type, data_date=data_date, source_id=manifest_source_id)
 
-        source_type = get_part(parts, source_type_index)
-        download_year = get_part(parts, year_index)
-        download_month = get_part(parts, month_index)
-        download_day = get_part(parts, day_index)
-        manifest_source_id = get_part(parts, source_id_index)
+        date_parts = data_date.split('-')
+        download_year = date_parts[0] if len(date_parts) >= 1 else None
+        download_month = date_parts[1] if len(date_parts) >= 2 else None
+        download_day = date_parts[2] if len(date_parts) >= 3 else None
 
         prefix = bucket_version_path
         if source_type:
@@ -264,14 +230,11 @@ def l0_gcs_loader_by_manifest() -> None:
                 files_downloaded_for_path += 1
 
         if files_downloaded_for_path == 0:
-            log.warning('No files found in bucket for manifest path', 
-                     manifest_path=manifest_path,
-                     bucket_prefix=prefixes[0] if prefixes else 'N/A',
-                     source_type=source_type,
-                     year=download_year,
-                     month=download_month,
-                     day=download_day,
-                     source_id=manifest_source_id)
+            log.warning('No files found in bucket for manifest record',
+                        source_type=source_type,
+                        data_date=data_date,
+                        source_id=manifest_source_id,
+                        bucket_prefix=prefixes[0] if prefixes else 'N/A')
 
     log.info('Manifest processing completed', total_files_downloaded=len(downloaded_blob_names))
 
