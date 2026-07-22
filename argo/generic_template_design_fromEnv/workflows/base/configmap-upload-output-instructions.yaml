@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: calibration-group-convert-upload-output-instructions-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  upload-output-instructions.sh: |
+    #!/bin/bash
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Export data to bucket
+    if [[ -d "$OUT_PATH_DATA_UPLOAD" ]]; then
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH_DATA_UPLOAD}/**/*.*"
+      echo "Linking output files to ${linkdir}"
+      for f in $out_parquet_glob; do
+        [[ "$f" =~ ^$OUT_PATH_DATA_UPLOAD/(.*)$ ]]
+        rel_path="${BASH_REMATCH[1]}"
+        fname="${rel_path##*/}"
+        rel_dir="${rel_path%/*}"
+        outdir="${linkdir}/${OUTPUT_BUCKET_PREFIX}/${rel_dir}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}"
+      done
+
+      echo "Syncing files to bucket"
+      rclone \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        copy \
+        "${linkdir}/${OUTPUT_BUCKET_PREFIX}" \
+        ":gcs://${OUTPUT_BUCKET_NAME}/${OUTPUT_BUCKET_PREFIX}"
+
+      echo "Removing temporary files"
+      rm -rf $linkdir
+
+    else
+      echo "No output found."
+    fi

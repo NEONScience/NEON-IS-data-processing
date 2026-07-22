@@ -26,6 +26,8 @@ spec:
         value: calibration-group-convert-load-data-instructions-config
       - name: config-map-processing-instructions-name
         value: calibration-group-convert-processing-instructions-config
+      - name: config-map-upload-output-instructions-name
+        value: calibration-group-convert-upload-output-instructions-config
       - name: config-map-resource-request-name
         value: calibration-group-convert-resource-config
 
@@ -49,6 +51,9 @@ spec:
         - name: config-processing-vol
           configMap:
             name: "{{workflow.parameters.config-map-processing-instructions-name}}"
+        - name: config-upload-output-vol
+          configMap:
+            name: "{{workflow.parameters.config-map-upload-output-instructions-name}}"
         - name: config-output-vol
           emptyDir: { }
         - name: data-vol
@@ -125,6 +130,8 @@ spec:
             mountPath: /scripts-load-data
           - name: config-processing-vol
             mountPath: /scripts
+          - name: config-upload-output-vol
+            mountPath: /scripts-upload-output
           - name: config-output-vol
             mountPath: /config/config-out
           - name: tmp-vol
@@ -133,25 +140,17 @@ spec:
         containers:
           - name: load-data
             image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-0842388
+            env:
+              - name: MANIFEST
+                value: "{{inputs.parameters.datum-manifest}}"
             envFrom:
               - configMapRef:
                   name: "{{inputs.parameters.config-map-env-name}}"
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
-            # resources:
-            #   requests:
-            #     memory: "300Mi"
-            #     cpu: "100m"
-            #   limits:
-            #     memory: "500Mi"
-            #     cpu: "1"
             command: ["/bin/bash"]
             args: ["/scripts-load-data/load-data-instructions.sh"]
-
-            env:
-              - name: MANIFEST
-                value: "{{inputs.parameters.datum-manifest}}"
 
           - name: processing
             dependencies:
@@ -165,6 +164,7 @@ spec:
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
+
           - name: main
             dependencies:
               - processing
@@ -175,47 +175,5 @@ spec:
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
-            # resources:
-            #   requests:
-            #     memory: "300Mi"
-            #     cpu: "100m"
-            #   limits:
-            #     memory: "500Mi"
-            #     cpu: "1"
-            command:
-              - bash
-              - -c
-              - |
-                set -euo pipefail
-                IFS=$'\n\t'
-
-                # Export data to bucket
-                if [[ -d "$OUT_PATH_DATA_UPLOAD" ]]; then
-                  linkdir=$(mktemp -d)
-                  shopt -s globstar
-                  out_parquet_glob="${OUT_PATH_DATA_UPLOAD}/**/*.*"
-                  echo "Linking output files to ${linkdir}"
-                  for f in $out_parquet_glob; do
-                    [[ "$f" =~ ^$OUT_PATH_DATA_UPLOAD/(.*)$ ]]
-                    rel_path="${BASH_REMATCH[1]}"
-                    fname="${rel_path##*/}"
-                    rel_dir="${rel_path%/*}"
-                    outdir="${linkdir}/${OUTPUT_BUCKET_PREFIX}/${rel_dir}"
-                    mkdir -p "${outdir}"
-                    ln -s "${f}" "${outdir}"
-                  done
-
-                  echo "Syncing files to bucket"
-                  rclone \
-                    --copy-links \
-                    --gcs-bucket-policy-only \
-                    copy \
-                    "${linkdir}/${OUTPUT_BUCKET_PREFIX}" \
-                    ":gcs://${OUTPUT_BUCKET_NAME}/${OUTPUT_BUCKET_PREFIX}"
-
-                  echo "Removing temporary files"
-                  rm -rf $linkdir
-
-                else
-                  echo "No output found."
-                fi
+            command: ["/bin/bash"]
+            args: ["/scripts-upload-output/upload-output-instructions.sh"]
