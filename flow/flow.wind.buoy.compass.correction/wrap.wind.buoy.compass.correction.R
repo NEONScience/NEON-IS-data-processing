@@ -298,7 +298,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   ###############
   # Write out files
   #only keep the necessary columns for further analysis
-  dataOut <- wind_data[, c("readout_time", "source_id", "site_id", "speed_calibrated","compass_direction_raw","direction_calibrated","direction_corrected","direction_corrected_rad")]
+  dataOut <- wind_data[, c("readout_time", "source_id", "site_id", "speed_calibrated","compass_direction_raw","direction_calibrated","direction_corrected","direction_corrected_rad","azimuth")]
   flagsOut <- wind_data[, c("readout_time", "source_id", "site_id", "buoyWindDirDeadZone","buoyWindDirCalmWind")]
     
     
