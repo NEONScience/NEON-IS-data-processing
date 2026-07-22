@@ -17,20 +17,33 @@ spec:
     parameters:
       - name: datum-manifest
         value: |
-          {"paths": ["cmp22/2025/10/01/11185","cmp22/2026/05/01/11185","cmp22/2026/05/02/11183"]}
+          {"paths": ["aepg600m/2026/05/03","aepg600m/2026/05/01"]}
       - name: config-map-schemas-name
         value: schemas-config
       - name: config-map-env-name
         value: calibration-group-convert-env-config
-      - name: config-map-processing-name
-        value: calibration-group-convert-processing-config
+      - name: config-map-processing-instructions-name
+        value: calibration-group-convert-processing-instructions-config
+      - name: config-map-resource-request-name
+        value: resource-request
 
   templates:
     - name: run
+      podSpecPatch: |
+        containers:
+          - name: processing
+            resources:
+              requests:
+                cpu: "{{inputs.parameters.cpu-request}}"
+                memory: "{{inputs.parameters.memory-request}}"
+              limits:
+                cpu: "{{inputs.parameters.cpu-limit}}"
+                memory: "{{inputs.parameters.memory-limit}}"
+
       volumes:
         - name: config-processing-vol
           configMap:
-            name: "{{workflow.parameters.config-map-processing-name}}"
+            name: "{{workflow.parameters.config-map-processing-instructions-name}}"
         - name: config-output-vol
           emptyDir: { }
         - name: data-vol
@@ -42,7 +55,26 @@ spec:
         parameters:
           - name: datum-manifest
           - name: config-map-env-name
-          - name: config-map-processing-name
+          - name: cpu-request
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-resource-request-name}}"
+                key: cpu_request
+          - name: cpu-limit
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-resource-request-name}}"
+                key: cpu_limit
+          - name: memory-request
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-resource-request-name}}"
+                key: memory_request
+          - name: memory-limit
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-resource-request-name}}"
+                key: memory_limit
           - name: schema-repo-eng-url
             valueFrom:
               configMapKeyRef:
@@ -100,13 +132,13 @@ spec:
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
-            resources:
-              requests:
-                memory: "300Mi"
-                cpu: "100m"
-              limits:
-                memory: "500Mi"
-                cpu: "1"
+            # resources:
+            #   requests:
+            #     memory: "300Mi"
+            #     cpu: "100m"
+            #   limits:
+            #     memory: "500Mi"
+            #     cpu: "1"
             command:
               - bash
               - -c
@@ -159,19 +191,12 @@ spec:
             image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-33f7182
             envFrom:
               - configMapRef:
-                  name: "{{inputs.parameters.config-map-env-name}}"
+                  name: "{{inputs.parameters.config-map-env-name}}"              
             command: ["/bin/bash"]
             args: ["/scripts/processing-instructions.sh"]
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
-            resources:
-              requests:
-                memory: "700Mi"
-                cpu: "1"
-              limits:
-                memory: "1Gi"
-                cpu: "1.25"
           - name: main
             dependencies:
               - processing
@@ -182,13 +207,13 @@ spec:
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
-            resources:
-              requests:
-                memory: "300Mi"
-                cpu: "100m"
-              limits:
-                memory: "500Mi"
-                cpu: "1"
+            # resources:
+            #   requests:
+            #     memory: "300Mi"
+            #     cpu: "100m"
+            #   limits:
+            #     memory: "500Mi"
+            #     cpu: "1"
             command:
               - bash
               - -c

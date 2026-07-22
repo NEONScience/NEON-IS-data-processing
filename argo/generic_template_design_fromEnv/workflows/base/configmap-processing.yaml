@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: calibration-group-convert-processing-config
+  name: calibration-group-convert-processing-instructions-config
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:

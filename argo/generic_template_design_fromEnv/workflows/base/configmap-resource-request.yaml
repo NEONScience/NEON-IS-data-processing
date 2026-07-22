@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: calibration-group-convert-resource-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  memory_request: "700Mi"
+  memory_limit: "1Gi"
+  cpu_request: "1"
+  cpu_limit: "1.25"
