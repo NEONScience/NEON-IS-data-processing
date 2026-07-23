@@ -6,7 +6,7 @@
 #' 
 #' @description Wrapper function. Uses thresholds to apply wind direction statistics and uncertainty calculations to buoy wind data.
 #'
-#' @param DirIn Character value. The base file path to the input data, QA/QC plausibility flags and quality flag thresholds.
+#' @param DirIn Character value. The base file path to the input data, uncertainty data, and thresholds.
 #'  
 #' @param DirOutBase Character value. The base file path for the output data. 
 #' 
@@ -15,13 +15,11 @@
 #' @param SchmStatsOut (optional), A json-formatted character string containing the schema for the data file.
 #' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
 #' 
-#' @param SchmFlagsOut (optional), A json-formatted character string containing the schema for the output flags. 
-#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #' 
-#' @return Buoy wind data file and combined flag file in daily parquets.
+#' @return Buoy wind direction statistics in daily parquet files.
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -37,7 +35,6 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
                                   DirOutBase,
                                   WndwAgr,
                                   SchmStatsOut=NULL,
-                                  SchmFlagsOut=NULL,
                                   log=NULL
 ){
   
@@ -49,7 +46,6 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
 
   DirInData <- paste0(DirIn,"/data")
-  DirInFlags<- paste0(DirIn,"/flags")
   DirInThresholds <- paste0(DirIn,"/threshold")
   DirInUcrt <- paste0(DirIn,"/uncertainty_data")
   DirInUcrtCoef <- base::paste0(DirIn,'/uncertainty_coef')
@@ -77,23 +73,6 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     } 
   }
   
-  # Read in plausibility flag file
-  flagFileName <- base::list.files(DirInFlags,full.names=FALSE)
-  flags_plauName <- flagFileName[base::grepl("plausibility", tolower(flagFileName)) & !base::grepl("zone.identifier", tolower(flagFileName))]
-  if(length(flags_plauName)==0){
-    log$error(base::paste0('Plausibility flag file not found in ', DirInFlags)) 
-    stop()
-  } else {
-    flags_plau <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInFlags, '/', flags_plauName),
-                                                       log = log),silent = FALSE)
-    if(class(flags_plau)[1] == 'try-error'){
-      log$error(base::paste0('Error reading in plausibility flag file: ', DirInFlags, '/', flags_plauName)) 
-      stop()
-    }else{
-      log$debug(base::paste0('Successfully read in file: ',flags_plauName))
-    }
-  }
-
   #read in buoy wind uncertainty coefficients and data
   ucrtFileName <- base::list.files(DirInUcrt,full.names=FALSE)
   ucrtFileName <- ucrtFileName[!base::grepl("zone.identifier", tolower(ucrtFileName))]
@@ -148,11 +127,6 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     data_wind$compassUcrtValue<-compassUcrt$number_value[1]
   }
 
-
-  # testfile <- "NEON.D03.BARC.DP1.20059.001.103.100.002.WSDBuoy_2min.2025-12.expanded.20260504T185356Z.csv"
-  # data_wind<-read.csv(file=base::paste0("/home/ncatolico/Git/pfs/test/", testfile),header=TRUE,stringsAsFactors=FALSE)
-  # data_wind$readout_time<-as.POSIXct(data_wind$startDateTime,format="%Y-%m-%dT%H:%M:%OSZ",tz="GMT")
-  # data_wind<-data_wind[data_wind$readout_time>="2025-12-17 00:00:00" & data_wind$readout_time<"2025-12-18 00:00:00",]
 
   ################
   # Calculate the mean and variance with analytical two-pass method
@@ -275,18 +249,15 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
 
     # Write out stats file
     statsFileName<-paste0(DirOutStats,"/",tools::file_path_sans_ext(dataFileName), "_sciStats_", WndwAgr[j], ".parquet")
-    rptOutData <- try(NEONprocIS.base::def.wrte.parq(data = statsOut,
+    rptStatsData <- try(NEONprocIS.base::def.wrte.parq(data = statsOut,
                                                       NameFile = statsFileName,
                                                       Schm = SchmStatsOut),silent=TRUE)
-    if(class(rptOutData)[1] == 'try-error'){
-      log$error(base::paste0('Cannot write Data to ',statsFileName,'. ',attr(rptOutData, "condition")))
+    if(class(rptStatsData)[1] == 'try-error'){
+      log$error(base::paste0('Cannot write Data to ',statsFileName,'. ',attr(rptStatsData, "condition")))
       stop()
     } else {
       log$info(base::paste0('Data written successfully in ', statsFileName))
     }
-
-
-
 
   }  
 }

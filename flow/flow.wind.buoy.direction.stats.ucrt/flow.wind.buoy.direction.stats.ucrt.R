@@ -8,25 +8,24 @@
 #'
 #' The arguments are: 
 #' 
-#' 1. "DirIn=value", The base file path to the input data, QA/QC plausibility flags and quality flag thresholds. 
-#' #/pfs/BASE_REPO/date/location/cfgloc, where files will then be in /data, /flags and /threshold sub-folders.
+#' 1. "DirIn=value", The base file path to the input data, uncertainty data, and thresholds. 
+#' #/pfs/BASE_REPO/date/location/cfgloc, where files will then 
+#' be in /data, /uncertainty_data, /uncertainty_coef and /threshold sub-folders.
 #' 
 #' 2. "DirOut=value", The base file path for the output data.
 #' 
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #'  
-#' 4. "WndwAgr=value", The window aggregation period for the buoy wind data (e.g., "002" for 2-minute averages, "030" for 30-minute averages).
+#' 4. "WndwAgr=value", The window aggregation period for the buoy wind data (e.g., "002" for 2-minute averages, 
+#' "030" for 30-minute averages).
 #' 
-#' 5. "FileSchmStats=value" (optional), The avro schema for the input and output data file.
-#' 
-#' 6. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
-#' 
+#' 5. "FileSchmStats=value" (optional), The avro schema for the input and output data file. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #' 
-#' @return Sensor-specific quality flag files in daily parquets.
+#' @return Buoy wind direction statistics in daily parquet files.
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -79,7 +78,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr","WndwAgr"),
-                                      NameParaOptn = c("FileSchmStats","FileSchmQf"),
+                                      NameParaOptn = c("FileSchmStats"),
                                       log = log)
 
 
@@ -88,7 +87,6 @@ log$debug(base::paste0('Input data directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmStats))
-log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
 log$debug(base::paste0('Window aggregation: ', Para$WndwAgr))
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
@@ -96,11 +94,6 @@ if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
   SchmStatsOut <- NULL
 } else {
   SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
-}
-if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
-  SchmFlagsOut <- NULL
-} else {
-  SchmFlagsOut <- base::paste0(base::readLines(Para$FileSchmQf),collapse='')
 }
 
 # Find all the input paths (datums). We will process each one.
@@ -121,7 +114,6 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
         DirOutBase=Para$DirOut,
         WndwAgr=Para$WndwAgr,
         SchmStatsOut=SchmStatsOut,
-        SchmFlagsOut=SchmFlagsOut,
         log=log
       ),
       error = function(err) {
