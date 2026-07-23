@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_group_and_parse
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-f2086f2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-cb090ac
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
