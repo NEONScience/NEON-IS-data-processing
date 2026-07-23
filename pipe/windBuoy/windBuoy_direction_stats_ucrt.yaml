@@ -23,12 +23,12 @@ transform:
     python3 -m filter_joiner.filter_joiner_main
 
     # Run second module - wind direction statistics and uncertainty calculations
-    Rscript ./flow.wind.buoy.direction.stats.ucrt.R \
-      DirIn=/tmp/pfs/rmyoung_filter_joined \
-      DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums \
-      "WndwAgr=002|030" \
-      FileSchmStats=$SCHEMA_STATS
+    # Rscript ./flow.wind.buoy.direction.stats.ucrt.R \
+    #   DirIn=/tmp/pfs/rmyoung_filter_joined \
+    #   DirOut=/pfs/out \
+    #   DirErr=/pfs/out/errored_datums \
+    #   "WndwAgr=002|030" \
+    #   FileSchmStats=$SCHEMA_STATS
 
     EOF
   env:
@@ -56,7 +56,7 @@ transform:
             join_indices: [8]
             outer_join: true
     LOG_LEVEL: DEBUG
-    OUT_PATH_1: /tmp/pfs/rmyoung_filter_joined
+    OUT_PATH_1: /pfs/out #/tmp/pfs/rmyoung_filter_joined
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. 
     PARALLELIZATION_INTERNAL: '3'
@@ -70,21 +70,21 @@ input:
     - pfs:
         name: DATA_PATH
         repo: windBuoy_analyze_pad_and_qaqc_plau
-        glob: /(*)/(*)/17/wind-buoy_BARC103100
+        glob: /(*)/(*)/(*)/(*)
         joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY.
     - pfs:
         name: THRESHOLD_PATH
         repo: windBuoy_threshold_select
-        glob: /(*)/(*)/17/wind-buoy_BARC103100
+        glob: /(*)/(*)/(*)/(*)
         joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY.
     - pfs:
         name: UNCERTAINTY_PATH
         repo: windBuoy_group_path
-        glob: /(*)/(*)/17/wind-buoy_BARC103100
+        glob: /(*)/(*)/(*)/(*)
         joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY.

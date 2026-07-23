@@ -73,7 +73,7 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     } 
   }
   
-  #read in buoy wind uncertainty coefficients and data
+  #read in buoy wind uncertainty data
   ucrtFileName <- base::list.files(DirInUcrt,full.names=FALSE)
   ucrtFileName <- ucrtFileName[!base::grepl("zone.identifier", tolower(ucrtFileName))]
   ucrt_data<- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(DirInUcrt, '/', ucrtFileName), log=log), silent = FALSE)
@@ -83,35 +83,52 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
   }else{
     log$debug(base::paste0('Successfully read in uncertainty data file: ', ucrtFileName))
   }
+
+  #merge with the buoy wind data
+  if(all(is.na(ucrt_data$direction_ucrtMeas))){
+    log$warn(base::paste0('Uncertainty data file: ', ucrtFileName, ' is empty. Uncertainty values will be NA.'))
+    data_wind$direction_ucrtMeas <- NA_real_
+    data_wind$direction_ucrtComb <- NA_real_
+    data_wind$direction_ucrtExpn <- NA_real_
+  } else {
+    data_wind <- merge(data_wind, ucrt_data[, c("readout_time", "direction_ucrtMeas", "direction_ucrtComb","direction_ucrtExpn")], by="readout_time", all.x=TRUE)
+  }
   
+  #read in buoy wind uncertainty coefficients
   ucrtCoefFileName <- base::list.files(DirInUcrtCoef,full.names=FALSE)
   ucrtCoefFileName <- ucrtCoefFileName[!base::grepl("zone.identifier", tolower(ucrtCoefFileName))]
   if(base::length(ucrtCoefFileName) != 1){
-      log$warn(base::paste0("There are either zero or more than one uncertainty coefficient files in path: ",DirInUcrtCoef,"... Uncertainty coefs will not be read in. This is fine if the uncertainty function doesn't need it, but you should check..."))
-      ucrtCoef <- base::list()
-    } else {
-      
-      # Open the uncertainty file
-      ucrtCoef  <- base::try(rjson::fromJSON(file=base::paste0(DirInUcrtCoef, '/', ucrtCoefFileName),simplify=TRUE),silent=FALSE)
-      if(base::class(ucrtCoef) == 'try-error'){
-        # Generate error and stop execution
-        log$error(base::paste0('File: ', ucrtCoefFileName, ' is unreadable.')) 
-        stop()
-      }
-      # Turn times to POSIX
-      ucrtCoef <- base::lapply(ucrtCoef,FUN=function(idxUcrt){
-        idxUcrt$start_date <- base::strptime(idxUcrt$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-        idxUcrt$end_date <- base::strptime(idxUcrt$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-        return(idxUcrt)
-      })
-      log$debug(base::paste0('Successfully read uncertainty coefficients from file: ',ucrtCoefFileName))
+    log$warn(base::paste0("There are either zero or more than one uncertainty coefficient files in path: ",DirInUcrtCoef,"... Uncertainty coefs will not be read in. This is fine if the uncertainty function doesn't need it, but you should check..."))
+    ucrtCoef <- base::list()
+  } else {
+    # Open the uncertainty file
+    ucrtCoef  <- base::try(rjson::fromJSON(file=base::paste0(DirInUcrtCoef, '/', ucrtCoefFileName),simplify=TRUE),silent=FALSE)
+    if(base::class(ucrtCoef) == 'try-error'){
+      # Generate error and stop execution
+      log$error(base::paste0('File: ', ucrtCoefFileName, ' is unreadable.')) 
+      stop()
     }
+    # Turn times to POSIX
+    ucrtCoef <- base::lapply(ucrtCoef,FUN=function(idxUcrt){
+      idxUcrt$start_date <- base::strptime(idxUcrt$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+      idxUcrt$end_date <- base::strptime(idxUcrt$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+      return(idxUcrt)
+    })
+    log$debug(base::paste0('Successfully read uncertainty coefficients from file: ',ucrtCoefFileName))
+  }
 
-  #merge with the buoy wind data
-  data_wind <- merge(data_wind, ucrt_data[, c("readout_time", "direction_ucrtMeas", "direction_ucrtComb","direction_ucrtExpn")], by="readout_time", all.x=TRUE)
-  data_wind$U_CVALA1 <- as.numeric(ucrtCoef[[which(sapply(ucrtCoef, function(x) x$Name == "U_CVALA1" & x$term == "direction"))[1]]]$Value)
-  data_wind$U_CVALA3 <- as.numeric(ucrtCoef[[which(sapply(ucrtCoef, function(x) x$Name == "U_CVALA3" & x$term == "direction"))[1]]]$Value)
-
+  if(base::length(ucrtCoef) == 0){
+    log$debug(base::paste0('Uncertainty coefficients are empty. Uncertainty values will be NA.'))
+    data_wind$U_CVALA1 <- NA_real_
+    data_wind$U_CVALA3 <- NA_real_
+  } else {
+    idxU1 <- which(sapply(ucrtCoef, function(x) x$Name == "U_CVALA1" & x$term == "direction"))[1]
+    idxU3 <- which(sapply(ucrtCoef, function(x) x$Name == "U_CVALA3" & x$term == "direction"))[1]
+    data_wind$U_CVALA1 <- if(!base::is.na(idxU1)) base::as.numeric(ucrtCoef[[idxU1]]$Value) else NA_real_
+    data_wind$U_CVALA3 <- if(!base::is.na(idxU3)) base::as.numeric(ucrtCoef[[idxU3]]$Value) else NA_real_
+    log$debug(base::paste0('Successfully read uncertainty coefficients from file: ',ucrtCoefFileName))
+  }
+  
   #read in compass thresholds
   thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
   thresholdFileName <- thresholdFileName[!base::grepl("zone.identifier", tolower(thresholdFileName))]
