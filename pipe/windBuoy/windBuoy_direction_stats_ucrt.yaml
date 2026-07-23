@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_direction_stats_ucrt
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-direction-stats-ucrt:sha-cddadfb
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-direction-stats-ucrt:sha-0838b74
   cmd:
   - sh
   - "-c"
@@ -12,17 +12,23 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
 
-    echo "=== Debugging input paths ==="
-    echo "--- /pfs/DATA_PATH ---"
-    find /pfs/DATA_PATH -mindepth 1 | sort || echo "DATA_PATH not found or empty"
-    echo "--- /pfs/THRESHOLD_PATH ---"
-    find /pfs/THRESHOLD_PATH -mindepth 1 | sort || echo "THRESHOLD_PATH not found or empty"
-    echo "--- /pfs/UNCERTAINTY_PATH ---"
-    find /pfs/UNCERTAINTY_PATH -mindepth 1 | sort || echo "UNCERTAINTY_PATH not found or empty"
-    echo "=== End debugging input paths ==="
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/rmyoung_filter_joined
+    mkdir -p /tmp/pfs/rmyoung_filter_joined
+
+    # Set some environment variables for the first module
+    export OUT_PATH=$OUT_PATH_1
     
     # Run filter-joiner for data (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
+
+    # Run second module - wind direction statistics and uncertainty calculations
+    Rscript ./flow.wind.buoy.direction.stats.ucrt.R \
+      DirIn=/tmp/pfs/rmyoung_filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "WndwAgr=002|030" \
+      FileSchmStats=$SCHEMA_STATS
 
     EOF
   env:
@@ -39,32 +45,49 @@ transform:
             # Join on named location (already joined below by source type and day)
             join_indices: [8]
         - path:
+            name: THRESHOLD_PATH
+            glob_pattern: /pfs/THRESHOLD_PATH/*/*/*/*/rmyoung/*/threshold/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [8]
+        - path:
             name: UNCERTAINTY_PATH
             glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/rmyoung/*/uncertainty*/**
             # Join on named location (already joined below by source type and day)
             join_indices: [8]
             outer_join: true
     LOG_LEVEL: DEBUG
-    OUT_PATH: /pfs/out
+    OUT_PATH_1: /tmp/pfs/rmyoung_filter_joined
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. 
     PARALLELIZATION_INTERNAL: '3'
 input:
-  join:    
+  cross:
   - pfs:
-      name: DATA_PATH
-      repo: windBuoy_analyze_pad_and_qaqc_plau
-      glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3/$4
-      outer_join: false
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY.
-  - pfs:
-      name: UNCERTAINTY_PATH
-      repo: windBuoy_group_path
-      glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3/$4
-      outer_join: true
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY.
+      name: SCHEMA_STATS
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_direction_stats.avsc
+  - join:    
+    - pfs:
+        name: DATA_PATH
+        repo: windBuoy_analyze_pad_and_qaqc_plau
+        glob: /(*)/(*)/17/wind-buoy_BARC103100
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY.
+    - pfs:
+        name: THRESHOLD_PATH
+        repo: windBuoy_threshold_select
+        glob: /(*)/(*)/17/wind-buoy_BARC103100
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY.
+    - pfs:
+        name: UNCERTAINTY_PATH
+        repo: windBuoy_group_path
+        glob: /(*)/(*)/17/wind-buoy_BARC103100
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY.
 parallelism_spec:
   constant: 5
 autoscaling: true
