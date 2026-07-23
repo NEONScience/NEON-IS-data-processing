@@ -150,7 +150,7 @@ input:
   - join:
     - pfs:
         name: DATA_PATH_ARCHIVE
-        repo: sunav2_raw_data_parser
+        repo: sunav2_data_source_gcs
         glob: /(sunav2/*/*/*) #sunav2/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY

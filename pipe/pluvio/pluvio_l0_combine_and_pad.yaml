@@ -88,7 +88,7 @@ input:
   - join:
     - pfs:
         name: DATA_PATH_ARCHIVE
-        repo: pluvio_raw_data_parser
+        repo: pluvio_data_source_gcs
         glob: /pluvio/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true

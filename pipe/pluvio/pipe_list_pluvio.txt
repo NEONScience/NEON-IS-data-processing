@@ -1,7 +1,6 @@
 pluvio_ingest_days.yaml
 pluvio_cron_daily_and_date_control.yaml
 pluvio_data_source_gcs.yaml
-pluvio_raw_data_parser.yaml
 pluvio_l0_combine_and_pad.yaml
 pluvio_time_shift.yaml
 pluvio_calibration_list_files.yaml

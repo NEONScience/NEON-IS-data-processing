@@ -2,7 +2,7 @@ name: PROD-l2130i-update-dag
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/l2130i/*.yaml'
       - 'pipe/l2130i/pipe_list_l2130i.txt'
