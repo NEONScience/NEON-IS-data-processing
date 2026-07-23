@@ -53,7 +53,7 @@ input:
   - pfs:
       name: SWE_DATA
       repo: l4discharge_group_path
-      glob: /(2025/09/29/*)
+      glob: /(*/*/*/*)
       joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY

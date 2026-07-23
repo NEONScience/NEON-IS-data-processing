@@ -73,6 +73,8 @@
 #     original creation
 #   Nora Catolico(2025-11-18)
 #     reorganized input directories and added error logging
+#   Nora Catolico(2026-07-23)
+#     updated dates to POSIX
 ##############################################################################################
 wrap.discharge.parse.os.inputs <- function(DirIn,
                                            csd_constantBiasShift_pub,
@@ -129,12 +131,12 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   # Which curveID(s) is/are active for this site*date?
   currCurveData <- sdrc_curveIdentification_pub[
     sdrc_curveIdentification_pub$site==site
-    &((sdrc_curveIdentification_pub$curveStartDate<=startDate
-       &sdrc_curveIdentification_pub$curveEndDate>=endDate)
-      |(sdrc_curveIdentification_pub$curveStartDate<=startDate
-        &sdrc_curveIdentification_pub$curveEndDate>=startDate)
-      |(sdrc_curveIdentification_pub$curveStartDate<=endDate
-        &sdrc_curveIdentification_pub$curveEndDate>=endDate)
+    &((as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC")<=startDate
+       &as.POSIXct(sdrc_curveIdentification_pub$curveEndDate,tz="UTC")>=endDate)
+      |(as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC")<=startDate
+        &as.POSIXct(sdrc_curveIdentification_pub$curveEndDate,tz="UTC")>=startDate)
+      |(as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC")<=endDate
+        &as.POSIXct(sdrc_curveIdentification_pub$curveEndDate,tz="UTC")>=endDate)
     ),
   ]
   
@@ -240,12 +242,12 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   # Which regressionID(s) is/are active for this site*date?
   currRegData <- csd_gaugeWaterColumnRegression_pub[
     csd_gaugeWaterColumnRegression_pub$site==site
-    &((csd_gaugeWaterColumnRegression_pub$regressionStartDate<=startDate
-       &csd_gaugeWaterColumnRegression_pub$regressionEndDate>=endDate)
-      |(csd_gaugeWaterColumnRegression_pub$regressionStartDate<=startDate
-        &csd_gaugeWaterColumnRegression_pub$regressionEndDate>=startDate)
-      |(csd_gaugeWaterColumnRegression_pub$regressionStartDate<=endDate
-        &csd_gaugeWaterColumnRegression_pub$regressionEndDate>=endDate)
+    &((as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC")<=startDate
+       &as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionEndDate,tz="UTC")>=endDate)
+      |(as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC")<=startDate
+        &as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionEndDate,tz="UTC")>=startDate)
+      |(as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC")<=endDate
+        &as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionEndDate,tz="UTC")>=endDate)
     ),
   ]
   

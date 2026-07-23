@@ -32,11 +32,11 @@
 
 #' @examples
 #' Stepping through the code in Rstudio
-# Sys.setenv(DIR_IN_OS='~/pfs/l4discharge_os_table_group',DIR_IN='~/pfs/l4discharge_csd_swe_group/2024/03/20/l4discharge_HOPB132100')
+# Sys.setenv(DIR_IN_OS='~/Git/pfs/l4discharge_os_table_loader',DIR_IN='~/Git/pfs/l4discharge_csd_swe_group/2025/10/01')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN",
 #          "DirInOS=$DIR_IN_OS",
-#          "DirOut=~/pfs/out",
+#          "DirOut=~/pfs/out", 
 #          "DirErr=~/pfs/out/errored_datums")
 # rm(list=setdiff(ls(),c('arg','log')))
 # setwd('/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.parse.os.inputs')
@@ -48,6 +48,8 @@
 #     original creation
 #   Nora Catolico(2025-11-18)
 #     reorganized input directories and added error logging
+#   Nora Catolico(2026-07-23)
+#     updated dates to POSIX
 ##############################################################################################
 options(digits.secs = 3)
 library(lubridate)
