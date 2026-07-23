@@ -39,14 +39,15 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-setwd("/home/NEON/ncatolico/R/NEON-IS-data-processing/flow/flow.discharge.predict")
-Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2024/03/20/l4discharge_HOPB132100')
+setwd("/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict")
+# Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2025/09/29/l4discharge_HOPB132100')
+Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2025')
 log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 arg <- c("DirIn=$DIR_IN",
-         "DirBaM=~/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
-         "DirOut=~/pfs/out",
-         "DirErr=~/pfs/out/errored_datums")
-#"FileSchmData=~/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
+         "DirBaM=/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
+         "DirOut=/home/nickerson/pfs/out",
+         "DirErr=/home/nickerson/pfs/out/errored_datums",
+         "FileSchmData=/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
 #setwd("/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict")
 
@@ -59,14 +60,15 @@ arg <- c("DirIn=$DIR_IN",
 #     added error logging, updates to better interact with pachyderm
 ##############################################################################################
 options(digits.secs = 3)
+library(foreach)
+library(doParallel)
 library(lubridate)
 library(dplyr)
-library(lubridate)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.discharge.predict.R")
 source("./def.dir.in.partial.R")
-source("./BaM_beta")
+# source("./BaM_beta")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -74,13 +76,24 @@ arg <- base::commandArgs(trailingOnly = TRUE)
 # Start logging
 log <- NEONprocIS.base::def.log.init()
 
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
+
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirBaM","DirOut","DirErr"),
                                       NameParaOptn = c("FileSchmData"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
-log$debug(base::paste0('Model executable directory: ', Para$DirBam))
+log$debug(base::paste0('Model executable directory: ', Para$DirBaM))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
@@ -102,9 +115,15 @@ DirIn <-
 log$debug(base::paste0('Directories identified:', DirIn))
 
 # Process each datum path
-for(idxDirIn in DirIn){
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   # idxDirIn=DirIn[1]
   log$info(base::paste0('Processing path to file: ', idxDirIn))
+  
+  # Copy BaM model to a temporary directory within this iteration of DirIn
+  fs::dir_copy(path = Para$DirBaM, new_path = base::paste(idxDirIn,"BaM_beta",sep="/"), overwrite = TRUE)
+  Para$DirBaM <- base::paste(idxDirIn,"BaM_beta",sep="/")
+  
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
@@ -133,6 +152,14 @@ for(idxDirIn in DirIn){
     # This simply to avoid returning the error
     error=function(err) {}
   )
+  
+  # Clean up the temporary BaM model directory after processing
+  base::unlink(
+    base::paste(idxDirIn,"BaM_beta",sep="/"),
+    recursive = TRUE,
+    force = TRUE
+  )
+  Para$DirBaM <- "/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta"
 }
 
 

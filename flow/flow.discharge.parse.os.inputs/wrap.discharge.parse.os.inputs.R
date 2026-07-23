@@ -140,103 +140,108 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
     ),
   ]
   
-  # If there are no active curve IDs, do not write out any data
-  # If there are active curve IDs, write out data associated with active curve
-  if(nrow(currCurveData)>0){
-    # Write curveIdentification
-    write_currCurveData<-try(write.csv(currCurveData,
-                                       paste(DirOutData,
-                                             "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv",
-                                             sep = "/"),
-                                       row.names = F))
-    if(any(grepl('try-error',class(write_currCurveData)))){
-      log$error(base::paste0('Writing the currCurveData output data failed: ',attr(write_currCurveData,"condition")))
-      stop()
-    } else {
-      log$info("currCurveData data written out.")
-    }
-    
-    # Write controls data associated with this curve
-    surveyDate <- as.Date(currCurveData$controlSurveyEndDateTime,tz="UTC")
-    write_sdrc_controlInfo<-try(write.csv(
-      sdrc_controlInfo_pub[as.Date(sdrc_controlInfo_pub$endDate,
-                                   tz="UTC",
-                                   format="%Y-%m-%dT%H:%M:%SZ")
-                           %in%surveyDate
-                           &sdrc_controlInfo_pub$site==site,],
-      paste(DirOutData,
-            "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
-            sep = "/"),
-      row.names = F))
-    if(any(grepl('try-error',class(write_sdrc_controlInfo)))){
-      log$error(base::paste0('Writing the sdrc_controlInfo output data failed: ',attr(write_sdrc_controlInfo,"condition")))
-      stop()
-    } else {
-      log$info("sdrc_controlInfo data written out.")
-    }
-    
-    write_sdrc_priorParameters<-try(write.csv(
-      sdrc_priorParameters_pub[as.Date(sdrc_priorParameters_pub$endDate,
-                                       tz="UTC",
-                                       format="%Y-%m-%dT%H:%M:%SZ")
-                               %in%surveyDate
-                               &sdrc_priorParameters_pub$site==site,],
-      paste(DirOutData,
-            "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
-            sep = "/"),
-      row.names = F))
-    if(any(grepl('try-error',class(write_sdrc_priorParameters)))){
-      log$error(base::paste0('Writing the sdrc_priorParameters output data failed: ',attr(write_sdrc_priorParameters,"condition")))
-      stop()
-    } else {
-      log$info("sdrc_priorParameters data written out.")
-    }
-    
-    # Write the rating curve data associated with this curveID
-    curveID <- currCurveData$curveID
-    write_sdrc_stageDischargeCurveInfo<-try(write.csv(
-      sdrc_stageDischargeCurveInfo_pub[sdrc_stageDischargeCurveInfo_pub$curveID
-                                       %in%curveID,],
-      paste(DirOutData,
-            "NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.csv",
-            sep = "/"),
-      row.names = F))
-    if(any(grepl('try-error',class(write_sdrc_stageDischargeCurveInfo)))){
-      log$error(base::paste0('Writing the sdrc_stageDischargeCurveInfo output data failed: ',attr(write_sdrc_stageDischargeCurveInfo,"condition")))
-      stop()
-    } else {
-      log$info("sdrc_stageDischargeCurveInfo data written out.")
-    }
-    
-    write_sdrc_gaugeDischargeMeas<-try(write.csv(
-      sdrc_gaugeDischargeMeas_pub[sdrc_gaugeDischargeMeas_pub$curveID
-                                  %in%curveID,],
-      paste(DirOutData,
-            "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv",
-            sep = "/"),
-      row.names = F))
-    if(any(grepl('try-error',class(write_sdrc_gaugeDischargeMeas)))){
-      log$error(base::paste0('Writing the sdrc_gaugeDischargeMeas output data failed: ',attr(write_sdrc_gaugeDischargeMeas,"condition")))
-      stop()
-    } else {
-      log$info("sdrc_gaugeDischargeMeas data written out.")
-    }
-    
-    write_sdrc_sampledParameters<-try(write.csv(
-      sdrc_sampledParameters_pub[sdrc_sampledParameters_pub$curveID
-                                 %in%curveID,],
-      paste(DirOutData,
-            "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv",
-            sep = "/"),
-      row.names = F))
-    if(any(grepl('try-error',class(write_sdrc_sampledParameters)))){
-      log$error(base::paste0('Writing the sdrc_sampledParameters output data failed: ',attr(write_sdrc_sampledParameters,"condition")))
-      stop()
-    } else {
-      log$info("sdrc_sampledParameters data written out.")
-    }
-  }else{
-    log$info(paste0("No currCurveData for ",site," on ",date))
+  # If there are no active curve IDs, proceed with the max curve ID
+  if(nrow(currCurveData)==0){
+    log$info(paste0("No active curveID for ",site," on ",date,". Using the max curveID for this site."))
+    currCurveData <- sdrc_curveIdentification_pub[
+      sdrc_curveIdentification_pub$site==site
+      &sdrc_curveIdentification_pub$curveID==max(sdrc_curveIdentification_pub$curveID[sdrc_curveIdentification_pub$site==site]),
+    ]
+  }
+
+  # Write out data associated with active curve
+
+  # Write curveIdentification
+  write_currCurveData<-try(write.csv(currCurveData,
+                                      paste(DirOutData,
+                                            "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv",
+                                            sep = "/"),
+                                      row.names = F))
+  if(any(grepl('try-error',class(write_currCurveData)))){
+    log$error(base::paste0('Writing the currCurveData output data failed: ',attr(write_currCurveData,"condition")))
+    stop()
+  } else {
+    log$info("currCurveData data written out.")
+  }
+  
+  # Write controls data associated with this curve
+  surveyDate <- as.Date(currCurveData$controlSurveyEndDateTime,tz="UTC")
+  write_sdrc_controlInfo<-try(write.csv(
+    sdrc_controlInfo_pub[as.Date(sdrc_controlInfo_pub$endDate,
+                                  tz="UTC",
+                                  format="%Y-%m-%dT%H:%M:%SZ")
+                          %in%surveyDate
+                          &sdrc_controlInfo_pub$site==site,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
+          sep = "/"),
+    row.names = F))
+  if(any(grepl('try-error',class(write_sdrc_controlInfo)))){
+    log$error(base::paste0('Writing the sdrc_controlInfo output data failed: ',attr(write_sdrc_controlInfo,"condition")))
+    stop()
+  } else {
+    log$info("sdrc_controlInfo data written out.")
+  }
+  
+  write_sdrc_priorParameters<-try(write.csv(
+    sdrc_priorParameters_pub[as.Date(sdrc_priorParameters_pub$endDate,
+                                      tz="UTC",
+                                      format="%Y-%m-%dT%H:%M:%SZ")
+                              %in%surveyDate
+                              &sdrc_priorParameters_pub$site==site,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
+          sep = "/"),
+    row.names = F))
+  if(any(grepl('try-error',class(write_sdrc_priorParameters)))){
+    log$error(base::paste0('Writing the sdrc_priorParameters output data failed: ',attr(write_sdrc_priorParameters,"condition")))
+    stop()
+  } else {
+    log$info("sdrc_priorParameters data written out.")
+  }
+  
+  # Write the rating curve data associated with this curveID
+  curveID <- currCurveData$curveID
+  write_sdrc_stageDischargeCurveInfo<-try(write.csv(
+    sdrc_stageDischargeCurveInfo_pub[sdrc_stageDischargeCurveInfo_pub$curveID
+                                      %in%curveID,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.csv",
+          sep = "/"),
+    row.names = F))
+  if(any(grepl('try-error',class(write_sdrc_stageDischargeCurveInfo)))){
+    log$error(base::paste0('Writing the sdrc_stageDischargeCurveInfo output data failed: ',attr(write_sdrc_stageDischargeCurveInfo,"condition")))
+    stop()
+  } else {
+    log$info("sdrc_stageDischargeCurveInfo data written out.")
+  }
+  
+  write_sdrc_gaugeDischargeMeas<-try(write.csv(
+    sdrc_gaugeDischargeMeas_pub[sdrc_gaugeDischargeMeas_pub$curveID
+                                %in%curveID,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv",
+          sep = "/"),
+    row.names = F))
+  if(any(grepl('try-error',class(write_sdrc_gaugeDischargeMeas)))){
+    log$error(base::paste0('Writing the sdrc_gaugeDischargeMeas output data failed: ',attr(write_sdrc_gaugeDischargeMeas,"condition")))
+    stop()
+  } else {
+    log$info("sdrc_gaugeDischargeMeas data written out.")
+  }
+  
+  write_sdrc_sampledParameters<-try(write.csv(
+    sdrc_sampledParameters_pub[sdrc_sampledParameters_pub$curveID
+                                %in%curveID,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv",
+          sep = "/"),
+    row.names = F))
+  if(any(grepl('try-error',class(write_sdrc_sampledParameters)))){
+    log$error(base::paste0('Writing the sdrc_sampledParameters output data failed: ',attr(write_sdrc_sampledParameters,"condition")))
+    stop()
+  } else {
+    log$info("sdrc_sampledParameters data written out.")
   }
   
   # Which regressionID(s) is/are active for this site*date?
@@ -251,40 +256,45 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
     ),
   ]
   
-  # If there are no active regressionIDs, do not write out any data
-  # If there are active regressionIDs, write out data associated with active curve
-  if(nrow(currRegData)>0){
-    # Write gaugeWaterColumnRegression
-    write_currRegData<-try(write.csv(currRegData,
-                                     paste(DirOutData,
-                                           "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv",
-                                           sep = "/"),
-                                     row.names = F))
-    if(any(grepl('try-error',class(write_currRegData)))){
-      log$error(base::paste0('Writing the currRegData output data failed: ',attr(write_currRegData,"condition")))
-      stop()
-    } else {
-      log$info("currRegData data written out.")
-    }
-    
-    # Write the gauge-pressure relationship data associated with this curveID
-    regressionID <- currRegData$regressionID
-    sdrc_gaugePressureRelationship<-try(write.csv(
-      sdrc_gaugePressureRelationship_pub[
-        sdrc_gaugePressureRelationship_pub$regressionID
-        %in%regressionID,],
-      paste(DirOutData,
-            "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv",
-            sep = "/"),
-      row.names = F))
-    if(any(grepl('try-error',class(sdrc_gaugePressureRelationship)))){
-      log$error(base::paste0('Writing the gaugePressureRelationship output data failed: ',attr(sdrc_gaugePressureRelationship,"condition")))
-      stop()
-    } else {
-      log$info("gaugePressureRelationship data written out.")
-    }
-  }else{
-    log$info(paste0("No currRegData for ",site," on ",date))
+  # If there are no active regressionIDs, proceed with the max regressionID
+  if(nrow(currRegData)==0){
+    log$info(paste0("No active regressionID for ",site," on ",date,". Using the max regressionID for this site."))
+    currRegData <- csd_gaugeWaterColumnRegression_pub[
+      csd_gaugeWaterColumnRegression_pub$site==site
+      &csd_gaugeWaterColumnRegression_pub$regressionID==max(csd_gaugeWaterColumnRegression_pub$regressionID[csd_gaugeWaterColumnRegression_pub$site==site]),
+    ]
+  }
+
+  # Write out data associated with active regression
+
+  # Write gaugeWaterColumnRegression
+  write_currRegData<-try(write.csv(currRegData,
+                                    paste(DirOutData,
+                                          "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv",
+                                          sep = "/"),
+                                    row.names = F))
+  if(any(grepl('try-error',class(write_currRegData)))){
+    log$error(base::paste0('Writing the currRegData output data failed: ',attr(write_currRegData,"condition")))
+    stop()
+  } else {
+    log$info("currRegData data written out.")
+  }
+  
+  # Write the gauge-pressure relationship data associated with this curveID
+  regressionID <- currRegData$regressionID
+  sdrc_gaugePressureRelationship<-try(write.csv(
+    sdrc_gaugePressureRelationship_pub[
+      sdrc_gaugePressureRelationship_pub$regressionID
+      %in%regressionID,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv",
+          sep = "/"),
+    row.names = F))
+  if(any(grepl('try-error',class(sdrc_gaugePressureRelationship)))){
+    log$error(base::paste0('Writing the gaugePressureRelationship output data failed: ',attr(sdrc_gaugePressureRelationship,"condition")))
+    stop()
+  } else {
+    log$info("gaugePressureRelationship data written out.")
   }
   
   # Are there any correction-related tables that need to be published on this site*day?

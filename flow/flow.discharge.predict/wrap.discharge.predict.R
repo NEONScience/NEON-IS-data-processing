@@ -36,16 +36,16 @@
 
 #' @examples
 #' # Not run
-# DirIn <-'/home/NEON/nickerson/pfs/testing/2024/02/25/l4discharge_HOPB132100/data'
-# DirBaM <- '/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta'
-# DirOutBase <- "/home/NEON/nickerson/pfs/out"
-# SchmDataOut="/home/NEON/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# wrap.discharge.predict(DirIn=DirIn,
-#                        DirBaM=DirBaM,
-#                        DirOutBase=DirOutBase,
-#                        SchmDataOut=SchmDataOut,
-#                        log=log)
+DirIn <- '/home/nickerson/pfs/l4discharge_group_and_parse/2025/10/03/l4discharge_WLOU102100'
+DirBaM <- '/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta'
+DirOutBase <- "/home/nickerson/pfs/out"
+SchmDataOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+wrap.discharge.predict(DirIn=DirIn,
+                       DirBaM=DirBaM,
+                       DirOutBase=DirOutBase,
+                       SchmDataOut=SchmDataOut,
+                       log=log)
 
 #' @seealso None currently
 
@@ -75,8 +75,8 @@ wrap.discharge.predict <- function(DirIn,
   correctedFile <- list.files(DirInOSData,pattern = "CSD_15_min")
   
   DirInSWE <- def.dir.in.partial(DirBgn = DirIn,
-                       nameDirSubPartial = 'surfacewater-physical',
-                       log = log)
+                                 nameDirSubPartial = 'surfacewater-physical',
+                                 log = log)
   DirInSWEdata <- paste0(DirInSWE,"/data")
   uncorrectedFile <- list.files(DirInSWEdata,pattern = "EOS_1_min")
   
@@ -186,13 +186,18 @@ wrap.discharge.predict <- function(DirIn,
     # Determine if modeling with a current or previous regression ####
     
     # Read in the gaugeWaterColumnRegression data - stashed local from pachctl query
-    gaugeWaterColumnRegression <- read.csv(
+    gaugeWaterColumnRegression <- base::try(read.csv(
       paste(DirInOSData,
             "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv",
             sep="/"),
       header = TRUE,
       encoding = "UTF-8"
-    )
+    ))
+    if (base::any(base::class(gaugeWaterColumnRegression) == 'try-error')) {
+      # Generate error and stop execution
+      log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv is unreadable"))
+      base::stop()
+    }
     # Check if there is a regression available 
     regAvailable <- any(gaugeWaterColumnRegression$siteID==siteID
                         &((gaugeWaterColumnRegression$regressionStartDate<=startDate
@@ -238,13 +243,18 @@ wrap.discharge.predict <- function(DirIn,
       # Model stage and estimate systematic uncertainty ####
     
       # Read in the curveIdentification data - stashed locally from pachctl query
-      gaugePressureRelationship <- read.csv(
+      gaugePressureRelationship <- base::try(read.csv(
         paste(DirInOSData,
               "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv",
               sep="/"),
         header = TRUE,
         encoding = "UTF-8"
-      )
+      ))
+      if (base::any(base::class(gaugePressureRelationship) == 'try-error')) {
+        # Generate error and stop execution
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv is unreadable"))
+        base::stop()
+      }
       gaugePress <- gaugePressureRelationship[
         gaugePressureRelationship$regressionID==currReg$regressionID,
       ]
@@ -287,13 +297,19 @@ wrap.discharge.predict <- function(DirIn,
     # Determine if modeling with a current or previous rating curve ####
     
     # Read in the curveIdentification data - stashed locally from pachctl query
-    curveIdentification <- read.csv(
+    curveIdentification <- base::try(read.csv(
       paste(DirInOSData,
             "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv",
             sep="/"),
       header = TRUE,
       encoding = "UTF-8"
-    )
+    ))
+    if (base::any(base::class(curveIdentification) == 'try-error')) {
+      # Generate error and stop execution
+      log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv is unreadable"))
+      base::stop()
+    }
+
     # Check if there is a curve available 
     curveAvailable <- any(curveIdentification$siteID==siteID
                           &((curveIdentification$curveStartDate<=startDate
@@ -338,25 +354,35 @@ wrap.discharge.predict <- function(DirIn,
       
       # Read in the controlInfo data - stashed locally from pachctl query
       surveyDate <- as.Date(currCurve$controlSurveyEndDateTime)
-      controlInfo <- read.csv(
+      controlInfo <- base::try(read.csv(
         paste(DirInOSData,
               "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
               sep="/"),
         header = TRUE,
         encoding = "UTF-8"
-      )
+      ))
+      if (base::any(base::class(controlInfo) == 'try-error')) {
+        # Generate error and stop execution
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv is unreadable"))
+        base::stop()
+      }
       controlInfo <- controlInfo[
         controlInfo$siteID==siteID
         &as.Date(controlInfo$endDate)==surveyDate,
       ]
       # Read in the priorParameters data - stashed locally from pachctl query
-      priorParameters <- read.csv(
+      priorParameters <- base::try(read.csv(
         paste(DirInOSData,
               "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
               sep="/"),
         header = TRUE,
         encoding = "UTF-8"
-      )
+      ))
+      if (base::any(base::class(priorParameters) == 'try-error')) {
+        # Generate error and stop execution
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv is unreadable"))
+        base::stop()
+      }
       priorParameters <- priorParameters[
         priorParameters$siteID==siteID
         &as.Date(priorParameters$endDate)==surveyDate,
@@ -443,13 +469,18 @@ wrap.discharge.predict <- function(DirIn,
       # Configure gaugings for BaM! predictive model ####
       
       # Read in the priorParameters data - stashed locally from pachctl query
-      gaugeDischargeMeas <- read.csv(
+      gaugeDischargeMeas <- try(read.csv(
         paste(DirInOSData,
               "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv",
               sep="/"),
         header = TRUE,
         encoding = "UTF-8"
-      )
+      ))
+      if (base::any(base::class(gaugeDischargeMeas) == 'try-error')) {
+        # Generate error and stop execution
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv is unreadable"))
+        base::stop()
+      }
       gaugeDischargeMeas <- gaugeDischargeMeas[
         gaugeDischargeMeas$curveID==currCurve$curveID,
       ]
@@ -482,13 +513,18 @@ wrap.discharge.predict <- function(DirIn,
       # Configure spaghettis for BaM! predictive model ####
       
       # Read in the priorParameters data - stashed locally from pachctl query
-      sampledParameters <- read.csv(
+      sampledParameters <- try(read.csv(
         paste(DirInOSData,
               "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv",
               sep="/"),
         header = TRUE,
         encoding = "UTF-8"
-      )
+      ))
+      if (base::any(base::class(sampledParameters) == 'try-error')) {
+        # Generate error and stop execution
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv is unreadable"))
+        base::stop()
+      }
       sampledParameters <- sampledParameters[
         sampledParameters$curveID==currCurve$curveID,
       ]
