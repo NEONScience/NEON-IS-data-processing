@@ -22,6 +22,9 @@ transform:
       "TermCtxt2=windSpeedMean|buoy-wind" \
       "TermCtxt3=windDirMean|buoy-wind" \
       "DirSubCopy=location|data"
+
+    # Note: Not running timeseries_padder module here because we need to do compass corrections first.
+    # timeseries_padder is run in the next pipeline (windBuoy_compass_correct_and_pad)
     
     EOF
 output_branch: master

@@ -7,8 +7,9 @@ windBuoy_threshold.yaml
 windBuoy_thresh_select.yaml
 windBuoy_windBuoy_compass_correct_and_pad.yaml
 windBuoy_analyze_pad_and_qaqc_plau.yaml
-
 windBuoy_stats_group_and_compute.yaml
+windBuoy_direction_stats_ucrt.yaml
+
 windBuoy_qm_group_and_compute.yaml
 windBuoy_null_gap_ucrt.yaml
 windBuoy_level1_group_consolidate_srf.yaml
