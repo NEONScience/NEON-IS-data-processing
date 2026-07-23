@@ -37,7 +37,7 @@ transform:
       "TermTest3=vectorAverageHeading:null|gap|range|persistence" \
       "DirSubCopy=location|flags" \
       "FileSchmData=$SCHEMA_DATA" \
-      "FileSchmFlags=$SCHEMA_FLAGS"
+      "FileSchmQf=$SCHEMA_FLAGS"
     EOF
   env:
     # Environment variables for padded timeseries analyzer
