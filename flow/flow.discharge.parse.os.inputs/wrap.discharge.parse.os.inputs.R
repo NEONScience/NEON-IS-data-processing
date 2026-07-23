@@ -34,20 +34,22 @@
 
 #' @examples
 #' Not run
-# dirList <- list.files(Para$DirInTables,pattern = "table_loader")
+# DirIn <- "/home/nickerson/pfs/testing/2025/10/01/l4discharge_ARIK102100"
+# DirOutBase <- "/home/nickerson/pfs/out"
+# dirInTables <- "/home/nickerson/pfs/l4discharge_os_table_loader"
+# dirList <- list.files(dirInTables,full.names = F)
 # tableNameMap <- list()
 # for(d in 1:length(dirList)){
-#   fileName <- list.files(paste(Para$DirInTables,dirList[d],sep = "/"))
-#   filePath <- list.files(paste(Para$DirInTables,dirList[d],sep = "/"),
+#   fileName <- dirList[d]
+#   filePath <- list.files(dirInTables,
+#                          pattern=fileName,
 #                          full.names = T)
 #   currFile <- read.csv(filePath,encoding = "UTF-8",header = T)
 #   tableNameMap[[gsub("\\.csv$","",
 #                      gsub("^.*\\.001\\.","",
 #                           fileName))]] <- currFile
 # }
-# ListTables <- tableNameMap
-# DirIn <- "/home/NEON/nickerson/pfs/testing/2024/02/25/l4discharge_HOPB132100/data"
-# DirOutBase <- "/home/NEON/nickerson/pfs/out"
+# list2env(tableNameMap,envir = .GlobalEnv)
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # wrap.discharge.parse.os.inputs(
 #   DirIn=DirIn,
@@ -129,8 +131,17 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }
   
   # Which curveID(s) is/are active for this site*date?
+  if(grepl("TOOK150",DirIn)){
+    curveIDsite <- "TKIN"
+  }else{
+    if(grepl("TOOK160",DirIn)){
+      curveIDsite <- "TKOT"
+    }else{
+      curveIDsite <- site
+    }
+  }
   currCurveData <- sdrc_curveIdentification_pub[
-    sdrc_curveIdentification_pub$site==site
+    grepl(paste0("^",curveIDsite,"\\."), sdrc_curveIdentification_pub$curveID)
     &((as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC")<=startDate
        &as.POSIXct(sdrc_curveIdentification_pub$curveEndDate,tz="UTC")>=endDate)
       |(as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC")<=startDate
@@ -144,8 +155,8 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   if(nrow(currCurveData)==0){
     log$info(paste0("No active curveID for ",site," on ",date,". Using the max curveID for this site."))
     currCurveData <- sdrc_curveIdentification_pub[
-      sdrc_curveIdentification_pub$site==site
-      &sdrc_curveIdentification_pub$curveID==max(sdrc_curveIdentification_pub$curveID[sdrc_curveIdentification_pub$site==site]),
+      grepl(paste0("^",curveIDsite,"\\."), sdrc_curveIdentification_pub$curveID)
+      &sdrc_curveIdentification_pub$curveID==max(sdrc_curveIdentification_pub$curveID[grepl(paste0("^",curveIDsite,"\\."), sdrc_curveIdentification_pub$curveID)]),
     ]
   }
 
@@ -166,12 +177,21 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   
   # Write controls data associated with this curve
   surveyDate <- as.Date(currCurveData$controlSurveyEndDateTime,tz="UTC")
+  if(grepl("TOOK150",DirIn)){
+    surveyLoc <- "TOOK.AOS.discharge.inflow"
+  }else{
+    if(grepl("TOOK160",DirIn)){
+      surveyLoc <- "TOOK.AOS.discharge.outflow"
+    }else{
+      surveyLoc <- paste0(site,".AOS.discharge")
+    }
+  }
   write_sdrc_controlInfo<-try(write.csv(
     sdrc_controlInfo_pub[as.Date(sdrc_controlInfo_pub$endDate,
                                   tz="UTC",
                                   format="%Y-%m-%dT%H:%M:%SZ")
                           %in%surveyDate
-                          &sdrc_controlInfo_pub$site==site,],
+                          &sdrc_controlInfo_pub$namedLocation==surveyLoc,],
     paste(DirOutData,
           "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
           sep = "/"),
@@ -188,7 +208,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
                                       tz="UTC",
                                       format="%Y-%m-%dT%H:%M:%SZ")
                               %in%surveyDate
-                              &sdrc_priorParameters_pub$site==site,],
+                              &sdrc_priorParameters_pub$namedLocation==surveyLoc,],
     paste(DirOutData,
           "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
           sep = "/"),
@@ -245,8 +265,17 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }
   
   # Which regressionID(s) is/are active for this site*date?
+  if(grepl("TOOK150",DirIn)){
+    regIDsite <- "TKIN"
+  }else{
+    if(grepl("TOOK160",DirIn)){
+      regIDsite <- "TKOT"
+    }else{
+      regIDsite <- site
+    }
+  }
   currRegData <- csd_gaugeWaterColumnRegression_pub[
-    csd_gaugeWaterColumnRegression_pub$site==site
+    grepl(paste0("^",regIDsite,"\\."), csd_gaugeWaterColumnRegression_pub$regressionID)
     &((as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC")<=startDate
        &as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionEndDate,tz="UTC")>=endDate)
       |(as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC")<=startDate
@@ -260,8 +289,8 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   if(nrow(currRegData)==0){
     log$info(paste0("No active regressionID for ",site," on ",date,". Using the max regressionID for this site."))
     currRegData <- csd_gaugeWaterColumnRegression_pub[
-      csd_gaugeWaterColumnRegression_pub$site==site
-      &csd_gaugeWaterColumnRegression_pub$regressionID==max(csd_gaugeWaterColumnRegression_pub$regressionID[csd_gaugeWaterColumnRegression_pub$site==site]),
+      grepl(paste0("^",regIDsite,"\\."), csd_gaugeWaterColumnRegression_pub$regressionID)
+      &csd_gaugeWaterColumnRegression_pub$regressionID==max(csd_gaugeWaterColumnRegression_pub$regressionID[grepl(paste0("^",regIDsite,"\\."), csd_gaugeWaterColumnRegression_pub$regressionID)]),
     ]
   }
 
@@ -300,7 +329,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   # Are there any correction-related tables that need to be published on this site*day?
   # Are there any gaps that end on this day?
   currGapData <- csd_dataGapToFillMethodMapping_pub[
-   csd_dataGapToFillMethodMapping_pub$siteID==site
+   csd_dataGapToFillMethodMapping_pub$namedLocation==surveyLoc
    &as.Date(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
   ,]
   if(nrow(currGapData)>0){
@@ -321,7 +350,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }
   # Are there any constant bias shifts that end on this day?
   currShiftData <- csd_constantBiasShift_pub[
-    csd_constantBiasShift_pub$siteID==site
+    csd_constantBiasShift_pub$namedLocation==surveyLoc
     &as.Date(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
     ,]
   if(nrow(currShiftData)>0){
@@ -342,7 +371,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }
   # Are there any gap filling regressions that end on this day?
   currGapRegData <- csd_gapFillingRegression_pub[
-    csd_gapFillingRegression_pub$siteID==site
+    csd_gapFillingRegression_pub$namedLocation==surveyLoc
     &as.Date(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
     ,]
   if(nrow(currGapRegData)>0){
