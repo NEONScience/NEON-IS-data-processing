@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_thresh_select_ts_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.3.4
   cmd:
   - sh
   - "-c"
@@ -103,10 +103,10 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 1.5G
+  memory: 2.5G
   cpu: 5.5
 resource_limits:
-  memory: 3G
+  memory: 4G
   cpu: 6.5
 sidecar_resource_requests:
   memory: 4G
@@ -115,4 +115,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

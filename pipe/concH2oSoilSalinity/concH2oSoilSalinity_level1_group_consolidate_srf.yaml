@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_level1_group_consolidate_srf
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.5
   cmd:
   - sh
   - "-c"
@@ -24,6 +24,7 @@ transform:
     #
     # Run filter-joiner to bring in SRF (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
+  
     # Set some environment variables for the 3rd module
     export OUT_PATH=$OUT_PATH_3
     #
@@ -40,7 +41,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "DirData=stats|quality_metrics" \
       PathPubWb=$PUB_WORKBOOKS \
-      "DirSubCopy=science_review_flags|group"
+      "DirSubCopy=science_review_flags|group|location"
     #
     #
     # Export Level 1 data to bucket
@@ -116,15 +117,16 @@ transform:
     IN_PATH: /tmp/interimB
     OUT_PATH_3: /tmp/pfs/interimC # This will be transfered to OUT_PATH for the second module
     GROUP_INDEX: "6" # path index of names of group-level metadata to include in the output
-    # Input data carries an intermediate CFGLOC segment at index 7, so
-    # group metadata folders (group, science_review_flags) are at index 8.
-    GROUP_METADATA_INDEX: "8"
+    # group_split saves the group JSON above the CFGLOC level, so group metadata
+    # folders (group, science_review_flags) sit directly under the group at index 7.
+    GROUP_METADATA_INDEX: "7"
     GROUP_METADATA_NAMES: group,science_review_flags
-    # path index of names of directories to include in the output
-    # Input data carries an intermediate CFGLOC segment at index 7, so
-    # data types (stats, quality_metrics) are at index 8.
+    # Data types (stats, quality_metrics, location) remain nested under the CFGLOC
+    # level, one deeper than the group metadata, at index 8. Location must be listed
+    # here — otherwise level1_consolidate drops the CFGLOC/location/*.json files that
+    # pub_files' CFGLOC discovery loop relies on.
     DATA_TYPE_INDEX: "8"
-    DATA_TYPE_NAMES: stats,quality_metrics
+    DATA_TYPE_NAMES: stats,quality_metrics,location
     
 # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /tmp/pub_workbooks
@@ -164,10 +166,10 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 4G
-  cpu: 3
+  cpu: 7
 resource_limits:
   memory: 5G
-  cpu: 6
+  cpu: 8
 sidecar_resource_requests:
   memory: 4G
   cpu: 1.2
@@ -175,4 +177,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

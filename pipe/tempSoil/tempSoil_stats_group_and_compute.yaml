@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_stats_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.6
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.7
   cmd:
   - sh
   - "-c"
@@ -86,4 +86,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

@@ -3,7 +3,7 @@
 pipeline:
   name: concH2oSoilSalinity_qm_join_stats
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.5
   cmd:
   - sh
   - "-c"
@@ -33,6 +33,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "WndwAgr=005|030" \
       "WghtAlphBeta=1|2" \
+      "DirSubCopy=location" \
       FileSchmQm=$FILE_SCHEMA_QM \
       Thsh=0.6 \
       "GrpQfAlph1=VSWCsoilSpecificDepth01:VSWCsoilSpecificDepth01NullQF|VSWCsoilSpecificDepth01GapQF|VSWCsoilSpecificDepth01RangeQF|VSWCsoilSpecificDepth01StepQF|VSWCsoilSpecificDepth01PersistenceQF|VSWCsoilSpecificDepth01SpikeQF|VSWCDepth01SuspectCalQF|tempTestDepth01QF" \
@@ -147,6 +148,12 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [6]
         - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            # Location JSONs — carried through via DirSubCopy so pub_files
+            # can discover CFGLOCs downstream in the pub_group output.
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/location/**
+            join_indices: [6]
+        - path:
             name: REGULARIZED_FLAGS_PATH
             # Filter for flags directory
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/enviroscan/*/flags/**
@@ -186,16 +193,16 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 900M
-  cpu: 3.5
-resource_limits:
   memory: 2G
+  cpu: 4
+resource_limits:
+  memory: 3G
   cpu: 5
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
