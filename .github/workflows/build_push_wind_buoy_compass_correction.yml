@@ -1,11 +1,11 @@
-name: "Build-push_concH2oSoilSalinity_position_history_loader"
+name: "Build-push_wind_buoy_compass_correction"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'modules/concH2oSoilSalinity_position_history_loader/**'
+      - 'flow/flow.wind.buoy.compass.correction/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./modules/concH2oSoilSalinity_position_history_loader
-  IMAGE_NAME: neon-is-conc-h2o-salinity-position-history-loader
+  MODULE_PATH: ./flow/flow.wind.buoy.compass.correction
+  IMAGE_NAME: neon-is-wind-buoy-compass-correction
 
 jobs:
   build-push:
@@ -44,3 +44,4 @@ jobs:
         uses: ./.github/actions/build-push
         with:
             image-tag: "${short_sha}"
+            

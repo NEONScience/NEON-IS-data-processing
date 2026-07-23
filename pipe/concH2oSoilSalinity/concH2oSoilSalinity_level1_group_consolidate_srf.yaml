@@ -41,7 +41,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "DirData=stats|quality_metrics" \
       PathPubWb=$PUB_WORKBOOKS \
-      "DirSubCopy=science_review_flags|group"
+      "DirSubCopy=science_review_flags|group|location"
     #
     #
     # Export Level 1 data to bucket
@@ -121,10 +121,12 @@ transform:
     # folders (group, science_review_flags) sit directly under the group at index 7.
     GROUP_METADATA_INDEX: "7"
     GROUP_METADATA_NAMES: group,science_review_flags
-    # Data types (stats, quality_metrics) remain nested under the CFGLOC level,
-    # one deeper than the group metadata, at index 8.
+    # Data types (stats, quality_metrics, location) remain nested under the CFGLOC
+    # level, one deeper than the group metadata, at index 8. Location must be listed
+    # here — otherwise level1_consolidate drops the CFGLOC/location/*.json files that
+    # pub_files' CFGLOC discovery loop relies on.
     DATA_TYPE_INDEX: "8"
-    DATA_TYPE_NAMES: stats,quality_metrics
+    DATA_TYPE_NAMES: stats,quality_metrics,location
     
 # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /tmp/pub_workbooks
@@ -164,10 +166,10 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 4G
-  cpu: 5
+  cpu: 7
 resource_limits:
   memory: 5G
-  cpu: 6
+  cpu: 8
 sidecar_resource_requests:
   memory: 4G
   cpu: 1.2
@@ -175,4 +177,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

@@ -158,16 +158,16 @@ input:
         empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 400M
-  cpu: .5
+  memory: 1G
+  cpu: 1.7
 resource_limits:
-  memory: 800M
-  cpu: 1.3
+  memory: 2G
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 3G
-  cpu: 1
+  cpu: 1.6
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
