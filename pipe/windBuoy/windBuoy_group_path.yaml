@@ -66,12 +66,6 @@ input:
       repo: rmyoung_hmr3300_fill_date_gaps
       glob: /hmr3300/(*/*/*)
       joinOn: $1
-#    - pfs:
-#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-#        name: GROUP_FOCUS_PATH
-#        repo: 
-#        glob: /(*/*/*)
-#        joinOn: $1
 parallelism_spec:
   constant: 5
 autoscaling: true

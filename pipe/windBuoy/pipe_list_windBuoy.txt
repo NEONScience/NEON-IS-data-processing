@@ -11,7 +11,6 @@ windBuoy_stats_group_and_compute.yaml
 windBuoy_direction_stats_ucrt.yaml
 
 windBuoy_qm_group_and_compute.yaml
-windBuoy_null_gap_ucrt.yaml
 windBuoy_level1_group_consolidate_srf.yaml
 windBuoy_cron_monthly_and_pub_control.yaml
 windBuoy_pub_group.yaml
