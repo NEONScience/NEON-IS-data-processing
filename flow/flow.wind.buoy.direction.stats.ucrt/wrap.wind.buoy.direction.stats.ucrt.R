@@ -260,8 +260,12 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     data_wind_avg$combUncertMean <- base::sqrt(data_wind_avg$U_CVALA3^2 + data_wind_avg$windDirSE^2 + data_wind_avg$compassUcrtValue^2 + data_wind_avg$magDecUcrtValue^2)
     data_wind_avg$expUncertMean <- 2 * data_wind_avg$combUncertMean
 
+    # Add start and end date-time columns for each observation window 
+    data_wind_avg$startDateTime <- data_wind_avg$windowStart
+    data_wind_avg$endDateTime <- data_wind_avg$windowStart + lubridate::minutes(as.numeric(WndwAgr[j]))
+
     # only keep the necessary columns for further analysis
-    statsOut <- data_wind_avg[, c("readout_time", "source_id", "site_id", "windDirMean", "windDirVar", "n","windDirSE","expUncertMean")]
+    statsOut <- data_wind_avg[, c("startDateTime", "endDateTime", "source_id", "site_id", "windDirMean", "windDirVar", "n","windDirSE","expUncertMean")]
 
 
     # Write out stats file
