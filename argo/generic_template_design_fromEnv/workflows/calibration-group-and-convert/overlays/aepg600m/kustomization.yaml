@@ -8,7 +8,7 @@ resources:
   - configmap-env.yaml
   - configmap-resource-request.yaml
 
-patchesStrategicMerge:
+patches:
   - |-
     apiVersion: argoproj.io/v1alpha1
     kind: WorkflowTemplate
