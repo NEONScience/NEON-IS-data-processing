@@ -19,16 +19,18 @@ transform:
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
 
-    # ---- Run module - quality metrics (averaged) ----
-    # Rscript ./flow.qaqc.qm.R \
-    #   DirIn=/tmp/pfs/filter_joined \
-    #   DirOut=/pfs/out \
-    #   DirErr=/pfs/out/errored_datums \
-    #   "WndwAgr=002|030" \
-    #   "WghtAlphBeta=2|1" \
-    #   Thsh=0.2 \
-    #   "GrpQfAlph1=speed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedRangeQF|buoyWindSpeedPersistenceQF" \
-    #   "GrpQfBeta1=speed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedPersistenceQF|buoyWindSpeedRangeQF" 
+    #---- Run module - quality metrics (averaged) ----
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "WndwAgr=002|030" \
+      "WghtAlphBeta=2|1" \
+      Thsh=0.2 \
+      "GrpQfAlph1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedRangeQF|buoyWindSpeedPersistenceQF" \
+      "GrpQfBeta1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedPersistenceQF|buoyWindSpeedRangeQF"  \
+      "GrpQfAlph2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyWindDirPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF" \
+      "GrpQfBeta2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyWindDirPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF"
  
   env:
     # Environment variables for filter-joiner
@@ -41,16 +43,16 @@ transform:
         - path:
             name: QAQC_PLAUSIBILITY_PATH
             # Filter for flags directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/wind-buoy_BARC103100/rmyoung/*/flags/**
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/rmyoung/*/flags/**
             # Join on named location (already joined below by day)
             join_indices: [6]
         - path:
             name: REGULARIZED_FLAGS_PATH
             # Filter for flags directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/wind-buoy_BARC103100/rmyoung/*/flags/**
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/rmyoung/*/flags/**
             # Join on named location (already joined below by day
             join_indices: [6]
-    OUT_PATH: /pfs/out #/tmp/pfs/filter_joined
+    OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.

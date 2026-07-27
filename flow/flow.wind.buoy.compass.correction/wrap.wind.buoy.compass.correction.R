@@ -53,6 +53,10 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   DirIn_rmyoung <- paste0(DirIn,"/rmyoung")
   DirIn_hmr3300 <- paste0(DirIn,"/hmr3300")
 
+  timeBgn <-InfoDirIn$time # Earliest possible start date for the data
+  timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
+  all_starts <- seq(timeBgn, timeEnd - 60, by = 60)
+
   #list directories
   allDir_rmyoung <- base::list.dirs(path = DirIn_rmyoung, full.names = TRUE, 
         recursive = TRUE)
@@ -105,7 +109,13 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
     }else{
       log$debug(base::paste0('Successfully read in file: ',dataFileName_rmyoung))
       data_rmyoung$readout_time <- as.POSIXct(data_rmyoung$readout_time, origin="1970-01-01", tz="GMT")
-      data_rmyoung <- data_rmyoung[!duplicated(data_rmyoung), ]
+      if(all(data_rmyoung$source_id == "99999")){
+        #clean up empty df
+        data_rmyoung <- data_rmyoung[0,]
+        #add a row for each readout time in all_starts
+        data_rmyoung <- data_rmyoung[rep(1, length(all_starts)), , drop = FALSE]
+        data_rmyoung$readout_time <- all_starts
+      }
     }    
   }
   dataFileName_hmr3300<-base::list.files(DirInData_hmr3300,full.names=FALSE)
@@ -120,9 +130,14 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
     }else{
       log$debug(base::paste0('Successfully read in file: ',dataFileName_hmr3300))
       data_hmr3300$readout_time <- as.POSIXct(data_hmr3300$readout_time, origin="1970-01-01", tz="GMT")
-      data_hmr3300 <- data_hmr3300[!duplicated(data_hmr3300), ]
-    }
-    
+      if(all(data_hmr3300$source_id == "99999")){
+        #clean up empty df
+        data_hmr3300 <- data_hmr3300[0,]
+        #add a row for each readout time in all_starts
+        data_hmr3300 <- data_hmr3300[rep(1, length(all_starts)), , drop = FALSE]
+        data_hmr3300$readout_time <- all_starts
+      }
+    }    
   }
 
   
