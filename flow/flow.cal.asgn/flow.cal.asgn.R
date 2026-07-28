@@ -59,6 +59,14 @@
 #' 2020
 #' 2021
 #' 
+#' 4.a "DateStart=value" (optional, combined with DateEnd is an alternative to FileYear), where value is a date
+#' string formatted "YYYY-mm-dd" specifying the start date (inclusive) to assign calibrations. This input will 
+#' be ignored if FileYear is specified.
+#' 
+#' 4.b "DateEnd=value" (optional, combined with DateStart is an alternative to FileYear), where value is a date
+#' string formatted "YYYY-mm-dd" specifying the end date (NON-inclusive) to assign calibrations. This input will 
+#' be ignored if FileYear is specified.
+#' 
 #' 5. "PadDay=value" (optional), where value contains the integer days to include applicable 
 #' calibration files before/after a given data day. A negative value will copy in the calibration file(s) 
 #' that are applicable to the given data day AND # number of days before the data day. A positive value 
@@ -133,8 +141,12 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut","DirErr","FileYear"),
-    NameParaOptn = c("PadDay","Arry"),
+    NameParaReqd = c("DirIn", "DirOut","DirErr"),
+    NameParaOptn = c("FileYear",
+                     "DateStart",
+                     "DateEnd",
+                     "PadDay",
+                     "Arry"),
     ValuParaOptn = base::list(PadDay=0,
                               Arry=FALSE),
     TypePara = base::list(PadDay="integer",
@@ -148,14 +160,35 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Parse the file containing the years to populate
-log$debug(base::paste0('File containing data years to populate: ', Para$FileYear))
-yearFill <- base::as.integer(base::readLines(con=Para$FileYear))
-if(base::length(yearFill) == 0 || base::any(base::is.na(yearFill))){
-  log$fatal(base::paste0('Cannot determine years to populate from file: ', Para$FileYear,'. Check file contents.'))
-  stop()
+if(base::length(Para$FileYear) > 0){
+  log$debug(base::paste0('File containing data years to populate: ', Para$FileYear))
+  yearFill <- base::as.integer(base::readLines(con=Para$FileYear))
+  if(base::length(yearFill) == 0 || base::any(base::is.na(yearFill))){
+    log$fatal(base::paste0('Cannot determine years to populate from file: ', Para$FileYear,'. Check file contents.'))
+    stop()
+  }
+  timeBgn <- base::as.POSIXct(x=paste0(min(yearFill),'-01-01'),tz='GMT')
+  timeEnd <- base::as.POSIXct(x=paste0(max(yearFill)+1,'-01-01'),tz='GMT')
+} else {
+  log$debug(base::paste0('File containing data years to populate not found. Using specified DateStart: ',
+    Para$DateStart,' and DateEnd: ', 
+    Para$DateEnd))
+  timeBgn <- base::as.POSIXct(Para$DateStart,tz='GMT')
+  timeEnd <- base::as.POSIXct(Para$DateEnd,tz='GMT')
+
+  if(base::length(timeBgn) != 1 || is.na(timeBgn)){
+    log$fatal(base::paste0('Cannot determine start date from input DateBgn. Check parameter.'))
+    stop()
+  }
+  if(base::length(timeEnd) != 1 || is.na(timeEnd)){
+    log$fatal(base::paste0('Cannot determine end date from input DateEnd. Check parameter.'))
+    stop()
+  }
+  if(timeBgn > timeEnd){
+    log$fatal(base::paste0('DateBgn is after DateEnd... illogical! Check input parameters.'))
+    stop()
+  }
 }
-timeBgn <- base::as.POSIXct(x=paste0(min(yearFill),'-01-01'),tz='GMT')
-timeEnd <- base::as.POSIXct(x=paste0(max(yearFill)+1,'-01-01'),tz='GMT')
 
 # Parse the days to pad
 if(base::length(Para$PadDay) == 1 && !base::is.na(Para$PadDay)){
