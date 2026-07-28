@@ -27,7 +27,8 @@ Example manifest:
 ]
 
 Output path segment order is controlled by environment variables that map fields to
-0-based indexes in each output path:
+0-based indexes in each output path. Any subset of these variables may be set; only
+configured components are included in output paths:
 - PATH_SOURCE_TYPE_INDEX
 - PATH_YEAR_INDEX
 - PATH_MONTH_INDEX
@@ -105,20 +106,26 @@ def _load_manifest(env: environs.Env) -> list[dict]:
 
 
 def _read_index_env(env: environs.Env) -> dict[str, int]:
-    index_map = {
-        "source_type": env.int("PATH_SOURCE_TYPE_INDEX"),
-        "year": env.int("PATH_YEAR_INDEX"),
-        "month": env.int("PATH_MONTH_INDEX"),
-        "day": env.int("PATH_DAY_INDEX"),
-        "source_id": env.int("PATH_SOURCE_ID_INDEX"),
+    raw_index_map = {
+        "source_type": env.int("PATH_SOURCE_TYPE_INDEX", None),
+        "year": env.int("PATH_YEAR_INDEX", None),
+        "month": env.int("PATH_MONTH_INDEX", None),
+        "day": env.int("PATH_DAY_INDEX", None),
+        "source_id": env.int("PATH_SOURCE_ID_INDEX", None),
     }
+
+    index_map = {key: value for key, value in raw_index_map.items() if value is not None}
+    if not index_map:
+        sys.exit(
+            "At least one PATH_*_INDEX environment variable is required to build output paths."
+        )
 
     for key, value in index_map.items():
         if value < 0:
             sys.exit(f"Index for {key} must be >= 0, got {value}.")
 
     if len(set(index_map.values())) != len(index_map):
-        sys.exit("All OUTPUT_*_INDEX values must be unique.")
+        sys.exit("All configured PATH_*_INDEX values must be unique.")
 
     return index_map
 
@@ -168,21 +175,31 @@ def _build_path(record: dict, index_map: dict[str, int]) -> str:
             if source_id_str:
                 values["source_id"] = source_id_str
 
-    # Determine the cutoff index: exclude any component whose index is larger
-    # than the deepest available date component (i.e., when data_date is truncated).
+    # Determine the cutoff index using only configured date/source_id indices.
+    # If no relevant date/source_id indices are configured, no cutoff is applied.
+    cutoff: int | None = None
     if "source_id" in values:
-        cutoff = index_map["source_id"]
+        for key in ("source_id", "day", "month", "year"):
+            if key in index_map:
+                cutoff = index_map[key]
+                break
     elif day is not None:
-        cutoff = index_map["day"]
+        for key in ("day", "month", "year"):
+            if key in index_map:
+                cutoff = index_map[key]
+                break
     elif month is not None:
-        cutoff = index_map["month"]
-    else:
+        for key in ("month", "year"):
+            if key in index_map:
+                cutoff = index_map[key]
+                break
+    elif "year" in index_map:
         cutoff = index_map["year"]
 
     indexed_values = [
         (index_map[key], value)
         for key, value in values.items()
-        if index_map[key] <= cutoff
+        if key in index_map and (cutoff is None or index_map[key] <= cutoff)
     ]
     indexed_values.sort(key=lambda item: item[0])
 
