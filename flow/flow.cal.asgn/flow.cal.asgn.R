@@ -59,11 +59,11 @@
 #' 2020
 #' 2021
 #' 
-#' 4.a "DtaeBgn=value" (optional, combined with DateEnd is an alternative to FileYear), where value is a date
+#' 4.a "DateBgn=value" (optional, combined with DateEnd is an alternative to FileYear), where value is a date
 #' string formatted "YYYY-mm-dd" specifying the start date (inclusive) to assign calibrations. This input will 
 #' be ignored if FileYear is specified.
 #' 
-#' 4.b "DateEnd=value" (optional, combined with DtaeBgn is an alternative to FileYear), where value is a date
+#' 4.b "DateEnd=value" (optional, combined with DateBgn is an alternative to FileYear), where value is a date
 #' string formatted "YYYY-mm-dd" specifying the end date (NON-inclusive) to assign calibrations. This input will 
 #' be ignored if FileYear is specified.
 #' 
@@ -172,10 +172,10 @@ if(base::length(Para$FileYear) > 0){
   timeBgn <- base::as.POSIXct(x=paste0(min(yearFill),'-01-01'),tz='GMT')
   timeEnd <- base::as.POSIXct(x=paste0(max(yearFill)+1,'-01-01'),tz='GMT')
 } else {
-  log$debug(base::paste0('File containing data years to populate not found. Using specified DtaeBgn: ',
-    Para$DtaeBgn,' and DateEnd: ', 
+  log$debug(base::paste0('File containing data years to populate not found. Using specified DateBgn: ',
+    Para$DateBgn,' and DateEnd: ', 
     Para$DateEnd))
-  timeBgn <- base::as.POSIXct(Para$DtaeBgn,tz='GMT')
+  timeBgn <- base::as.POSIXct(Para$DateBgn,tz='GMT')
   timeEnd <- base::as.POSIXct(Para$DateEnd,tz='GMT')
 
   if(base::length(timeBgn) != 1 || is.na(timeBgn)){
