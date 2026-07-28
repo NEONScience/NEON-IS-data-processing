@@ -22,6 +22,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       "WndwAgr=002|030" \
+      FileSchmStat=$FILE_SCHEMA_STATS \
       "TermStat1=speed:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
     EOF
   env:
@@ -52,6 +53,10 @@ transform:
     PARALLELIZATION_INTERNAL: '5' # Option for stats module
 input:
   cross:
+  - pfs:
+      name: FILE_SCHEMA_STATS
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_speed_stats.avsc
   - join:
     - pfs:
         name: QAQC_PATH

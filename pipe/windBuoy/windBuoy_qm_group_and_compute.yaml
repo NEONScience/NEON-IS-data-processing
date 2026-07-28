@@ -27,6 +27,7 @@ transform:
       "WndwAgr=002|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
+      FileSchmQm=$FILE_SCHEMA_QM \
       "GrpQfAlph1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedRangeQF|buoyWindSpeedPersistenceQF" \
       "GrpQfBeta1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedPersistenceQF|buoyWindSpeedRangeQF"  \
       "GrpQfAlph2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyWindDirPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF" \
@@ -61,6 +62,10 @@ input:
 # We're going to send in all the data at once and partition out the aquatroll vs. leveltroll data using the
 # filter-joiner.  
   cross:
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_quality_metrics.avsc
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH

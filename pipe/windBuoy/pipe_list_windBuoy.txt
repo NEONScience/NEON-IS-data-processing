@@ -1,3 +1,4 @@
+windBuoy_cron_monthly_and_pub_control.yaml
 windBuoy_group_loader.yaml
 windBuoy_group_assignment.yaml
 windBuoy_srf_loader.yaml
@@ -11,7 +12,6 @@ windBuoy_stats_group_and_compute.yaml
 windBuoy_direction_stats_ucrt.yaml
 windBuoy_qm_group_and_compute.yaml
 windBuoy_level1_group_consolidate_srf.yaml
-windBuoy_cron_monthly_and_pub_control.yaml
 windBuoy_pub_group.yaml
 windBuoy_pub_format_and_package.yaml
 windBuoy_pub_egress_and_publish.yaml
