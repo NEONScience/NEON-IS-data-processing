@@ -28,6 +28,7 @@ RUN apt update && \
     apt-get install -y --no-install-recommends \
         software-properties-common \
         gnupg && \
+        jq && \
     rm -rf /var/lib/apt/lists/* 
     
 RUN add-apt-repository ppa:deadsnakes/ppa -y
