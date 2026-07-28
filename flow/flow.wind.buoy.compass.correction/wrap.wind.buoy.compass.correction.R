@@ -100,6 +100,9 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   if(length(dataFileName_rmyoung)==0){
     log$error(base::paste0('Data file not found in ', DirInData_rmyoung)) 
     stop()
+  } else if(length(dataFileName_rmyoung)>1){
+    log$error(base::paste0('More than one data file found in ', DirInData_rmyoung))
+    stop()
   } else {
     data_rmyoung<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData_rmyoung, '/', dataFileName_rmyoung),
                                                        log = log),silent = FALSE)
@@ -120,7 +123,11 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   }
   dataFileName_hmr3300<-base::list.files(DirInData_hmr3300,full.names=FALSE)
   if(length(dataFileName_hmr3300)==0){
-    log$debug(base::paste0('HMR3300 file not found in ', DirInData_hmr3300))
+    log$error(base::paste0('HMR3300 file not found in ', DirInData_hmr3300))
+    stop()
+  } else if(length(dataFileName_hmr3300)>1){
+    log$error(base::paste0('More than one HMR3300 data file found in ', DirInData_hmr3300))
+    stop()
   } else {
     data_hmr3300<-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData_hmr3300, '/', dataFileName_hmr3300),
                                                        log = log),silent = FALSE)    
@@ -167,7 +174,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
 
 
   #3. Magnetic declination and compass offset from thresholds
-  if(length(dataFileName_hmr3300)>0 && length(DirInThresholds_hmr3300) > 0){
+  if(length(dataFileName_hmr3300)>0 && length(dir(DirInThresholds_hmr3300)) > 0){
     #read in hmr3300 thresholds
     fileThsh <- base::dir(DirInThresholds_hmr3300,full.names=TRUE)
     
@@ -283,7 +290,7 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   if(length(data_hmr3300$readout_time)>0){
     # rename column hmr3300$direction to compass_direction_raw
     names(data_hmr3300)[names(data_hmr3300) == "direction"] <- "compass_direction_raw"
-    wind_data <- merge(rmyoungData, data_hmr3300[, c("readout_time", "compass_direction_raw", "compass_direction_adjusted")], by="readout_time", all=TRUE)
+    wind_data <- merge(rmyoungData, data_hmr3300[, c("readout_time", "compass_direction_raw", "compass_direction_adjusted")], by="readout_time", all.x=TRUE)
     if(nrow(wind_data) != nrow(rmyoungData)){
       log$error(base::paste0('The number of rows in the merged wind data (',nrow(wind_data),') does not match the number of rows in the rmyoung data (',nrow(rmyoungData),').'))
     }
