@@ -59,11 +59,11 @@
 #' 2020
 #' 2021
 #' 
-#' 4.a "DateStart=value" (optional, combined with DateEnd is an alternative to FileYear), where value is a date
+#' 4.a "DtaeBgn=value" (optional, combined with DateEnd is an alternative to FileYear), where value is a date
 #' string formatted "YYYY-mm-dd" specifying the start date (inclusive) to assign calibrations. This input will 
 #' be ignored if FileYear is specified.
 #' 
-#' 4.b "DateEnd=value" (optional, combined with DateStart is an alternative to FileYear), where value is a date
+#' 4.b "DateEnd=value" (optional, combined with DtaeBgn is an alternative to FileYear), where value is a date
 #' string formatted "YYYY-mm-dd" specifying the end date (NON-inclusive) to assign calibrations. This input will 
 #' be ignored if FileYear is specified.
 #' 
@@ -110,6 +110,8 @@
 #     add support for array variables/calibrations that utilize multiple stream IDs for the same term
 #   Cove Sturtevant (2021-08-26)
 #     Add datum error routing
+#   Cove Sturtevant (2026-07-28)
+#     Add option to specify date range instaed of reading date year from file
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -143,7 +145,7 @@ Para <-
     arg = arg,
     NameParaReqd = c("DirIn", "DirOut","DirErr"),
     NameParaOptn = c("FileYear",
-                     "DateStart",
+                     "DtaeBgn",
                      "DateEnd",
                      "PadDay",
                      "Arry"),
@@ -170,10 +172,10 @@ if(base::length(Para$FileYear) > 0){
   timeBgn <- base::as.POSIXct(x=paste0(min(yearFill),'-01-01'),tz='GMT')
   timeEnd <- base::as.POSIXct(x=paste0(max(yearFill)+1,'-01-01'),tz='GMT')
 } else {
-  log$debug(base::paste0('File containing data years to populate not found. Using specified DateStart: ',
-    Para$DateStart,' and DateEnd: ', 
+  log$debug(base::paste0('File containing data years to populate not found. Using specified DtaeBgn: ',
+    Para$DtaeBgn,' and DateEnd: ', 
     Para$DateEnd))
-  timeBgn <- base::as.POSIXct(Para$DateStart,tz='GMT')
+  timeBgn <- base::as.POSIXct(Para$DtaeBgn,tz='GMT')
   timeEnd <- base::as.POSIXct(Para$DateEnd,tz='GMT')
 
   if(base::length(timeBgn) != 1 || is.na(timeBgn)){
