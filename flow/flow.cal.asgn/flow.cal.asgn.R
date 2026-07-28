@@ -145,7 +145,7 @@ Para <-
     arg = arg,
     NameParaReqd = c("DirIn", "DirOut","DirErr"),
     NameParaOptn = c("FileYear",
-                     "DtaeBgn",
+                     "DateBgn",
                      "DateEnd",
                      "PadDay",
                      "Arry"),
