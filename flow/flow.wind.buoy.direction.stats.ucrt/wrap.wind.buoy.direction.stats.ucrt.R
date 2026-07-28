@@ -47,7 +47,6 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
 
   DirInData <- paste0(DirIn,"/data")
   DirInThresholds <- paste0(DirIn,"/threshold")
-  DirInUcrt <- paste0(DirIn,"/uncertainty_data")
   DirInUcrtCoef <- base::paste0(DirIn,'/uncertainty_coef')
   
   # Create output directories
@@ -61,6 +60,9 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
   if(length(dataFileName)==0){
     log$error(base::paste0('Data file not found in ', DirInData)) 
     stop()
+  } else if(length(dataFileName)>1){
+    log$error(base::paste0('More than one data file found in ', DirInData))
+    stop()
   } else {
     data_wind <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', dataFileName),
                                                        log = log),silent = FALSE)
@@ -71,27 +73,6 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
       log$debug(base::paste0('Successfully read in file: ',dataFileName))
       data_wind$readout_time <- as.POSIXct(data_wind$readout_time, origin="1970-01-01", tz="GMT")
     } 
-  }
-  
-  #read in buoy wind uncertainty data
-  ucrtFileName <- base::list.files(DirInUcrt,full.names=FALSE)
-  ucrtFileName <- ucrtFileName[!base::grepl("zone.identifier", tolower(ucrtFileName))]
-  ucrt_data<- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(DirInUcrt, '/', ucrtFileName), log=log), silent = FALSE)
-  if(class(ucrt_data)[1] == 'try-error'){
-    log$error(base::paste0('Error reading in uncertainty data file: ', DirInUcrt, '/', ucrtFileName)) 
-    stop()
-  }else{
-    log$debug(base::paste0('Successfully read in uncertainty data file: ', ucrtFileName))
-  }
-
-  #merge with the buoy wind data
-  if(all(is.na(ucrt_data$direction_ucrtMeas))){
-    log$warn(base::paste0('Uncertainty data file: ', ucrtFileName, ' is empty. Uncertainty values will be NA.'))
-    data_wind$direction_ucrtMeas <- NA_real_
-    data_wind$direction_ucrtComb <- NA_real_
-    data_wind$direction_ucrtExpn <- NA_real_
-  } else {
-    data_wind <- merge(data_wind, ucrt_data[, c("readout_time", "direction_ucrtMeas", "direction_ucrtComb","direction_ucrtExpn")], by="readout_time", all.x=TRUE)
   }
   
   #read in buoy wind uncertainty coefficients
@@ -224,7 +205,7 @@ wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
     data_wind_avg <- data_wind_avg %>%
       dplyr::group_by(windowStart) %>%
       dplyr::mutate(
-        windDirVar = safe_mean(min_angular_distance^2) - A_Tbar^2
+        windDirVar = base::pmax(0, safe_mean(min_angular_distance^2) - A_Tbar^2)
       ) %>%
       dplyr::ungroup()
 

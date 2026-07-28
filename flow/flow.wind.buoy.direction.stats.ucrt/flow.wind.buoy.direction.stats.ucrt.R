@@ -33,14 +33,12 @@
 #' @keywords Currently none
 
 #' @examples
-#' flow.wind.buoy.direction.stats.ucrt <- function(DirIn="~/pfs/windBuoy_analyze_pad_and_qaqc_plau/2025/12/17/wind-buoy_BARC103100",                        
-#'                               DirOut="~/pfs/wind_buoy_direction_stats_ucrt",
-#'                               log=log)
 #' Stepping through the code in R studio                               
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_direction/2025/12/17/wind-buoy_BLWA103100",
-#          "DirOut=/home/ncatolico/Git/pfs/wind_buoy_direction_stats_ucrt",
-#          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums", "WndwAgr=002|030")
+# arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_direction/2025/12/17/wind-buoy_BARC103100",
+#          "DirOut=/home/ncatolico/Git/pfs/out",
+#          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums", "WndwAgr=002|030",
+#          "FileSchmStats=/home/ncatolico/Git/pfs/windBuoy_avro_schemas/windBuoy/windBuoy_direction_stats.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
