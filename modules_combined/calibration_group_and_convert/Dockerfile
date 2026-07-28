@@ -1,5 +1,5 @@
 # Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, array parser, 
-calibration assignment and calibration Conversion
+# calibration assignment and calibration Conversion
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
