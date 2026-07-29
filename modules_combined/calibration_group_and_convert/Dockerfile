@@ -65,9 +65,9 @@ COPY ./flow/flow.kfka.comb/wrap.kfka.comb.R .
 # Load calibration conversion module
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./flow/flow.cal.conv/renv.lock .
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
 COPY ./flow/flow.cal.asgn/renv.lock .
+RUN R -e 'renv::restore(lockfile="./renv.lock")'
+COPY ./flow/flow.cal.conv/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
 # Copy in calibration R code
