@@ -23,9 +23,10 @@ COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/r
  
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        python3.8 && \
+        python3.8 \
+        jq && \
     apt install -y python3-pip && \
-    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel jq && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
    apt-get autoremove -y && \
 	 apt-get autoclean -y && \
@@ -41,6 +42,8 @@ ARG MODULE_DIR="flow"
 
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
+COPY ./${MODULE_DIR}/flow.loc.grp.asgn/renv.lock ./renv.lock.loc.grp.asgn
+RUN R -e 'renv::restore(lockfile="./renv.lock.loc.grp.asgn")' 
 COPY ./${MODULE_DIR}/flow.rglr/renv.lock ./renv.lock
 RUN R -e 'renv::restore(lockfile="./renv.lock")' 
 #RUN git clone -b deve https://github.com/NEONScience/eddy4R.git 
@@ -54,6 +57,8 @@ WORKDIR /usr/src/app
 # Copy in application code
 COPY ./${MODULE_DIR}/flow.rglr/wrap.rglr.R .
 COPY ./${MODULE_DIR}/flow.rglr/flow.rglr.R .
+COPY ./${MODULE_DIR}/flow.loc.grp.asgn/flow.loc.grp.asgn.R .
+COPY ./${MODULE_DIR}/flow.loc.grp.asgn/wrap.loc.grp.asgn.R .
 
 # Run as app user
 USER appuser
