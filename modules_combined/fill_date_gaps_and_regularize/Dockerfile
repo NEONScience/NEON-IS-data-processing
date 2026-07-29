@@ -26,7 +26,7 @@ RUN apt update && \
         python3.8 \
         jq && \
     apt install -y python3-pip && \
-    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel jq && \
+    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
    apt-get autoremove -y && \
 	 apt-get autoclean -y && \
