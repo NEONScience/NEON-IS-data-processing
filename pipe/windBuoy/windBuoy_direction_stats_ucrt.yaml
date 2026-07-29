@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_direction_stats_ucrt
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-direction-stats-ucrt:sha-3db2134
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-direction-stats-ucrt:sha-8bce4ee
   cmd:
   - sh
   - "-c"
