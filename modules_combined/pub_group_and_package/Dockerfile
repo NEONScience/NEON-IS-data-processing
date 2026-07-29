@@ -16,6 +16,7 @@ ARG APP_DIR_2a="pub_workbook_loader"
 ARG APP_DIR_3="pub_packager"
 ARG APP_DIR_4="pub_files"
 ARG APP_DIR_5="os_table_loader"
+ARG APP_DIR_6="concH2oSoilSalinity_position_history_loader"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"
@@ -29,6 +30,7 @@ COPY ${MODULE_DIR}/${APP_DIR_2a}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR
 COPY ${MODULE_DIR}/${APP_DIR_3}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_3}/requirements.txt
 COPY ${MODULE_DIR}/${APP_DIR_4}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_4}/requirements.txt
 COPY ${MODULE_DIR}/${APP_DIR_5}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_5}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR_6}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_6}/requirements.txt
 COPY ${MODULE_DIR}/${COMMON_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${COMMON_DIR}/requirements.txt
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}/requirements.txt
 
@@ -51,6 +53,7 @@ RUN update-ca-trust && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_3}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_4}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_5}/requirements.txt && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_6}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${COMMON_DIR}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
@@ -64,6 +67,7 @@ COPY ${MODULE_DIR}/${APP_DIR_2a} ${CONTAINER_APP_DIR}/${APP_DIR_2a}
 COPY ${MODULE_DIR}/${APP_DIR_3} ${CONTAINER_APP_DIR}/${APP_DIR_3}
 COPY ${MODULE_DIR}/${APP_DIR_4} ${CONTAINER_APP_DIR}/${APP_DIR_4}
 COPY ${MODULE_DIR}/${APP_DIR_5} ${CONTAINER_APP_DIR}/${APP_DIR_5}
+COPY ${MODULE_DIR}/${APP_DIR_6} ${CONTAINER_APP_DIR}/${APP_DIR_6}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
 

@@ -44,6 +44,9 @@ def get_named_location_geolocations(connector: DbConnector, named_location_id: i
             {schema}.nam_locn on locn.nam_locn_id_off = nam_locn.nam_locn_id
         where
             locn_nam_locn.nam_locn_id = %s
+        order by
+            locn_nam_locn_strt_date nulls first,
+            locn.locn_id
     '''
     features: List[Feature] = []
     with closing(connection.cursor()) as cursor:

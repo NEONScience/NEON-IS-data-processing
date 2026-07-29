@@ -34,7 +34,7 @@ transform:
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
-    SOURCE_TYPE: pluvio_raw
+    SOURCE_TYPE: pluvio
     #BUCKET_NAME: neon-l0-ingest # Always pull from prod bucket
   secrets:
   - name: l0-bucket # Using this secret will use the dev/cert/prod bucket linked to the Pachyderm environment
