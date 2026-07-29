@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_direction_stats_ucrt
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-direction-stats-ucrt:sha-e109ac8
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-direction-stats-ucrt:sha-3db2134
   cmd:
   - sh
   - "-c"
@@ -51,7 +51,7 @@ transform:
             join_indices: [8]
         - path:
             name: UNCERTAINTY_PATH
-            glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/rmyoung/*/uncertainty*/**
+            glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/rmyoung/*/uncertainty_coef/**
             # Join on named location (already joined below by source type and day)
             join_indices: [8]
             outer_join: true

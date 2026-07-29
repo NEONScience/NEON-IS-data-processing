@@ -4,7 +4,7 @@
 # docker build -t neon-is-wind-buoy-direction-stats-ucrt -f ./modules_combined/windBuoy_direction_stats_ucrt/Dockerfile .
 
 # Start with the neon-is-pack-stat-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-stat-r:v1.1.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.14
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
