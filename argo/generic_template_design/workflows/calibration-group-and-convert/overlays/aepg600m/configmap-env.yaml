@@ -58,7 +58,7 @@ data:
     "DirSubCopy=calibration"
 
   # R arguments for calibration conversion step
-  OUT_PATH_CAL_CONV: /data/cmp22_calibration_group_and_convert
+  OUT_PATH_CAL_CONV: /data/aepg600m_calibration_group_and_convert
   CAL_CONV_R_ARGS: >-
     "DirIn=$OUT_PATH_KAFKA_COMB"
     "DirOut=$OUT_PATH_CAL_CONV"
