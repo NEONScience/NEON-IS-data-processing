@@ -29,18 +29,18 @@ Example manifest:
 Output path segment order is controlled by environment variables that map fields to
 0-based indexes in each output path. Any subset of these variables may be set; only
 configured components are included in output paths:
-- PATH_SOURCE_TYPE_INDEX
-- PATH_YEAR_INDEX
-- PATH_MONTH_INDEX
-- PATH_DAY_INDEX
-- PATH_SOURCE_ID_INDEX
+- OUT_PATH_SOURCE_TYPE_INDEX
+- OUT_PATH_YEAR_INDEX
+- OUT_PATH_MONTH_INDEX
+- OUT_PATH_DAY_INDEX
+- OUT_PATH_SOURCE_ID_INDEX
 
 For example, if:
-PATH_SOURCE_TYPE_INDEX=0
-PATH_YEAR_INDEX=1
-PATH_MONTH_INDEX=2
-PATH_DAY_INDEX=3
-PATH_SOURCE_ID_INDEX=4
+OUT_PATH_SOURCE_TYPE_INDEX=0
+OUT_PATH_YEAR_INDEX=1
+OUT_PATH_MONTH_INDEX=2
+OUT_PATH_DAY_INDEX=3
+OUT_PATH_SOURCE_ID_INDEX=4
 
 Then:
 {
@@ -107,17 +107,17 @@ def _load_manifest(env: environs.Env) -> list[dict]:
 
 def _read_index_env(env: environs.Env) -> dict[str, int]:
     raw_index_map = {
-        "source_type": env.int("PATH_SOURCE_TYPE_INDEX", None),
-        "year": env.int("PATH_YEAR_INDEX", None),
-        "month": env.int("PATH_MONTH_INDEX", None),
-        "day": env.int("PATH_DAY_INDEX", None),
-        "source_id": env.int("PATH_SOURCE_ID_INDEX", None),
+        "source_type": env.int("OUT_PATH_SOURCE_TYPE_INDEX", None),
+        "year": env.int("OUT_PATH_YEAR_INDEX", None),
+        "month": env.int("OUT_PATH_MONTH_INDEX", None),
+        "day": env.int("OUT_PATH_DAY_INDEX", None),
+        "source_id": env.int("OUT_PATH_SOURCE_ID_INDEX", None),
     }
 
     index_map = {key: value for key, value in raw_index_map.items() if value is not None}
     if not index_map:
         sys.exit(
-            "At least one PATH_*_INDEX environment variable is required to build output paths."
+            "At least one OUT_PATH_*_INDEX environment variable is required to build output paths."
         )
 
     for key, value in index_map.items():
@@ -125,7 +125,7 @@ def _read_index_env(env: environs.Env) -> dict[str, int]:
             sys.exit(f"Index for {key} must be >= 0, got {value}.")
 
     if len(set(index_map.values())) != len(index_map):
-        sys.exit("All configured PATH_*_INDEX values must be unique.")
+        sys.exit("All configured OUT_PATH_*_INDEX values must be unique.")
 
     return index_map
 

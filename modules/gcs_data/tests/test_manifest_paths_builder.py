@@ -76,11 +76,11 @@ class ManifestPathsBuilderTest(TestCase):
 
     def test_read_index_env_valid(self):
         """Test reading valid index environment variables."""
-        os.environ["PATH_SOURCE_TYPE_INDEX"] = "0"
-        os.environ["PATH_YEAR_INDEX"] = "1"
-        os.environ["PATH_MONTH_INDEX"] = "2"
-        os.environ["PATH_DAY_INDEX"] = "3"
-        os.environ["PATH_SOURCE_ID_INDEX"] = "4"
+        os.environ["OUT_PATH_SOURCE_TYPE_INDEX"] = "0"
+        os.environ["OUT_PATH_YEAR_INDEX"] = "1"
+        os.environ["OUT_PATH_MONTH_INDEX"] = "2"
+        os.environ["OUT_PATH_DAY_INDEX"] = "3"
+        os.environ["OUT_PATH_SOURCE_ID_INDEX"] = "4"
 
         import environs
         env = environs.Env()
@@ -94,11 +94,11 @@ class ManifestPathsBuilderTest(TestCase):
 
     def test_read_index_env_negative_index(self):
         """Test that negative indices cause an error."""
-        os.environ["PATH_SOURCE_TYPE_INDEX"] = "-1"
-        os.environ["PATH_YEAR_INDEX"] = "1"
-        os.environ["PATH_MONTH_INDEX"] = "2"
-        os.environ["PATH_DAY_INDEX"] = "3"
-        os.environ["PATH_SOURCE_ID_INDEX"] = "4"
+        os.environ["OUT_PATH_SOURCE_TYPE_INDEX"] = "-1"
+        os.environ["OUT_PATH_YEAR_INDEX"] = "1"
+        os.environ["OUT_PATH_MONTH_INDEX"] = "2"
+        os.environ["OUT_PATH_DAY_INDEX"] = "3"
+        os.environ["OUT_PATH_SOURCE_ID_INDEX"] = "4"
 
         import environs
         env = environs.Env()
@@ -108,11 +108,11 @@ class ManifestPathsBuilderTest(TestCase):
 
     def test_read_index_env_duplicate_indices(self):
         """Test that duplicate indices cause an error."""
-        os.environ["PATH_SOURCE_TYPE_INDEX"] = "0"
-        os.environ["PATH_YEAR_INDEX"] = "0"
-        os.environ["PATH_MONTH_INDEX"] = "2"
-        os.environ["PATH_DAY_INDEX"] = "3"
-        os.environ["PATH_SOURCE_ID_INDEX"] = "4"
+        os.environ["OUT_PATH_SOURCE_TYPE_INDEX"] = "0"
+        os.environ["OUT_PATH_YEAR_INDEX"] = "0"
+        os.environ["OUT_PATH_MONTH_INDEX"] = "2"
+        os.environ["OUT_PATH_DAY_INDEX"] = "3"
+        os.environ["OUT_PATH_SOURCE_ID_INDEX"] = "4"
 
         import environs
         env = environs.Env()
@@ -343,11 +343,11 @@ class ManifestPathsBuilderTest(TestCase):
             {"source_type": "cmp22", "data_date": "2026"},
         ]
         os.environ["MANIFEST"] = json.dumps(manifest_data)
-        os.environ["PATH_SOURCE_TYPE_INDEX"] = "0"
-        os.environ["PATH_YEAR_INDEX"] = "1"
-        os.environ["PATH_MONTH_INDEX"] = "2"
-        os.environ["PATH_DAY_INDEX"] = "3"
-        os.environ["PATH_SOURCE_ID_INDEX"] = "4"
+        os.environ["OUT_PATH_SOURCE_TYPE_INDEX"] = "0"
+        os.environ["OUT_PATH_YEAR_INDEX"] = "1"
+        os.environ["OUT_PATH_MONTH_INDEX"] = "2"
+        os.environ["OUT_PATH_DAY_INDEX"] = "3"
+        os.environ["OUT_PATH_SOURCE_ID_INDEX"] = "4"
 
         # Capture stdout
         from io import StringIO
@@ -376,11 +376,11 @@ class ManifestPathsBuilderTest(TestCase):
             {"source_type": "cmp22", "data_date": "2025-10-01", "source_id": "11185"},
         ]
         os.environ["MANIFEST"] = json.dumps(manifest_data)
-        os.environ["PATH_SOURCE_TYPE_INDEX"] = "0"
-        os.environ["PATH_YEAR_INDEX"] = "1"
-        os.environ["PATH_MONTH_INDEX"] = "2"
-        os.environ["PATH_DAY_INDEX"] = "3"
-        os.environ["PATH_SOURCE_ID_INDEX"] = "4"
+        os.environ["OUT_PATH_SOURCE_TYPE_INDEX"] = "0"
+        os.environ["OUT_PATH_YEAR_INDEX"] = "1"
+        os.environ["OUT_PATH_MONTH_INDEX"] = "2"
+        os.environ["OUT_PATH_DAY_INDEX"] = "3"
+        os.environ["OUT_PATH_SOURCE_ID_INDEX"] = "4"
 
         from io import StringIO
         captured_output = StringIO()
@@ -405,11 +405,11 @@ class ManifestPathsBuilderTest(TestCase):
             {"source_type": "co2", "data_date": "2025-10-01", "source_id": "12345"},
         ]
         os.environ["MANIFEST"] = json.dumps(manifest_data)
-        os.environ["PATH_SOURCE_TYPE_INDEX"] = "0"
-        os.environ["PATH_YEAR_INDEX"] = "1"
-        os.environ["PATH_MONTH_INDEX"] = "2"
-        os.environ["PATH_DAY_INDEX"] = "3"
-        os.environ["PATH_SOURCE_ID_INDEX"] = "4"
+        os.environ["OUT_PATH_SOURCE_TYPE_INDEX"] = "0"
+        os.environ["OUT_PATH_YEAR_INDEX"] = "1"
+        os.environ["OUT_PATH_MONTH_INDEX"] = "2"
+        os.environ["OUT_PATH_DAY_INDEX"] = "3"
+        os.environ["OUT_PATH_SOURCE_ID_INDEX"] = "4"
 
         from io import StringIO
         captured_output = StringIO()
@@ -424,5 +424,145 @@ class ManifestPathsBuilderTest(TestCase):
             self.assertEqual(len(paths), 2)
             self.assertIn("cmp22/2025/10/01/11185", paths)
             self.assertIn("co2/2025/10/01/12345", paths)
+        finally:
+            sys.stdout = sys.__stdout__
+
+    # --- Subset OUT_PATH_*_INDEX scenarios ---
+
+    def test_read_index_env_subset_only_source_type_and_year(self):
+        """Test _read_index_env with only source_type and year indices set."""
+        os.environ.pop("OUT_PATH_MONTH_INDEX", None)
+        os.environ.pop("OUT_PATH_DAY_INDEX", None)
+        os.environ.pop("OUT_PATH_SOURCE_ID_INDEX", None)
+        os.environ["OUT_PATH_SOURCE_TYPE_INDEX"] = "0"
+        os.environ["OUT_PATH_YEAR_INDEX"] = "1"
+
+        import environs
+        env = environs.Env()
+        index_map = _read_index_env(env)
+
+        self.assertEqual(index_map["source_type"], 0)
+        self.assertEqual(index_map["year"], 1)
+        self.assertNotIn("month", index_map)
+        self.assertNotIn("day", index_map)
+        self.assertNotIn("source_id", index_map)
+
+    def test_read_index_env_subset_no_vars_raises(self):
+        """Test _read_index_env with no indices set raises an error."""
+        for key in (
+            "OUT_PATH_SOURCE_TYPE_INDEX",
+            "OUT_PATH_YEAR_INDEX",
+            "OUT_PATH_MONTH_INDEX",
+            "OUT_PATH_DAY_INDEX",
+            "OUT_PATH_SOURCE_ID_INDEX",
+        ):
+            os.environ.pop(key, None)
+
+        import environs
+        env = environs.Env()
+        with self.assertRaises(SystemExit) as cm:
+            _read_index_env(env)
+        self.assertIn("required", str(cm.exception))
+
+    def test_build_path_subset_source_type_and_year_only(self):
+        """Test _build_path when only source_type and year are indexed."""
+        record = {
+            "source_type": "cmp22",
+            "data_date": "2025-10-01",
+            "source_id": "11185",
+        }
+        index_map = {
+            "source_type": 0,
+            "year": 1,
+        }
+        path = _build_path(record, index_map)
+        self.assertEqual(path, "cmp22/2025")
+
+    def test_build_path_subset_year_and_month_only(self):
+        """Test _build_path when only year and month are indexed (no source_type)."""
+        record = {
+            "source_type": "cmp22",
+            "data_date": "2025-10-01",
+            "source_id": "11185",
+        }
+        index_map = {
+            "year": 0,
+            "month": 1,
+        }
+        path = _build_path(record, index_map)
+        self.assertEqual(path, "2025/10")
+
+    def test_build_path_subset_source_type_and_source_id_only(self):
+        """Test _build_path when only source_type and source_id are indexed."""
+        record = {
+            "source_type": "cmp22",
+            "data_date": "2025-10-01",
+            "source_id": "11185",
+        }
+        index_map = {
+            "source_type": 0,
+            "source_id": 1,
+        }
+        path = _build_path(record, index_map)
+        self.assertEqual(path, "cmp22/11185")
+
+    def test_manifest_paths_builder_subset_indices(self):
+        """Test end-to-end manifest_paths_builder with only source_type and year indices."""
+        manifest_data = [
+            {"source_type": "cmp22", "data_date": "2025-10-01", "source_id": "11185"},
+            {"source_type": "cmp22", "data_date": "2025-11", "source_id": "11185"},
+            {"source_type": "co2", "data_date": "2025-10-01", "source_id": "12345"},
+        ]
+        os.environ["MANIFEST"] = json.dumps(manifest_data)
+        os.environ["OUT_PATH_SOURCE_TYPE_INDEX"] = "0"
+        os.environ["OUT_PATH_YEAR_INDEX"] = "1"
+        os.environ.pop("OUT_PATH_MONTH_INDEX", None)
+        os.environ.pop("OUT_PATH_DAY_INDEX", None)
+        os.environ.pop("OUT_PATH_SOURCE_ID_INDEX", None)
+
+        from io import StringIO
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        try:
+            manifest_paths_builder()
+            output = captured_output.getvalue()
+            result = json.loads(output)
+
+            paths = result["paths"]
+            # All 2025 records collapse to source_type/year; co2 is distinct
+            self.assertIn("cmp22/2025", paths)
+            self.assertIn("co2/2025", paths)
+            # Duplicates deduplicated: cmp22/2025 appears once despite two records
+            self.assertEqual(paths.count("cmp22/2025"), 1)
+        finally:
+            sys.stdout = sys.__stdout__
+
+    def test_manifest_paths_builder_subset_year_month_only(self):
+        """Test end-to-end manifest_paths_builder with only year and month indices."""
+        manifest_data = [
+            {"source_type": "cmp22", "data_date": "2025-10-01", "source_id": "11185"},
+            {"source_type": "co2", "data_date": "2025-10-15", "source_id": "12345"},
+        ]
+        os.environ["MANIFEST"] = json.dumps(manifest_data)
+        os.environ.pop("OUT_PATH_SOURCE_TYPE_INDEX", None)
+        os.environ["OUT_PATH_YEAR_INDEX"] = "0"
+        os.environ["OUT_PATH_MONTH_INDEX"] = "1"
+        os.environ.pop("OUT_PATH_DAY_INDEX", None)
+        os.environ.pop("OUT_PATH_SOURCE_ID_INDEX", None)
+
+        from io import StringIO
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        try:
+            manifest_paths_builder()
+            output = captured_output.getvalue()
+            result = json.loads(output)
+
+            paths = result["paths"]
+            # Both records map to 2025/10 (different source_type/source_id ignored)
+            self.assertEqual(len(paths), 1)
+            self.assertEqual(paths[0], "2025/10")
         finally:
             sys.stdout = sys.__stdout__
