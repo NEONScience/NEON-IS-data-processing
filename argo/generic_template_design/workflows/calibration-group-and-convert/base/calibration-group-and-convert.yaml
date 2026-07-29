@@ -15,9 +15,12 @@ spec:
 
   arguments:
     parameters:
+      # - name: datum-manifest
+      #   value: |
+      #     [{"source_type": "aepg600m", "data_date": "2026-05-03","source_id": "16768"},{"source_type": "aepg600m", "data_date": "2026-05-01"}]
       - name: datum-manifest
         value: |
-          [{"source_type": "aepg600m", "data_date": "2026-05-03","source_id": "16768"},{"source_type": "aepg600m", "data_date": "2026-05-01"}]
+          [{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "11184", "file_name":"10000000000098_WO83151_397977.xml"},{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "47913", "file_name":"10000000000098_WO83151_397977.xml"}]
       - name: config-map-schemas-name
         value: schemas-config
       - name: config-map-env-name
@@ -167,6 +170,9 @@ spec:
             dependencies:
               - load-data
             image: "{{inputs.parameters.processing-image}}"
+            env:
+              - name: MANIFEST
+                value: "{{inputs.parameters.datum-manifest}}"
             envFrom:
               - configMapRef:
                   name: "{{inputs.parameters.config-map-env-name}}"

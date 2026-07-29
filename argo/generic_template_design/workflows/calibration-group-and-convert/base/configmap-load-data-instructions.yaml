@@ -5,16 +5,18 @@ metadata:
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-0842388
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:sha-9cf8a5b
   load-data-instructions.sh: |
     #!/bin/bash
     set -euo pipefail
     IFS=$'\n\t'
 
     # Get L0 data from GCS
+    echo "Retrieving L0 data indicate in the manifest"
     python3 -m l0_gcs_loader_by_manifest
 
     # Get assigned calibrations
+    echo "Retrieving calibrations"
     CAL_REPO="${CAL_BUCKET_PREFIX#/}"
     CAL_REPO="${CAL_REPO%/}"
     CAL_ROOT=":gcs://${CAL_BUCKET_NAME}/${CAL_REPO}"
@@ -31,7 +33,6 @@ data:
     echo
 
     for datum_path in $(printf '%s' "$MANIFEST_PATHS" | jq -r '.paths[]'); do
-      echo "DATUM: $datum_path"
       echo "Getting calibration datum: $datum_path"
 
       src="${CAL_ROOT}/${datum_path}"

@@ -5,11 +5,32 @@ metadata:
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-33f7182
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-3e7b7b7
   processing-instructions.sh: |
     #!/bin/bash
     set -euo pipefail
     IFS=$'\n\t'
+
+    # Determine if MANIFEST is a file path or JSON string
+    if [ -f "$MANIFEST" ]; then
+      json_data=$(cat "$MANIFEST")
+    else
+      json_data="$MANIFEST"
+    fi
+
+    # Run calibration assignment for each date in the manifest
+    while IFS= read -r data_date; do
+      export CAL_ASGN_DATE_BEGIN="$data_date"
+  
+      # Calculate next day (works with GNU date or macOS date)
+      export CAL_ASGN_DATE_END=$(date -d "$data_date + 1 day" +%Y-%m-%d)
+  
+      echo "CAL_ASGN_DATE_BEGIN=$CAL_ASGN_DATE_BEGIN"
+      echo "CAL_ASGN_DATE_END=$CAL_ASGN_DATE_END"
+  
+      eval "Rscript ./flow.cal.asgn.R $CAL_ASGN_R_ARGS"
+
+    done < <(echo "$json_data" | jq -r '.[] | .data_date')
 
     # Join files from the archive and from Kafka
     export OUT_PATH=$OUT_PATH_JOINER
