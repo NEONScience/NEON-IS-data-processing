@@ -231,7 +231,7 @@ def format_column(dataframe: DataFrame, column: str, column_format: str):
         # dataframe[column] = dataframe[column].map(py_format.format)
         
     if column_format == 'integer':
-        dataframe[column] = pd.to_numeric(dataframe[column], errors='coerce').round().map('{:.0f}'.format)
+        dataframe[column] = dataframe[column].round().map('{:.0f}'.format)
 
 
 def format_sig(element, n_digits):
