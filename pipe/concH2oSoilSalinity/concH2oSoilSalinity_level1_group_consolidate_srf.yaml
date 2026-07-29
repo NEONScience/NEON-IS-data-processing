@@ -166,10 +166,10 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 4G
-  cpu: 5
+  cpu: 7
 resource_limits:
   memory: 5G
-  cpu: 6
+  cpu: 8
 sidecar_resource_requests:
   memory: 4G
   cpu: 1.2
