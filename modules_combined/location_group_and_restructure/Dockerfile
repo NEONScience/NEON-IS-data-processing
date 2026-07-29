@@ -24,7 +24,8 @@ COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/r
  
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        python3.8 && \
+        python3.8 \
+        jq && \
     apt install -y python3-pip && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
@@ -54,12 +55,13 @@ COPY ./${MODULE_DIR}/flow.kfka.comb/wrap.kfka.comb.R .
 
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
+COPY ./flow/flow.loc.grp.asgn/renv.lock ./renv.lock.loc.grp.asgn
+RUN R -e 'renv::restore(lockfile="./renv.lock.loc.grp.asgn")'
 COPY ./${MODULE_DIR}/flow.loc.repo.strc/renv.lock ./renv.lock.repo.strc
 RUN R -e 'renv::restore(lockfile="./renv.lock.repo.strc")'
 COPY ./${MODULE_DIR}/flow.loc.data.trnc.comb/renv.lock ./renv.lock.comb.trnc
 RUN R -e 'renv::restore(lockfile="./renv.lock.comb.trnc")'
-COPY ./flow/flow.loc.grp.asgn/renv.lock ./renv.lock.loc.grp.asgn
-RUN R -e 'renv::restore(lockfile="./renv.lock.loc.grp.asgn")'
+
 
 # Copy in application code
 COPY ./${MODULE_DIR}/flow.loc.repo.strc/wrap.loc.repo.strc.R .
