@@ -1,5 +1,6 @@
 # Dockerfile for NEON IS Data Processing - Group in location metadata and restructure+merge data files by location
-# This image combines four modules: filter-joiner, kafka combiner, flow.loc.repo.strc, and flow.loc.data.trnc.comb
+# This image combines four modules: filter-joiner, kafka combiner, flow.loc.repo.strc, flow.loc.data.trnc.comb,
+# and flow.loc.grp.asgn
 # Build with the following command
 # docker build --no-cache -t neon-is-loc-grp-strc-comb -f <path to this file> <path to parent directory of flow/ and modules/>
 
@@ -57,12 +58,16 @@ COPY ./${MODULE_DIR}/flow.loc.repo.strc/renv.lock ./renv.lock.repo.strc
 RUN R -e 'renv::restore(lockfile="./renv.lock.repo.strc")'
 COPY ./${MODULE_DIR}/flow.loc.data.trnc.comb/renv.lock ./renv.lock.comb.trnc
 RUN R -e 'renv::restore(lockfile="./renv.lock.comb.trnc")'
+COPY ./flow/flow.loc.grp.asgn/renv.lock ./renv.lock.loc.grp.asgn
+RUN R -e 'renv::restore(lockfile="./renv.lock.loc.grp.asgn")'
 
 # Copy in application code
 COPY ./${MODULE_DIR}/flow.loc.repo.strc/wrap.loc.repo.strc.R .
 COPY ./${MODULE_DIR}/flow.loc.repo.strc/flow.loc.repo.strc.R .
 COPY ./${MODULE_DIR}/flow.loc.data.trnc.comb/wrap.loc.data.trnc.comb.R .
 COPY ./${MODULE_DIR}/flow.loc.data.trnc.comb/flow.loc.data.trnc.comb.R .
+COPY ./${MODULE_DIR}/flow.loc.grp.asgn/wrap.loc.grp.asgn.R .
+COPY ./${MODULE_DIR}/flow.loc.grp.asgn/flow.loc.grp.asgn.R .
 
 # Run as app user
 USER appuser
