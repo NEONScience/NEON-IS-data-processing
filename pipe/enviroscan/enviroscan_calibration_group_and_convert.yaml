@@ -114,7 +114,7 @@ transform:
     OUT_PATH_ARRAY_PARSER: /tmp/pfs/array_parsed # R modules must have pfs in the repo structure
 
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+    PARALLELIZATION_INTERNAL: '2' # Option for calibration conversion module
 input:
   cross:
   # - pfs:
@@ -164,14 +164,14 @@ input:
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 4
+  constant: 12
 autoscaling: true
 resource_requests:
   memory: 2.5G
-  cpu: 5
+  cpu: 2
 resource_limits:
   memory: 4G
-  cpu: 6.5
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 4G
   cpu: 1

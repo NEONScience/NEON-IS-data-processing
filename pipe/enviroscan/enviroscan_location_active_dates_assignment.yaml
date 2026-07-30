@@ -30,7 +30,7 @@ input:
       repo: enviroscan_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 2
+  constant: 8
 autoscaling: true
 resource_requests:
   memory: 210M
