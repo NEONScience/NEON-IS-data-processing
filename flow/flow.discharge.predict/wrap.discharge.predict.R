@@ -36,16 +36,16 @@
 
 #' @examples
 #' # Not run
-DirIn <- '/home/nickerson/pfs/l4discharge_group_and_parse/2025/10/03/l4discharge_WLOU102100'
-DirBaM <- '/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta'
-DirOutBase <- "/home/nickerson/pfs/out"
-SchmDataOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-wrap.discharge.predict(DirIn=DirIn,
-                       DirBaM=DirBaM,
-                       DirOutBase=DirOutBase,
-                       SchmDataOut=SchmDataOut,
-                       log=log)
+# DirIn <- '/home/nickerson/pfs/l4discharge_group_and_parse/2025/10/01/l4discharge_TOOK150100'
+# DirBaM <- '/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta'
+# DirOutBase <- "/home/nickerson/pfs/out"
+# SchmDataOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# wrap.discharge.predict(DirIn=DirIn,
+#                        DirBaM=DirBaM,
+#                        DirOutBase=DirOutBase,
+#                        SchmDataOut=SchmDataOut,
+#                        log=log)
 
 #' @seealso None currently
 
@@ -118,6 +118,8 @@ wrap.discharge.predict <- function(DirIn,
     qHOR <- substr(uncorrectedFile,27,29)
     startDate <- as.POSIXct(substr(uncorrectedFile,34,43),tz="UTC")
     endDate <- startDate+secInDay-secIn15min
+    siteID_os <- ifelse(qHOR=="150","TKIN",ifelse(qHOR=="160","TKOT",siteID))
+    siteID_surveyLoc <- ifelse(qHOR=="150","inflow",ifelse(qHOR=="160","outflow",siteID))
   
     # Set paths and parse configuration files ####
     dirConfig <- paste0(DirBaM,"/BaM_BaRatin/")
@@ -199,7 +201,7 @@ wrap.discharge.predict <- function(DirIn,
       base::stop()
     }
     # Check if there is a regression available 
-    regAvailable <- any(gaugeWaterColumnRegression$siteID==siteID
+    regAvailable <- any(grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
                         &((gaugeWaterColumnRegression$regressionStartDate<=startDate
                            &gaugeWaterColumnRegression$regressionEndDate>=endDate)
                           |(gaugeWaterColumnRegression$regressionStartDate<=startDate
@@ -211,7 +213,7 @@ wrap.discharge.predict <- function(DirIn,
     if(regAvailable){
       # If yes, subset to that regression
       gaugeWaterColumnRegression <- gaugeWaterColumnRegression[
-        gaugeWaterColumnRegression$siteID==siteID
+        grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
         &((gaugeWaterColumnRegression$regressionStartDate<=startDate
            &gaugeWaterColumnRegression$regressionEndDate>=endDate)
           |(gaugeWaterColumnRegression$regressionStartDate<=startDate
@@ -223,7 +225,7 @@ wrap.discharge.predict <- function(DirIn,
     }else{
       # If no, subset to most recent regression
       prevReg <- max(gaugeWaterColumnRegression$regressionID[
-        gaugeWaterColumnRegression$siteID==siteID
+        grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
       ])
       gaugeWaterColumnRegression <- gaugeWaterColumnRegression[
         gaugeWaterColumnRegression$regressionID==prevReg,
@@ -311,7 +313,7 @@ wrap.discharge.predict <- function(DirIn,
     }
 
     # Check if there is a curve available 
-    curveAvailable <- any(curveIdentification$siteID==siteID
+    curveAvailable <- any(grepl(siteID_os,curveIdentification$curveID)
                           &((curveIdentification$curveStartDate<=startDate
                              &curveIdentification$curveEndDate>=endDate)
                             |(curveIdentification$curveStartDate<=startDate
@@ -323,7 +325,7 @@ wrap.discharge.predict <- function(DirIn,
     if(curveAvailable){
       # If yes, subset to that curve
       curveIdentification <- curveIdentification[
-        curveIdentification$siteID==siteID
+        grepl(siteID_os,curveIdentification$curveID)
         &((curveIdentification$curveStartDate<=startDate
            &curveIdentification$curveEndDate>=endDate)
           |(curveIdentification$curveStartDate<=startDate
@@ -335,7 +337,7 @@ wrap.discharge.predict <- function(DirIn,
     }else{
       # If no, subset to most recent curve
       prevCurve <- max(curveIdentification$curveID[
-        curveIdentification$siteID==siteID
+        grepl(siteID_os,curveIdentification$curveID)
       ])
       curveIdentification <- curveIdentification[
         curveIdentification$curveID==prevCurve,
@@ -348,7 +350,7 @@ wrap.discharge.predict <- function(DirIn,
     curveID <- curveIdentification$curveID
     
     for(c in 1:length(curveID)){
-      #c=1
+      # c=1
       currCurve <- curveIdentification[c,]
       # Configure priors for BaM! predictive model ####
       
@@ -367,7 +369,7 @@ wrap.discharge.predict <- function(DirIn,
         base::stop()
       }
       controlInfo <- controlInfo[
-        controlInfo$siteID==siteID
+        grepl(siteID_surveyLoc, controlInfo$namedLocation)
         &as.Date(controlInfo$endDate)==surveyDate,
       ]
       # Read in the priorParameters data - stashed locally from pachctl query
@@ -384,7 +386,7 @@ wrap.discharge.predict <- function(DirIn,
         base::stop()
       }
       priorParameters <- priorParameters[
-        priorParameters$siteID==siteID
+        grepl(siteID_surveyLoc, priorParameters$namedLocation)
         &as.Date(priorParameters$endDate)==surveyDate,
       ]
       
@@ -757,11 +759,12 @@ wrap.discharge.predict <- function(DirIn,
     CSD_15_min$regressionID[is.na(CSD_15_min$waterColumnHeightContinuous)] <- NA
     
     outFileName <- gsub("surfacewater-physical","l4discharge",uncorrectedFile)
-    outFileName <- gsub("EOS_1_min_001","CSD_15_min_015",outFile)
+    outFileName <- gsub("EOS_1_min_001","CSD_15_min_015",outFileName)
 
   }else{
     # Workflow for predicting corrected discharge ####
-    if(length(EOS_1_min)>0 & length(CSD_15_min)>0){
+    if((length(EOS_1_min)>0 & length(CSD_15_min)>0)
+       |(length(EOS_1_min)==0 & length(CSD_15_min)>0)){
       log$info(base::paste0("CSD file is available and will passed through unmodified. FileName: ",correctedFile))
       outFileName <-correctedFile
       
