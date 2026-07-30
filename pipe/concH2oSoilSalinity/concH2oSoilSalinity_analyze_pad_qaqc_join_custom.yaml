@@ -148,7 +148,7 @@ input:
         joinOn: $1/$2/$3
         empty_files: false
 parallelism_spec:
-  constant: 30
+  constant: 20
 autoscaling: true
 resource_requests:
   memory: 5G

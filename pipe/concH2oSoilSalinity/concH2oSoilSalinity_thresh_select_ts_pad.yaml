@@ -100,7 +100,7 @@ input:
       repo: concH2oSoilSalinity_threshold
       glob: /thresholds.json
 parallelism_spec:
-  constant: 20
+  constant: 14
 autoscaling: true
 resource_requests:
   memory: 2.5G
