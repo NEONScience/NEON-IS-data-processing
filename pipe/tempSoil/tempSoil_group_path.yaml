@@ -55,11 +55,12 @@ input:
 #        glob: /(*/*/*)
 #        joinOn: $1
 parallelism_spec:
-  constant: 5
+  constant: 12
 autoscaling: true
 resource_requests:
   memory: 2G
   cpu: 0.6
+  disk: 2G
 resource_limits:
   memory: 3.5G
   cpu: 1.5

@@ -50,14 +50,14 @@ input:
     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 
 parallelism_spec:
-  constant: 5
+  constant: 12
 autoscaling: true
 resource_requests:
   memory: 2.2G
-  cpu: 3.3
+  cpu: 1.5
 resource_limits:
   memory: 4G
-  cpu: 4.5
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 3G
   cpu: 0.5

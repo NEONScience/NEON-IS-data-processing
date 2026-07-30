@@ -37,7 +37,7 @@ transform:
     RELATIVE_PATH_INDEX: '3'
     ERR_PATH: /pfs/out/errored_datums
     # Environment variables for qaqc plausibility
-    PARALLELIZATION_INTERNAL: '5'
+    PARALLELIZATION_INTERNAL: '2'
 input:
   cross:
   - pfs:
@@ -49,14 +49,14 @@ input:
       repo: tempSoil_avro_schemas
       glob: /tempSoil/flags_plausibility_tempSoil.avsc
 parallelism_spec:
-  constant: 5
+  constant: 20
 autoscaling: true
 resource_requests:
   memory: 4G
-  cpu: 6.5
+  cpu: 2
 resource_limits:
   memory: 5G
-  cpu: 8
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 4G
   cpu: 1.2
