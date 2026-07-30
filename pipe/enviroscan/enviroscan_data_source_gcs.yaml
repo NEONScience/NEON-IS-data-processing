@@ -62,7 +62,7 @@ input:
       branch: master
 output_branch: master
 parallelism_spec:
-  constant: 5
+  constant: 15
 autoscaling: true
 resource_requests:
   memory: 400M

@@ -22,8 +22,11 @@
 #' Input path = /scratch/pfs/proc_group/prt/27134 \cr
 #'     
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
+#' 
 #' @param TimeBgn POSIX. The minimum date for which to assign location files.
+#' 
 #' @param TimeEnd POSIX. The maximum date for which to assign location files.
+#' 
 #' @param TypeFile String value. The type of file that is being distributed and filtered. 
 #' Options are 'asset', 'namedLocation', and 'group'. Only one may be specified. 'asset' corresponds to a 
 #' location file for a particular asset, which includes information about where and for how long
@@ -31,9 +34,11 @@
 #' location file specific to a named location, including the properties of that named location and
 #' the dates over which it was active (should have been producing data). 'group' corresponds to a group
 #' file specific to a group member, including what groups the member is in and properties of the group.
+#' 
 #' @param Prop character vector of the properties in the file to retain. The meaning of this input changes
 #' according to TypeFile. See the filtering functions for each type for details. Defaults to 'all'. Currently
 #' relevant for TypeFile='asset' and TypeFile='namedLocation'.
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #' 

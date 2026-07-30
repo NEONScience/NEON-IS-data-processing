@@ -1,0 +1,197 @@
+# Calibration group and convert workflow template
+# This template is platform-agnostic and sensor-agnostic.
+# Sensor-specific configuration is injected via ConfigMap environment variables.
+# Processing instructions are still rendered from YAML by an init container.
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: calibration-group-and-convert
+spec:
+  entrypoint: run
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: OnRootMismatch
+
+  arguments:
+    parameters:
+      # - name: datum-manifest
+      #   value: |
+      #     [{"source_type": "aepg600m", "data_date": "2026-05-03","source_id": "16768"},{"source_type": "aepg600m", "data_date": "2026-05-01"}]
+      - name: datum-manifest
+        value: |
+          [{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "11184", "file_name":"10000000000098_WO83151_397977.xml"},{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "47913", "file_name":"10000000000098_WO83151_397977.xml"}]
+      - name: config-map-schemas-name
+        value: schemas-config
+      - name: config-map-env-name
+        value: calibration-group-convert-env-config
+      - name: config-map-load-data-instructions-name
+        value: calibration-group-convert-load-data-instructions-config
+      - name: config-map-processing-instructions-name
+        value: calibration-group-convert-processing-instructions-config
+      - name: config-map-upload-output-instructions-name
+        value: calibration-group-convert-upload-output-instructions-config
+      - name: config-map-resource-request-name
+        value: calibration-group-convert-resource-config
+
+  templates:
+    - name: run
+      podSpecPatch: |
+        containers:
+          - name: processing
+            resources:
+              requests:
+                cpu: "{{inputs.parameters.cpu-request}}"
+                memory: "{{inputs.parameters.memory-request}}"
+              limits:
+                cpu: "{{inputs.parameters.cpu-limit}}"
+                memory: "{{inputs.parameters.memory-limit}}"
+
+      volumes:
+        - name: config-load-data-vol
+          configMap:
+            name: "{{workflow.parameters.config-map-load-data-instructions-name}}"
+        - name: config-processing-vol
+          configMap:
+            name: "{{workflow.parameters.config-map-processing-instructions-name}}"
+        - name: config-upload-output-vol
+          configMap:
+            name: "{{workflow.parameters.config-map-upload-output-instructions-name}}"
+        - name: data-vol
+          emptyDir: { }
+        - name: tmp-vol
+          emptyDir: { }
+
+      inputs:
+        parameters:
+          - name: datum-manifest
+          - name: config-map-env-name
+          - name: cpu-request
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-resource-request-name}}"
+                key: cpu_request
+          - name: cpu-limit
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-resource-request-name}}"
+                key: cpu_limit
+          - name: memory-request
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-resource-request-name}}"
+                key: memory_request
+          - name: memory-limit
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-resource-request-name}}"
+                key: memory_limit
+          - name: load-data-image
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-load-data-instructions-name}}"
+                key: image
+          - name: processing-image
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-processing-instructions-name}}"
+                key: image
+          - name: upload-output-image
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-upload-output-instructions-name}}"
+                key: image
+          - name: schema-repo-eng-url
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-schemas-name}}"
+                key: schema-repo-eng-url
+          - name: schema-repo-eng-revision
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-schemas-name}}"
+                key: schema-repo-eng-revision
+          - name: schema-repo-sci-url
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-schemas-name}}"
+                key: schema-repo-sci-url
+          - name: schema-repo-sci-revision
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-schemas-name}}"
+                key: schema-repo-sci-revision
+        artifacts:
+          - name: schemas-eng
+            path: /data/schemas-eng
+            git:
+              repo: "{{inputs.parameters.schema-repo-eng-url}}"
+              revision: "{{inputs.parameters.schema-repo-eng-revision}}"
+              depth: 1
+              sshPrivateKeySecret:
+                name: neon-avro-schemas-secret-readonly
+                key: sshPrivateKey
+          - name: schemas-sci
+            path: /data/schemas-sci
+            git:
+              repo: "{{inputs.parameters.schema-repo-sci-url}}"
+              revision: "{{inputs.parameters.schema-repo-sci-revision}}"
+              depth: 1
+
+      containerSet:
+        volumeMounts:
+          - name: data-vol
+            mountPath: /data
+          - name: config-load-data-vol
+            mountPath: /scripts-load-data
+          - name: config-processing-vol
+            mountPath: /scripts
+          - name: config-upload-output-vol
+            mountPath: /scripts-upload-output
+          - name: tmp-vol
+            mountPath: /tmp            
+
+        containers:
+          - name: load-data
+            image: "{{inputs.parameters.load-data-image}}"
+            env:
+              - name: MANIFEST
+                value: "{{inputs.parameters.datum-manifest}}"
+            envFrom:
+              - configMapRef:
+                  name: "{{inputs.parameters.config-map-env-name}}"
+            securityContext:
+              runAsUser: 1001
+              runAsGroup: 1001
+            command: ["/bin/bash"]
+            args: ["/scripts-load-data/load-data-instructions.sh"]
+
+          - name: processing
+            dependencies:
+              - load-data
+            image: "{{inputs.parameters.processing-image}}"
+            env:
+              - name: MANIFEST
+                value: "{{inputs.parameters.datum-manifest}}"
+            envFrom:
+              - configMapRef:
+                  name: "{{inputs.parameters.config-map-env-name}}"
+            command: ["/bin/bash"]
+            args: ["/scripts/processing-instructions.sh"]
+            securityContext:
+              runAsUser: 1001
+              runAsGroup: 1001
+
+          # One container must be named "main".
+          - name: main
+            dependencies:
+              - processing
+            image: "{{inputs.parameters.upload-output-image}}"
+            envFrom:
+              - configMapRef:
+                  name: "{{inputs.parameters.config-map-env-name}}"
+            securityContext:
+              runAsUser: 1001
+              runAsGroup: 1001
+            command: ["/bin/bash"]
+            args: ["/scripts-upload-output/upload-output-instructions.sh"]
