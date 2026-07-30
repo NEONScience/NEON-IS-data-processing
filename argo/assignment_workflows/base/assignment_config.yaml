@@ -1,0 +1,16 @@
+---
+# General configuration for assignment workflows.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: assignment-config
+  namespace: argo-workflows-dev
+  labels:
+    # This label is required for the informer to detect this ConfigMap
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  # Bucket for saving manifests
+  output_bucket: neon-dev-argo-workflow-test
+  # Images
+  io_image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-argo-workflows-data-change-manifest:sha-b080606
+  location_group_assignment_image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.4.0

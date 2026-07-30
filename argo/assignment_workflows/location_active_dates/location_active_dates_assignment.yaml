@@ -1,0 +1,38 @@
+---
+# Default workflow for assigning location active dates to data days.
+# The data is loaded to a shared volume.
+# The assignment module processes whatever is in the volume.
+# The final output is written to a bucket.
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: location-active-dates-assignment
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: run_date
+        value: "{{=sprig.date('2006/01/02', workflow.creationTimestamp)}}"
+      - name: date_begin
+        value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
+      - name: configuration
+        value: location-active-dates-assignment-config
+      - name: r_parameters_by_source_type
+        valueFrom:
+          configMapKeyRef:
+            name: location-active-dates-assignment-config
+            key: r_parameters_by_source_type
+  templates:
+    - name: main
+      steps:
+        - - name: run-step
+            templateRef:
+              name: location-group-assignment-template
+              template: main
+            arguments:
+              parameters:
+                - name: source_type
+                  value: '{{item.key}}'
+                - name: r_args
+                  value: '{{item.value}}'
+            withParam: '{{workflow.parameters.r_parameters_by_source_type}}'

@@ -1,0 +1,148 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: calibration-assignment-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  log_level: DEBUG
+  # Calibration bucket
+  calibration_bucket: neon-test-calibration
+  calibration_bucket_prefix: files
+  # Bucket for writing manifests.
+  output_bucket: neon-dev-argo-workflow-test
+  output_bucket_prefix: calibration_assignment
+  # Path index for the source ID in the assignment output paths.
+  source_id_path_index: "7"
+  # R code
+  assignment_image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.1.0
+  relative_path_index: "2"
+  parallelization_internal: "4"
+  r_parameters_by_source_type: |
+    [
+      {
+        "key": "aepg600m",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "cmp22",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "csat3",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "dualfan",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "enviroscan",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "exo2",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "exoconductivity",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "exodissolvedoxygen",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "exofdom",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "exophorp",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "exototalalgae",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "exoturbidity",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "gascylinder",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "hmp155",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "lt400_hu24",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "li191r",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "li840a",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "li7200",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "mcseries",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "metone370380",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "mt300ahrs",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "pluvio",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "pqs1",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "pressuretransducer",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "prt",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "ptb330a",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "pump",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "sunav2",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "tchain",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "troll",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      },
+      {
+        "key": "windobserverii",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+      }
+    ]

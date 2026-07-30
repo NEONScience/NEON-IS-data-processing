@@ -1,0 +1,244 @@
+---
+# Default workflow for assigning calibrations to data days.
+# The data is loaded to a local shared volume.
+# The assignment module processes whatever is in the volume.
+# The final output is written to a bucket.
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: calibration-assignment
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: date_run
+        value: "{{=sprig.date('2006/01/02', workflow.creationTimestamp)}}"
+      - name: date_begin
+        value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
+      - name: configuration
+        value: calibration-assignment-config
+      - name: r_parameters_by_source_type
+        # valueFrom:
+        #   configMapKeyRef:
+        #     name: calibration-assignment-config
+        #     key: r_parameters_by_source_type
+        # TODO: testing
+        value: |
+          [
+            {
+              "key": "aepg600m",
+              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+            },
+            {
+              "key": "aepg600m_heated",
+              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+            },
+            {
+              "key": "comps",
+              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+            },
+            {
+              "key": "leveltroll500",
+              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
+            }
+          ]
+  templates:
+    # Main loop.
+    - name: main
+      steps:
+        - - name: run-step
+            template: run
+            arguments:
+              parameters:
+              - name: source_type
+                value: "{{item.key}}"
+              - name: r_args
+                value: "{{item.value}}"
+            withParam: "{{workflow.parameters.r_parameters_by_source_type}}"
+    # Process each source type by downloading files, assigning to dates, and uploading manifests.
+    - name: run
+      inputs:
+        parameters:
+          # Required input parameters.
+          - name: source_type
+          - name: r_args
+          # ConfigMap constants.
+          - name: log_level
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: log_level
+          - name: source_id_path_index
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: source_id_path_index
+          # Calibration source bucket
+          - name: calibration_bucket
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: calibration_bucket
+          - name: calibration_bucket_prefix
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: calibration_bucket_prefix
+          # Output bucket
+          - name: output_bucket
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: output_bucket
+          - name: output_bucket_prefix
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: output_bucket_prefix
+          # R Code
+          - name: parallelization_internal
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: parallelization_internal
+          - name: relative_path_index
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: relative_path_index
+          # Container images
+          - name: io_image
+            valueFrom:
+              configMapKeyRef:
+                name: assignment-config
+                key: io_image
+          - name: assignment_image
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: assignment_image
+      volumes:
+        - name: workspace
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+      containerSet:
+        # Mount shared volumes here for all containers
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+        containers:
+          # Download the calibration files
+          - name: download
+            image: gcr.io/google.com/cloudsdktool/google-cloud-cli:slim
+            resources:
+              requests:
+                memory: 2Gi
+                cpu: 250m
+              limits:
+                memory: 3Gi
+                cpu: 500m
+            command: [sh, -c]
+            args:
+              - |
+                mkdir -p /workspace/gcloud
+                export HOME=/workspace/gcloud
+
+                bucket={{inputs.parameters.calibration_bucket}}
+                prefix={{inputs.parameters.calibration_bucket_prefix}}
+                source_type={{inputs.parameters.source_type}}
+
+                url="gs://${bucket}/${prefix}/${source_type}/"
+
+                download_dir=/workspace/calibration_files
+                mkdir -p ${download_dir}
+                cd ${download_dir}
+                echo "Copying files from GCS bucket..."
+                if gcloud storage cp --recursive $url ${download_dir}/; then
+                  echo "Copy succeeded."
+                else
+                  echo "No matching files for $url (or another error occurred). Continuing..."
+                fi
+          # Assign the calibrations
+          - name: assign
+            dependencies:
+              - download
+            image: "{{inputs.parameters.assignment_image}}"
+            resources:
+              requests:
+                memory: 2Gi
+                cpu: 250m
+              limits:
+                memory: 3Gi
+                cpu: 500m
+            volumeMounts:
+              - name: tmp
+                mountPath: /tmp
+            env:
+              - name: DIR_IN
+                value: /workspace/calibration_files
+              - name: DIR_OUT
+                value: /workspace/processed_files
+              - name: ERR_PATH
+                value: /workspace/error_files
+              - name: RELATIVE_PATH_INDEX
+                value: "{{inputs.parameters.relative_path_index}}"
+              - name: LOG_LEVEL
+                value: "{{inputs.parameters.log_level}}"
+              - name: R_ARGS
+                value: "{{inputs.parameters.r_args}}"
+              - name: PARALLELIZATION_INTERNAL
+                value: "{{inputs.parameters.parallelization_internal}}"
+              - name: DATE_BEGIN
+                value: "{{workflow.parameters.date_begin}}"
+            command: [bash, -c]
+            args:
+              - |
+                set -euo pipefail
+                IFS=$'\n\t'
+                export DATE_END=$(date -d "{{workflow.creationTimestamp}} +1 day" +%F)
+                echo "Date end: $DATE_END"
+                mkdir -p /workspace/processed_files
+                mkdir -p /workspace/error_files
+                eval "Rscript ./flow.cal.asgn.R $R_ARGS"
+          # Generate the changed file manifest and save to a bucket
+          - name: main
+            dependencies:
+              - assign
+            image: "{{inputs.parameters.io_image}}"
+            resources:
+              requests:
+                memory: 300Mi
+                cpu: 250m
+              limits:
+                memory: 500Mi
+                cpu: 500m
+            env:
+              - name: SOURCE_PATH
+                value: /workspace/processed_files
+              - name: SOURCE_TYPE
+                value: "{{inputs.parameters.source_type}}"
+              - name: SOURCE_ID_INDEX
+                value: "{{inputs.parameters.source_id_path_index}}"
+              - name: RUN_DATE
+                value: "{{workflow.parameters.date_run}}"
+              - name: OUTPUT_PATH
+                value: /workspace/output_files
+              - name: MANIFEST_BUCKET
+                value: "{{inputs.parameters.output_bucket}}"
+              - name: MANIFEST_BUCKET_PREFIX
+                value: "{{inputs.parameters.output_bucket_prefix}}"
+              - name: MANIFEST_FILE_NAME
+                value: manifest.json
+              - name: CHANGE_MANIFEST_FILE_NAME
+                value: change_manifest.json
+              - name: LOGURU_LEVEL
+                value: "{{inputs.parameters.log_level}}"
+            command: [sh, -c]
+            args:
+              - |
+                echo "Running..."
+                mkdir -p /workspace/output_files
+                python3 /app/main.py
+                echo "Output files:"
+                find /workspace/output_files -type f

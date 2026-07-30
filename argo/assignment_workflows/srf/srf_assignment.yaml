@@ -1,0 +1,230 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: srf-assignment-template
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: run_date
+        value: "{{=sprig.date('2006/01/02', workflow.creationTimestamp)}}"
+      - name: date_begin
+        value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
+      - name: configuration
+        value: srf-assignment-config
+      - name: r_parameters_by_source_type
+        valueFrom:
+          configMapKeyRef:
+            name: srf-assignment-config
+            key: r_parameters_by_source_type
+  templates:
+    - name: main
+      steps:
+        - - name: run
+            template: run
+            arguments:
+              parameters:
+                - name: source_type
+                  value: '{{item.key}}'
+                - name: r_args
+                  value: '{{item.value}}'
+            withParam: "{{workflow.parameters.r_parameters_by_source_type}}"
+    - name: run
+      inputs:
+        parameters:
+          - name: source_type
+          - name: r_args
+          - name: log_level
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: log_level
+          - name: source_id_path_index
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: source_id_path_index
+          # Git
+          - name: git_secret_name
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: git_secret_name
+          - name: git_secret_file_name
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: git_secret_file_name
+          - name: git_repo_url
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: git_repo_url
+          - name: git_branch
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: git_branch
+          - name: git_repo
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: git_repo_name
+          - name: git_repo_dir
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: git_repo_dir
+          # Output bucket
+          - name: output_bucket
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: output_bucket
+          - name: output_bucket_prefix
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: output_bucket_prefix
+          # R script configuration
+          - name: parallelization_internal
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: parallelization_internal
+          - name: relative_path_index
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: relative_path_index
+          # Container images
+          - name: io_image
+            valueFrom:
+              configMapKeyRef:
+                name: assignment-config
+                key: io_image
+          - name: assignment_image
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: assignment_image
+      volumes:
+        - name: workspace
+          emptyDir: { }
+        - name: tmp
+          emptyDir: { }
+        - name: git-secret
+          secret:
+            secretName: "{{inputs.parameters.git_secret_name}}"
+      containerSet:
+        # Mount volumes here to make them accessible to all containers
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+        containers:
+          # Load all changed metadata files from Git in the latest commit.
+          - name: load
+            image: "{{inputs.parameters.io_image}}"
+            volumeMounts:
+              - name: git-secret
+                mountPath: /workspace/ssh_key
+            resources:
+              requests:
+                memory: 1.5Gi
+                cpu: 250m
+              limits:
+                memory: 2.5Gi
+                cpu: 500m
+            env:
+              - name: DOWNLOAD_PATH
+                value: "/workspace/download_files/{{inputs.parameters.git_repo}}"
+              - name: GIT_BRANCH
+                value: "{{inputs.parameters.git_branch}}"
+              - name: GIT_REPO_DIR
+                value: "{{inputs.parameters.git_repo_dir}}"
+              - name: GIT_REPO
+                value: "{{inputs.parameters.git_repo}}"
+              - name: GIT_REPO_URL
+                value: "{{inputs.parameters.git_repo_url}}"
+              - name: KEY_PATH
+                value: "/workspace/ssh_key/{{inputs.parameters.git_secret_file_name}}"
+              - name: LOGURU_LEVEL
+                value: "{{inputs.parameters.log_level}}"
+              - name: OUTPUT_PATH
+                value: /workspace/srf_files
+            command: [sh, -c]
+            args: ["python3 /app/clone_changed_files.py"]
+          - name: assign
+            dependencies:
+              - load
+            image: "{{inputs.parameters.assignment_image}}"
+            volumeMounts:
+              - name: tmp
+                mountPath: /tmp
+            resources:
+              requests:
+                memory: 200M
+                cpu: 250m
+              limits:
+                memory: 800M
+                cpu: 500m
+            env:
+              - name: DIR_IN
+                value: /workspace/srf_files
+              - name: DIR_OUT
+                value: /workspace/processed_files
+              - name: ERR_PATH
+                value: /workspace/error_files
+              - name: DATE_BEGIN
+                value: "{{workflow.parameters.date_begin}}"
+              - name: LOG_LEVEL
+                value: "{{inputs.parameters.log_level}}"
+              - name: PARALLELIZATION_INTERNAL
+                value: "{{inputs.parameters.parallelization_internal}}"
+              - name: RELATIVE_PATH_INDEX
+                value: "{{inputs.parameters.relative_path_index}}"
+              - name: R_ARGS
+                value: "{{inputs.parameters.r_args}}"
+            command: [bash, -c]
+            args:
+              - |
+                set -euo pipefail
+                IFS=$'\n\t'
+                export DATE_END=$(date -d "{{workflow.creationTimestamp}} +1 day" +%F)                
+                eval "Rscript ./flow.srf.asgn.R $R_ARGS"
+          # Generate the change manifest and write it to a bucket.
+          - name: main
+            dependencies:
+              - assign
+            image: "{{inputs.parameters.io_image}}"
+            resources:
+              requests:
+                memory: 300Mi
+                cpu: 250m
+              limits:
+                memory: 500Mi
+                cpu: 500m
+            env:
+              - name: CHANGE_MANIFEST_FILE_NAME
+                value: change_manifest.json
+              - name: LOGURU_LEVEL
+                value: "{{inputs.parameters.log_level}}"
+              - name: MANIFEST_BUCKET
+                value: "{{inputs.parameters.output_bucket}}"
+              - name: MANIFEST_BUCKET_PREFIX
+                value: "{{inputs.parameters.output_bucket_prefix}}"
+              - name: MANIFEST_FILE_NAME
+                value: manifest.json
+              - name: OUTPUT_PATH
+                value: /workspace/output_files
+              - name: RUN_DATE
+                value: "{{workflow.parameters.run_date}}"
+              - name: SOURCE_ID_INDEX
+                value: "7"
+              - name: SOURCE_PATH
+                value: /workspace/processed_files
+              - name: SOURCE_TYPE
+                value: "{{inputs.parameters.source_type}}"
+            command: [sh, -c]
+            args: ["python3 /app/main.py"]

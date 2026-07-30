@@ -6,7 +6,23 @@ metadata:
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
-  "config": |
+  log_level: INFO
+  # Git configuration.
+  git_secret_name: git-data-processing-metadata-key
+  git_secret_file_name: ssh-private-key
+  git_repo_url: git@github.com:BattelleEcology/data-processing-metadata.git
+  git_branch: main
+  git_repo_name: data-processing-metadata
+  git_repo_dir: locations
+  # Bucket for saving manifests.
+  output_bucket: neon-dev-argo-workflow-test
+  output_bucket_prefix: location_active_dates_assignment
+  # Path index for the source ID in the assignment output paths.
+  source_id_path_index: "7"
+  # R code
+  relative_path_index: "3"
+  parallelization_internal: "4"  # Internal R parallelization for all R modules.
+  r_parameters_by_source_type: |
     [
       {
         "key": "aepg600m",
