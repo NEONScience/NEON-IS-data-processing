@@ -1,0 +1,44 @@
+---
+# Default workflow for assigning locations/assets to data days.
+# The data is loaded to a shared volume.
+# The assignment module processes whatever is in the volume.
+# The final output is written to a specified path in the specified output bucket.
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: location-asset-assignment
+spec:
+  schedules:
+  - "* * 31 2 *"
+  concurrencyPolicy: Forbid
+  workflowSpec:
+    entrypoint: main
+    # This block for granting setting the group permissions on emptyDir volumes
+    securityContext:
+      fsGroup: 1001
+      fsGroupChangePolicy: OnRootMismatch
+    arguments:
+      parameters:
+      - name: run_date
+        value: "{{=sprig.date('2006/01/02', workflow.creationTimestamp)}}"
+      - name: env_config
+        value: location-asset-assignment-env
+      - name: assignment_config
+        valueFrom:
+          configMapKeyRef:
+            name: location-asset-assignment-config
+            key: config
+    templates:
+    - name: main
+      steps:
+      - - name: run-step
+          templateRef: 
+            name: assignment-template
+            template: main
+          arguments:
+            parameters:
+            - name: source_type
+              value: '{{item.key}}'
+            - name: r_args
+              value: '{{item.value}}'
+          withParam: '{{workflow.parameters.assignment_config}}'

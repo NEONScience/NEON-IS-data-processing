@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmp22-calibration-group-convert-resource-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  memory_request: "1.5Gi"
+  memory_limit: "3Gi"
+  cpu_request: "3.3"
+  cpu_limit: "4.5"
