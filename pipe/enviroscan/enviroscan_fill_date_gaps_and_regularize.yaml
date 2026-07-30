@@ -52,7 +52,7 @@ transform:
     EMPTY_FILE_TYPE_INDEX: '4'
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     # Environment variables for regularizer
-    PARALLELIZATION_INTERNAL: '3' # Parallelization within R. If increased, adjust resource requests appropriately.
+    PARALLELIZATION_INTERNAL: '2' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
@@ -89,14 +89,14 @@ input:
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 12
 autoscaling: true
 resource_requests:
   memory: 2G
-  cpu: 3.3
+  cpu: 2
 resource_limits:
   memory: 3G
-  cpu: 4.5
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 3G
   cpu: 0.5
