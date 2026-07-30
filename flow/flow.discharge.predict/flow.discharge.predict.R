@@ -41,7 +41,7 @@
 #' Stepping through the code in Rstudio 
 setwd("/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict")
 # Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2025/09/29/l4discharge_HOPB132100')
-Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2025')
+Sys.setenv(DIR_IN='~/pfs/l4discharge_group_and_parse/2025/09/29')
 log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 arg <- c("DirIn=$DIR_IN",
          "DirBaM=/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta",
@@ -122,14 +122,14 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   # Copy BaM model to a temporary directory within this iteration of DirIn
   fs::dir_copy(path = Para$DirBaM, new_path = base::paste(idxDirIn,"BaM_beta",sep="/"), overwrite = TRUE)
-  Para$DirBaM <- base::paste(idxDirIn,"BaM_beta",sep="/")
+  idxDirBaM <- base::paste(idxDirIn,"BaM_beta",sep="/")
   
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
       wrap.discharge.predict(
         DirIn=idxDirIn,
-        DirBaM=Para$DirBaM,
+        DirBaM=idxDirBaM,
         DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
         log=log
@@ -152,14 +152,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
     # This simply to avoid returning the error
     error=function(err) {}
   )
-  
-  # Clean up the temporary BaM model directory after processing
-  base::unlink(
-    base::paste(idxDirIn,"BaM_beta",sep="/"),
-    recursive = TRUE,
-    force = TRUE
-  )
-  Para$DirBaM <- "/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta"
 }
 
 
