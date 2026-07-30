@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-from typing import NamedTuple
 from pathlib import Path
+from typing import NamedTuple
 
 
 class Config(NamedTuple):
     data_path: Path
     schema_path: Path
     out_path: Path
+    source_type: str
+    data_date: str
+    source_id_list: str
     parse_calibration: bool
     source_type_index: int
     source_type_out: str
@@ -18,3 +21,8 @@ class Config(NamedTuple):
     source_id_index: int
     data_type_index: int
     test_mode: bool
+    using_filesystem: bool
+    file_version: str
+    common_path: str
+    utils_path: str
+    update_trigger_table: bool
