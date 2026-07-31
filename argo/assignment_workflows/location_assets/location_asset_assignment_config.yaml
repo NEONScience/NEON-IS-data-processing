@@ -9,7 +9,7 @@ data:
   log_level: DEBUG
   # Git configuration.
   git_secret_name: git-data-processing-metadata-key
-  git_secret_file_name: ssh-private-key
+  git_secret_key: ssh-private-key
   git_repo_url: git@github.com:BattelleEcology/data-processing-metadata.git
   git_branch: main
   git_repo_dir: location-assets

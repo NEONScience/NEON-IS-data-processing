@@ -51,11 +51,11 @@ spec:
               configMapKeyRef:
                 name: "{{workflow.parameters.configuration}}"
                 key: git_secret_name
-          - name: git_secret_file_name
+          - name: git_secret_key
             valueFrom:
               configMapKeyRef:
                 name: "{{workflow.parameters.configuration}}"
-                key: git_secret_file_name
+                key: git_secret_key
           - name: git_repo_url
             valueFrom:
               configMapKeyRef:
@@ -109,9 +109,12 @@ spec:
           emptyDir: { }
         - name: tmp
           emptyDir: { }
-        - name: git-secret
+        - name: git-secret-key
           secret:
             secretName: "{{inputs.parameters.git_secret_name}}"
+            items:
+              - key: "{{inputs.parameters.git_secret_key}}"
+                path: "{{inputs.parameters.git_secret_key}}"
       containerSet:
         # Mount volumes here to make them accessible to all containers
         volumeMounts:
@@ -122,8 +125,8 @@ spec:
           - name: load
             image: "{{inputs.parameters.io_image}}"
             volumeMounts:
-              - name: git-secret
-                mountPath: /workspace/ssh_key
+              - name: git-secret-key
+                mountPath: /workspace/git_key
             resources:
               requests:
                 memory: 1.5Gi
@@ -141,7 +144,7 @@ spec:
               - name: GIT_REPO_URL
                 value: "{{inputs.parameters.git_repo_url}}"
               - name: KEY_PATH
-                value: "/workspace/ssh_key/{{inputs.parameters.git_secret_file_name}}"
+                value: "/workspace/git_key/{{inputs.parameters.git_secret_key}}"
               - name: LOGURU_LEVEL
                 value: "{{inputs.parameters.log_level}}"
             command: [sh, -c]
@@ -182,6 +185,8 @@ spec:
               - |
                 set -euo pipefail
                 IFS=$'\n\t'
+                echo "Input files:"
+                ls -alR /workspace
                 export DATE_END=$(date -d "{{workflow.creationTimestamp}} +1 day" +%F)                
                 eval "Rscript ./flow.srf.asgn.R $R_ARGS"
           # Generate the change manifest and write it to a bucket.
