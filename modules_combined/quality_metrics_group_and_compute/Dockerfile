@@ -16,6 +16,10 @@ ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
+# For rclone
+ARG TARGETPLATFORM
+ARG RCLONE_VERSION=v1.62.2
+
 WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
@@ -26,9 +30,20 @@ RUN apt update && \
     apt install -y python3-pip && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    apt install -y wget && \
    apt-get autoremove -y && \
 	 apt-get autoclean -y && \
-	 rm -rf /var/lib/apt/lists/* 
+	 rm -rf /var/lib/apt/lists/*
+
+# Multi-platform package install for rclone
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; \
+    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm-v7; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=arm64; \
+    else ARCHITECTURE=amd64; fi && \
+    TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB" "https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-${ARCHITECTURE}.deb" &&\
+    dpkg -i "$TEMP_DEB" &&\
+    rm -f "$TEMP_DEB"
 
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
