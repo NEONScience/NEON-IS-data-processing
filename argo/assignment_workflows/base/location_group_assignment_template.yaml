@@ -2,7 +2,7 @@
 # Workflow for assigning location/asset/group metadata to data dates.
 # The data is loaded to a shared volume.
 # The assignment script processes whatever is in the volume.
-# The final output is written to a specified path in the specified output bucket.
+# The final output manifests are written into the output bucket.
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
@@ -26,28 +26,23 @@ spec:
           - name: git_secret_name
             valueFrom:
               configMapKeyRef:
-                name: processing_metadata_git_repo
+                name: "{{workflow.parameters.configuration}}"
                 key: git_secret_name
           - name: git_secret_file_name
             valueFrom:
               configMapKeyRef:
-                name: processing_metadata_git_repo
+                name: "{{workflow.parameters.configuration}}"
                 key: git_secret_file_name
           - name: git_repo_url
             valueFrom:
               configMapKeyRef:
-                name: processing_metadata_git_repo
+                name: "{{workflow.parameters.configuration}}"
                 key: git_repo_url
           - name: git_branch
             valueFrom:
               configMapKeyRef:
-                name: processing_metadata_git_repo
+                name: "{{workflow.parameters.configuration}}"
                 key: git_branch
-          - name: git_repo
-            valueFrom:
-              configMapKeyRef:
-                name: processing_metadata_git_repo
-                key: git_repo_name
           - name: git_repo_dir
             valueFrom:
               configMapKeyRef:
@@ -79,7 +74,7 @@ spec:
           - name: io_image
             valueFrom:
               configMapKeyRef:
-                name: assignment-config
+                name: base-assignment-config
                 key: io_image
           - name: assignment_image
             valueFrom:
@@ -115,21 +110,17 @@ spec:
               cpu: 500m
           env:
             - name: DOWNLOAD_PATH
-              value: "/workspace/download_files/{{inputs.parameters.git_repo}}"
+              value: /workspace/download_files
             - name: GIT_BRANCH
               value: "{{inputs.parameters.git_branch}}"
             - name: GIT_REPO_DIR
               value: "{{inputs.parameters.git_repo_dir}}"
-            - name: GIT_REPO
-              value: "{{inputs.parameters.git_repo}}"
             - name: GIT_REPO_URL
               value: "{{inputs.parameters.git_repo_url}}"
             - name: KEY_PATH
               value: "/workspace/ssh_key/{{inputs.parameters.git_secret_file_name}}"
             - name: LOGURU_LEVEL
               value: "{{inputs.parameters.log_level}}"
-            - name: OUTPUT_PATH
-              value: /workspace/source_files
           command: [sh, -c]
           args: ["python3 /app/clone_changed_files.py"]
         # Assign the data to dates.
@@ -149,7 +140,7 @@ spec:
               cpu: 500m
           env:
             - name: DIR_IN
-              value: /workspace/source_files
+              value: /workspace/download_files
             - name: DIR_OUT
               value: /workspace/processed_files
             - name: ERR_PATH

@@ -17,11 +17,11 @@ spec:
         value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
       - name: configuration
         value: location-active-dates-assignment-config
-      - name: r_parameters_by_source_type
+      - name: r_args_by_source_type
         valueFrom:
           configMapKeyRef:
             name: location-active-dates-assignment-config
-            key: r_parameters_by_source_type
+            key: r_args_by_source_type
   templates:
     - name: main
       steps:
@@ -35,4 +35,4 @@ spec:
                   value: '{{item.key}}'
                 - name: r_args
                   value: '{{item.value}}'
-            withParam: '{{workflow.parameters.r_parameters_by_source_type}}'
+            withParam: '{{workflow.parameters.r_args_by_source_type}}'

@@ -12,8 +12,7 @@ data:
   git_secret_file_name: ssh-private-key
   git_repo_url: git@github.com:BattelleEcology/data-processing-metadata.git
   git_branch: main
-  git_repo_name: data-processing-metadata
-  git_repo_dir: srf
+  git_repo_dir: science-review-flags
   # Bucket for saving manifests.
   output_bucket: neon-dev-argo-workflow-test
   output_bucket_prefix: srf_assignment
@@ -23,7 +22,7 @@ data:
   relative_path_index: "3"
   parallelization_internal: "4"
   assignment_image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.2.0
-  r_parameters_by_source_type: |
+  r_args_by_source_type: |
     [
       {
         "key": "aspirated-single",

@@ -17,11 +17,11 @@ spec:
         value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
       - name: configuration
         value: calibration-assignment-config
-      - name: r_parameters_by_source_type
+      - name: r_args_by_source_type
         # valueFrom:
         #   configMapKeyRef:
         #     name: calibration-assignment-config
-        #     key: r_parameters_by_source_type
+        #     key: r_args_by_source_type
         # TODO: testing
         value: |
           [
@@ -54,7 +54,7 @@ spec:
                 value: "{{item.key}}"
               - name: r_args
                 value: "{{item.value}}"
-            withParam: "{{workflow.parameters.r_parameters_by_source_type}}"
+            withParam: "{{workflow.parameters.r_args_by_source_type}}"
     # Process each source type by downloading files, assigning to dates, and uploading manifests.
     - name: run
       inputs:
@@ -110,7 +110,7 @@ spec:
           - name: io_image
             valueFrom:
               configMapKeyRef:
-                name: assignment-config
+                name: base-assignment-config
                 key: io_image
           - name: assignment_image
             valueFrom:

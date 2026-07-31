@@ -19,7 +19,7 @@ data:
   assignment_image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.1.0
   relative_path_index: "2"
   parallelization_internal: "4"
-  r_parameters_by_source_type: |
+  r_args_by_source_type: |
     [
       {
         "key": "aepg600m",

@@ -13,11 +13,11 @@ spec:
         value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
       - name: configuration
         value: srf-assignment-config
-      - name: r_parameters_by_source_type
+      - name: r_args_by_source_type
         valueFrom:
           configMapKeyRef:
             name: srf-assignment-config
-            key: r_parameters_by_source_type
+            key: r_args_by_source_type
   templates:
     - name: main
       steps:
@@ -29,7 +29,7 @@ spec:
                   value: '{{item.key}}'
                 - name: r_args
                   value: '{{item.value}}'
-            withParam: "{{workflow.parameters.r_parameters_by_source_type}}"
+            withParam: "{{workflow.parameters.r_args_by_source_type}}"
     - name: run
       inputs:
         parameters:
@@ -66,11 +66,6 @@ spec:
               configMapKeyRef:
                 name: "{{workflow.parameters.configuration}}"
                 key: git_branch
-          - name: git_repo
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.configuration}}"
-                key: git_repo_name
           - name: git_repo_dir
             valueFrom:
               configMapKeyRef:
@@ -102,7 +97,7 @@ spec:
           - name: io_image
             valueFrom:
               configMapKeyRef:
-                name: assignment-config
+                name: base-assignment-config
                 key: io_image
           - name: assignment_image
             valueFrom:
@@ -138,21 +133,17 @@ spec:
                 cpu: 500m
             env:
               - name: DOWNLOAD_PATH
-                value: "/workspace/download_files/{{inputs.parameters.git_repo}}"
+                value: "/workspace/download_files"
               - name: GIT_BRANCH
                 value: "{{inputs.parameters.git_branch}}"
               - name: GIT_REPO_DIR
                 value: "{{inputs.parameters.git_repo_dir}}"
-              - name: GIT_REPO
-                value: "{{inputs.parameters.git_repo}}"
               - name: GIT_REPO_URL
                 value: "{{inputs.parameters.git_repo_url}}"
               - name: KEY_PATH
                 value: "/workspace/ssh_key/{{inputs.parameters.git_secret_file_name}}"
               - name: LOGURU_LEVEL
                 value: "{{inputs.parameters.log_level}}"
-              - name: OUTPUT_PATH
-                value: /workspace/srf_files
             command: [sh, -c]
             args: ["python3 /app/clone_changed_files.py"]
           - name: assign
@@ -171,7 +162,7 @@ spec:
                 cpu: 500m
             env:
               - name: DIR_IN
-                value: /workspace/srf_files
+                value: /workspace/download_files
               - name: DIR_OUT
                 value: /workspace/processed_files
               - name: ERR_PATH
