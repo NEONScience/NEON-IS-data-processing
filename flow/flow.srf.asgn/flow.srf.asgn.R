@@ -52,6 +52,14 @@
 #' 2020
 #' 2021
 #' 
+#' 4.a "DateBgn=value" (optional, combined with DateEnd is an alternative to FileYear), where value is a date
+#' string formatted "YYYY-mm-dd" specifying the start date (inclusive) to assign files. This input will 
+#' be ignored if FileYear is specified.
+#' 
+#' 4.b "DateEnd=value" (optional, combined with DateBgn is an alternative to FileYear), where value is a date
+#' string formatted "YYYY-mm-dd" specifying the end date (NON-inclusive) to assign files. This input will 
+#' be ignored if FileYear is specified.
+#' 
 #' Note: This script implements optional parallelization as well as logging (described in 
 #' \code{\link[NEONprocIS.base]{def.log.init}}), both of which use system environment variables if available. 
 
@@ -76,6 +84,8 @@
 #     original creation, refactored from flow.loc.grp.asgn
 #   Cove Sturtevant (2024-11-27)
 #     Allow good records to pass through, while removing bad records and routing to errored datums
+#   Cove Sturtevant (2026-07-29)
+#     Add option to specify date range instead of reading date year from file
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -107,7 +117,10 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut","DirErr","FileYear"),
+    NameParaReqd = c("DirIn", "DirOut","DirErr"),
+    NameParaOptn = c("FileYear",
+                     "DateBgn",
+                     "DateEnd"),
     log = log
   )
 
@@ -117,14 +130,35 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Parse the file containing the years to populate
-log$debug(base::paste0('File containing data years to populate: ', Para$FileYear))
-yearFill <- base::as.integer(base::readLines(con=Para$FileYear))
-if(base::length(yearFill) == 0 || base::any(base::is.na(yearFill))){
-  log$fatal(base::paste0('Cannot determine years to populate from file: ', Para$FileYear,'. Check file contents.'))
-  stop()
+if(base::length(Para$FileYear) > 0){
+  log$debug(base::paste0('File containing data years to populate: ', Para$FileYear))
+  yearFill <- base::as.integer(base::readLines(con=Para$FileYear))
+  if(base::length(yearFill) == 0 || base::any(base::is.na(yearFill))){
+    log$fatal(base::paste0('Cannot determine years to populate from file: ', Para$FileYear,'. Check file contents.'))
+    stop()
+  }
+  timeBgn <- base::as.POSIXct(x=paste0(min(yearFill),'-01-01'),tz='GMT')
+  timeEnd <- base::as.POSIXct(x=paste0(max(yearFill)+1,'-01-01'),tz='GMT')
+} else {
+  log$debug(base::paste0('File containing data years to populate not found. Using specified DateBgn: ',
+    Para$DateBgn,' and DateEnd: ',
+    Para$DateEnd))
+  timeBgn <- base::as.POSIXct(Para$DateBgn,tz='GMT')
+  timeEnd <- base::as.POSIXct(Para$DateEnd,tz='GMT')
+
+  if(base::length(timeBgn) != 1 || is.na(timeBgn)){
+    log$fatal(base::paste0('Cannot determine start date from input DateBgn. Check parameter.'))
+    stop()
+  }
+  if(base::length(timeEnd) != 1 || is.na(timeEnd)){
+    log$fatal(base::paste0('Cannot determine end date from input DateEnd. Check parameter.'))
+    stop()
+  }
+  if(timeBgn > timeEnd){
+    log$fatal(base::paste0('DateBgn is after DateEnd... illogical! Check input parameters.'))
+    stop()
+  }
 }
-timeBgn <- base::as.POSIXct(x=paste0(min(yearFill),'-01-01'),tz='GMT')
-timeEnd <- base::as.POSIXct(x=paste0(max(yearFill)+1,'-01-01'),tz='GMT')
 
 # Find all the input paths (terminal directories). We will process each one.
 DirIn <-

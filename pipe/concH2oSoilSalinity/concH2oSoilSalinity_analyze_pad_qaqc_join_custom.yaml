@@ -110,7 +110,7 @@ transform:
     ERR_PATH: /pfs/out/errored_datums
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY
-    PARALLELIZATION_INTERNAL: '5' 
+    PARALLELIZATION_INTERNAL: '2'
     # Environment variables for filter-joiner
     CONFIG: |
       ---
@@ -148,14 +148,15 @@ input:
         joinOn: $1/$2/$3
         empty_files: false
 parallelism_spec:
-  constant: 8
+  constant: 20
 autoscaling: true
 resource_requests:
-  memory: 8G
-  cpu: 8.5
+  memory: 5G
+  cpu: 2.5
+  disk: 4G
 resource_limits:
-  memory: 10G
-  cpu: 10
+  memory: 6G
+  cpu: 4
 sidecar_resource_requests:
   memory: 3G
   cpu: 0.3

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aepg600m-heated-calibration-group-convert-resource-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  memory_request: "900Mi"
+  memory_limit: "1.5Gi"
+  cpu_request: "2.2"
+  cpu_limit: "3"

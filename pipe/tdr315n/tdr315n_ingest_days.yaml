@@ -2,7 +2,7 @@
 pipeline:
   name: tdr315n_ingest_days
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v2.0.0
   env:
     SOURCE_TYPE_INDEX: "3"
     YEAR_INDEX: "4"
