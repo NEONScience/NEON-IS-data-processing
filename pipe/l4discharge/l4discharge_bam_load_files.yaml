@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_bam_load_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-bam-loader:sha-57b2475
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-bam-loader:sha-93ec595
   cmd:
   - /bin/bash
   stdin:

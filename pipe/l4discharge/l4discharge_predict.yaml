@@ -11,14 +11,31 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
     
     # Run first module - filter-joiner (using environment variables below as input parameters)
-    python3 -m filter_joiner.filter_joiner_main
+    python3 -m filter_joiner.filter_joiner_main    
+
+    # Copy the full BaM_beta folder into each l4discharge_* output folder.
+    # This keeps datum outputs unique and avoids duplicate /BaM_beta root paths.
+    for discharge_dir in /tmp/pfs/filter_joined/*/*/*/l4discharge_*; do
+      if [[ -d "${discharge_dir}" ]]; then
+        cp -R /pfs/BAM_EXE/BaM_beta "${discharge_dir}/"
+      fi
+    done
+
+    # Run second module - discharge predict
+    Rscript ./flow.discharge.predict.R
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums
     
     EOF
   env:
-    # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
-    # these repos in order to pull them in with or without the SRF
+    # Environment variables for 1st filter-joiner.
     CONFIG: |
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
@@ -29,29 +46,24 @@ transform:
             name: DISCHARGE_GROUP
             glob_pattern: /pfs/DISCHARGE_GROUP/**
             join_indices: [3]
-        - path:
-            name: BAM_EXE
-            glob_pattern: /pfs/BAM_EXE/**
-            join_indices: [3]
+            outer_join: True
         
-    OUT_PATH: /pfs/out # Transfered to OUT_PATH for the first module
+    OUT_PATH: /tmp/pfs/filter_joined # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
     LOG_LEVEL: DEBUG # Shared among all modules
     
 input:
-  join:
+  cross:
   - pfs:
       name: DISCHARGE_GROUP
       repo: l4discharge_group_and_parse
-      glob: /*
-      joinOn: $1
+      glob: /(*/*/*/*)
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: BAM_EXE
       repo: l4discharge_bam_load_files
       glob: /*
-      joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5

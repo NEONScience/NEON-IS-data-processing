@@ -1,3 +1,0 @@
-"Results_MCMC_Cooked.txt" ! Result file
-0.5 ! BurnFactor
-100 ! Nslim

@@ -42,7 +42,6 @@
 # SchmDataOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # wrap.discharge.predict(DirIn=DirIn,
-#                        DirBaM=DirBaM,
 #                        DirOutBase=DirOutBase,
 #                        SchmDataOut=SchmDataOut,
 #                        log=log)
@@ -54,9 +53,10 @@
 #     original creation
 #   Nora Catolico (2025-12-17) 
 #     added error logging, updates to better interact with pachyderm
+#   Nora Catolico (2026-08-03) 
+#     change BaM_beta source
 ##############################################################################################
 wrap.discharge.predict <- function(DirIn,
-                                   DirBaM,
                                    DirOutBase,
                                    SchmDataOut=NULL,
                                    log=NULL
@@ -65,6 +65,7 @@ wrap.discharge.predict <- function(DirIn,
   # Gather info about the input directory (including date), and create base output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirInData <- fs::path(DirIn,'data')
+  DirBaM <- fs::path(DirIn,'BaM_beta')
   
   # create output 
   DirOutData <- base::paste0(DirOutBase,InfoDirIn$dirRepo,'/data')
@@ -686,8 +687,13 @@ wrap.discharge.predict <- function(DirIn,
                                                 ConfigPredictions[4])))
       
       # Run BaM! - prediction mode ####
-      setwd(DirBaM)
-      system2(paste(DirBaM,"BaM",sep = "/")) # Linux executable
+      #setwd(DirBaM)
+      tryCatch({
+        system2(paste(DirBaM,"BaM",sep = "/")) # Linux executable
+      }, error = function(e){
+        log$error(base::paste0("Error running BaM: ", e$message))
+        base::stop()
+      })
 
       # Read in and format model outputs ####
       Qt_Maxpost_spag <- read.table(paste0(dirConfig,QMaxpostSpagName),
