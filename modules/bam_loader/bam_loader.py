@@ -1,8 +1,7 @@
 
-from pathlib import Path
-
-import environs
 from google.cloud import storage
+from pathlib import Path
+import environs
 
 
 def bam_loader() -> None:
