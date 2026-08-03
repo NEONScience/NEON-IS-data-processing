@@ -28,7 +28,7 @@ def load() -> None:
     starting_path_index: int = env.int('STARTING_PATH_INDEX')
     print("starting_path_index value is:", starting_path_index)
 
-    target_prefix = "v2-dev/BaM_beta"
+    target_prefix = "BaM_beta"
 
     with closing(DbConnector(db_config)) as connector:
         now = datetime.datetime.now()

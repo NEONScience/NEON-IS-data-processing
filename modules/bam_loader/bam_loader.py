@@ -11,7 +11,7 @@ def bam_loader() -> None:
     output_directory: Path = env.path('OUT_PATH')
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
-    target_prefix = "v2-dev/BaM_beta"
+    target_prefix = "BaM_beta"
     path_names = storage_client.list_blobs(ingest_bucket, prefix=target_prefix)
 
     for blob in path_names:
