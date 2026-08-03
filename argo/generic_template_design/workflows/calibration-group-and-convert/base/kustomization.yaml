@@ -5,6 +5,5 @@ resources:
   - calibration-group-and-convert.yaml
   - configmap-load-data-instructions.yaml
   - configmap-processing-instructions.yaml
-  - configmap-resource-request.yaml
   - configmap-schemas.yaml
   - configmap-upload-output-instructions.yaml

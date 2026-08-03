@@ -17,22 +17,14 @@ spec:
     parameters:
       # - name: datum-manifest
       #   value: |
-      #     [{"source_type": "aepg600m", "data_date": "2026-05-03","source_id": "16768"},{"source_type": "aepg600m", "data_date": "2026-05-01"}]
       - name: datum-manifest
         value: |
           [{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "11184", "file_name":"10000000000098_WO83151_397977.xml"},{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "47913", "file_name":"10000000000098_WO83151_397977.xml"}]
+      #    [{"source_type": "aepg600m", "data_date": "2026-05-03","source_id": "16768"},{"source_type": "aepg600m", "data_date": "2026-05-01"}]
       - name: config-map-schemas-name
         value: schemas-config
       - name: config-map-env-name
         value: calibration-group-convert-env-config
-      - name: config-map-load-data-instructions-name
-        value: calibration-group-convert-load-data-instructions-config
-      - name: config-map-processing-instructions-name
-        value: calibration-group-convert-processing-instructions-config
-      - name: config-map-upload-output-instructions-name
-        value: calibration-group-convert-upload-output-instructions-config
-      - name: config-map-resource-request-name
-        value: calibration-group-convert-resource-config
 
   templates:
     - name: run
@@ -50,13 +42,13 @@ spec:
       volumes:
         - name: config-load-data-vol
           configMap:
-            name: "{{workflow.parameters.config-map-load-data-instructions-name}}"
+            name: "{{inputs.parameters.config-map-load-data-instructions-name}}"
         - name: config-processing-vol
           configMap:
-            name: "{{workflow.parameters.config-map-processing-instructions-name}}"
+            name: "{{inputs.parameters.config-map-processing-instructions-name}}"
         - name: config-upload-output-vol
           configMap:
-            name: "{{workflow.parameters.config-map-upload-output-instructions-name}}"
+            name: "{{inputs.parameters.config-map-upload-output-instructions-name}}"
         - name: data-vol
           emptyDir: { }
         - name: tmp-vol
@@ -69,38 +61,53 @@ spec:
           - name: cpu-request
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-resource-request-name}}"
-                key: cpu_request
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: processing_cpu_request
           - name: cpu-limit
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-resource-request-name}}"
-                key: cpu_limit
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: processing_cpu_limit
           - name: memory-request
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-resource-request-name}}"
-                key: memory_request
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: processing_memory_request
           - name: memory-limit
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-resource-request-name}}"
-                key: memory_limit
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: processing_memory_limit
           - name: load-data-image
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-load-data-instructions-name}}"
-                key: image
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: load-data-image
+          - name: config-map-load-data-instructions-name
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: config-map-load-data-instructions-name
           - name: processing-image
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-processing-instructions-name}}"
-                key: image
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: processing-image
+          - name: config-map-processing-instructions-name
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: config-map-processing-instructions-name
           - name: upload-output-image
             valueFrom:
               configMapKeyRef:
-                name: "{{workflow.parameters.config-map-upload-output-instructions-name}}"
-                key: image
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: upload-output-image
+          - name: config-map-upload-output-instructions-name
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: config-map-upload-output-instructions-name
           - name: schema-repo-eng-url
             valueFrom:
               configMapKeyRef:

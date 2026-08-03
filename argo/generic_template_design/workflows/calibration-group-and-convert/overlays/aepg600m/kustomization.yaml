@@ -6,7 +6,6 @@ namespace: argo-workflows-dev
 resources:
   - ../../base
   - configmap-env.yaml
-  - configmap-resource-request.yaml
 
 patches:
   - patch: |-
@@ -19,8 +18,7 @@ patches:
           parameters:
             - name: config-map-env-name
               value: aepg600m-calibration-group-convert-env-config
-            - name: config-map-resource-request-name
-              value: aepg600m-calibration-group-convert-resource-config
+
 
 commonLabels:
   sensor: aepg600m

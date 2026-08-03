@@ -9,6 +9,13 @@ data:
   LOG_LEVEL: DEBUG
   ERR_PATH: /data/errored_datums
 
+
+  ######################## LOAD DATA ########################
+
+  # Image and script for loading data
+  load-data-image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v2.0.0
+  config-map-load-data-instructions-name: calibration-group-convert-load-data-instructions-config
+  
   # Environment vars for loading data
   L0_BUCKET_NAME: neon-dev-l0-ingest
   L0_BUCKET_VERSION_PATH: v2 # L0 loader has a known path structure. No path indices required
@@ -19,6 +26,12 @@ data:
   OUT_PATH_SOURCE_TYPE_INDEX: "0" # output path index for source-type for calibration files, after OUT_PATH_CAL. Index is 0-based (0 is first path after OUT_PATH_CAL)
   OUT_PATH_SOURCE_ID_INDEX: "1"
   
+ ######################## PROCESSING ########################
+
+  # Image and script for processing data
+  processing-image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.3.0
+  config-map-processing-instructions-name: calibration-group-convert-processing-instructions-config
+
   # Arguments for calibration assignment
   # Note: Env vars $CAL_ASGN_DATE_BEGIN and $CAL_ASGN_DATE_END and dynamically assigned based on the manifest dates
   #   See processing-instructions.sh
@@ -69,6 +82,18 @@ data:
     "ConvFuncTerm2=def.cal.conv.poly.aepg600m:strain_gauge2_frequency_raw"
     "ConvFuncTerm3=def.cal.conv.poly.aepg600m:strain_gauge3_frequency_raw"
     "TermQf=strain_gauge1_frequency_raw|strain_gauge2_frequency_raw|strain_gauge3_frequency_raw"
+
+  # Resource requests/limits for processing step
+  processing_memory_request: "900Mi"
+  processing_memory_limit: "1.5Gi"
+  processing_cpu_request: "2.2"
+  processing_cpu_limit: "3"
+
+  ###################### UPLOAD OUTPUT #########################
+
+  # Image and script for uploading output
+  upload-output-image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v2.0.0
+  config-map-upload-output-instructions-name: calibration-group-convert-upload-output-instructions-config
 
   # Environment vars for data upload
   OUT_PATH_DATA_UPLOAD: /data/aepg600m_heated_calibration_group_and_convert

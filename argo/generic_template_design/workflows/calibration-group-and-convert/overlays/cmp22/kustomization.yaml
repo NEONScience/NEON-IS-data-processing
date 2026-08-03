@@ -6,7 +6,6 @@ namespace: argo-workflows-dev
 resources:
   - ../../base
   - configmap-env.yaml
-  - configmap-resource-request.yaml
 
 patches:
   - patch: |-
@@ -19,8 +18,6 @@ patches:
           parameters:
             - name: config-map-env-name
               value: cmp22-calibration-group-convert-env-config
-            - name: config-map-resource-request-name
-              value: cmp22-calibration-group-convert-resource-config
 
 commonLabels:
   sensor: cmp22
