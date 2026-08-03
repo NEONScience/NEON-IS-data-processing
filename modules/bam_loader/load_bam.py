@@ -19,6 +19,8 @@ from io import StringIO
 def load() -> None:
     env = environs.Env()
     ingest_bucket_name = env.str('INGEST_BUCKET')
+    gcs_root_prefix = env.str('GCS_ROOT_PREFIX', 'v2-dev').strip('/')
+    bam_folder = env.str('BAM_FOLDER', 'BaM_beta').strip('/')
     in_path: Path = env.path('IN_PATH')
     print("IN_PATH value is:", in_path)
     output_directory: Path = env.path('OUT_PATH')
@@ -28,7 +30,8 @@ def load() -> None:
     starting_path_index: int = env.int('STARTING_PATH_INDEX')
     print("starting_path_index value is:", starting_path_index)
 
-    target_prefix = "BaM_beta"
+    target_prefix = f"{gcs_root_prefix}/{bam_folder}"
+    gcs_root_prefix_with_slash = f"{gcs_root_prefix}/"
 
     with closing(DbConnector(db_config)) as connector:
         now = datetime.datetime.now()
@@ -60,7 +63,11 @@ def load() -> None:
                     print(f"WARNING: Blob does not exist in GCS: {gcs_path}")
                     continue
 
-                output_path = Path(output_directory, gcs_path)
+                relative_output_path = gcs_path
+                if gcs_path.startswith(gcs_root_prefix_with_slash):
+                    relative_output_path = gcs_path[len(gcs_root_prefix_with_slash):]
+
+                output_path = Path(output_directory, relative_output_path)
                 output_path.parent.mkdir(parents=True, exist_ok=True)
                 blob.download_to_filename(str(output_path))
                 print(f"Wrote file: {gcs_path} -> {output_path} ({output_path.stat().st_size} bytes)")
@@ -72,7 +79,11 @@ def load() -> None:
                 for blob in storage_client.list_blobs(ingest_bucket, prefix=target_prefix):
                     if blob.name.endswith('/'):
                         continue
-                    output_path = Path(output_directory, blob.name)
+                    relative_output_path = blob.name
+                    if blob.name.startswith(gcs_root_prefix_with_slash):
+                        relative_output_path = blob.name[len(gcs_root_prefix_with_slash):]
+
+                    output_path = Path(output_directory, relative_output_path)
                     output_path.parent.mkdir(parents=True, exist_ok=True)
                     blob.download_to_filename(str(output_path))
                     print(f"Wrote file: {blob.name} -> {output_path} ({output_path.stat().st_size} bytes)")

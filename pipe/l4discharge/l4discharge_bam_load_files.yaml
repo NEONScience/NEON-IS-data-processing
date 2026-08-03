@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_bam_load_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-bam-loader:sha-f4cc93a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-bam-loader:sha-57b2475
   cmd:
   - /bin/bash
   stdin:
@@ -14,6 +14,8 @@ transform:
   
   env:
     INGEST_BUCKET: neon-int-l4-discharge-proc
+    GCS_ROOT_PREFIX: v2-dev
+    BAM_FOLDER: BaM_beta
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     STARTING_PATH_INDEX: "7"
@@ -24,7 +26,7 @@ input:
   pfs:
     name: IN_PATH
     repo: l4discharge_bam_list_files
-    glob: /*/*/*/v2-dev
+    glob: /*/*/*/*
     empty_files: true
 parallelism_spec:
   constant: 10
