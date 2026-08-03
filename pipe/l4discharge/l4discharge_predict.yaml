@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_predict
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:sha-d759540
   cmd:
   - sh
   - "-c"
@@ -13,7 +13,7 @@ transform:
     IFS=$'\n\t'
 
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -r -f /tmp/pfs/filter_joined
+    rm -rf /tmp/pfs/filter_joined
     mkdir -p /tmp/pfs/filter_joined
     
     # Run first module - filter-joiner (using environment variables below as input parameters)
@@ -27,8 +27,8 @@ transform:
       fi
     done
 
-    # Run second module - discharge predict
-    Rscript ./flow.discharge.predict.R
+    # Run second module - discharge prediction (using environment variables below as input parameters)
+    Rscript ./flow.discharge.predict.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums
@@ -58,7 +58,7 @@ input:
   - pfs:
       name: DISCHARGE_GROUP
       repo: l4discharge_group_and_parse
-      glob: /(*/*/*/*)
+      glob: /(*/10/01/l4discharge_ARIK102100)
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: BAM_EXE
