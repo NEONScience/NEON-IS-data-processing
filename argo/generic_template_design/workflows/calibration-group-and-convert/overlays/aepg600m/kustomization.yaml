@@ -9,18 +9,18 @@ resources:
   - configmap-resource-request.yaml
 
 patches:
-  - |-
-    apiVersion: argoproj.io/v1alpha1
-    kind: WorkflowTemplate
-    metadata:
-      name: calibration-group-and-convert
-    spec:
-      arguments:
-        parameters:
-          - name: config-map-env-name
-            value: aepg600m-calibration-group-convert-env-config
-          - name: config-map-resource-request-name
-            value: aepg600m-calibration-group-convert-resource-config
+  - patch: |-
+      apiVersion: argoproj.io/v1alpha1
+      kind: WorkflowTemplate
+      metadata:
+        name: calibration-group-and-convert
+      spec:
+        arguments:
+          parameters:
+            - name: config-map-env-name
+              value: aepg600m-calibration-group-convert-env-config
+            - name: config-map-resource-request-name
+              value: aepg600m-calibration-group-convert-resource-config
 
 commonLabels:
   sensor: aepg600m
