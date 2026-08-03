@@ -687,9 +687,11 @@ wrap.discharge.predict <- function(DirIn,
                                                 ConfigPredictions[4])))
       
       # Run BaM! - prediction mode ####
-      #setwd(DirBaM)
       tryCatch({
-        system2(paste(DirBaM,"BaM",sep = "/")) # Linux executable
+        oldWd <- getwd()
+        on.exit(setwd(oldWd), add = TRUE)
+        setwd(DirBaM)
+        system2("./BaM") # Linux executable
       }, error = function(e){
         log$error(base::paste0("Error running BaM: ", e$message))
         base::stop()
