@@ -1,0 +1,105 @@
+---
+# SKETCH — copy of tempSoil_group_path.yaml refactored to use a bash heredoc
+# (so an rclone block can be appended) and with a GCS export at the end.
+# When deployed alongside the year's processing run, mirrors ONLY the group/
+# and location/ subtrees to GCS for post-teardown SRF re-apply.
+#
+# Why filtered: group_path is a hub module. Its /pfs/out contains group/,
+# location/, data/, flags/, uncertainty_data/, uncertainty_coef/ subdirs —
+# most of that is raw data passed through for the qm/stats pipes to consume.
+# Level1 only reads group/ and location/ from group_path, so we skip the rest
+# to avoid duplicating raw data (qm/stats outputs are mirrored separately).
+#
+# Writes to the same bucket as level1 pub output (l1-bucket → BUCKET_NAME) under
+# a pre-l1/<pipeline_name>/ prefix alongside the v2/ pub prefix.
+#
+# Layout produced on GCS:
+#   gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/YYYY/MM/DD/temp-soil_XXX/group/*.json
+#   gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/.../location/*.json
+#
+# Behavior of group_path_main is unchanged — just wrapped in bash and given a
+# filtered rclone step after it.
+pipeline:
+  name: tempSoil_group_path
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:sha-861de87
+  # === CHANGED: switched from bare `stdin:` to a bash heredoc so we can chain rclone ===
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Existing behavior — group_path module writes to /pfs/out
+    python3 -m group_path.group_path_main
+
+    # === NEW: mirror ONLY group/ and location/ subdirs of /pfs/out to GCS.
+    # Explicit includes → implicit exclusion of everything else (data, flags,
+    # uncertainty_data, uncertainty_coef). Errored_datums excluded explicitly.
+    if [[ -d /pfs/out ]] && [[ -n "$(ls -A /pfs/out 2>/dev/null)" ]]; then
+      rclone --no-check-dest --copy-links --gcs-bucket-policy-only \
+             --gcs-no-check-bucket \
+             --exclude "errored_datums/**" \
+             --include "**/group/**" \
+             --include "**/location/**" \
+             copy /pfs/out ":gcs://${BUCKET_NAME}/pre-l1/tempSoil_group_path"
+    fi
+    EOF
+  env:
+    GROUP: temp-soil
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+    ERR_PATH: /pfs/out/errored_datums
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    LOCATION_FOCUS_SOURCE_TYPE_INDEX: '3'
+    LOCATION_FOCUS_YEAR_INDEX: '4'
+    LOCATION_FOCUS_MONTH_INDEX: '5'
+    LOCATION_FOCUS_DAY_INDEX: '6'
+    LOCATION_FOCUS_LOCATION_INDEX: '7'
+    LOCATION_FOCUS_DATA_TYPE_INDEX: '8'
+    GROUP_FOCUS_YEAR_INDEX: '3'
+    GROUP_FOCUS_MONTH_INDEX: '4'
+    GROUP_FOCUS_DAY_INDEX: '5'
+    GROUP_FOCUS_GROUP_INDEX: '6'
+  # === NEW: bucket name secret for GCS export (same bucket as level1 pub output) ===
+  secrets:
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+input:
+  join:
+  - pfs:
+      name: GROUP_ASSIGNMENT_PATH
+      repo: tempSoil_group_assignment
+      glob: /temp-soil/(*/*/*)
+      joinOn: $1
+  - union:
+    - pfs:
+        name: LOCATION_FOCUS_PATH
+        repo: prt_fill_date_gaps_and_regularize
+        glob: /prt/(*/*/*)
+        joinOn: $1
+parallelism_spec:
+  constant: 12
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 0.6
+  disk: 2G
+resource_limits:
+  memory: 3.5G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 1.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

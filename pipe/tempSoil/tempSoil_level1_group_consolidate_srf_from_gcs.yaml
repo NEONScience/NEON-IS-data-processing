@@ -1,0 +1,237 @@
+---
+# Drop-in replacement for tempSoil_level1_group_consolidate_srf.yaml
+# used AFTER processing has completed and the upstream Pachyderm chain
+# (stats, qm, group_path, etc.) has been torn down.
+#
+# Pipeline NAME is identical to the production level1 pipe on purpose — deploying
+# this file overwrites the production pipe in place, so downstream pub_group /
+# pub_format_and_package / pub_egress_and_publish keep reading from the same
+# output repo name with no config change.
+#
+# Deploy cycle:
+#   During year N processing → deploy production tempSoil_level1_group_consolidate_srf.yaml
+#   After release review period    → deploy THIS file, daily cron, monthly cron, pub yamls. 
+#   Year N+1 processing      → swap back to production version
+#
+# Trigger: join(prt_cron_daily_and_date_control, prt_ingest_days, tempSoil_srf_assignment)
+# on YYYY/MM/DD — same shape as production prt_data_source_gcs. cron_daily promotes
+# prt_ingest_days staging→master via trigger; both ingest legs are outer so any daily
+# activity fires the datum, with SRF supplying what to reapply. Trigger repos are
+# DB/tick-driven and stay alive post-teardown; data-processing chain (group_path/qm/stats)
+# does not.
+#
+# Everything else hydrates from the L1 bucket (same bucket as pub output) under the
+# pre-l1/ prefix. Populated during earlier year processing runs by
+# tempSoil_stats_group_and_compute_gcs.yaml, tempSoil_qm_group_and_compute_gcs.yaml, and tempSoil_group_path_gcs.yaml.
+
+pipeline:
+  name: tempSoil_level1_group_consolidate_srf
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.5
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Hydrated inputs land under /tmp/qm, /tmp/stats, /tmp/group with two
+    # leading path segments (tmp/<repo>) so RELATIVE_PATH_INDEX=3 puts YYYY
+    # at index 3 — matching how the production pipe reads /pfs/QM/YYYY/...
+    rm -rf /tmp/interimA /tmp/interimB /tmp/pfs/interimC /tmp/qm /tmp/stats /tmp/group
+    mkdir -p /tmp/interimA /tmp/interimB /tmp/pfs/interimC /tmp/qm /tmp/stats /tmp/group
+
+    # ---- STEP 0: Hydrate qm/stats/group from GCS for the datum's day ----
+    # Iterate ingest_trigger (has one entry per processed day) — NOT SRF_PATH,
+    # which is sparse (only days with actual review flags). This lets us reapply
+    # for every day the mirror pipes populated, regardless of whether SRFs exist.
+    # Source: gs://${BUCKET_NAME}/pre-l1/<pipeline_name>/YYYY/MM/DD/... (same bucket
+    # as the level1 v2/ pub prefix, just under pre-l1/ instead).
+    for ymd_dir in /pfs/ingest_trigger/prt/*/*/*; do
+      [[ -d "$ymd_dir" ]] || continue
+      rel="${ymd_dir#/pfs/ingest_trigger/prt/}"
+      echo "Hydrating GCS inputs for ${rel}"
+      rclone --gcs-bucket-policy-only --gcs-no-check-bucket copy \
+             ":gcs://${BUCKET_NAME}/pre-l1/tempSoil_qm_group_and_compute/${rel}" \
+             "/tmp/qm/${rel}" || true
+      rclone --gcs-bucket-policy-only --gcs-no-check-bucket copy \
+             ":gcs://${BUCKET_NAME}/pre-l1/tempSoil_stats_group_and_compute/${rel}" \
+             "/tmp/stats/${rel}" || true
+      rclone --gcs-bucket-policy-only --gcs-no-check-bucket copy \
+             ":gcs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/${rel}" \
+             "/tmp/group/${rel}" || true
+    done
+
+    if [[ -z "$(ls -A /tmp/qm 2>/dev/null)$(ls -A /tmp/stats 2>/dev/null)" ]]; then
+      echo "No GCS inputs for the SRF datums in this run. Nothing to do."
+      exit 0
+    fi
+
+    # ---- STEP 1: First filter-joiner — stats + qm + group by Y/M/D/group ----
+    # Same module as production; CONFIG below points at /tmp/{qm,stats,group}
+    # instead of /pfs/QUALITY_METRICS_PATH etc.
+    export OUT_PATH=$OUT_PATH_1
+    python3 -m filter_joiner.filter_joiner_main
+
+    # ---- STEP 2: Second filter-joiner — outer-join in the SRF assignments ----
+    export OUT_PATH=$OUT_PATH_2
+    export CONFIG=$CONFIG2
+    python3 -m filter_joiner.filter_joiner_main
+    rm -rf /tmp/interimA
+
+    # ---- STEP 3: level1_consolidate → consolidated-group tree ----
+    export OUT_PATH=$OUT_PATH_3
+    python3 -m level1_consolidate.level1_consolidate_main
+
+    # ---- STEP 4: pub_workbook_loader ----
+    python3 -m pub_workbook_loader.pub_workbook_loader_main
+
+    # ---- STEP 5: pub tables + SRF apply (EXISTING R script, unchanged) ----
+    Rscript ./flow.pub.tabl.srf.R \
+      DirIn=/tmp/pfs/interimC \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirData=stats|quality_metrics" \
+      PathPubWb=$PUB_WORKBOOKS \
+      "DirSubCopy=science_review_flags|group|location"
+
+    # # ---- STEP 6: Export pub tables to L1 bucket (same layout as production) ----
+    # # Lands under gs://${BUCKET_NAME}/v2/... — same prefix as production so
+    # # downstream pub chain sees no path change.
+    # export OUT_PATH=/pfs/out
+    # linkdir=$(mktemp -d)
+    # shopt -s globstar
+    # fname=""
+    # for f in ${OUT_PATH}/**/*.parquet; do
+    #   if [[ -f "$f" ]]; then
+    #     [[ "$f" =~ ^$OUT_PATH/([0-9]+)/([0-9]+)/([0-9]+)/(${GROUP_PREFIX}_[A-Za-z0-9]+)/data/(.*)$ ]]
+    #     fyear="${BASH_REMATCH[1]}"; fmonth="${BASH_REMATCH[2]}"; fday="${BASH_REMATCH[3]}"
+    #     fgroup="${BASH_REMATCH[4]}"; fname="${BASH_REMATCH[5]}"
+    #     [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_([A-Za-z0-9]+)_[A-Za-z0-9]+_[A-Za-z0-9]+_([A-Za-z0-9]+).parquet ]]
+    #     avg_int="${BASH_REMATCH[2]}"
+    #     outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
+    #     mkdir -p "${outdir}"
+    #     ln -s "${f}" "${outdir}/${fname}"
+    #   fi
+    # done
+    # if [[ -n "$fname" ]]; then
+    #   rclone --no-check-dest --copy-links --gcs-bucket-policy-only \
+    #          --gcs-no-check-bucket copy \
+    #          "${linkdir}" ":gcs://${BUCKET_NAME}"
+    #   rm -rf $linkdir
+    # fi
+    EOF
+  env:
+    # First filter-joiner CONFIG — paths point at /tmp/{qm,stats,group} (hydrated
+    # from GCS). Path segment layout matches production /pfs/... structure:
+    #   /tmp(1)/qm(2)/YYYY(3)/MM(4)/DD(5)/group(6)/**  → same indices as /pfs/QM/...
+    CONFIG: |
+      ---
+      input_paths:
+        - path:
+            name: QUALITY_METRICS_PATH
+            glob_pattern: /tmp/qm/*/*/*/*/**
+            join_indices: [3,4,5,6]
+        - path:
+            name: STATISTICS_PATH
+            glob_pattern: /tmp/stats/*/*/*/*/**
+            join_indices: [3,4,5,6]
+        - path:
+            name: GROUP_PATH
+            glob_pattern: /tmp/group/*/*/*/*/group/**
+            join_indices: [3,4,5,6]
+        - path:
+            name: GROUP_PATH
+            glob_pattern: /tmp/group/*/*/*/*/*/*/location/**
+            join_indices: [3,4,5,6]
+    OUT_PATH_1: /tmp/interimA
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY
+    LOG_LEVEL: INFO
+
+    # Second filter-joiner CONFIG — SRF still comes from /pfs/SRF_PATH (Pachyderm-resident).
+    CONFIG2: |
+      ---
+      input_paths:
+        - path:
+            name: CONSOLIDATED_PATH
+            glob_pattern: /tmp/interimA/*/*/*/*/**
+            join_indices: [6]
+            outer_join: True
+        - path:
+            name: SRF_PATH
+            glob_pattern: /pfs/SRF_PATH/*/*/*/*/**
+            join_indices: [6]
+    OUT_PATH_2: /tmp/interimB
+
+    IN_PATH: /tmp/interimB
+    OUT_PATH_3: /tmp/pfs/interimC
+    GROUP_INDEX: "6"
+    GROUP_METADATA_INDEX: "7"
+    GROUP_METADATA_NAMES: group,science_review_flags
+    DATA_TYPE_INDEX: "9"
+    DATA_TYPE_NAMES: location,stats,quality_metrics
+
+    OUT_PATH_WORKBOOK: /tmp/pub_workbooks
+    PRODUCTS: NEON.DOM.SITE.DP1.00041.001
+    PUB_WORKBOOKS: /tmp/pub_workbooks
+    PARALLELIZATION_INTERNAL: '2'
+    GROUP_PREFIX: temp-soil
+
+  # Only the L1 bucket secret is needed — pre-l1/ input hydration reads from
+  # the same bucket as the v2/ pub output.
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+
+# Same shape as production pipes that key off daily ingest (prt_data_source_gcs.yaml):
+#   join(prt_cron_daily_and_date_control, prt_ingest_days, tempSoil_srf_assignment)
+# on YYYY/MM/DD. The cron_daily pipe promotes prt_ingest_days staging→master via
+# a Pachyderm trigger, so both ingest sides read master. Ingest legs are outer so
+# a datum fires when EITHER side has activity for the day; SRF drives what to reapply.
+# All actual DATA is GCS-hydrated in STEP 0.
+input:
+  join:
+  - pfs:
+      name: import_trigger
+      repo: prt_cron_daily_and_date_control
+      glob: /prt/(*/*/*)
+      joinOn: $1
+      outer_join: true
+  - pfs:
+      name: ingest_trigger
+      repo: prt_ingest_days
+      glob: /prt/(*/*/*)
+      joinOn: $1
+      branch: master
+      outer_join: true
+  - pfs:
+      name: SRF_PATH
+      repo: tempSoil_srf_assignment
+      glob: /(*/*/*)
+      joinOn: $1
+      outer_join: true  # SRF is sparse; days without SRFs still fire
+      empty_files: false
+
+output_branch: master
+parallelism_spec:
+  constant: 20
+autoscaling: true
+resource_requests:
+  memory: 4G
+  cpu: 2
+resource_limits:
+  memory: 5.5G
+  cpu: 2.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

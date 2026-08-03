@@ -1,22 +1,30 @@
 ---
+# SKETCH — copy of tempSoil_stats_group_and_compute.yaml with a GCS export appended.
+# When deployed alongside the year's processing run, this mirrors per-day per-group
+# stats output to GCS so the level1 reapply pipe can hydrate it later after the
+# upstream chain is torn down.
+#
+# Writes to the same bucket as level1 pub output (l1-bucket → BUCKET_NAME) under a
+# pre-l1/<pipeline_name>/ prefix alongside the v2/ pub prefix.
+#
+# Layout produced on GCS:
+#   gs://${BUCKET_NAME}/pre-l1/tempSoil_stats_group_and_compute/YYYY/MM/DD/temp-soil_XXX/stats/*.parquet
+#
+# Only difference from production file: trailing rclone block + l1-bucket secret.
 pipeline:
   name: tempSoil_stats_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.7
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:sha-be3206c
   cmd:
   - sh
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
     mkdir -p /tmp/pfs/filter_joined
-    # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
-    # Run second module - basic stats
     Rscript ./flow.stat.basc.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
@@ -24,33 +32,37 @@ transform:
       FileSchmStat=$FILE_SCHEMA_STATS \
       "WndwAgr=005|030" \
       "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)"
+
+    # === NEW: mirror /pfs/out to GCS for post-teardown SRF re-apply ===
+    if [[ -d /pfs/out ]] && [[ -n "$(ls -A /pfs/out 2>/dev/null)" ]]; then
+      rclone --no-check-dest --copy-links --gcs-bucket-policy-only \
+             --gcs-no-check-bucket \
+             --exclude "errored_datums/**" \
+             copy /pfs/out ":gcs://${BUCKET_NAME}/pre-l1/tempSoil_stats_group_and_compute"
+    fi
     EOF
   env:
-    # Environment variables for filter-joiner
     CONFIG: |
       ---
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
             name: QAQC_PATH
-            # Filter for data & uncertainty_data directories
             glob_pattern: /pfs/QAQC_PATH/*/*/*/*/*/*/data/**
-            # Join on named location (already joined below by day)
             join_indices: [6]
         - path:
             name: UNCERTAINTY_PATH
-            # Filter for data directory
             glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/*/*/uncertainty*/**
-            # Join on named location (already joined below by day)
             join_indices: [6]
     OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
-    # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '2' # Option for stats module
+    LINK_TYPE: COPY
+    PARALLELIZATION_INTERNAL: '2'
+  # === NEW: bucket name secret for GCS export (same bucket as level1 pub output) ===
+  secrets:
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
 input:
   cross:
   - pfs:
@@ -63,13 +75,13 @@ input:
         repo: tempSoil_analyze_pad_and_qaqc_plau
         glob: /(*/*/*)
         joinOn: $1
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        empty_files: false
     - pfs:
         name: UNCERTAINTY_PATH
         repo: tempSoil_group_path
         glob: /(*/*/*)
         joinOn: $1
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        empty_files: false
 parallelism_spec:
   constant: 20
 autoscaling: true
