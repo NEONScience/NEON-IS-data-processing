@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schemas-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  # Schema repository URLs and revisions
+  schema-repo-eng-url: git@github.com:BattelleEcology/neon-avro-schemas.git
+  schema-repo-eng-revision: develop
+  schema-repo-sci-url: https://github.com/NEONScience/NEON-IS-avro-schemas.git
+  schema-repo-sci-revision: master

@@ -4,7 +4,7 @@ permissions:
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/tdr315n/*.yaml'
       - 'pipe/tdr315n/pipe_list_tdr315n.txt'
