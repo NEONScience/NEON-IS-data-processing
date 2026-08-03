@@ -58,7 +58,7 @@ input:
   - pfs:
       name: DISCHARGE_GROUP
       repo: l4discharge_group_and_parse
-      glob: /(*/10/01/l4discharge_ARIK102100)
+      glob: /(*/*/*/*)
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: BAM_EXE
