@@ -261,9 +261,8 @@ wrap.precip.pluvio.stats <- function(DirIn,
   #apply UCRT to combined
   data[, combinedUcrt := uCvalA1 * accu_nrt]
     
-# Minimum uncertainty set to 0.03 mm based on 0.1 mm gauge resolution.
-# This converts resolution to standard uncertainty (res / sqrt(12)),
-
+  # Minimum standard uncertainty set to 0.03 mm based on 0.1 mm gauge resolution.
+  # Resolution converted to standard uncertainty (res / sqrt(12)).
   data[, combinedUcrt := fifelse(combinedUcrt < 0.03, 0.03, combinedUcrt)]
     
   # More efficient aggregation using data.table
