@@ -32,7 +32,7 @@ transform:
       "GrpQfBeta1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedPersistenceQF|buoyWindSpeedRangeQF"  \
       "GrpQfAlph2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyWindDirPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF" \
       "GrpQfBeta2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyWindDirPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF"
- 
+    EOF
   env:
     # Environment variables for filter-joiner
     CONFIG: |

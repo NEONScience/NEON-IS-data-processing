@@ -4,7 +4,6 @@ windBuoy_group_assignment.yaml
 windBuoy_group_path.yaml
 windBuoy_srf_loader.yaml
 windBuoy_srf_assignment.yaml
-windBuoy_group_path.yaml
 windBuoy_threshold.yaml
 windBuoy_threshold_select.yaml
 windBuoy_compass_correct_and_pad.yaml

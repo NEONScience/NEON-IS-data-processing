@@ -37,7 +37,7 @@ namePack <- c("NEONprocIS.base",
 
 
 # Do you want to run the unit tests for the package? Additionally, want to compute and show test coverage?
-RunTest <- False
+RunTest <- TRUE
 ShowTestCovr <- TRUE
 
 ###
