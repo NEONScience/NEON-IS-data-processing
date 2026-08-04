@@ -29,7 +29,7 @@
 # hydration path (/tmp/group_split) and the pipe keeps its single filter-joiner
 # (STATISTICS_PATH + SRF_PATH).
 pipeline:
-  name: concH2oSoilSalinity_level1_group_cons_srf_test
+  name: concH2oSoilSalinity_level1_group_consolidate_srf
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.5
   cmd:
