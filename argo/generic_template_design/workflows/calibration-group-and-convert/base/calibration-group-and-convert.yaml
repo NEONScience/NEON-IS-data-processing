@@ -103,6 +103,11 @@ spec:
               configMapKeyRef:
                 name: "{{workflow.parameters.config-map-env-name}}"
                 key: upload-output-image
+          - name: errored-manifest
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.config-map-env-name}}"
+                key: ERRORED_MANIFEST
           - name: config-map-upload-output-instructions-name
             valueFrom:
               configMapKeyRef:
@@ -202,3 +207,7 @@ spec:
               runAsGroup: 1001
             command: ["/bin/bash"]
             args: ["/scripts-upload-output/upload-output-instructions.sh"]
+            outputs:
+              artifacts:
+                - name: errored-manifest
+                  path: "{{inputs.parameters.errored-manifest}}"

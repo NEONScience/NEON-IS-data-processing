@@ -28,7 +28,7 @@ data:
   ######################## PROCESSING ########################
 
   # Image and script for processing data
-  processing-image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.3.0
+  processing-image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-6ec7460
   config-map-processing-instructions-name: calibration-group-convert-processing-instructions-config
 
   # Arguments for calibration assignment
@@ -81,6 +81,9 @@ data:
     "TermQf=voltage"
     "UcrtFuncTerm1=def.ucrt.meas.mult:voltage"
     "FileUcrtFdas=/data/schemas-sci/uncertainty_fdas/fdas_calibration_uncertainty_general.json"
+
+  # Environment variables for writing the errored datums manifest
+  ERRORED_MANIFEST: /tmp/errored-manifest.json
 
   # Resource requests/limits for processing step
   processing_memory_request: "1.5Gi"

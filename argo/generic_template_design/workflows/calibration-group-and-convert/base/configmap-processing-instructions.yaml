@@ -40,3 +40,6 @@ data:
 
     # Run calibration conversion module
     eval "Rscript ./flow.cal.conv.R $CAL_CONV_R_ARGS"
+
+    # Create errored datum manifest
+    python3 -m errored_file_manifest.errored_file_manifest_main
