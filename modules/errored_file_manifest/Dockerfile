@@ -23,13 +23,11 @@ RUN update-ca-trust && \
             shadow-utils \
             gcc \
             libzstd  \
-        python3.11 \
-        python3.11-pip \
-        python3.11-wheel \
-        python3.11-devel \
-        python3.11-setuptools && \
-    python3.11 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3.11 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+        python39 \
+        python39-pip \
+        python39-devel && \
+    python3.9 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3.9 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
     microdnf clean all --disableplugin=subscription-manager && \
     groupadd -g 9999 appuser && \
@@ -40,4 +38,4 @@ COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser
 
-ENTRYPOINT ["python3.11", "-m", "errored_file_manifest.errored_file_manifest_main"]
+ENTRYPOINT ["python3.9", "-m", "errored_file_manifest.errored_file_manifest_main"]

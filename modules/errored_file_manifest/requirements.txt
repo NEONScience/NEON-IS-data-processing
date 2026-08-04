@@ -1,2 +1,2 @@
-environs==15.1.0
-structlog==26.1.0
+environs==14.3.0
+structlog==25.4.0
