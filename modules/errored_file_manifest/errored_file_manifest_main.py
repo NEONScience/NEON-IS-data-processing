@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3
 """Generate a manifest of errored files.
 
 Inputs (environment variables):
