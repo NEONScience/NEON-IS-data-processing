@@ -73,6 +73,8 @@
 #     change sum logic to be NA when all 30 mins are NA. 
 #   Teresa Burlingame  (2026-06-26)
 #     update ucrt to be set to a minimum of 0.03 mm based on 0.1 mm gauge resolution, which converts to standard uncertainty (res / sqrt(12)).
+#   Teresa Burlingame  (2026-08-04)
+#     extremePrecipQF now flags the full 30-minute window on any 1-minute occurrence, per ATBD, instead of the 10% rule
 
 ##############################################################################################
 wrap.precip.pluvio.stats <- function(DirIn,
@@ -301,7 +303,8 @@ wrap.precip.pluvio.stats <- function(DirIn,
     precipNumPts = sum(precipNumPts, na.rm = TRUE), # Sum the counts from 1-minute intervals
     nullQF = as.integer(ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                ifelse(all(is.na(nullQF)), NA_integer_, min(nullQF, na.rm = TRUE)))),
-    extremePrecipQF = as.integer(ifelse(mean(extremePrecipQF == 1, na.rm = TRUE) >= 0.1, 1L, 
+    # Per ATBD: any 1-minute extremePrecipQF flag raises the whole 30-minute window (not the general 10% rule)
+    extremePrecipQF = as.integer(ifelse(any(extremePrecipQF == 1, na.rm = TRUE), 1L, 
                                         ifelse(all(is.na(extremePrecipQF)), NA_integer_, min(extremePrecipQF, na.rm = TRUE)))),
     sensorErrorQF = as.integer(ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                       ifelse(all(is.na(sensorErrorQF)), NA_integer_, min(sensorErrorQF, na.rm = TRUE)))),
