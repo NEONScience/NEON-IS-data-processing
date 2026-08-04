@@ -1,0 +1,131 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: group-assignment-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  "config": |
+    [
+      {
+        "key": "aspirated-single",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "aspirated-triple",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "conc-h2o-soil-salinity",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "conc-h2o-soil-salinity-split",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "groundwater-physical",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "l4discharge",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "nitrate-surfacewater",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "par",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "par-quantum-line",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "par-underwater",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "par-water-surface",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "precip-throughfall",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "precip-tipping",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "precip-weighing",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "precip-weighing-v2",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "pressure-air",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "pressure-air-buoy",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "rad-short-primary",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "rel-humidity",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "rel-humidity-buoy",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "subsurf-moor-temp-cond",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "summary-weather-stats",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "surfacewater-physical",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "temp-air-triple",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "temp-soil",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "temp-specific-depths-lakes",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "temp-specific-depths-lakes-split",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "temp-surfacewater",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "turbulent",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      },
+      {
+        "key": "water-quality",
+        "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH FileYear=$FILE_YEAR TypeFile=group"
+      }
+    ]

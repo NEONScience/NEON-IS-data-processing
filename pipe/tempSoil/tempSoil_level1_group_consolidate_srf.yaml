@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_level1_group_consolidate_srf
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.5
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.3.0
   cmd:
   - sh
   - "-c"
@@ -174,7 +174,7 @@ transform:
   
 # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /tmp/pub_workbooks
-    PARALLELIZATION_INTERNAL: '5'
+    PARALLELIZATION_INTERNAL: '2'
 
 # Environment variables for the L1 archiver
     GROUP_PREFIX: temp-soil # no ending "_"
@@ -217,14 +217,15 @@ input:
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 output_branch: master
 parallelism_spec:
-  constant: 5
+  constant: 20
 autoscaling: true
 resource_requests:
   memory: 4G
-  cpu: 6.5
+  cpu: 2
+  disk: 4G
 resource_limits:
   memory: 5.5G
-  cpu: 8
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 3G
   cpu: 1
