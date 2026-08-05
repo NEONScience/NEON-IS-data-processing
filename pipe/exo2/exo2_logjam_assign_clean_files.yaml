@@ -6,10 +6,18 @@ transform:
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
+  - set -x
   - Rscript ./flow.exo2.logfiles.R \
       DirIn=$DIR_IN
       DirOutBase=/pfs/out
       DirErr=/pfs/out/errored_datums
+      SchmExo2=$SCHEMA_EXO2
+      SchmCond=$SCHEMA_COND
+      SchmDO=$SCHEMA_DO
+      SchmPh=$SCHEMA_PH
+      SchmTurb=$SCHEMA_TURB
+      SchmFdom=$SCHEMA_FDOM
+      SchmChl=$SCHEMA_CHL
   env:
     LOG_LEVEL: DEBUG
 input:
@@ -18,6 +26,34 @@ input:
       name: DIR_IN
       repo: exo2_logjam_load_files
       glob: /*
+  - pfs:
+      name: SCHEMA_EXO2
+      repo: exo2_avro_schemas
+      glob: /exo2/exo2_calibrated.avsc
+  - pfs:
+      name: SCHEMA_COND
+      repo: exo2_avro_schemas
+      glob: /exoconductivity/exoconductivity_calibrated.avsc
+  - pfs:
+      name: SCHEMA_DO
+      repo: exo2_avro_schemas
+      glob: /exodissolvedoxygen/exodissolvedoxygen_calibrated.avsc
+  - pfs:
+      name: SCHEMA_PH
+      repo: exo2_avro_schemas
+      glob: /exophorp/exophorp_calibrated.avsc
+  - pfs:
+      name: SCHEMA_TURB
+      repo: exo2_avro_schemas
+      glob: /exoturbidity/exoturbidity_calibrated.avsc
+  - pfs:
+      name: SCHEMA_FDOM
+      repo: exo2_avro_schemas
+      glob: /exofdom/exofdom_calibrated.avsc
+  - pfs:
+      name: SCHEMA_CHL
+      repo: exo2_avro_schemas
+      glob: /exototalalgae/exototalalgae_calibrated.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

@@ -127,13 +127,13 @@ foreach::foreach(idxFileIn = fileData) %dopar% {
       wrap.exo2.logfiles(
         FileIn=idxFileIn,
         DirOutBase=Para$DirOutBase,
-        SchmExo2=Para$SchmExo2,
-        SchmCond=Para$SchmCond,
-        SchmDO=Para$SchmDO,
-        SchmPh=Para$SchmPh,
-        SchmTurb=Para$SchmTurb,
-        SchmFdom=Para$SchmFdom,
-        SchmChl=Para$SchmChl,
+        SchmExo2=SchmExo2,
+        SchmCond=SchmCond,
+        SchmDO=SchmDO,
+        SchmPh=SchmPh,
+        SchmTurb=SchmTurb,
+        SchmFdom=SchmFdom,
+        SchmChl=SchmChl,
         log=log
       ),
       error = function(err) {
