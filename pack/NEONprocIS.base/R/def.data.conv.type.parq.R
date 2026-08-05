@@ -43,6 +43,8 @@
 #     Do not attempt to convert lists 
 #   Cove Sturtevant (2026-02-19)
 #     Expand handling for list data columns
+#   Cove Sturtevant (2026-06-22)
+#     Handling for large_string type
 ##############################################################################################
 def.data.conv.type.parq <- function(data,
                                     type,
@@ -78,7 +80,7 @@ def.data.conv.type.parq <- function(data,
       # Use as.character rather than class(..) <- 'character'. Converts factors to character without factors as attributes.
       data[[nameIdx]] <- base::as.factor(data[[nameIdx]])
       
-    } else if(base::any(typeIdx %in% c('string','utf8','large_utf8','character'))){
+    } else if(base::any(typeIdx %in% c('string','utf8','large_utf8','character','large_string'))){
       # Use as.character rather than class(..) <- 'character'. Converts factors to character without factors as attributes.
       data[[nameIdx]] <- base::as.character(data[[nameIdx]])
       

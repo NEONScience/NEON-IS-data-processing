@@ -31,6 +31,7 @@ autoscaling: true
 resource_requests:
   memory: 500M
   cpu: 0.5
+  disk: 2G
 resource_limits:
   memory: 1G
   cpu: 1.5
@@ -44,4 +45,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

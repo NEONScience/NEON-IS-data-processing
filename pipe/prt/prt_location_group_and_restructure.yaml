@@ -2,7 +2,7 @@
 pipeline:
   name: prt_location_group_and_restructure
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.3.0
   cmd:
   - sh
   - "-c"
@@ -62,7 +62,7 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for R modules
-    PARALLELIZATION_INTERNAL: '5' 
+    PARALLELIZATION_INTERNAL: '2' 
 input:
   join:
   - pfs:
@@ -79,20 +79,21 @@ input:
       joinOn: $1
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 5
+  constant: 14
 autoscaling: true
 resource_requests:
-  memory: 3G
-  cpu: 5.5
+  memory: 5.5G
+  cpu: 2.5
+  disk: 2G
 resource_limits:
-  memory: 6G
-  cpu: 7
+  memory: 8G
+  cpu: 3
 sidecar_resource_requests:
-  memory: 4G
-  cpu: 0.6
+  memory: 5.5G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
     

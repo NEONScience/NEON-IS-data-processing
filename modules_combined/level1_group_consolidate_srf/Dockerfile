@@ -1,13 +1,13 @@
 ####
 #
-# This dockerfile will build the combined module for level1_consolidate, filter_joiner, and flow.pub.tabl.
+# This dockerfile will build the combined module for level1_consolidate, filter_joiner, flow.pub.tabl, and flow.srf.asgn
 # It also includes rclone for exporting output to a bucket
 # Example command (must be run from project root directory to include modules and modules_combined path in Docker context):
 # docker build -t neon-is-levl1-grp-cons-srf -f ./modules_combined/level1_group_consolidate_srf/Dockerfile .
 #
 ###
 # Start with the pub package R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:v1.0.8
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:v1.0.10
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -34,7 +34,7 @@ COPY ${MODULE_DIR}/${COMMON_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${COMMON_
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}/requirements.txt
 
 RUN apt update && \
-    apt-get install -y python3.9 python3.9-venv python3-pip && \
+    apt-get install -y python3.9 python3.9-venv python3-pip jq && \
     python3.9 -m venv /opt/venv
     
 ENV VIRTUAL_ENV=/opt/venv
@@ -76,12 +76,16 @@ ARG MODULE_DIR="flow"
 
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./${MODULE_DIR}/flow.pub.tabl.srf/renv.lock ./renv.lock
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
+COPY ./${MODULE_DIR}/flow.srf.asgn/renv.lock ./renv.lock.srf.asgn
+RUN R -e 'renv::restore(lockfile="./renv.lock.srf.asgn")'
+COPY ./${MODULE_DIR}/flow.pub.tabl.srf/renv.lock ./renv.lock.pub.tabl.srf
+RUN R -e 'renv::restore(lockfile="./renv.lock.pub.tabl.srf")'
 
 # Copy in application code
 COPY ./${MODULE_DIR}/flow.pub.tabl.srf/flow.pub.tabl.srf.R .
 COPY ./${MODULE_DIR}/flow.pub.tabl.srf/wrap.pub.tabl.srf.R .
+COPY ./${MODULE_DIR}/flow.srf.asgn/flow.srf.asgn.R .
+COPY ./${MODULE_DIR}/flow.srf.asgn/wrap.srf.asgn.R .
 
 # Run as app user
 USER appuser

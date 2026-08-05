@@ -13,7 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       Arry=TRUE
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.0.5
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.1.0
   env:
     LOG_LEVEL: INFO
 input:
@@ -27,7 +27,7 @@ input:
       repo: enviroscan_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 5
+  constant: 10
 autoscaling: true
 resource_requests:
   memory: 500M
@@ -42,4 +42,4 @@ datum_set_spec:
   number: 5
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

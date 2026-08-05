@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_ingest_days
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v2.0.0
   env:
     SOURCE_TYPE_INDEX: "3"
     YEAR_INDEX: "4"
@@ -90,4 +90,4 @@ sidecar_resource_requests:
 autoscaling: true
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

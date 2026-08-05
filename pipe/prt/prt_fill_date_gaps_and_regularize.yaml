@@ -2,7 +2,7 @@
 pipeline:
   name: prt_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.3.0
   cmd:
   - sh
   - "-c"
@@ -48,7 +48,7 @@ transform:
     EMPTY_FILE_TYPE_INDEX: '4'
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     # Environment variables for regularizer
-    PARALLELIZATION_INTERNAL: '3' # Parallelization within R. If increased, adjust resource requests appropriately.
+    PARALLELIZATION_INTERNAL: '2' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
@@ -85,19 +85,21 @@ input:
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 14
 autoscaling: true
 resource_requests:
-  memory: 5G
-  cpu: 3.3
+  memory: 5.5G
+  cpu: 2.5
+  disk: 2G
 resource_limits:
-  memory: 7G
-  cpu: 4.5
+  memory: 8G
+  cpu: 3
 sidecar_resource_requests:
-  memory: 3.5G
-  cpu: 1
+  memory: 5.5G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
+    

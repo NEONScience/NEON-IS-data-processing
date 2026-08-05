@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_qm_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.5
   cmd:
   - sh
   - "-c"
@@ -22,7 +22,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQm=$FILE_SCHEMA_QM \
-      "WndwAgr=001|030" \
+      "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       "GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF" \
@@ -53,7 +53,7 @@ transform:
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
-    PARALLELIZATION_INTERNAL: '6' # Option for quality metrics module
+    PARALLELIZATION_INTERNAL: '2' # Option for quality metrics module
 input:
   cross:
   - pfs:
@@ -69,19 +69,20 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
-        repo: tempSoil_pre_stats_qm
+        repo: tempSoil_group_path
         glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 10
+  constant: 16
 autoscaling: true
-resource_requests: 
+resource_requests:
   memory: 3G
-  cpu: 6.5
+  cpu: 2
+  disk: 3G
 resource_limits:
   memory: 4.5G
-  cpu: 7
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 3G
   cpu: 0.6
@@ -89,4 +90,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

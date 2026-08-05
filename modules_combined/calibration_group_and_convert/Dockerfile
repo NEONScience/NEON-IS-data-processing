@@ -1,9 +1,10 @@
-# Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, array parser, and Calibration Conversion
+# Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, array parser, 
+# calibration assignment and calibration Conversion
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
 # Start with the calibration package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.1.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.1.5
 
 
 # maintainer handle
@@ -26,7 +27,8 @@ COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_
 RUN apt update && \
     apt-get install -y --no-install-recommends \
         software-properties-common \
-        gnupg && \
+        gnupg \
+        jq && \
     rm -rf /var/lib/apt/lists/* 
     
 RUN add-apt-repository ppa:deadsnakes/ppa -y
@@ -63,12 +65,16 @@ COPY ./flow/flow.kfka.comb/wrap.kfka.comb.R .
 # Load calibration conversion module
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
+COPY ./flow/flow.cal.asgn/renv.lock .
+RUN R -e 'renv::restore(lockfile="./renv.lock")'
 COPY ./flow/flow.cal.conv/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
-# Copy in R code
+# Copy in calibration R code
 COPY ./flow/flow.cal.conv/flow.cal.conv.R .
 COPY ./flow/flow.cal.conv/wrap.cal.conv.R .
+COPY ./flow/flow.cal.asgn/flow.cal.asgn.R .
+COPY ./flow/flow.cal.asgn/wrap.cal.asgn.R .
 
 # Run as app user
 USER appuser

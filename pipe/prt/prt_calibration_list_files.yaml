@@ -12,13 +12,15 @@ transform:
   - python3 -m calval_loader.calval_loader
 input:
   pfs:
-    repo: prt_cron_daily_and_date_control_tick
-    glob: /*
+    repo: prt_ingest_days
+    glob: /tick/
+    branch: master
     empty_files: true
 autoscaling: true
 resource_requests:
   memory: 800M
   cpu: 0.4
+  disk: 2G
 resource_limits:
   memory: 1.2G
   cpu: 1.5
@@ -27,4 +29,4 @@ sidecar_resource_requests:
   cpu: 0.2
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

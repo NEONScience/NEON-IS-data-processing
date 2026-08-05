@@ -2,7 +2,7 @@ name: PROD-hmp155-update-dag
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/hmp155/*.yaml'
       - 'pipe/hmp155/pipe_list_hmp155.txt'

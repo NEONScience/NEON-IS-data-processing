@@ -2,7 +2,7 @@ name: PROD-li840a-site-list
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/li840a/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface

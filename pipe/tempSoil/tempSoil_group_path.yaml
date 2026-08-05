@@ -39,14 +39,14 @@ input:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
       repo: tempSoil_group_assignment
-      glob: /temp-soil/(2025/08/05)
+      glob: /temp-soil/(*/*/*)
       joinOn: $1
   - union: 
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
         repo: prt_fill_date_gaps_and_regularize
-        glob: /prt/(2025/08/05)
+        glob: /prt/(*/*/*)
         joinOn: $1
 #    - pfs:
 #        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
@@ -55,19 +55,20 @@ input:
 #        glob: /(*/*/*)
 #        joinOn: $1
 parallelism_spec:
-  constant: 5
+  constant: 12
 autoscaling: true
 resource_requests:
-  memory: 600M
-  cpu: 0.4
-resource_limits:
   memory: 2G
-  cpu: 1.2
+  cpu: 0.6
+  disk: 2G
+resource_limits:
+  memory: 3.5G
+  cpu: 1.5
 sidecar_resource_requests:
   memory: 4G
-  cpu: 1
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
