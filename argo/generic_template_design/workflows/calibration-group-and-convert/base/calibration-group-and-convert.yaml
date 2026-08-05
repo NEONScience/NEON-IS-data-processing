@@ -15,8 +15,6 @@ spec:
 
   arguments:
     parameters:
-      # - name: datum-manifest
-      #   value: |
       - name: datum-manifest
         value: |
           [{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "11184", "file_name":"10000000000098_WO83151_397977.xml"},{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "47913", "file_name":"10000000000098_WO83151_397977.xml"}]
@@ -24,10 +22,147 @@ spec:
       - name: config-map-schemas-name
         value: schemas-config
       - name: config-map-env-name
-        value: calibration-group-convert-env-config
+      #  value: cmp22-calibration-group-convert-env-config
 
   templates:
+    # Entrypoint: thin steps template so this can be called from another WorkflowTemplate
+    # with only datum-manifest, config-map-env-name and config-map-schemas-name.
+    # (Argo cannot resolve a configMapKeyRef name/key using a sibling
+    # inputs.parameters value, so the configmap lookups are done in the steps arguments 
+    # and passed to the resolve-inputs-and-run template as plain args.)
     - name: run
+      inputs: 
+        parameters: 
+         - name: datum-manifest
+         - name: config-map-schemas-name
+         - name: config-map-env-name
+      steps: 
+        - - name: resolve-inputs-and-run
+            template: resolve-inputs-and-run
+            arguments:
+              parameters:      
+              - name: datum-manifest
+                value: "{{inputs.parameters.datum-manifest}}"
+              - name: config-map-schemas-name
+                value: "{{inputs.parameters.config-map-schemas-name}}"
+              - name: config-map-env-name
+                value: "{{inputs.parameters.config-map-env-name}}"
+              - name: cpu-request
+                valueFrom:
+                  configMapKeyRef:
+                    # Previously all these were workflow.parameters...
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: processing_cpu_request
+              - name: cpu-limit
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: processing_cpu_limit
+              - name: memory-request
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: processing_memory_request
+              - name: memory-limit
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: processing_memory_limit
+              - name: load-data-image
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: load-data-image
+              - name: config-map-load-data-instructions-name
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: config-map-load-data-instructions-name
+              - name: processing-image
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: processing-image
+              - name: config-map-processing-instructions-name
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: config-map-processing-instructions-name
+              - name: upload-output-image
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: upload-output-image
+              - name: errored-manifest
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: ERRORED_MANIFEST
+              - name: config-map-upload-output-instructions-name
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-env-name}}"
+                    key: config-map-upload-output-instructions-name
+              - name: schema-repo-eng-url
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-schemas-name}}"
+                    key: schema-repo-eng-url
+              - name: schema-repo-eng-revision
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-schemas-name}}"
+                    key: schema-repo-eng-revision
+              - name: schema-repo-sci-url
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-schemas-name}}"
+                    key: schema-repo-sci-url
+              - name: schema-repo-sci-revision
+                valueFrom:
+                  configMapKeyRef:
+                    name: "{{inputs.parameters.config-map-schemas-name}}"
+                    key: schema-repo-sci-revision      
+      
+    - name: resolve-inputs-and-run
+      inputs:
+        parameters:      
+        - name: datum-manifest
+        - name: config-map-env-name
+        - name: config-map-schemas-name
+        - name: cpu-request
+        - name: cpu-limit
+        - name: memory-request
+        - name: memory-limit
+        - name: load-data-image
+        - name: config-map-load-data-instructions-name
+        - name: processing-image
+        - name: config-map-processing-instructions-name
+        - name: upload-output-image
+        - name: errored-manifest
+        - name: config-map-upload-output-instructions-name
+        - name: schema-repo-eng-url
+        - name: schema-repo-eng-revision
+        - name: schema-repo-sci-url
+        - name: schema-repo-sci-revision           
+
+        artifacts:
+          - name: schemas-eng
+            path: /data/schemas-eng
+            git:
+              repo: "{{inputs.parameters.schema-repo-eng-url}}"
+              revision: "{{inputs.parameters.schema-repo-eng-revision}}"
+              depth: 1
+              sshPrivateKeySecret:
+                name: neon-avro-schemas-secret-readonly
+                key: sshPrivateKey
+          - name: schemas-sci
+            path: /data/schemas-sci
+            git:
+              repo: "{{inputs.parameters.schema-repo-sci-url}}"
+              revision: "{{inputs.parameters.schema-repo-sci-revision}}"
+              depth: 1
+      
       podSpecPatch: |
         containers:
           - name: processing
@@ -53,102 +188,6 @@ spec:
           emptyDir: { }
         - name: tmp-vol
           emptyDir: { }
-
-      inputs:
-        parameters:
-          - name: datum-manifest
-          - name: config-map-env-name
-          - name: cpu-request
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: processing_cpu_request
-          - name: cpu-limit
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: processing_cpu_limit
-          - name: memory-request
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: processing_memory_request
-          - name: memory-limit
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: processing_memory_limit
-          - name: load-data-image
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: load-data-image
-          - name: config-map-load-data-instructions-name
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: config-map-load-data-instructions-name
-          - name: processing-image
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: processing-image
-          - name: config-map-processing-instructions-name
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: config-map-processing-instructions-name
-          - name: upload-output-image
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: upload-output-image
-          - name: errored-manifest
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: ERRORED_MANIFEST
-          - name: config-map-upload-output-instructions-name
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-env-name}}"
-                key: config-map-upload-output-instructions-name
-          - name: schema-repo-eng-url
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-schemas-name}}"
-                key: schema-repo-eng-url
-          - name: schema-repo-eng-revision
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-schemas-name}}"
-                key: schema-repo-eng-revision
-          - name: schema-repo-sci-url
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-schemas-name}}"
-                key: schema-repo-sci-url
-          - name: schema-repo-sci-revision
-            valueFrom:
-              configMapKeyRef:
-                name: "{{workflow.parameters.config-map-schemas-name}}"
-                key: schema-repo-sci-revision
-        artifacts:
-          - name: schemas-eng
-            path: /data/schemas-eng
-            git:
-              repo: "{{inputs.parameters.schema-repo-eng-url}}"
-              revision: "{{inputs.parameters.schema-repo-eng-revision}}"
-              depth: 1
-              sshPrivateKeySecret:
-                name: neon-avro-schemas-secret-readonly
-                key: sshPrivateKey
-          - name: schemas-sci
-            path: /data/schemas-sci
-            git:
-              repo: "{{inputs.parameters.schema-repo-sci-url}}"
-              revision: "{{inputs.parameters.schema-repo-sci-revision}}"
-              depth: 1
 
       containerSet:
         volumeMounts:
