@@ -1,0 +1,45 @@
+---
+pipeline:
+  name: exo2_regularize
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.2
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - Rscript ./flow.rglr.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      "DirRglr=data"
+      FreqRglr=0.003333
+      MethRglr=CybiEc
+      WndwRglr=Cntr
+      IdxWndw=IdxWndwMin
+      RptTimeWndw=FALSE
+      DropNotNumc=TRUE
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: exo2_replace_sn_with_assetuid
+      glob: /
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

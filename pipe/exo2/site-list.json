@@ -2,5 +2,9 @@
 	{
 	"site" : "POSE",
 	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "WALK",
+	"kafka_start_date" : "2024-02-09"
 	}
 ]
