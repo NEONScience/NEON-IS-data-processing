@@ -14,6 +14,8 @@ transform:
     IFS=$'\n\t' 
     export DATA_PATH=$DATA_PATH
     python3 -m replace_sn_with_assetuid.replace_sn_with_assetuid_main
+
+    EOF
   env:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "3"

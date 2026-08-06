@@ -306,7 +306,7 @@ wrap.exo2.logfiles <- function(FileIn,
         }
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
-        flags_file$logQF <- 1
+        flags_file$LogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
@@ -354,7 +354,8 @@ wrap.exo2.logfiles <- function(FileIn,
         }
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
-        flags_file$logQF <- 1
+        flags_file$specificCondLogDataQF <- 1
+        flags_file$surfaceWaterTempLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
@@ -403,6 +404,9 @@ wrap.exo2.logfiles <- function(FileIn,
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
         flags_file$logQF <- 1
+        flags_file$dissolvedOxygenLogDataQF <- 1
+        flags_file$seaLevelDOSatLogDataQF <- 1
+        flags_file$localDOSatLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
@@ -590,6 +594,7 @@ wrap.exo2.logfiles <- function(FileIn,
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
         flags_file$logQF <- 1
+        flags_file$chlaRelativeFluorLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
