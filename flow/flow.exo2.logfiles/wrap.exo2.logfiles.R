@@ -305,7 +305,8 @@ wrap.exo2.logfiles <- function(FileIn,
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
         #create DF for flags
-        flags_file <- out_file[, c("readout_time")]
+        flags_file <- as.data.frame(out_file)
+        flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$sensorDepthLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
@@ -353,7 +354,8 @@ wrap.exo2.logfiles <- function(FileIn,
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
         #create DF for flags
-        flags_file <- out_file[, c("readout_time")]
+        flags_file <- as.data.frame(out_file)
+        flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$specificCondLogDataQF <- 1
         flags_file$surfaceWaterTempLogDataQF <- 1
         # Create directory and write out flags file
@@ -402,7 +404,8 @@ wrap.exo2.logfiles <- function(FileIn,
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
         #create DF for flags
-        flags_file <- out_file[, c("readout_time")]
+        flags_file <- as.data.frame(out_file)
+        flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$logQF <- 1
         flags_file$dissolvedOxygenLogDataQF <- 1
         flags_file$seaLevelDOSatLogDataQF <- 1
@@ -452,7 +455,8 @@ wrap.exo2.logfiles <- function(FileIn,
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
         #create DF for flags
-        flags_file <- out_file[, c("readout_time")]
+        flags_file <- as.data.frame(out_file)
+        flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$pHLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
@@ -497,7 +501,8 @@ wrap.exo2.logfiles <- function(FileIn,
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
         #create DF for flags
-        flags_file <- out_file[, c("readout_time")]
+        flags_file <- as.data.frame(out_file)
+        flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$turbidityLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
@@ -542,7 +547,8 @@ wrap.exo2.logfiles <- function(FileIn,
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
         #create DF for flags
-        flags_file <- out_file[, c("readout_time")]
+        flags_file <- as.data.frame(out_file)
+        flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$fdomLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
@@ -592,7 +598,8 @@ wrap.exo2.logfiles <- function(FileIn,
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
         #create DF for flags
-        flags_file <- out_file[, c("readout_time")]
+        flags_file <- as.data.frame(out_file)
+        flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$chlorophyllLogDataQF <- 1
         flags_file$chlaRelativeFluorLogDataQF <- 1
         # Create directory and write out flags file
