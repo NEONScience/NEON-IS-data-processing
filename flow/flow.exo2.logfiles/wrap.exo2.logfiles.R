@@ -306,7 +306,7 @@ wrap.exo2.logfiles <- function(FileIn,
         }
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
-        flags_file$LogDataQF <- 1
+        flags_file$sensorDepthLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
@@ -453,7 +453,7 @@ wrap.exo2.logfiles <- function(FileIn,
         }
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
-        flags_file$logQF <- 1
+        flags_file$pHLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
@@ -498,7 +498,7 @@ wrap.exo2.logfiles <- function(FileIn,
         }
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
-        flags_file$logQF <- 1
+        flags_file$turbidityLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
@@ -543,7 +543,7 @@ wrap.exo2.logfiles <- function(FileIn,
         }
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
-        flags_file$logQF <- 1
+        flags_file$fdomLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
@@ -593,7 +593,7 @@ wrap.exo2.logfiles <- function(FileIn,
         }
         #create DF for flags
         flags_file <- out_file[, c("readout_time")]
-        flags_file$logQF <- 1
+        flags_file$chlorophyllLogDataQF <- 1
         flags_file$chlaRelativeFluorLogDataQF <- 1
         # Create directory and write out flags file
         DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
