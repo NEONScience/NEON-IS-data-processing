@@ -34,23 +34,23 @@
 
 #' @examples
 #' Not run
-# DirIn <- "/home/nickerson/pfs/testing/2025/10/01/l4discharge_ARIK102100"
-# DirOutBase <- "/home/nickerson/pfs/out"
-# dirInTables <- "/home/nickerson/pfs/l4discharge_os_table_loader"
-# dirList <- list.files(dirInTables,full.names = F)
-# tableNameMap <- list()
-# for(d in 1:length(dirList)){
-#   fileName <- dirList[d]
-#   filePath <- list.files(dirInTables,
-#                          pattern=fileName,
-#                          full.names = T)
-#   currFile <- read.csv(filePath,encoding = "UTF-8",header = T)
-#   tableNameMap[[gsub("\\.csv$","",
-#                      gsub("^.*\\.001\\.","",
-#                           fileName))]] <- currFile
-# }
-# list2env(tableNameMap,envir = .GlobalEnv)
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+DirIn <- "/home/nickerson/pfs/testing/2025/10/01/l4discharge_ARIK102100"
+DirOutBase <- "/home/nickerson/pfs/out"
+dirInTables <- "/home/nickerson/pfs/l4discharge_os_table_loader"
+dirList <- list.files(dirInTables,full.names = F)
+tableNameMap <- list()
+for(d in 1:length(dirList)){
+  fileName <- dirList[d]
+  filePath <- list.files(dirInTables,
+                         pattern=fileName,
+                         full.names = T)
+  currFile <- read.csv(filePath,encoding = "UTF-8",header = T)
+  tableNameMap[[gsub("\\.csv$","",
+                     gsub("^.*\\.001\\.","",
+                          fileName))]] <- currFile
+}
+list2env(tableNameMap,envir = .GlobalEnv)
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # wrap.discharge.parse.os.inputs(
 #   DirIn=DirIn,
 #   csd_constantBiasShift_pub=csd_constantBiasShift_pub,
@@ -327,11 +327,18 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }
   
   # Are there any correction-related tables that need to be published on this site*day?
-  # Are there any gaps that end on this day?
+  
+  # Is this day in a gap?
   currGapData <- csd_dataGapToFillMethodMapping_pub[
-   csd_dataGapToFillMethodMapping_pub$namedLocation==surveyLoc
-   &as.Date(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
-  ,]
+    csd_dataGapToFillMethodMapping_pub$namedLocation==surveyLoc
+    &((as.POSIXct(csd_dataGapToFillMethodMapping_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
+       &as.POSIXct(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
+      |(as.POSIXct(csd_dataGapToFillMethodMapping_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
+        &as.POSIXct(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=startDate)
+      |(as.POSIXct(csd_dataGapToFillMethodMapping_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=endDate
+        &as.POSIXct(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
+    ),
+  ]
   if(nrow(currGapData)>0){
     # Write dataGapToFillMethodMapping
     write_currGapData<-try(write.csv(currGapData,
@@ -348,11 +355,19 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }else{
     log$info("No records to write out for csd_dataGapToFillMethodMapping_pub.")
   }
-  # Are there any constant bias shifts that end on this day?
+  
+  # Is this day in a shift?
   currShiftData <- csd_constantBiasShift_pub[
     csd_constantBiasShift_pub$namedLocation==surveyLoc
-    &as.Date(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
-    ,]
+    &((as.POSIXct(csd_constantBiasShift_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
+       &as.POSIXct(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
+      |(as.POSIXct(csd_constantBiasShift_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
+        &as.POSIXct(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=startDate)
+      |(as.POSIXct(csd_constantBiasShift_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=endDate
+        &as.POSIXct(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
+    ),
+  ]
+
   if(nrow(currShiftData)>0){
     # Write constantBiasShift
     write_currShiftData<-try(write.csv(currShiftData,
@@ -369,11 +384,19 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }else{
     log$info("No records to write out for csd_constantBiasShift_pub")
   }
-  # Are there any gap filling regressions that end on this day?
+
+  # Does this day fall within a gap-filling regression?
   currGapRegData <- csd_gapFillingRegression_pub[
     csd_gapFillingRegression_pub$namedLocation==surveyLoc
-    &as.Date(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")==endDate
-    ,]
+    &((as.POSIXct(csd_gapFillingRegression_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
+       &as.POSIXct(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
+      |(as.POSIXct(csd_gapFillingRegression_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
+        &as.POSIXct(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=startDate)
+      |(as.POSIXct(csd_gapFillingRegression_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=endDate
+        &as.POSIXct(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
+    ),
+  ]
+  
   if(nrow(currGapRegData)>0){
     # Write gapFillingRegression
     write_currGapRegData<-try(write.csv(currGapRegData,
