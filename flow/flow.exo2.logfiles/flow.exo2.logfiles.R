@@ -30,6 +30,20 @@
 #' 
 #' "SchmChl" (optional), the avro schema for the total algae sensor data streams 
 #' 
+#' "SchmFlagsExo2" (optional), the avro schema for the the sonde body flags
+#' 
+#' "SchmFlagsCond" (optional), the avro schema for the conductivity sensor flags
+#' 
+#' "SchmFlagsDO" (optional), the avro schema for the dissolved oxygen sensor flags
+#' 
+#' "SchmFlagsPh" (optional), the avro schema for the pH sensor flags
+#' 
+#' "SchmFlagsTurb" (optional), the avro schema for the turbidity sensor flags
+#' 
+#' "SchmFlagsFdom" (optional), the avro schema for the fDOM sensor flags
+#' 
+#' "SchmFlagsChl" (optional), the avro schema for the total algae sensor flags
+#' 
 #' @return Parquets of logged multisonde data parsed into individual sensors streams.
 
 #' @references
@@ -51,6 +65,8 @@
 #     Original creation
 #   Nora Catolico (2026-04-30)
 #     updated to write out daily parquets
+#   Nora Catolico (2026-08-06)
+#     added flags
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -81,7 +97,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOutBase","DirErr"),
-                                      NameParaOptn = c("SchmExo2","SchmCond","SchmDO","SchmPh","SchmTurb","SchmFdom","SchmChl"),log = log)
+                                      NameParaOptn = c("SchmExo2","SchmCond","SchmDO","SchmPh","SchmTurb","SchmFdom","SchmChl","SchmFlagsExo2","SchmFlagsCond","SchmFlagsDO","SchmFlagsPh","SchmFlagsTurb","SchmFlagsFdom","SchmFlagsChl"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -94,6 +110,13 @@ log$debug(base::paste0('Schema for pH: ', Para$SchmPh))
 log$debug(base::paste0('Schema for turbidity: ', Para$SchmTurb))
 log$debug(base::paste0('Schema for fDOM: ', Para$SchmFdom))
 log$debug(base::paste0('Schema for total algae: ', Para$SchmChl))
+log$debug(base::paste0('Schema for sonde body flags: ', Para$SchmFlagsExo2))
+log$debug(base::paste0('Schema for conductance flags: ', Para$SchmFlagsCond))
+log$debug(base::paste0('Schema for dissolved oxygen flags: ', Para$SchmFlagsDO))
+log$debug(base::paste0('Schema for pH flags: ', Para$SchmFlagsPh))
+log$debug(base::paste0('Schema for turbidity flags: ', Para$SchmFlagsTurb))
+log$debug(base::paste0('Schema for fDOM flags: ', Para$SchmFlagsFdom))
+log$debug(base::paste0('Schema for total algae flags: ', Para$SchmFlagsChl))
 
 # Read in the schemas.
 if(base::is.null(Para$SchmExo2) || Para$SchmExo2 == 'NA'){SchmExo2 <- NULL} else {SchmExo2 <- base::paste0(base::readLines(Para$SchmExo2),collapse='')}
@@ -103,7 +126,13 @@ if(base::is.null(Para$SchmPh) || Para$SchmPh == 'NA'){SchmPh <- NULL} else {Schm
 if(base::is.null(Para$SchmTurb) || Para$SchmTurb == 'NA'){SchmTurb <- NULL} else {SchmTurb <- base::paste0(base::readLines(Para$SchmTurb),collapse='')}
 if(base::is.null(Para$SchmFdom) || Para$SchmFdom == 'NA'){SchmFdom <- NULL} else {SchmFdom <- base::paste0(base::readLines(Para$SchmFdom),collapse='')}
 if(base::is.null(Para$SchmChl) || Para$SchmChl == 'NA'){SchmChl <- NULL} else {SchmChl <- base::paste0(base::readLines(Para$SchmChl),collapse='')}
-
+if(base::is.null(Para$SchmFlagsExo2) || Para$SchmFlagsExo2 == 'NA'){SchmFlagsExo2 <- NULL} else {SchmFlagsExo2 <- base::paste0(base::readLines(Para$SchmFlagsExo2),collapse='')}
+if(base::is.null(Para$SchmFlagsCond) || Para$SchmFlagsCond == 'NA'){SchmFlagsCond <- NULL} else {SchmFlagsCond <- base::paste0(base::readLines(Para$SchmFlagsCond),collapse='')}
+if(base::is.null(Para$SchmFlagsDO) || Para$SchmFlagsDO == 'NA'){SchmFlagsDO <- NULL} else {SchmFlagsDO <- base::paste0(base::readLines(Para$SchmFlagsDO),collapse='')}
+if(base::is.null(Para$SchmFlagsPh) || Para$SchmFlagsPh == 'NA'){SchmFlagsPh <- NULL} else {SchmFlagsPh <- base::paste0(base::readLines(Para$SchmFlagsPh),collapse='')}
+if(base::is.null(Para$SchmFlagsTurb) || Para$SchmFlagsTurb == 'NA'){SchmFlagsTurb <- NULL} else {SchmFlagsTurb <- base::paste0(base::readLines(Para$SchmFlagsTurb),collapse='')}
+if(base::is.null(Para$SchmFlagsFdom) || Para$SchmFlagsFdom == 'NA'){SchmFlagsFdom <- NULL} else {SchmFlagsFdom <- base::paste0(base::readLines(Para$SchmFlagsFdom),collapse='')}
+if(base::is.null(Para$SchmFlagsChl) || Para$SchmFlagsChl == 'NA'){SchmFlagsChl <- NULL} else {SchmFlagsChl <- base::paste0(base::readLines(Para$SchmFlagsChl),collapse='')}
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
@@ -134,6 +163,13 @@ foreach::foreach(idxFileIn = fileData) %dopar% {
         SchmTurb=SchmTurb,
         SchmFdom=SchmFdom,
         SchmChl=SchmChl,
+        SchmFlagsExo2=SchmFlagsExo2,
+        SchmFlagsCond=SchmFlagsCond,
+        SchmFlagsDO=SchmFlagsDO,
+        SchmFlagsPh=SchmFlagsPh,
+        SchmFlagsTurb=SchmFlagsTurb,
+        SchmFlagsFdom=SchmFlagsFdom,
+        SchmFlagsChl=SchmFlagsChl,
         log=log
       ),
       error = function(err) {

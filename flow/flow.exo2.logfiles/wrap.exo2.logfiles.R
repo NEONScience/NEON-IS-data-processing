@@ -24,6 +24,14 @@
 #' @param SchmExo2Fdom (optional), Schema for the output data from the fdom probe.
 #' 
 #' @param SchmExo2Chlorophyll (optional), Schema for the output data from the chlorophyll probe.
+#' 
+#' @param SchmFlagsExo2 (optional), Schema for the output data from the sonde body flags.
+#' @param SchmFlagsCond (optional), Schema for the output data from the conductivity sensor flags.
+#' @param SchmFlagsDO (optional), Schema for the output data from the dissolved oxygen sensor flags.
+#' @param SchmFlagsPh (optional), Schema for the output data from the pH sensor flags.
+#' @param SchmFlagsTurb (optional), Schema for the output data from the turbidity sensor flags.
+#' @param SchmFlagsFdom (optional), Schema for the output data from the fDOM sensor flags.
+#' @param SchmFlagsChl (optional), Schema for the output data from the chlorophyll sensor flags.
 #'                                                                 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
@@ -57,6 +65,8 @@
 #' Nora Catolico (2026-04-30)
 #'   Updates for file encoding
 #     updated to write out daily parquets
+#   Nora Catolico (2026-08-06)
+#     added flags
 ##############################################################################################
 wrap.exo2.logfiles <- function(FileIn,
                              DirOutBase,
@@ -67,6 +77,13 @@ wrap.exo2.logfiles <- function(FileIn,
                              SchmTurb=NULL,
                              SchmFdom=NULL,
                              SchmChl=NULL,
+                             SchmFlagsExo2=NULL,
+                             SchmFlagsCond=NULL,
+                             SchmFlagsDO=NULL,
+                             SchmFlagsPh=NULL,
+                             SchmFlagsTurb=NULL,
+                             SchmFlagsFdom=NULL,
+                             SchmFlagsChl=NULL,
                              log=NULL
 ){
   
@@ -78,7 +95,8 @@ wrap.exo2.logfiles <- function(FileIn,
 #get body asset info
   bodyAsset <- basename(dirname(FileIn))
   fname <- basename(FileIn)
-
+  #remove .csv from fname
+  fname <- gsub(".csv","",fname)
   
 # Load in the csv log file(s) 
   
@@ -274,7 +292,7 @@ wrap.exo2.logfiles <- function(FileIn,
         colnames(out_file) <- names(currentTable)
         year <- substr(out_file$readout_time[1],1,4)
         month <- substr(out_file$readout_time[1],6,7)
-        day <- substr(out_file$readout_time[1],9,10)
+        day <- substr(out_file$readout_time[1],9,10)        
         # Create directory and write out file
         DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
@@ -285,6 +303,20 @@ wrap.exo2.logfiles <- function(FileIn,
           stop()
         } else {
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+        #create DF for flags
+        flags_file <- out_file[, c("readout_time")]
+        flags_file$logQF <- 1
+        # Create directory and write out flags file
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        base::dir.create(DirOutFlags,recursive=TRUE)
+        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsExo2),silent=TRUE)
+        if(class(rptOutFlags)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Flags Data written successfully in ', base::paste0(DirOutFlags,csv_name_flags,".parquet"), ' from file ',fname))
         }
       }#end of days loop
       currentTable <- NULL
@@ -320,6 +352,20 @@ wrap.exo2.logfiles <- function(FileIn,
         } else {
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
+        #create DF for flags
+        flags_file <- out_file[, c("readout_time")]
+        flags_file$logQF <- 1
+        # Create directory and write out flags file
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        base::dir.create(DirOutFlags,recursive=TRUE)
+        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsCond),silent=TRUE)
+        if(class(rptOutFlags)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Flags Data written successfully in ', base::paste0(DirOutFlags,csv_name_flags,".parquet"), ' from file ',fname))
+        }
       }#end of days loop
       currentTable <- NULL
     }else{
@@ -354,6 +400,20 @@ wrap.exo2.logfiles <- function(FileIn,
         } else {
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
+        #create DF for flags
+        flags_file <- out_file[, c("readout_time")]
+        flags_file$logQF <- 1
+        # Create directory and write out flags file
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        base::dir.create(DirOutFlags,recursive=TRUE)
+        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsDO),silent=TRUE)
+        if(class(rptOutFlags)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Flags Data written successfully in ', base::paste0(DirOutFlags,csv_name_flags,".parquet"), ' from file ',fname))
+        }
       }#end of days loop
       currentTable <- NULL
     }else{
@@ -387,6 +447,20 @@ wrap.exo2.logfiles <- function(FileIn,
         } else {
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
+        #create DF for flags
+        flags_file <- out_file[, c("readout_time")]
+        flags_file$logQF <- 1
+        # Create directory and write out flags file
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        base::dir.create(DirOutFlags,recursive=TRUE)
+        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsPh),silent=TRUE)
+        if(class(rptOutFlags)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Flags Data written successfully in ', base::paste0(DirOutFlags,csv_name_flags,".parquet"), ' from file ',fname))
+        }
       }#end of days loop
       currentTable <- NULL
     }else{
@@ -418,6 +492,20 @@ wrap.exo2.logfiles <- function(FileIn,
         } else {
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
         }
+        #create DF for flags
+        flags_file <- out_file[, c("readout_time")]
+        flags_file$logQF <- 1
+        # Create directory and write out flags file
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        base::dir.create(DirOutFlags,recursive=TRUE)
+        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsTurb),silent=TRUE)
+        if(class(rptOutFlags)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Flags Data written successfully in ', base::paste0(DirOutFlags,csv_name_flags,".parquet"), ' from file ',fname))
+        }
       }#end of days loop
       currentTable <- NULL
     }else{
@@ -448,6 +536,20 @@ wrap.exo2.logfiles <- function(FileIn,
           stop()
         } else {
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+        #create DF for flags
+        flags_file <- out_file[, c("readout_time")]
+        flags_file$logQF <- 1
+        # Create directory and write out flags file
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        base::dir.create(DirOutFlags,recursive=TRUE)
+        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsFdom),silent=TRUE)
+        if(class(rptOutFlags)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Flags Data written successfully in ', base::paste0(DirOutFlags,csv_name_flags,".parquet"), ' from file ',fname))
         }
       }#end of days loop
       currentTable <- NULL
@@ -484,6 +586,20 @@ wrap.exo2.logfiles <- function(FileIn,
           stop()
         } else {
           log$info(base::paste0('Data written successfully in ', base::paste0(DirOut,csv_name,".parquet"), ' from file ',fname))
+        }
+        #create DF for flags
+        flags_file <- out_file[, c("readout_time")]
+        flags_file$logQF <- 1
+        # Create directory and write out flags file
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        base::dir.create(DirOutFlags,recursive=TRUE)
+        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsChl),silent=TRUE)
+        if(class(rptOutFlags)[1] == 'try-error'){
+          log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
+          stop()
+        } else {
+          log$info(base::paste0('Flags Data written successfully in ', base::paste0(DirOutFlags,csv_name_flags,".parquet"), ' from file ',fname))
         }
       }#end of days loop
       currentTable <- NULL
