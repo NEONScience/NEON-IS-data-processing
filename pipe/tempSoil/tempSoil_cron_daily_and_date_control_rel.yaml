@@ -1,15 +1,20 @@
 ---
-# _rel variant: coexists alongside production enviroscan_cron_daily_and_date_control.
+# tempSoil-specific cron for the _rel chain. Lives under the tempSoil release
+# pipeline rather than piggybacking on prt's cron so the whole _rel chain is
+# self-contained. SOURCE_TYPE stays "prt" because that's still the sensor
+# source type the L1 chain looks for under /pfs/import_trigger/prt/...
+#
 # Enumerates the full release-window date range (2016-01-01 -> 2026-06-30) for
 # the release-window mini pipeline that pulls pre-L1 data from GCS and produces
-# L1 output for the concH2oSoilSalinity data release (July 2025 - June 2026
-# provisional data, plus historic-data SRF flagging back to 2016).
+# L1 output for the July 2025 - June 2026 provisional-data release, plus
+# historic-data SRF flagging back to 2016.
 #
-# Independent of enviroscan_ingest_days: driven by a plain daily cron because
-# the release chain reads pre-L1 from GCS, not raw ingest. Production and _rel
-# process disjoint date ranges so they run side-by-side.
+# Independent of prt_ingest_days: driven by a plain daily cron because the
+# release chain reads pre-L1 from GCS, not raw ingest. Production and _rel
+# process disjoint date ranges (rel: 2016 -> Jun 2026, prod: Jul 2026 -> now)
+# so they can run side-by-side without stepping on each other.
 pipeline:
-  name: enviroscan_cron_daily_and_date_control_rel
+  name: tempSoil_cron_daily_and_date_control_rel
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   cmd: ["/bin/bash"]
@@ -19,22 +24,22 @@ transform:
     OUT_PATH: /pfs/out
     START_DATE: "2026-06-01"
     END_DATE: "2026-06-30"
-    SOURCE_TYPE: "enviroscan"
+    SOURCE_TYPE: "prt"
   stdin:
   - "#!/bin/bash"
   - set -euo pipefail
   - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
   # Emit a fresh /tick/<UTC-timestamp> file each run so downstream pipes
   # (srf_loader_rel) see a hash change on every cron tick and re-poll PDR.
-  # Mirrors the /pfs/out/tick pattern that enviroscan_ingest_days uses in prod.
+  # Mirrors the /pfs/out/tick pattern that prt_ingest_days uses in prod.
   - tick_str=$(date -u +%Y-%m-%dT%H:%M:%SZ)
   - mkdir -p /pfs/out/tick
   - echo "$tick_str" > "/pfs/out/tick/$tick_str"
 input:
-  # No dep on enviroscan_ingest_days (that's what makes this the _rel
-  # variant). Still needs SITE_FILE because cron_daily_and_date_control_main
-  # reads site-list.json to enumerate sites. Cross with the cron tick so
-  # any tick fires the pipe.
+  # No dep on prt_ingest_days (that's what makes this the _rel variant).
+  # Still needs SITE_FILE because cron_daily_and_date_control_main reads
+  # site-list.json to enumerate sites. Cross with the cron tick so any
+  # tick fires the pipe.
   cross:
   - cron:
       name: tick
@@ -43,7 +48,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: enviroscan_site_list
+      repo: prt_site_list
       glob: /site-list.json
 resource_requests:
   memory: 500M
@@ -53,7 +58,10 @@ resource_limits:
   cpu: 1.5
 sidecar_resource_requests:
   memory: 500M
-  cpu: 0.5
+  cpu: 0.2
+sidecar_resource_limits:
+  memory: 1G
+  cpu: 1
 autoscaling: true
 scheduling_spec:
   node_selector:

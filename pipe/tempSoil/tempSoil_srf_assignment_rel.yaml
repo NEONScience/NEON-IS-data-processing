@@ -2,7 +2,7 @@
 # _rel variant of tempSoil_srf_assignment.
 # Cross-joins the release-window SRF set (from tempSoil_srf_loader_rel) with
 # the release-window year files (data_year_2016.txt .. data_year_2026.txt)
-# emitted by prt_cron_daily_and_date_control_rel. Output is consumed by
+# emitted by tempSoil_cron_daily_and_date_control_rel. Output is consumed by
 # tempSoil_level1_group_consolidate_srf_rel. Coexists alongside production
 # tempSoil_srf_assignment (which processes Jul 2026 -> present).
 pipeline:
@@ -29,7 +29,7 @@ input:
       glob: /*
   - pfs:
       name: FILE_YEAR
-      repo: prt_cron_daily_and_date_control_rel
+      repo: tempSoil_cron_daily_and_date_control_rel
       glob: /data_year*.txt
 parallelism_spec:
   constant: 4

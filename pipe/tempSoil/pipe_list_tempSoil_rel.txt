@@ -1,3 +1,4 @@
+tempSoil_cron_daily_and_date_control_rel.yaml
 tempSoil_srf_loader_rel.yaml
 tempSoil_srf_assignment_rel.yaml
 tempSoil_level1_group_consolidate_srf_rel.yaml

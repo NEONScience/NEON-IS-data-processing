@@ -190,7 +190,7 @@ input:
   join:
   - pfs:
       name: import_trigger
-      repo: prt_cron_daily_and_date_control_rel
+      repo: tempSoil_cron_daily_and_date_control_rel
       glob: /prt/(*/*/*)
       joinOn: $1
       outer_join: true # Every cron day fires with or without SRFs

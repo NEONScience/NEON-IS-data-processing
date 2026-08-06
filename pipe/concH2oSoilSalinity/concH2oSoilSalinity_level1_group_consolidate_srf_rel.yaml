@@ -158,7 +158,7 @@ input:
   join:
   - pfs:
       name: import_trigger
-      repo: enviroscan_cron_daily_and_date_control_rel
+      repo: concH2oSoilSalinity_cron_daily_and_date_control_rel
       glob: /enviroscan/(*/*/*)
       joinOn: $1
       outer_join: true # Every cron day fires with or without SRFs
