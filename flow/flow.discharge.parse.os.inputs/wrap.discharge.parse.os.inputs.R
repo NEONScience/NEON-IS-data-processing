@@ -34,23 +34,23 @@
 
 #' @examples
 #' Not run
-DirIn <- "/home/nickerson/pfs/testing/2025/10/01/l4discharge_ARIK102100"
-DirOutBase <- "/home/nickerson/pfs/out"
-dirInTables <- "/home/nickerson/pfs/l4discharge_os_table_loader"
-dirList <- list.files(dirInTables,full.names = F)
-tableNameMap <- list()
-for(d in 1:length(dirList)){
-  fileName <- dirList[d]
-  filePath <- list.files(dirInTables,
-                         pattern=fileName,
-                         full.names = T)
-  currFile <- read.csv(filePath,encoding = "UTF-8",header = T)
-  tableNameMap[[gsub("\\.csv$","",
-                     gsub("^.*\\.001\\.","",
-                          fileName))]] <- currFile
-}
-list2env(tableNameMap,envir = .GlobalEnv)
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# DirIn <- "/home/nickerson/pfs/testing/2025/10/01/l4discharge_ARIK102100"
+# DirOutBase <- "/home/nickerson/pfs/out"
+# dirInTables <- "/home/nickerson/pfs/l4discharge_os_table_loader"
+# dirList <- list.files(dirInTables,full.names = F)
+# tableNameMap <- list()
+# for(d in 1:length(dirList)){
+#   fileName <- dirList[d]
+#   filePath <- list.files(dirInTables,
+#                          pattern=fileName,
+#                          full.names = T)
+#   currFile <- read.csv(filePath,encoding = "UTF-8",header = T)
+#   tableNameMap[[gsub("\\.csv$","",
+#                      gsub("^.*\\.001\\.","",
+#                           fileName))]] <- currFile
+# }
+# list2env(tableNameMap,envir = .GlobalEnv)
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # wrap.discharge.parse.os.inputs(
 #   DirIn=DirIn,
 #   csd_constantBiasShift_pub=csd_constantBiasShift_pub,
