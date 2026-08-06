@@ -1,0 +1,155 @@
+---
+# _rel variant of concH2oSoilSalinity_pub_egress_and_publish.
+# Reads from concH2oSoilSalinity_pub_format_and_package_rel and
+# concH2oSoilSalinity_cron_monthly_and_pub_rel. Publishes to the same
+# production pub bucket as the production pub chain - just different date
+# range coverage. Same transform and env as production.
+pipeline:
+  name: concH2oSoilSalinity_pub_egress_and_publish_rel
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v5.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    curl -o $OUT_MDP_SITES https://raw.githubusercontent.com/NEONScience/NEON-IS-data-processing-inputs/refs/heads/main/mdp_sites_list.txt
+
+    # Run first module - pub_egress
+    if [[ $(echo $DATA_PATH) ]]; then
+      python3 -m pub_egress.pub_egress_main
+    fi
+    if ls $OUT_PATH/NEON.DOM.SITE* 1> /dev/null 2>&1; then
+      for DIR in $OUT_PATH/NEON.DOM.SITE*; do
+        echo "Starting non-MDP sites=================="
+        echo "Syncing $DIR to bucket $BUCKET_NAME"
+        [[ "$DIR" =~ ^$OUT_PATH/(.*)$ ]]
+        PRODUCT="${BASH_REMATCH[1]}"
+        echo "PRODUCT is $PRODUCT"
+        rclone \
+          --no-check-dest \
+          --copy-links \
+          --gcs-bucket-policy-only \
+          --gcs-no-check-bucket \
+          copy \
+          "${OUT_PATH}/${PRODUCT}" \
+          ":gcs://${BUCKET_NAME}/${PRODUCT}"
+      done
+      echo "============ Done for non-MDP sites"
+    else
+      echo "No pub output to egress"
+    fi
+
+    if ls $OUT_PATH_MDP/NEON.DOM.SITE* 1> /dev/null 2>&1; then
+      for DIR in $OUT_PATH_MDP/NEON.DOM.SITE*; do
+        echo "="
+        echo "Starting MDP sites=================="
+        [[ "$DIR" =~ ^$OUT_PATH_MDP/(.*)$ ]]
+        PRODUCT="${BASH_REMATCH[1]}"
+        echo "PRODUCT is $PRODUCT"
+        for DIR_SUB in $DIR/MD*; do
+          echo "DIR is $DIR"
+          echo "DIR_SUB is $DIR_SUB"
+          [[ "$DIR_SUB" =~ ^$DIR/(.*)$ ]]
+          SITE="${BASH_REMATCH[1]}"
+          while read -r mdpsite prod staging bucket_name
+           do
+              if [[ $SITE == $mdpsite ]] && [[ $prod == $PROD ]] && [[ $staging == $STAGING ]]; then
+                 BUCKET_NAME_MDP=$bucket_name
+                 echo "$mdpsite products to $bucket_name bucket"
+              else echo "**** No products available for $mdpsite to $bucket_name bucket"
+              fi
+           done < $OUT_MDP_SITES
+        echo "Syncing $SITE products directory $DIR to mdp bucket $BUCKET_NAME_MDP"
+        done
+        rclone \
+          --no-check-dest \
+          --copy-links \
+          --gcs-bucket-policy-only \
+          --gcs-no-check-bucket \
+          copy \
+          "${OUT_PATH_MDP}/${PRODUCT}" \
+          ":gcs://${BUCKET_NAME_MDP}/${PRODUCT}"
+      done
+      echo "============ Done for MDP sites"
+    else
+      echo "No MDP pub output to egress"
+    fi
+
+    # Run second module - pub_upload
+    echo "run pub uploader ..."
+    export DATA_PATH=$OUT_PATH
+    python3 -m pub_uploader.pub_uploader_main
+    # Run third module - pub_sync
+    echo "run pub sync sites ..."
+    python3 -m pub_sync.pub_sync_main
+    EOF
+  env:
+    LOG_LEVEL: INFO
+
+    OUT_PATH: "/pfs/out"
+    OUT_PATH_MDP: "/pfs/out/mdp"
+    OUT_MDP_SITES: "/tmp/mdp_sites.txt"
+    ERR_PATH: /pfs/out/errored_datums
+    STARTING_PATH_INDEX: "2"
+    PROD: "false"
+    STAGING: "true"
+
+    VERSION: 'pachyderm_v1'
+    CHANGE_BY: pachyderm
+
+    DATE_PATH_YEAR_INDEX: "3"
+    DATE_PATH_MONTH_INDEX: "4"
+    DATA_PATH_PRODUCT_INDEX: "3"
+    DATA_PATH_SITE_INDEX: "4"
+    DATA_PATH_DATE_INDEX: "5"
+    DATA_PATH_PACKAGE_INDEX: "6"
+    PRODUCTS: NEON.DOM.SITE.DP1.00094.001
+    SITES: "all"
+
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+  - name: pub-bucket
+    env_var: BUCKET_NAME
+    key: BUCKET_NAME
+  - name: pub-bucket
+    env_var: EGRESS_URL
+    key: EGRESS_URL
+
+input:
+  group:
+  - join:
+    - pfs:
+        name: DATA_PATH
+        repo: concH2oSoilSalinity_pub_format_and_package_rel
+        glob: /*/*/(*/*)
+        joinOn: $1
+        group_by: $1
+    - pfs:
+        name: DATE_PATH
+        repo: concH2oSoilSalinity_cron_monthly_and_pub_rel
+        glob: /(*/*)
+        joinOn: $1
+        outer_join: True
+        group_by: $1
+        empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 1.7
+resource_limits:
+  memory: 2G
+  cpu: 2.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

@@ -1,7 +1,0 @@
-tempSoil_srf_loader.yaml
-tempSoil_srf_assignment.yaml
-tempSoil_level1_group_consolidate_srf_from_gcs.yaml
-tempSoil_cron_monthly_and_pub_control.yaml
-tempSoil_pub_group.yaml
-tempSoil_pub_format_and_package.yaml
-tempSoil_pub_egress_and_publish.yaml

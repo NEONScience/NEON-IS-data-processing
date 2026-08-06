@@ -1,2 +1,0 @@
-prt_ingest_days.yaml
-prt_cron_daily_and_date_control.yaml

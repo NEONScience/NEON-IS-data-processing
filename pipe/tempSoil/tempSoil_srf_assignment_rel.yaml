@@ -1,0 +1,50 @@
+---
+# _rel variant of tempSoil_srf_assignment.
+# Cross-joins the release-window SRF set (from tempSoil_srf_loader_rel) with
+# the release-window year files (data_year_2016.txt .. data_year_2026.txt)
+# emitted by prt_cron_daily_and_date_control_rel. Output is consumed by
+# tempSoil_level1_group_consolidate_srf_rel. Coexists alongside production
+# tempSoil_srf_assignment (which processes Jul 2026 -> present).
+pipeline:
+  name: tempSoil_srf_assignment_rel
+transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
+  - Rscript
+      ./flow.srf.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.2.0
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tempSoil_srf_loader_rel
+      glob: /*
+  - pfs:
+      name: FILE_YEAR
+      repo: prt_cron_daily_and_date_control_rel
+      glob: /data_year*.txt
+parallelism_spec:
+  constant: 4
+autoscaling: true
+resource_requests:
+  memory: 200M
+  cpu: 0.8
+resource_limits:
+  memory: 800M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 1
+datum_set_spec:
+  number: 10
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
