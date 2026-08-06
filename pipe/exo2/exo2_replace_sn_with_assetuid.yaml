@@ -22,15 +22,15 @@ transform:
     LOG_LEVEL: DEBUG
     # LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
-  cross:
+  join:
   - pfs:
       name: MAP_PATH
       repo: exo2_sn_assetuid_mapping_loader
-      glob: /exo2/*
+      glob: /*/*
   - pfs:
       name: DATA_PATH
       repo: exo2_logjam_assign_clean_files
-      glob: /*/*/*/*
+      glob: /*/*/*/*/*
 parallelism_spec:
   constant: 1
 autoscaling: true
