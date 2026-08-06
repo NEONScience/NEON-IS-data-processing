@@ -18,13 +18,6 @@ transform:
       SchmTurb=$SCHEMA_TURB
       SchmFdom=$SCHEMA_FDOM
       SchmChl=$SCHEMA_CHL
-      SchmFlagsExo2=$SCHEMA_FLAGS_EXO2
-      SchmFlagsCond=$SCHEMA_FLAGS_COND
-      SchmFlagsDO=$SCHEMA_FLAGS_DO
-      SchmFlagsPh=$SCHEMA_FLAGS_PH
-      SchmFlagsTurb=$SCHEMA_FLAGS_TURB
-      SchmFlagsFdom=$SCHEMA_FLAGS_FDOM
-      SchmFlagsChl=$SCHEMA_FLAGS_CHL
   env:
     LOG_LEVEL: DEBUG
 input:
@@ -61,34 +54,6 @@ input:
       name: SCHEMA_CHL
       repo: exo2_avro_schemas
       glob: /exototalalgae/exototalalgae_calibrated.avsc
-  - pfs:
-      name: SCHEMA_FLAGS_EXO2
-      repo: exo2_avro_schemas
-      glob: /exo2/flags_logs_exo2.avsc
-  - pfs:
-      name: SCHEMA_FLAGS_COND
-      repo: exo2_avro_schemas
-      glob: /exoconductivity/flags_logs_exoconductivity.avsc
-  - pfs:
-      name: SCHEMA_FLAGS_DO
-      repo: exo2_avro_schemas
-      glob: /exodissolvedoxygen/flags_logs_exodissolvedoxygen.avsc
-  - pfs:
-      name: SCHEMA_FLAGS_PH
-      repo: exo2_avro_schemas
-      glob: /exophorp/flags_logs_exophorp.avsc
-  - pfs:
-      name: SCHEMA_FLAGS_TURB
-      repo: exo2_avro_schemas
-      glob: /exoturbidity/flags_logs_exoturbidity.avsc
-  - pfs:
-      name: SCHEMA_FLAGS_FDOM
-      repo: exo2_avro_schemas
-      glob: /exofdom/flags_logs_exofdom.avsc
-  - pfs:
-      name: SCHEMA_FLAGS_CHL
-      repo: exo2_avro_schemas
-      glob: /exototalalgae/flags_logs_exototalalgae.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

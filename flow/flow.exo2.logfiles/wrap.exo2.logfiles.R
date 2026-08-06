@@ -343,9 +343,9 @@ wrap.exo2.logfiles <- function(FileIn,
         month <- substr(out_file$readout_time[1],6,7)
         day <- substr(out_file$readout_time[1],9,10)
         # Create directory and write out file
-        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNcond,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log_',fname)
+        csv_name <-paste0(current_sensor,'_',SNcond,'_',year,'-',month,'-',day,'_log_',fname)
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmCond),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -359,9 +359,9 @@ wrap.exo2.logfiles <- function(FileIn,
         flags_file$specificCondLogDataQF <- 1
         flags_file$surfaceWaterTempLogDataQF <- 1
         # Create directory and write out flags file
-        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNcond,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
-        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        csv_name_flags <-paste0(current_sensor,'_',SNcond  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
         rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsCond),silent=TRUE)
         if(class(rptOutFlags)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
@@ -393,9 +393,9 @@ wrap.exo2.logfiles <- function(FileIn,
         month <- substr(out_file$readout_time[1],6,7)
         day <- substr(out_file$readout_time[1],9,10)
         # Create directory and write out file
-        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdo,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log_',fname)
+        csv_name <-paste0(current_sensor,'_',SNdo,'_',year,'-',month,'-',day,'_log_',fname)
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmDO),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -411,9 +411,9 @@ wrap.exo2.logfiles <- function(FileIn,
         flags_file$seaLevelDOSatLogDataQF <- 1
         flags_file$localDOSatLogDataQF <- 1
         # Create directory and write out flags file
-        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdo,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
-        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        csv_name_flags <-paste0(current_sensor,'_',SNdo  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
         rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsDO),silent=TRUE)
         if(class(rptOutFlags)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
@@ -444,9 +444,9 @@ wrap.exo2.logfiles <- function(FileIn,
         month <- substr(out_file$readout_time[1],6,7)
         day <- substr(out_file$readout_time[1],9,10)
         # Create directory and write out file
-        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNph,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log_',fname)
+        csv_name <-paste0(current_sensor,'_',SNph,'_',year,'-',month,'-',day,'_log_',fname)
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmPh),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -459,9 +459,9 @@ wrap.exo2.logfiles <- function(FileIn,
         flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$pHLogDataQF <- 1
         # Create directory and write out flags file
-        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNph,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
-        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        csv_name_flags <-paste0(current_sensor,'_',SNph  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
         rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsPh),silent=TRUE)
         if(class(rptOutFlags)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
@@ -490,9 +490,9 @@ wrap.exo2.logfiles <- function(FileIn,
         month <- substr(out_file$readout_time[1],6,7)
         day <- substr(out_file$readout_time[1],9,10)
         # Create directory and write out file
-        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNturb,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log_',fname)
+        csv_name <-paste0(current_sensor,'_',SNturb,'_',year,'-',month,'-',day,'_log_',fname)
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmTurb),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -505,9 +505,9 @@ wrap.exo2.logfiles <- function(FileIn,
         flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$turbidityLogDataQF <- 1
         # Create directory and write out flags file
-        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNturb,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
-        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        csv_name_flags <-paste0(current_sensor,'_',SNturb  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
         rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsTurb),silent=TRUE)
         if(class(rptOutFlags)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
@@ -536,9 +536,9 @@ wrap.exo2.logfiles <- function(FileIn,
         month <- substr(out_file$readout_time[1],6,7)
         day <- substr(out_file$readout_time[1],9,10)
         # Create directory and write out file
-        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNfdom,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log_',fname)
+        csv_name <-paste0(current_sensor,'_',SNfdom,'_',year,'-',month,'-',day,'_log_',fname)
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmFdom),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -551,9 +551,9 @@ wrap.exo2.logfiles <- function(FileIn,
         flags_file <- flags_file[, "readout_time", drop = FALSE]
         flags_file$fdomLogDataQF <- 1
         # Create directory and write out flags file
-        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNfdom,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
-        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        csv_name_flags <-paste0(current_sensor,'_',SNfdom  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
         rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsFdom),silent=TRUE)
         if(class(rptOutFlags)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
@@ -587,9 +587,9 @@ wrap.exo2.logfiles <- function(FileIn,
         month <- substr(out_file$readout_time[1],6,7)
         day <- substr(out_file$readout_time[1],9,10)
         # Create directory and write out file
-        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/data/')
+        DirOut <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNchl,'/data/')
         base::dir.create(DirOut,recursive=TRUE)
-        csv_name <-paste0(current_sensor,'_',SNdepth,'_',year,'-',month,'-',day,'_log_',fname)
+        csv_name <-paste0(current_sensor,'_',SNchl,'_',year,'-',month,'-',day,'_log_',fname)
         rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file, NameFile = base::paste0(DirOut,csv_name,".parquet"),Schm = SchmChl),silent=TRUE)
         if(class(rptOut)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Data to ',base::paste0(DirOut,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -603,9 +603,9 @@ wrap.exo2.logfiles <- function(FileIn,
         flags_file$chlorophyllLogDataQF <- 1
         flags_file$chlaRelativeFluorLogDataQF <- 1
         # Create directory and write out flags file
-        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNdepth,'/flags/')
+        DirOutFlags <- paste0(DirOutBase,'/',current_sensor,'/',year,'/',month,'/',day,'/',SNchl,'/flags/')
         base::dir.create(DirOutFlags,recursive=TRUE)
-        csv_name_flags <-paste0(current_sensor,'_',SNdepth  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
+        csv_name_flags <-paste0(current_sensor,'_',SNchl  ,'_',year,'-',month,'-',day,'_log_flags_',fname)
         rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flags_file, NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),Schm = SchmFlagsChl),silent=TRUE)
         if(class(rptOutFlags)[1] == 'try-error'){
           log$error(base::paste0('Cannot write Flags Data to ',base::paste0(DirOutFlags,csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))
