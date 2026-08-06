@@ -24,11 +24,11 @@ input:
   - pfs:
       name: MAP_PATH
       repo: exo2_sn_assetuid_mapping_loader
-      glob: /*/*
+      glob: /exo2/*
   - pfs:
       name: DATA_PATH
       repo: exo2_logjam_assign_clean_files
-      glob: /*/(*/*/*)
+      glob: /*/*/*/*
 parallelism_spec:
   constant: 1
 autoscaling: true
