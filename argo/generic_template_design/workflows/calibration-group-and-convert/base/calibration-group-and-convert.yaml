@@ -123,6 +123,10 @@ spec:
                   configMapKeyRef:
                     name: "{{inputs.parameters.config-map-schemas-name}}"
                     key: schema-repo-sci-revision      
+      outputs:
+        artifacts:
+          - name: errored-manifest
+            from: "{{steps.resolve-inputs-and-run.outputs.artifacts.errored-manifest}}"
       
     - name: resolve-inputs-and-run
       inputs:
@@ -246,7 +250,8 @@ spec:
               runAsGroup: 1001
             command: ["/bin/bash"]
             args: ["/scripts-upload-output/upload-output-instructions.sh"]
-            outputs:
-              artifacts:
-                - name: errored-manifest
-                  path: "{{inputs.parameters.errored-manifest}}"
+
+      outputs:
+        artifacts:
+          - name: errored-manifest
+            path: "{{inputs.parameters.errored-manifest}}"
