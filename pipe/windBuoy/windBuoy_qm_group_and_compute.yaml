@@ -28,10 +28,10 @@ transform:
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       FileSchmQm=$FILE_SCHEMA_QM \
-      "GrpQfAlph1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedRangeQF|buoyWindSpeedPersistenceQF" \
-      "GrpQfBeta1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedPersistenceQF|buoyWindSpeedRangeQF"  \
-      "GrpQfAlph2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyWindDirPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF" \
-      "GrpQfBeta2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyWindDirPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF"
+      "GrpQfAlph1=speed:speedNullQF|speedGapQF|speedRangeQF|speedPersistenceQF" \
+      "GrpQfBeta1=speed:speedNullQF|speedGapQF|speedRangeQF|speedPersistenceQF"  \
+      "GrpQfAlph2=direction:directionNullQF|directionGapQF|directionRangeQF|directionPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF|buoyWindDirCalmWindQF" \
+      "GrpQfBeta2=direction:directionNullQF|directionGapQF|directionRangeQF|directionPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF|buoyWindDirCalmWindQF"
     EOF
   env:
     # Environment variables for filter-joiner
