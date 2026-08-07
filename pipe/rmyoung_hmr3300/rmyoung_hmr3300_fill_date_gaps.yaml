@@ -102,7 +102,7 @@ input:
   - pfs:
       name: SCHEMA_DATA_HMR3300
       repo: rmyoung_hmr3300_avro_schemas
-      glob: /hmr3300/hmr3300_l0.avsc
+      glob: /hmr3300/hmr3300_calibrated.avsc
   - group:
     - pfs:
         name: DATA_PATH
