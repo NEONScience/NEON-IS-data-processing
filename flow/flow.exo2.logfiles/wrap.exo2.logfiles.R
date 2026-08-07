@@ -288,7 +288,7 @@ wrap.exo2.logfiles <- function(FileIn,
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){
         #create DF
-        out_file <- as.data.frame(all_days[j])
+        out_file <- as.data.frame(all_days[[j]])
         colnames(out_file) <- names(currentTable)
         year <- substr(out_file$readout_time[1],1,4)
         month <- substr(out_file$readout_time[1],6,7)
@@ -337,7 +337,7 @@ wrap.exo2.logfiles <- function(FileIn,
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){
         #create DF
-        out_file <- as.data.frame(all_days[j])
+        out_file <- as.data.frame(all_days[[j]])
         colnames(out_file) <- names(currentTable)
         year <- substr(out_file$readout_time[1],1,4)
         month <- substr(out_file$readout_time[1],6,7)
@@ -387,7 +387,7 @@ wrap.exo2.logfiles <- function(FileIn,
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){
         #create DF
-        out_file <- as.data.frame(all_days[j])
+        out_file <- as.data.frame(all_days[[j]])
         colnames(out_file) <- names(currentTable)
         year <- substr(out_file$readout_time[1],1,4)
         month <- substr(out_file$readout_time[1],6,7)
@@ -438,7 +438,7 @@ wrap.exo2.logfiles <- function(FileIn,
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){
         #create DF
-        out_file <- as.data.frame(all_days[j])
+        out_file <- as.data.frame(all_days[[j]])
         colnames(out_file) <- names(currentTable)
         year <- substr(out_file$readout_time[1],1,4)
         month <- substr(out_file$readout_time[1],6,7)
@@ -484,7 +484,7 @@ wrap.exo2.logfiles <- function(FileIn,
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){
         #create DF
-        out_file <- as.data.frame(all_days[j])
+        out_file <- as.data.frame(all_days[[j]])
         colnames(out_file) <- names(currentTable)
         year <- substr(out_file$readout_time[1],1,4)
         month <- substr(out_file$readout_time[1],6,7)
@@ -530,7 +530,7 @@ wrap.exo2.logfiles <- function(FileIn,
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){
         #create DF
-        out_file <- as.data.frame(all_days[j])
+        out_file <- as.data.frame(all_days[[j]])
         colnames(out_file) <- names(currentTable)
         year <- substr(out_file$readout_time[1],1,4)
         month <- substr(out_file$readout_time[1],6,7)
@@ -581,7 +581,7 @@ wrap.exo2.logfiles <- function(FileIn,
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){
         #create DF
-        out_file <- as.data.frame(all_days[j])
+        out_file <- as.data.frame(all_days[[j]])
         colnames(out_file) <- names(currentTable)
         year <- substr(out_file$readout_time[1],1,4)
         month <- substr(out_file$readout_time[1],6,7)
