@@ -60,7 +60,7 @@ input:
   - pfs:
       name: SCHEMA_DATA
       repo: windBuoy_avro_schemas
-      glob: /windBuoy/windBuoy_analyzed.avsc
+      glob: /windBuoy/windBuoy_compass_corrected.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

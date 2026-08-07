@@ -112,7 +112,7 @@ input:
   - pfs:
       name: SCHEMA_L0_HMR3300
       repo: rmyoung_hmr3300_avro_schemas
-      glob: /hmr3300/hmr3300_l0.avsc
+      glob: /hmr3300/hmr3300_calibrated.avsc
   - join:
     - pfs:
         name: CALIBRATION_PATH
