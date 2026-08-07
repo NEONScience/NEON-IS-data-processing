@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_logjam_load_clean_assign
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-8b4154c
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-ad43248
   cmd:
   - sh
   - "-c"
@@ -27,7 +27,7 @@ transform:
     
     EOF
   env:
-    # Environment variables for logjam loader
+    # Environment variables for logjam loader 
     LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
     OUT_PATH: /tmp/pfs/interim
     LOG_LEVEL: DEBUG
