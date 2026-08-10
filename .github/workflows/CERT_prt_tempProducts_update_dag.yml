@@ -7,7 +7,7 @@ on:
       - 'pipe/prt/*.yaml'
       - 'pipe/prt/pipe_list_prt.txt'
       - 'pipe/tempSoil/*.yaml'
-      - 'pipe/tempSoil/pipe_list_tempSoil.txt'
+      - 'pipe/tempSoil/pipe_list_tempSoil_gcs.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
