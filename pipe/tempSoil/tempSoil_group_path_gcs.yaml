@@ -1,14 +1,4 @@
 ---
-# SKETCH — copy of tempSoil_group_path.yaml refactored to use a bash heredoc
-# (so an rclone block can be appended) and with a GCS export at the end.
-# When deployed alongside the year's processing run, mirrors ONLY the group/
-# and location/ subtrees to GCS for post-teardown SRF re-apply.
-#
-# Why filtered: group_path is a hub module. Its /pfs/out contains group/,
-# location/, data/, flags/, uncertainty_data/, uncertainty_coef/ subdirs —
-# most of that is raw data passed through for the qm/stats pipes to consume.
-# Level1 only reads group/ and location/ from group_path, so we skip the rest
-# to avoid duplicating raw data (qm/stats outputs are mirrored separately).
 #
 # Writes to the same bucket as level1 pub output (l1-bucket → BUCKET_NAME) under
 # a pre-l1/<pipeline_name>/ prefix alongside the v2/ pub prefix.

@@ -1,9 +1,4 @@
 ---
-# SKETCH — copy of tempSoil_stats_group_and_compute.yaml with a GCS export appended.
-# When deployed alongside the year's processing run, this mirrors per-day per-group
-# stats output to GCS so the level1 reapply pipe can hydrate it later after the
-# upstream chain is torn down.
-#
 # Writes to the same bucket as level1 pub output (l1-bucket → BUCKET_NAME) under a
 # pre-l1/<pipeline_name>/ prefix alongside the v2/ pub prefix.
 #
