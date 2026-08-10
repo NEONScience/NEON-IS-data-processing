@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: exo2_regularize
+  name: exo2_regularize_log_data
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.2.2
   cmd: ["/bin/bash"]
