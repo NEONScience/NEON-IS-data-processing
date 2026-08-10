@@ -87,6 +87,7 @@ data:
   ERRORED_MANIFEST: /tmp/errored-manifest.json
 
   # Resource requests/limits for processing step
+  chunk_count: "10" # How many sensors should be calibrated per pod (used in calibrate-sensor-data caller)
   processing_memory_request: "900Mi"
   processing_memory_limit: "1.5Gi"
   processing_cpu_request: "2.2"
