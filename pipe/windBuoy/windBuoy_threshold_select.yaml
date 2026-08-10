@@ -19,8 +19,8 @@ transform:
       DirErr=/pfs/out/errored_datums \
       FileThsh=$FILE_THRESHOLDS \
       "TermCtxt1=vectorAverageHeading|buoy-wind" \
-      "TermCtxt2=windSpeedMean|buoy-wind" \
-      "TermCtxt3=windDirMean|buoy-wind" \
+      "TermCtxt2=speed|buoy-wind" \
+      "TermCtxt3=direction|buoy-wind" \
       "DirSubCopy=location|data"
 
     # Note: Not running timeseries_padder module here because we need to do compass corrections first.
