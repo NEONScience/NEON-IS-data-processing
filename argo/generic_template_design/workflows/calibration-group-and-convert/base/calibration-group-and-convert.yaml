@@ -15,113 +15,113 @@ spec:
 
   arguments:
     parameters:
-      - name: datum-manifest
+      - name: input-manifest
         value: |
           [{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "11184", "file_name":"10000000000098_WO83151_397977.xml"},{"source_type": "cmp22", "data_date": "2026-02-20", "source_id": "47913", "file_name":"10000000000098_WO83151_397977.xml"}]
       #    [{"source_type": "aepg600m", "data_date": "2026-05-03","source_id": "16768"},{"source_type": "aepg600m", "data_date": "2026-05-01"}]
-      - name: config-map-schemas-name
+      - name: configmap-schemas
         value: schemas-config
-      - name: config-map-env-name
-      #  value: cmp22-calibration-group-convert-env-config
+      - name: configmap-parameters
+        value: cmp22-calibration-group-convert-config
 
   templates:
     # Entrypoint: thin steps template so this can be called from another WorkflowTemplate
-    # with only datum-manifest, config-map-env-name and config-map-schemas-name.
+    # with only input-manifest, configmap-parameters and configmap-schemas.
     # (Argo cannot resolve a configMapKeyRef name/key using a sibling
     # inputs.parameters value, so the configmap lookups are done in the steps arguments 
     # and passed to the resolve-inputs-and-run template as plain args.)
     - name: run
       inputs: 
         parameters: 
-         - name: datum-manifest
-         - name: config-map-schemas-name
-         - name: config-map-env-name
+         - name: input-manifest
+         - name: configmap-schemas
+         - name: configmap-parameters
       steps: 
         - - name: resolve-inputs-and-run
             template: resolve-inputs-and-run
             arguments:
               parameters:      
-              - name: datum-manifest
-                value: "{{inputs.parameters.datum-manifest}}"
-              - name: config-map-schemas-name
-                value: "{{inputs.parameters.config-map-schemas-name}}"
-              - name: config-map-env-name
-                value: "{{inputs.parameters.config-map-env-name}}"
+              - name: input-manifest
+                value: "{{inputs.parameters.input-manifest}}"
+              - name: configmap-schemas
+                value: "{{inputs.parameters.configmap-schemas}}"
+              - name: configmap-parameters
+                value: "{{inputs.parameters.configmap-parameters}}"
               - name: cpu-request
                 valueFrom:
                   configMapKeyRef:
                     # Previously all these were workflow.parameters...
-                    name: "{{inputs.parameters.config-map-env-name}}"
+                    name: "{{inputs.parameters.configmap-parameters}}"
                     key: processing_cpu_request
               - name: cpu-limit
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
+                    name: "{{inputs.parameters.configmap-parameters}}"
                     key: processing_cpu_limit
               - name: memory-request
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
+                    name: "{{inputs.parameters.configmap-parameters}}"
                     key: processing_memory_request
               - name: memory-limit
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
+                    name: "{{inputs.parameters.configmap-parameters}}"
                     key: processing_memory_limit
               - name: load-data-image
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
+                    name: "{{inputs.parameters.configmap-parameters}}"
                     key: load-data-image
-              - name: config-map-load-data-instructions-name
+              - name: configmap-load-data-instructions
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
-                    key: config-map-load-data-instructions-name
+                    name: "{{inputs.parameters.configmap-parameters}}"
+                    key: configmap-load-data-instructions
               - name: processing-image
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
+                    name: "{{inputs.parameters.configmap-parameters}}"
                     key: processing-image
-              - name: config-map-processing-instructions-name
+              - name: configmap-processing-instructions
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
-                    key: config-map-processing-instructions-name
+                    name: "{{inputs.parameters.configmap-parameters}}"
+                    key: configmap-processing-instructions
               - name: upload-output-image
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
+                    name: "{{inputs.parameters.configmap-parameters}}"
                     key: upload-output-image
               - name: errored-manifest
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
+                    name: "{{inputs.parameters.configmap-parameters}}"
                     key: ERRORED_MANIFEST
-              - name: config-map-upload-output-instructions-name
+              - name: configmap-upload-output-instructions
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-env-name}}"
-                    key: config-map-upload-output-instructions-name
+                    name: "{{inputs.parameters.configmap-parameters}}"
+                    key: configmap-upload-output-instructions
               - name: schema-repo-eng-url
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-schemas-name}}"
+                    name: "{{inputs.parameters.configmap-schemas}}"
                     key: schema-repo-eng-url
               - name: schema-repo-eng-revision
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-schemas-name}}"
+                    name: "{{inputs.parameters.configmap-schemas}}"
                     key: schema-repo-eng-revision
               - name: schema-repo-sci-url
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-schemas-name}}"
+                    name: "{{inputs.parameters.configmap-schemas}}"
                     key: schema-repo-sci-url
               - name: schema-repo-sci-revision
                 valueFrom:
                   configMapKeyRef:
-                    name: "{{inputs.parameters.config-map-schemas-name}}"
+                    name: "{{inputs.parameters.configmap-schemas}}"
                     key: schema-repo-sci-revision      
       outputs:
         artifacts:
@@ -131,20 +131,20 @@ spec:
     - name: resolve-inputs-and-run
       inputs:
         parameters:      
-        - name: datum-manifest
-        - name: config-map-env-name
-        - name: config-map-schemas-name
+        - name: input-manifest
+        - name: configmap-parameters
+        - name: configmap-schemas
         - name: cpu-request
         - name: cpu-limit
         - name: memory-request
         - name: memory-limit
         - name: load-data-image
-        - name: config-map-load-data-instructions-name
+        - name: configmap-load-data-instructions
         - name: processing-image
-        - name: config-map-processing-instructions-name
+        - name: configmap-processing-instructions
         - name: upload-output-image
         - name: errored-manifest
-        - name: config-map-upload-output-instructions-name
+        - name: configmap-upload-output-instructions
         - name: schema-repo-eng-url
         - name: schema-repo-eng-revision
         - name: schema-repo-sci-url
@@ -181,13 +181,13 @@ spec:
       volumes:
         - name: config-load-data-vol
           configMap:
-            name: "{{inputs.parameters.config-map-load-data-instructions-name}}"
+            name: "{{inputs.parameters.configmap-load-data-instructions}}"
         - name: config-processing-vol
           configMap:
-            name: "{{inputs.parameters.config-map-processing-instructions-name}}"
+            name: "{{inputs.parameters.configmap-processing-instructions}}"
         - name: config-upload-output-vol
           configMap:
-            name: "{{inputs.parameters.config-map-upload-output-instructions-name}}"
+            name: "{{inputs.parameters.configmap-upload-output-instructions}}"
         - name: data-vol
           emptyDir: { }
         - name: tmp-vol
@@ -211,10 +211,10 @@ spec:
             image: "{{inputs.parameters.load-data-image}}"
             env:
               - name: MANIFEST
-                value: "{{inputs.parameters.datum-manifest}}"
+                value: "{{inputs.parameters.input-manifest}}"
             envFrom:
               - configMapRef:
-                  name: "{{inputs.parameters.config-map-env-name}}"
+                  name: "{{inputs.parameters.configmap-parameters}}"
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
@@ -227,10 +227,10 @@ spec:
             image: "{{inputs.parameters.processing-image}}"
             env:
               - name: MANIFEST
-                value: "{{inputs.parameters.datum-manifest}}"
+                value: "{{inputs.parameters.input-manifest}}"
             envFrom:
               - configMapRef:
-                  name: "{{inputs.parameters.config-map-env-name}}"
+                  name: "{{inputs.parameters.configmap-parameters}}"
             command: ["/bin/bash"]
             args: ["/scripts/processing-instructions.sh"]
             securityContext:
@@ -244,7 +244,7 @@ spec:
             image: "{{inputs.parameters.upload-output-image}}"
             envFrom:
               - configMapRef:
-                  name: "{{inputs.parameters.config-map-env-name}}"
+                  name: "{{inputs.parameters.configmap-parameters}}"
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001

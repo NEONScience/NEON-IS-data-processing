@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: aepg600m-heated-calibration-group-convert-env-config
+  name: aepg600m-calibration-group-convert-config
   labels:
     workflows.argoproj.io/configmap-type: Parameter
 data:
@@ -9,29 +9,28 @@ data:
   LOG_LEVEL: DEBUG
   ERR_PATH: /data/errored_datums
 
-
   ######################## LOAD DATA ########################
 
   # Image and script for loading data
   load-data-image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v2.0.0
-  config-map-load-data-instructions-name: calibration-group-convert-load-data-instructions-config
+  configmap-load-data-instructions: calibration-group-convert-load-data-instructions-config
   
   # Environment vars for loading data
   L0_BUCKET_NAME: neon-dev-l0-ingest
   L0_BUCKET_VERSION_PATH: v2 # L0 loader has a known path structure. No path indices required
-  OUT_PATH: /data/DATA_PATH_ARCHIVE # Output path for L0 data
+  OUT_PATH: /data/DATA_PATH_ARCHIVE
   CAL_BUCKET_NAME: neon-dev-argo-workflow-test # Temporary until structured cal bucket is set up
-  CAL_BUCKET_PREFIX: calibration # Temporary until structured cal bucket is set up
-  OUT_PATH_CAL: /data/CALIBRATION_PATH
+  CAL_BUCKET_PREFIX: calibration/files # Temporary until structured cal bucket is set up
+  OUT_PATH_CAL: /data/calibration
   OUT_PATH_SOURCE_TYPE_INDEX: "0" # output path index for source-type for calibration files, after OUT_PATH_CAL. Index is 0-based (0 is first path after OUT_PATH_CAL)
   OUT_PATH_SOURCE_ID_INDEX: "1"
   
- ######################## PROCESSING ########################
+  ######################## PROCESSING ########################
 
   # Image and script for processing data
   processing-image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-6ec7460
-  config-map-processing-instructions-name: calibration-group-convert-processing-instructions-config
-
+  configmap-processing-instructions: calibration-group-convert-processing-instructions-config
+  
   # Arguments for calibration assignment
   # Note: Env vars $CAL_ASGN_DATE_BEGIN and $CAL_ASGN_DATE_END and dynamically assigned based on the manifest dates
   #   See processing-instructions.sh
@@ -41,42 +40,42 @@ data:
     "DirErr=$ERR_PATH"
     "DateBgn=$CAL_ASGN_DATE_BEGIN"
     "DateEnd=$CAL_ASGN_DATE_END"
-    
+  
   # Filter-joiner configuration for merging data and calibrations
   CONFIG: |
     ---
     input_paths:
     - path:
         name: DATA_PATH_ARCHIVE
-        glob_pattern: /data/DATA_PATH_ARCHIVE/aepg600m_heated/*/*/*/*/**
+        glob_pattern: /data/DATA_PATH_ARCHIVE/aepg600m/*/*/*/*/**
         join_indices: [7]
         outer_join: true
     - path:
         name: CALIBRATION_PATH
-        glob_pattern: /data/CALIBRATION_PATH/aepg600m_heated/*/*/*/*/**
+        glob_pattern: /data/CALIBRATION_PATH/aepg600m/*/*/*/*/**
         join_indices: [7]
         outer_join: true
   OUT_PATH_JOINER: /data/data_cal_joined
   RELATIVE_PATH_INDEX: "3"
   LINK_TYPE: SYMLINK
-  PARALLELISM_INTERNAL: "2"
+  PARALLELISM_INTERNAL: "1"
 
-  # Arguments for kafka combine step
+  # R arguments for kafka combine step
   OUT_PATH_KAFKA_COMB: /data/kafka_combined
   KFKA_COMB_R_ARGS: >-
     "DirIn=$OUT_PATH_JOINER"
     "DirOut=$OUT_PATH_KAFKA_COMB"
     "DirErr=$ERR_PATH"
-    "FileSchmL0=/data/schemas-eng/schemas/aepg600m/aepg600m_heated.avsc"
+    "FileSchmL0=/data/schemas-eng/schemas/aepg600m/aepg600m.avsc"
     "DirSubCopy=calibration"
 
-  # Arguments for calibration conversion step
-  OUT_PATH_CAL_CONV: /data/aepg600m_heated_calibration_group_and_convert
+  # R arguments for calibration conversion step
+  OUT_PATH_CAL_CONV: /data/aepg600m_calibration_group_and_convert
   CAL_CONV_R_ARGS: >-
     "DirIn=$OUT_PATH_KAFKA_COMB"
     "DirOut=$OUT_PATH_CAL_CONV"
     "DirErr=$ERR_PATH"
-    "FileSchmData=/data/schemas-sci/avro_schemas/aepg600m/aepg600m_heated_calibrated.avsc"
+    "FileSchmData=/data/schemas-sci/avro_schemas/aepg600m/aepg600m_calibrated.avsc"
     "FileSchmQf=/data/schemas-sci/avro_schemas/aepg600m/flags_calibration_aepg600m.avsc"
     "ConvFuncTerm1=def.cal.conv.poly.aepg600m:strain_gauge1_frequency_raw"
     "ConvFuncTerm2=def.cal.conv.poly.aepg600m:strain_gauge2_frequency_raw"
@@ -87,18 +86,18 @@ data:
   ERRORED_MANIFEST: /tmp/errored-manifest.json
 
   # Resource requests/limits for processing step
-  processing_memory_request: "900Mi"
-  processing_memory_limit: "1.5Gi"
-  processing_cpu_request: "2.2"
-  processing_cpu_limit: "3"
+  processing_memory_request: "500Mi"
+  processing_memory_limit: "800Mi"
+  processing_cpu_request: "1"
+  processing_cpu_limit: "1.25"
 
   ###################### UPLOAD OUTPUT #########################
 
   # Image and script for uploading output
   upload-output-image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v2.0.0
-  config-map-upload-output-instructions-name: calibration-group-convert-upload-output-instructions-config
+  configmap-upload-output-instructions: calibration-group-convert-upload-output-instructions-config
 
   # Environment vars for data upload
-  OUT_PATH_DATA_UPLOAD: /data/aepg600m_heated_calibration_group_and_convert
+  OUT_PATH_DATA_UPLOAD: /data/aepg600m_calibration_group_and_convert
   OUTPUT_BUCKET_NAME: neon-dev-argo-workflow-test
-  OUTPUT_BUCKET_PREFIX: aepg600m_heated_calibration_group_and_convert
+  OUTPUT_BUCKET_PREFIX: calibrated_data/aepg600m
