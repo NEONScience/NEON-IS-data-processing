@@ -9,7 +9,7 @@
 pipeline:
   name: tempSoil_stats_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:sha-be3206c
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.8
   cmd:
   - sh
   - "-c"
