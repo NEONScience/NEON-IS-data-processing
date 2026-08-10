@@ -32,8 +32,8 @@ transform:
       DirIn=/tmp/pfs/padded_analyzerCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "TermTest1=windSpeedMean:null|gap|range|persistence" \
-      "TermTest2=windDirMean:null|gap|range|persistence" \
+      "TermTest1=speed:null|gap|range|persistence" \
+      "TermTest2=direction:null|gap|range|persistence" \
       "TermTest3=vectorAverageHeading:null|gap|range|persistence" \
       "DirSubCopy=location|flags" \
       "FileSchmData=$SCHEMA_DATA" \
