@@ -169,6 +169,17 @@ spec:
       
       podSpecPatch: |
         containers:
+        # THe processing container needs the most resources, so set the highest request here. 
+        # The resources will be available in the pod, so the load-data and main containers can 
+        # make small requests but have high limits.
+          - name: load-data
+            resources:
+              requests:
+                cpu: 0.1
+                memory: 1Mi
+              limits:
+                cpu: "{{inputs.parameters.cpu-limit}}"
+                memory: "{{inputs.parameters.memory-limit}}"        
           - name: processing
             resources:
               requests:
@@ -177,7 +188,14 @@ spec:
               limits:
                 cpu: "{{inputs.parameters.cpu-limit}}"
                 memory: "{{inputs.parameters.memory-limit}}"
-
+          - name: main
+            resources:
+              requests:
+                cpu: 0.1
+                memory: 1Mi
+              limits:
+                cpu: "{{inputs.parameters.cpu-limit}}"
+                memory: "{{inputs.parameters.memory-limit}}"    
       volumes:
         - name: config-load-data-vol
           configMap:
