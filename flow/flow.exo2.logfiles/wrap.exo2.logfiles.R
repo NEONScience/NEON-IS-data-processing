@@ -326,7 +326,7 @@ wrap.exo2.logfiles <- function(FileIn,
     }#End sensor loop
     
     # Loop for conductance
-    current_sensor<-"exo2conductance"
+    current_sensor<-"exo2conductivity"
     if(!is.na(SNcond)){
       condTable<-dataTable[,names(dataTable) %in% c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature")]
       if(!"conductance" %in% names(condTable)){condTable$conductance <- NA}
