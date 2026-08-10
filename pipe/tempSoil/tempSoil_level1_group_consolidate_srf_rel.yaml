@@ -1,7 +1,6 @@
 ---
 # Release-window L1 consolidate for tempSoil (_rel).
 # Coexists alongside production tempSoil_level1_group_consolidate_srf.
-# Processes the 2016-01-01 -> 2026-06-30 window; production handles Jul 2026 -> present.
 #
 # Reads pre-L1 inputs (qm, stats, group_path) from GCS - the L1 bucket under the
 # pre-l1/ prefix, populated by the earlier "first pass on PROD" runs

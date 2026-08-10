@@ -1,7 +1,6 @@
 ---
 # Release-window L1 consolidate for concH2oSoilSalinity (_rel).
 # Coexists alongside production concH2oSoilSalinity_level1_group_consolidate_srf.
-# Processes the 2016-01-01 -> 2026-06-30 window; production handles Jul 2026 -> present.
 #
 # Reads pre-L1 input (group_split) from GCS - the L1 bucket under the pre-l1/
 # prefix, populated by the earlier "first pass on PROD" run

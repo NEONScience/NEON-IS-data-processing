@@ -1,10 +1,10 @@
 ---
 # _rel variant of tempSoil_srf_assignment.
 # Cross-joins the release-window SRF set (from tempSoil_srf_loader_rel) with
-# the release-window year files (data_year_2016.txt .. data_year_2026.txt)
+# the release-window year files 
 # emitted by tempSoil_cron_daily_and_date_control_rel. Output is consumed by
 # tempSoil_level1_group_consolidate_srf_rel. Coexists alongside production
-# tempSoil_srf_assignment (which processes Jul 2026 -> present).
+# tempSoil_srf_assignment 
 pipeline:
   name: tempSoil_srf_assignment_rel
 transform:

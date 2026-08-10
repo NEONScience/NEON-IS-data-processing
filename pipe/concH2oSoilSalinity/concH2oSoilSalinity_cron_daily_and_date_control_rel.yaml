@@ -5,10 +5,9 @@
 # "enviroscan" because that's still the sensor source type the L1 chain looks
 # for under /pfs/import_trigger/enviroscan/...
 #
-# Enumerates the full release-window date range (2016-01-01 -> 2026-06-30) for
+# Enumerates the full release-window date range for
 # the release-window mini pipeline that pulls pre-L1 data from GCS and produces
-# L1 output for the concH2oSoilSalinity data release (July 2025 - June 2026
-# provisional data, plus historic-data SRF flagging back to 2016).
+# L1 output for the concH2oSoilSalinity data release
 #
 # Independent of enviroscan_ingest_days: driven by a plain daily cron because
 # the release chain reads pre-L1 from GCS, not raw ingest. Production and _rel
@@ -19,8 +18,6 @@ transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   cmd: ["/bin/bash"]
   env:
-    # Dev demo: narrowed to June 2026 (all of June is in the dev pre-l1 GCS bucket).
-    # For the real release-window run, widen to START_DATE: "2016-01-01".
     OUT_PATH: /pfs/out
     START_DATE: "2026-06-01"
     END_DATE: "2026-06-30"

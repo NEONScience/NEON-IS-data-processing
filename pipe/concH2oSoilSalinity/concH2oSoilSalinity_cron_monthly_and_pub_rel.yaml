@@ -1,8 +1,8 @@
 ---
 # _rel variant of concH2oSoilSalinity_cron_monthly_and_pub_control.
-# Enumerates months across the full release window (2016-01 -> 2026-06) so the
+# Enumerates months across the full release window so the
 # _rel pub chain re-publishes month-by-month for the whole release. Coexists
-# alongside production which only covers Jul 2026 -> present.
+# alongside production which will only cover Jul 202N -> present.
 pipeline:
   name: concH2oSoilSalinity_cron_monthly_and_pub_rel
 transform:
