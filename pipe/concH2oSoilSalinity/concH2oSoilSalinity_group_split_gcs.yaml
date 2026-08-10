@@ -1,0 +1,114 @@
+---
+# In the conch DAG, `group_split` is the ONE pipeline whose output feeds
+# concH2oSoilSalinity_level1_group_consolidate_srf's STATISTICS_PATH input.
+# Its output already contains the per-depth stats + quality_metrics + location
+# JSONs the level1 pipe needs. Exporting this repo to GCS is sufficient for the
+# level1 reapply pipe to hydrate everything after the upstream chain is torn down.
+#
+# Writes to the same bucket as level1 pub output (l1-bucket → BUCKET_NAME) under
+# a pre-l1/<pipeline_name>/ prefix alongside the v2/ pub prefix.
+#
+# Layout produced on GCS:
+#   gs://${BUCKET_NAME}/pre-l1/concH2oSoilSalinity_group_split/YYYY/MM/DD/conc-h2o-soil-salinity-split_XXX/**
+#
+# Only difference from production file: trailing rclone block + l1-bucket secret.
+pipeline:
+  name: concH2oSoilSalinity_group_split
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-split-conc-h2o-salinity:sha-be3206c
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    echo "=== Starting pipeline ==="
+    rm -rf /tmp/pfs/group_path_out
+    rm -rf /tmp/pfs/group_path_outCopy
+    mkdir -p /tmp/pfs/group_path_out
+
+    echo "=== Running group_path ==="
+    export OUT_PATH=/tmp/pfs/group_path_out
+    python3 -m group_path.group_path_main
+
+    cp -rL /tmp/pfs/group_path_out /tmp/pfs/group_path_outCopy || :
+    rm -r -f /tmp/pfs/group_path_out
+    echo "=== group_path complete ==="
+
+    echo "=== Running flow.concH2oSalinity.grp.split ==="
+    Rscript flow.concH2oSalinity.grp.split.R \
+      DirIn=/tmp/pfs/group_path_outCopy \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmStats=$FILE_SCHEMA_STATS \
+      FileSchmQm=$FILE_SCHEMA_QM \
+      "DirSubCopy=location"
+    echo "=== flow.concH2oSalinity.grp.split complete ==="
+
+    # === NEW: mirror /pfs/out to GCS for post-teardown SRF re-apply ===
+    if [[ -d /pfs/out ]] && [[ -n "$(ls -A /pfs/out 2>/dev/null)" ]]; then
+      rclone --no-check-dest --copy-links --gcs-bucket-policy-only \
+             --gcs-no-check-bucket \
+             --exclude "errored_datums/**" \
+             copy /pfs/out ":gcs://${BUCKET_NAME}/pre-l1/concH2oSoilSalinity_group_split"
+    fi
+    EOF
+  env:
+    LOG_LEVEL: INFO
+    ERR_PATH: /pfs/out/errored_datums
+    GROUP: conc-h2o-soil-salinity-split_
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    GROUP_FOCUS_YEAR_INDEX: '3'
+    GROUP_FOCUS_MONTH_INDEX: '4'
+    GROUP_FOCUS_DAY_INDEX: '5'
+    GROUP_FOCUS_GROUP_INDEX: '8'
+    PARALLELIZATION_INTERNAL: '2'
+  # === NEW: bucket name secret for GCS export (same bucket as level1 pub output) ===
+  secrets:
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_STATS
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_stats_split.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: concH2oSoilSalinity_avro_schemas
+      glob: /concH2oSoilSalinity/concH2oSoilSalinity_dp01_quality_metrics_split.avsc
+  - join:
+    - pfs:
+        name: GROUP_ASSIGNMENT_PATH
+        repo: concH2oSoilSalinity_group_assignment_split
+        glob: /conc-h2o-soil-salinity-split/(*/*/*)
+        joinOn: $1
+    - pfs:
+        name: GROUP_FOCUS_PATH
+        repo: concH2oSoilSalinity_qm_join_stats
+        glob: /(*/*/*)
+        joinOn: $1
+parallelism_spec:
+  constant: 16
+autoscaling: true
+resource_requests:
+  memory: 4G
+  cpu: 2
+resource_limits:
+  memory: 5G
+  cpu: 2.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
