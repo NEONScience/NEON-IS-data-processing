@@ -12,7 +12,7 @@
 pipeline:
   name: tempSoil_group_path
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:sha-861de87
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.2
   # === CHANGED: switched from bare `stdin:` to a bash heredoc so we can chain rclone ===
   cmd:
   - sh
