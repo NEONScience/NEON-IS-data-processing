@@ -102,9 +102,9 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         log=log
       ),
       error = function(err) {
-        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
+        call.stack <- base::sys.calls()
         
-        # Re-route the failed datum
+        # Re-routes failed datum
         NEONprocIS.base::def.err.datm(
           err=err,
           call.stack=call.stack,
@@ -116,7 +116,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         )
       }
     ),
-    # This simply to avoid returning the error
     error=function(err) {}
   )
   
