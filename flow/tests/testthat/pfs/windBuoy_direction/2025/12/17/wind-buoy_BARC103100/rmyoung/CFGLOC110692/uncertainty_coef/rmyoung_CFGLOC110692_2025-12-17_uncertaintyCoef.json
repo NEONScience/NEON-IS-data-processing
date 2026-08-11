@@ -1,0 +1,122 @@
+[
+   {
+      "calibration_id":      411595,
+      "term":"speed",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"26",
+      ".attrs":"m/s"
+   },
+   {
+      "calibration_id":      411595,
+      "term":"speed",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"60",
+      ".attrs":"m/s"
+   },
+   {
+      "calibration_id":      411595,
+      "term":"speed",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"74",
+      ".attrs":"m/s"
+   },
+   {
+      "calibration_id":      411595,
+      "term":"speed",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"0.061643",
+      ".attrs":"m/s"
+   },
+   {
+      "calibration_id":      411595,
+      "term":"speed",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.071085",
+      ".attrs":"m/s"
+   },
+   {
+      "calibration_id":      411595,
+      "term":"speed",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"0.094090",
+      ".attrs":"m/s"
+   },
+   {
+      "calibration_id":      411554,
+      "term":"direction",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"68",
+      ".attrs":"deg"
+   },
+   {
+      "calibration_id":      411554,
+      "term":"direction",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"60",
+      ".attrs":"deg"
+   },
+   {
+      "calibration_id":      411554,
+      "term":"direction",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"68",
+      ".attrs":"deg"
+   },
+   {
+      "calibration_id":      411554,
+      "term":"direction",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"1.089977",
+      ".attrs":"deg"
+   },
+   {
+      "calibration_id":      411554,
+      "term":"direction",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.008630",
+      ".attrs":"deg"
+   },
+   {
+      "calibration_id":      411554,
+      "term":"direction",
+      "start_date":"2025-12-17T00:00:00.000Z",
+      "end_date":"2025-12-18T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"1.090011",
+      ".attrs":"deg"
+   }
+]
