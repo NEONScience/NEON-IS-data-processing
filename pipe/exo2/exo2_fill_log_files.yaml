@@ -2,13 +2,13 @@
 pipeline:
   name: exo2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-group-fill:sha-
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:v1.1.3
   cmd:
   - sh
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
     
@@ -24,18 +24,10 @@ transform:
     export OUT_PATH=$OUT_PATH_LIMIT_LOGFILES
     python3 -m filter_joiner.filter_joiner_main
     
-    # Run the filter joiner to merge files from all sources. 
-    echo "Running filter-joiner to merge all data sources"
-    export CONFIG=$CONFIG_JOIN_SOURCES
-    export OUT_PATH=$OUT_PATH_JOIN_SOURCES
-    python3 -m filter_joiner.filter_joiner_main
       
     EOF
   env:
     # Environment variables for filter-joiner.
-    # Ensure the path for the kafka data is listed prior to that for the archive data. When a conflict arises, 
-    # such as when Kafka re-streams data, the Kafka data will take precedence because it is 
-    # the latest and greatest.
     CONFIG_LIMIT_LOGFILES: |
       ---
       # Configuration for filter-joiner module that will limit log files to the dates in
@@ -48,41 +40,20 @@ transform:
         - path:
             name: DATA_PATH_LOG
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_LOG/*/*/*/**
-            # Join on y/m/d and sourceID
-            join_indices: [3,4,5,6]
-            outer_join: False
+            glob_pattern: /pfs/DATA_PATH_LOG/*/*/**
+            # Join on y/m/d
+            join_indices: [3,4,5]
+            outer_join: True
         - path:
             name: DATE_CONTROL
             # Filter for data directory
-            glob_pattern: /pfs/DATE_CONTROL/*/*/*/**
+            glob_pattern: /pfs/DATE_CONTROL/*/*/**
             # Join on y/m/d and sourceID 
-            join_indices: [3,4,5,6]
-            outer_join: False
-    CONFIG_JOIN_SOURCES: |
-      ---
-      # Configuration for filter-joiner module that will bring together all sources of data
-      # Make sure the DATA_PATH_LOG path is second. Any site files from the date_control pipeline
-      # won't be copied if there are files from the archive, or the log files. 
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      input_paths:
-        - path:
-            name: DATA_PATH_ARCHIVE
-            # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_ARCHIVE/*/*/*/**
-            # Join on y/m/d and sourceID 
-            join_indices: [3,4,5,6]
+            join_indices: [3,4,5]
             outer_join: True
-        - path:
-            name: DATA_PATH_LOG
-            # Filter for data directory
-            glob_pattern: /tmp/log_limited/*/*/*/**
-            # Join on y/m/d and sourceID
-            join_indices: [3,4,5,6]
-            outer_join: True
-    OUT_PATH_LIMIT_LOGFILES: /tmp/log_limited 
-    OUT_PATH_JOIN_SOURCES: /pfs/out #/tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    
+    OUT_PATH_LIMIT_LOGFILES: /pfs/out #/tmp/log_limited 
+    OUT_PATH_JOIN_SOURCES: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
@@ -90,24 +61,17 @@ input:
   cross:
   - join:
     - pfs:
-        name: DATA_PATH_ARCHIVE
-        repo: exo2_data_source_trino
-        glob: /(exo2/*/*/*) #sensor/Y/M/D
-        joinOn: $1
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
-        outer_join: true
-    - pfs:
         name: DATA_PATH_LOG
-        repo: exexo2_replace_sn_with_assetuid
-        glob: /(exo2/*/*/*) #sensor/Y/M/D
-        joinOn: $1
+        repo: exo2_regularize_log_data
+        glob: /(*)/(2025/09/05) #sensor/Y/M/D
+        joinOn: $1/$2/$3/$4
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
     - pfs:
         name: DATE_CONTROL
         repo: exo2_all_probes_cron_daily_and_date_control
-        glob: /(exo2/*/*/*) #exo2/Y/M/D
-        joinOn: $1
+        glob: /(*)/(2025/09/05) #sensor/Y/M/D
+        joinOn: $1/$2/$3/$4
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
 parallelism_spec:
