@@ -33,7 +33,7 @@
 #' @examples
 #' Stepping through the code in Rstudio
 # Sys.setenv(DIR_IN_OS='/home/nickerson/pfs/l4discharge_os_table_group',
-#            DIR_IN='/home/nickerson/pfs/l4discharge_csd_swe_group/2025')
+#            DIR_IN='/home/nickerson/pfs/l4discharge_csd_swe_group/2024/09/01')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN",
 #          "DirInOS=$DIR_IN_OS",
