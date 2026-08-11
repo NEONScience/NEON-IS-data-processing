@@ -1,0 +1,78 @@
+---
+pipeline:
+  name: l4discharge_predict_group
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:sha-d759540
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main    
+
+    # Copy the full BaM_beta folder into each l4discharge_* output folder.
+    # This keeps datum outputs unique and avoids duplicate /BaM_beta root paths.
+    for discharge_dir in /pfs/out/*/*/*/l4discharge_*; do
+      if [[ -d "${discharge_dir}" ]]; then
+        cp -R /pfs/BAM_EXE/BaM_beta "${discharge_dir}/"
+      fi
+    done
+    
+    EOF
+  env:
+    # Environment variables for 1st filter-joiner.
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: DISCHARGE_GROUP
+            glob_pattern: /pfs/DISCHARGE_GROUP/**
+            join_indices: [3]
+            outer_join: True
+        
+    OUT_PATH: /pfs/out #/tmp/pfs/filter_joined # Transfered to OUT_PATH for the first module
+    RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
+    LOG_LEVEL: DEBUG # Shared among all modules
+    
+input:
+  cross:
+  - pfs:
+      name: DISCHARGE_GROUP
+      repo: l4discharge_group_and_parse
+      glob: /(2024/09/01/l4discharge_BLUE110100)
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: BAM_EXE
+      repo: l4discharge_bam_load_files
+      glob: /*
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 2.2
+resource_limits:
+  memory: 2G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
