@@ -1,0 +1,103 @@
+---
+# Writes to the same bucket as level1 pub output (l1-bucket secret → BUCKET_NAME),
+# under a pre-l1/<pipeline_name>/ prefix so it sits alongside the v2/ pub prefix.
+#
+# Layout produced on GCS:
+#   gs://${BUCKET_NAME}/pre-l1/tempSoil_qm_group_and_compute/YYYY/MM/DD/temp-soil_XXX/quality_metrics/*.parquet
+#
+# Only difference from production file: the trailing rclone block in the transform,
+# and the l1-bucket secret. Nothing about the actual QM computation changes.
+pipeline:
+  name: tempSoil_qm_group_and_compute
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:sha-be3206c
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    set -euo pipefail
+    IFS=$'\n\t'
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    python3 -m filter_joiner.filter_joiner_main
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM \
+      "WndwAgr=005|030" \
+      "WghtAlphBeta=2|1" \
+      Thsh=0.2 \
+      "GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF" \
+      "GrpQfBeta1=:nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF" \
+      "GrpQfBetaIgnr1=:nullQF|gapQF"
+
+    # === NEW: mirror /pfs/out to GCS for post-teardown SRF re-apply ===
+    # Excludes errored_datums so partial failures don't pollute the mirror.
+    if [[ -d /pfs/out ]] && [[ -n "$(ls -A /pfs/out 2>/dev/null)" ]]; then
+      rclone --no-check-dest --copy-links --gcs-bucket-policy-only \
+             --gcs-no-check-bucket \
+             --exclude "errored_datums/**" \
+             copy /pfs/out ":gcs://${BUCKET_NAME}/pre-l1/tempSoil_qm_group_and_compute"
+    fi
+    EOF
+  env:
+    CONFIG: |
+      ---
+      input_paths:
+        - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
+            join_indices: [6]
+        - path:
+            name: REGULARIZED_FLAGS_PATH
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
+            join_indices: [6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY
+    PARALLELIZATION_INTERNAL: '2'
+  # === NEW: bucket name secret for GCS export (same bucket as level1 pub output) ===
+  secrets:
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: tempSoil_avro_schemas
+      glob: /tempSoil/tempSoil_dp01_quality_metrics.avsc
+  - join:
+    - pfs:
+        name: QAQC_PLAUSIBILITY_PATH
+        repo: tempSoil_analyze_pad_and_qaqc_plau
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false
+    - pfs:
+        name: REGULARIZED_FLAGS_PATH
+        repo: tempSoil_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false
+parallelism_spec:
+  constant: 16
+autoscaling: true
+resource_requests:
+  memory: 3G
+  cpu: 2
+  disk: 3G
+resource_limits:
+  memory: 4.5G
+  cpu: 2.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
