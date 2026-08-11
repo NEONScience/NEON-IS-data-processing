@@ -10,6 +10,9 @@ on:
       - 'pipe/precipWeighingv2/pipe_list_precipWeighingv2_prod.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
+permissions:
+  contents: read
+
 # Workflow-level concurrency
 concurrency: 
   group: ${{
