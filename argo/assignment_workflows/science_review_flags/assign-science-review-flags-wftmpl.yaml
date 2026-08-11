@@ -2,9 +2,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: srf-assignment-template
+  name: assign-science-review-flags
 spec:
   entrypoint: main
+  # ConfigMap volumes for map-sources
+  volumes:
+    - name: source-volume
+      configMap:
+        name: groups-config
+    - name: mapping-volume
+      configMap:
+        name: assign-science-review-flags-config
+    - name: output-volume
+      emptyDir: { }
   arguments:
     parameters:
       - name: run_date
@@ -12,28 +22,36 @@ spec:
       - name: date_begin
         value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
       - name: configuration
-        value: srf-assignment-config
-      - name: r_args_by_source_type
-        valueFrom:
-          configMapKeyRef:
-            name: srf-assignment-config
-            key: r_args_by_source_type
+        value: assign-science-review-flags-config
   templates:
     - name: main
       steps:
+        # Get the group name and R argument combinations from the ConfigMap.
+        - - name: get-items
+            templateRef:
+              name: map-sources
+              template: main
+            arguments:
+              parameters:
+                - name: source_key
+                  value: groups
+                - name: mapping_key
+                  value: r_args_by_group.json
+        # Loop over the group name and R argument combinations.
         - - name: run
             template: run
             arguments:
               parameters:
-                - name: source_type
+                - name: group_name
                   value: '{{item.key}}'
                 - name: r_args
                   value: '{{item.value}}'
-            withParam: "{{workflow.parameters.r_args_by_source_type}}"
+            withParam: "{{steps.get-items.outputs.parameters.items}}"
+    # Process each group name and associated R arguments.
     - name: run
       inputs:
         parameters:
-          - name: source_type
+          - name: group_name
           - name: r_args
           - name: log_level
             valueFrom:
@@ -97,7 +115,7 @@ spec:
           - name: io_image
             valueFrom:
               configMapKeyRef:
-                name: base-assignment-config
+                name: assignment-base-config
                 key: io_image
           - name: assignment_image
             valueFrom:
@@ -185,8 +203,6 @@ spec:
               - |
                 set -euo pipefail
                 IFS=$'\n\t'
-                echo "Input files:"
-                ls -alR /workspace
                 export DATE_END=$(date -d "{{workflow.creationTimestamp}} +1 day" +%F)                
                 eval "Rscript ./flow.srf.asgn.R $R_ARGS"
           # Generate the change manifest and write it to a bucket.
@@ -217,10 +233,10 @@ spec:
               - name: RUN_DATE
                 value: "{{workflow.parameters.run_date}}"
               - name: SOURCE_ID_INDEX
-                value: "7"
+                value: "{{inputs.parameters.source_id_path_index}}"
               - name: SOURCE_PATH
                 value: /workspace/processed_files
               - name: SOURCE_TYPE
-                value: "{{inputs.parameters.source_type}}"
+                value: "{{inputs.parameters.group_name}}"
             command: [sh, -c]
             args: ["python3 /app/main.py"]

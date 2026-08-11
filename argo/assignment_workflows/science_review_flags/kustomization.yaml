@@ -3,5 +3,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: argo-workflows-dev
 resources:
-  - group_assignment_config.yaml
-  - group_assignment.yaml
+  - assign-science-review-flags-config.yaml
+  - assign-science-review-flags-wftmpl.yaml

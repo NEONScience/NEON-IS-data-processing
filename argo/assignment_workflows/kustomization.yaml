@@ -4,8 +4,8 @@ kind: Kustomization
 namespace: argo-workflows-dev
 resources:
   - base
-  - calibration
-  - group
+  - calibrations
+  - groups
   - location_active_dates
   - location_assets
-  - srf
+  - science_review_flags

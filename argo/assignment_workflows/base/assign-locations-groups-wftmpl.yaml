@@ -1,12 +1,13 @@
 ---
-# Workflow for assigning location/asset/group metadata to data dates.
-# The data is loaded to a shared volume.
+# Workflow for assigning locations, location assets, and groups metadata
+# to data dates.
+# The data is loaded into a shared volume.
 # The assignment script processes whatever is in the volume.
 # The final output manifests are written into the output bucket.
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: location-group-assignment-template
+  name: assign-locations-groups
 spec:
   entrypoint: main
   templates:
@@ -16,6 +17,10 @@ spec:
           - name: source_type
           - name: r_args
           - name: source_id_path_index
+            valueFrom:
+              configMapKeyRef:
+                name: "{{workflow.parameters.configuration}}"
+                key: source_id_path_index
           # ConfigMap constants.
           - name: log_level
             valueFrom:
@@ -74,13 +79,13 @@ spec:
           - name: io_image
             valueFrom:
               configMapKeyRef:
-                name: base-assignment-config
+                name: assignment-base-config
                 key: io_image
           - name: assignment_image
             valueFrom:
               configMapKeyRef:
-                name: assignment-config
-                key: location_group_assignment_image
+                name: assignment-base-config
+                key: assign_location_groups_image
       volumes:
         - name: workspace
           emptyDir: { }
@@ -193,7 +198,7 @@ spec:
             - name: RUN_DATE
               value: "{{workflow.parameters.run_date}}"
             - name: SOURCE_ID_INDEX  # The source ID position in the input paths.
-              value: "{{inputs.parameters.source_id_index}}"
+              value: "{{inputs.parameters.source_id_path_index}}"
             - name: SOURCE_PATH
               value: "/workspace/processed_files/{{inputs.parameters.source_type}}"
             - name: SOURCE_TYPE

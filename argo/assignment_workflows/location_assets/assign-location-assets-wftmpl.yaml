@@ -6,9 +6,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: location-asset-assignment
+  name: assign-location-assets
 spec:
   entrypoint: main
+  # ConfigMap volumes for map-sources
+  volumes:
+    - name: source-volume
+      configMap:
+        name: processing-source-types-config
+    - name: mapping-volume
+      configMap:
+        name: assign-location-assets-config
+    - name: output-volume
+      emptyDir: { }
   arguments:
     parameters:
       - name: run_date
@@ -16,18 +26,23 @@ spec:
       - name: date_begin
         value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
       - name: configuration
-        value: location-asset-assignment-config
-      - name: r_args_by_source_type
-        valueFrom:
-          configMapKeyRef:
-            name: location-asset-assignment-config
-            key: r_args_by_source_type
+        value: assign-location-assets-config
   templates:
     - name: main
       steps:
+        - - name: get-items
+            templateRef:
+              name: map-sources
+              template: main
+            arguments:
+              parameters:
+                - name: source_key
+                  value: source_types
+                - name: mapping_key
+                  value: r_args_by_source_type.json
         - - name: run-step
             templateRef:
-              name: location-group-assignment-template
+              name: assign-locations-groups
               template: main
             arguments:
               parameters:
@@ -35,4 +50,4 @@ spec:
                   value: '{{item.key}}'
                 - name: r_args
                   value: '{{item.value}}'
-            withParam: '{{workflow.parameters.r_args_by_source_type}}'
+            withParam: '{{steps.get-items.outputs.parameters.items}}'

@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: assign-calibrations-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  log_level: "DEBUG"
+  # Calibration bucket
+  calibration_bucket: "neon-test-calibration"
+  calibration_bucket_prefix: "files"
+  # Bucket for writing manifests.
+  output_bucket: "neon-dev-argo-workflow-test"
+  output_bucket_prefix: "assign_calibrations"
+  # Path index for the source ID in the assignment output paths.
+  source_id_path_index: "7"
+  # R code
+  assignment_image: "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.1.0"
+  relative_path_index: "2"
+  parallelization_internal: "4"
+  r_args_by_source_type.json: |
+    {
+      "default": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END",
+      "additions": {
+        "enviroscan": "Arry=TRUE",
+        "tchain": "Arry=TRUE"
+      }
+    }

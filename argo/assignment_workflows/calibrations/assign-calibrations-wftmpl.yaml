@@ -6,9 +6,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: calibration-assignment
+  name: assign-calibrations
 spec:
   entrypoint: main
+  volumes:
+    # ConfigMap volumes for map-sources
+    - name: source-volume
+      configMap:
+        name: processing-source-types-config
+    - name: mapping-volume
+      configMap:
+        name: assign-calibrations-config
+    - name: output-volume
+      emptyDir: { }
   arguments:
     parameters:
       - name: date_run
@@ -16,36 +26,21 @@ spec:
       - name: date_begin
         value: "{{=sprig.date('2006-01-02', workflow.creationTimestamp)}}"
       - name: configuration
-        value: calibration-assignment-config
-      - name: r_args_by_source_type
-        # valueFrom:
-        #   configMapKeyRef:
-        #     name: calibration-assignment-config
-        #     key: r_args_by_source_type
-        # TODO: testing
-        value: |
-          [
-            {
-              "key": "aepg600m",
-              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
-            },
-            {
-              "key": "aepg600m_heated",
-              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
-            },
-            {
-              "key": "comps",
-              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
-            },
-            {
-              "key": "leveltroll500",
-              "value": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END"
-            }
-          ]
+        value: assign-calibrations-config
   templates:
     # Main loop.
     - name: main
       steps:
+        - - name: get-items
+            templateRef:
+              name: map-sources
+              template: main
+            arguments:
+              parameters:
+                - name: source_key
+                  value: source_types
+                - name: mapping_key
+                  value: r_args_by_source_type.json
         - - name: run-step
             template: run
             arguments:
@@ -54,8 +49,9 @@ spec:
                 value: "{{item.key}}"
               - name: r_args
                 value: "{{item.value}}"
-            withParam: "{{workflow.parameters.r_args_by_source_type}}"
-    # Process each source type by downloading files, assigning to dates, and uploading manifests.
+            withParam: "{{steps.get-items.outputs.parameters.items}}"
+
+      # Process each source type by downloading files, assigning to dates, and uploading manifests.
     - name: run
       inputs:
         parameters:
@@ -110,7 +106,7 @@ spec:
           - name: io_image
             valueFrom:
               configMapKeyRef:
-                name: base-assignment-config
+                name: assignment-base-config
                 key: io_image
           - name: assignment_image
             valueFrom:
@@ -197,7 +193,6 @@ spec:
                 set -euo pipefail
                 IFS=$'\n\t'
                 export DATE_END=$(date -d "{{workflow.creationTimestamp}} +1 day" +%F)
-                echo "Date end: $DATE_END"
                 mkdir -p /workspace/processed_files
                 mkdir -p /workspace/error_files
                 eval "Rscript ./flow.cal.asgn.R $R_ARGS"
@@ -237,8 +232,5 @@ spec:
             command: [sh, -c]
             args:
               - |
-                echo "Running..."
                 mkdir -p /workspace/output_files
                 python3 /app/main.py
-                echo "Output files:"
-                find /workspace/output_files -type f

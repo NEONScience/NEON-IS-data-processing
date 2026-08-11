@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: assign-location-active-dates-config
+  labels:
+    workflows.argoproj.io/configmap-type: Parameter
+data:
+  log_level: "INFO"
+  # Git configuration.
+  git_secret_name: "git-data-processing-metadata-key"
+  git_secret_key: "ssh-private-key"
+  git_repo_url: "git@github.com:BattelleEcology/data-processing-metadata.git"
+  git_branch: "main"
+  git_repo_dir: "locations"
+  # Bucket for saving manifests.
+  output_bucket: "neon-dev-argo-workflow-test"
+  output_bucket_prefix: "assign_location_active_dates"
+  # Path index for the source ID in the assignment output paths.
+  source_id_path_index: "7"
+  # R code
+  relative_path_index: "3"
+  parallelization_internal: "4"
+  r_args_by_source_type.json: |
+    {
+      "default": "DirIn=$DIR_IN DirOut=$DIR_OUT DirErr=$ERR_PATH DateBgn=$DATE_BEGIN DateEnd=$DATE_END TypeFile=namedLocation",
+      "additions": {
+        "aepg600m": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "cmp22": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "dualfan": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "enviroscan": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "lt400_hu24": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "li191r": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "metone370380": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods|context'",
+        "pluvio": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "ptb330a": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "sunav2": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "tchain": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods|ThermistorDepth501|ThermistorDepth502|ThermistorDepth503|ThermistorDepth504|ThermistorDepth505|ThermistorDepth506|ThermistorDepth507|ThermistorDepth508|ThermistorDepth509|ThermistorDepth510|ThermistorDepth511'",
+        "troll": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "windobserverii": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods'",
+        "pqs1": "'Prop=HOR|VER|name|description|site|Data Rate|active_periods|context'"
+      }
+    }

@@ -3,5 +3,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: argo-workflows-dev
 resources:
-  - srf_assignment_config.yaml
-  - srf_assignment.yaml
+  - assign-calibrations-config.yaml
+  - assign-calibrations-wftmpl.yaml

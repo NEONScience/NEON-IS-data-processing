@@ -1,0 +1,63 @@
+---
+# Default workflow for generating key/value pairs from
+# two ConfigMaps, one with a list of values and the other
+# containing mapped those values with a default.
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: map-sources
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      inputs:
+        parameters:
+          - name: source_key
+          - name: mapping_key
+      outputs:
+        parameters:
+          - name: items
+            valueFrom:
+              path: /output/items.json
+      script:
+        image: python:3.12
+        volumeMounts:
+          # NOTE: These mounts must be defined in calling Workflow.
+          - name: source-volume
+            mountPath: /config/source_config
+          - name: mapping-volume
+            mountPath: /config/mapping_config
+          - name: output-volume
+            mountPath: /output
+        env:
+          - name: SOURCE_KEY
+            value: "{{inputs.parameters.source_key}}"
+          - name: MAPPING_KEY
+            value: "{{inputs.parameters.mapping_key}}"
+        command: [ python ]
+        source: |
+          import os
+          import json
+          
+          source_key = os.environ.get('SOURCE_KEY')
+          mapping_key = os.environ.get('MAPPING_KEY')
+          
+          with open(f"/config/source_config/{source_key}") as f:
+            sources = json.load(f)
+          
+          with open(f"/config/mapping_config/{mapping_key}") as f:
+            mappings = json.load(f)
+          
+          default = mappings["default"]
+          additions = mappings["additions"]
+          
+          items = [
+            {
+              "key": source,
+              "value": default + (f" {extra}" if (extra := additions.get(source, "")) else "")
+            }
+            for source in sources
+          ]
+          
+          with open("/output/items.json", "w") as f:
+            json.dump(items, f)
