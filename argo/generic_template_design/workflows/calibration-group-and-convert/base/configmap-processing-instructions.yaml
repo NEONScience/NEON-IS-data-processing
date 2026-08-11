@@ -29,7 +29,7 @@ data:
   
       eval "Rscript ./flow.cal.asgn.R $CAL_ASGN_R_ARGS"
 
-    done < <(echo "$json_data" | jq -r '.[] | .data_date')
+    done < <(echo "$json_data" | jq -r '[.[].data_date] | unique[]')
 
     # Join files from the archive and from Kafka
     export OUT_PATH=$OUT_PATH_JOINER
