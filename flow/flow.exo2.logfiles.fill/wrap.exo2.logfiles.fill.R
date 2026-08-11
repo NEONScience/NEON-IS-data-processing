@@ -50,8 +50,7 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   
   # Gather info and creates full directories
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInBase)
-  DirInStreamData <- fs::path(DirInBase,'streamed')
-  DirInLogsData <- fs::path(DirInBase,'logged')
+  DirInData <- fs::path(DirInBase,'data')
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutData <- base::paste0(DirOut,'/data')
@@ -59,56 +58,56 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   DirOutFlags <- base::paste0(DirOut,'/log_flags')
   base::dir.create(DirOutFlags,recursive=TRUE)
   
+  # All file names
+  fileNames<-base::list.files(DirInData,full.names=FALSE)
+  loggedFileName<-fileNames[grepl("_log",fileNames)]
+  streamedFileName<-fileNames[!grepl("_log",fileNames)]
+
   # Load any streamed data
-  streamedFileName<-base::list.files(DirInStreamData,full.names=FALSE)
   if(length(streamedFileName)>=1){
-    streamedData  <-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInStreamData, '/', streamedFileName),log = log),silent = FALSE)
+    streamedData  <-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', streamedFileName),log = log),silent = FALSE)
     if (base::any(base::class(streamedData) == 'try-error')) {
-      log$error(base::paste0('File ', DirInStreamData, '/', streamedFileName, ' is unreadable.'))
+      log$error(base::paste0('File ', DirInData, '/', streamedFileName, ' is unreadable.'))
       base::stop()}
   }else{streamedData<-NULL}
   
   # Load any logged data
-  loggedFileNameLog<-base::list.files(DirInLogsData,full.names=FALSE)
-  if(length(loggedFileNameLog)>=1){
-    loggedData  <-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInLogsData, '/', loggedFileNameLog),log = log),silent = FALSE)
+  if(length(loggedFileName)>=1){
+    loggedData  <-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', loggedFileName),log = log),silent = FALSE)
     if (base::any(base::class(loggedData) == 'try-error')) {
-      log$error(base::paste0('File ', DirInLogsData, '/', loggedFileNameLog, ' is unreadable.'))
+      log$error(base::paste0('File ', DirInData, '/', loggedFileName, ' is unreadable.'))
       base::stop()}
   }else{loggedData<-NULL}
   
-  # Determine which sensor the data comes from.
-  if(any(grepl("depth", colnames(streamedData)))|any(grepl("depth", colnames(loggedData)))){sensor="exo2"}
-  if(any(grepl("conductivity", colnames(streamedData)))|any(grepl("conductivity", colnames(loggedData)))){sensor="exoconductivity"}
-  if(any(grepl("oxygen", colnames(streamedData)))|any(grepl("oxygen", colnames(loggedData)))){sensor="exodissolvedoxygen"}
-  if(any(grepl("ph", colnames(streamedData)))|any(grepl("ph", colnames(loggedData)))){sensor="exophorp"}
-  if(any(grepl("turbidity", colnames(streamedData)))|any(grepl("turbidity", colnames(loggedData)))){sensor="exoturbidity"}
-  if(any(grepl("fdom", colnames(streamedData)))|any(grepl("fdom", colnames(loggedData)))){sensor="exofdom"}
-  if(any(grepl("chlorophyll", colnames(streamedData)))|any(grepl("chlorophyll", colnames(loggedData)))){sensor="exototalalgae"}  
-  
+  # Determine which sensor the data comes from. 
+  sensor <- base::strsplit(InfoDirIn$dirRepo,'[/]')[[1]][2]
+  #check that sensor is one of the expected types. If not, log an error and stop.
+  if(!sensor %in% c("exo2","exo2conductivity","exo2dissolvedoxygen","exo2phorp","exo2turbidity","exo2fdom","exo2totalalgae")){
+    log$error(base::paste0('Sensor type ', sensor, ' is not recognized.'))
+    base::stop()
+  }
+
   # Set corrected schema based on sensor type
   if(!is.null(SchmBase)){
-  SchmData<-base::paste0(SchmBase,"/",sensor,"/",sensor,'_calibrated.avsc')
-  SchmData <- base::paste0(base::readLines(SchmData),collapse='')
-  SchmFlags<-base::paste0(SchmBase,"/",sensor,"/flags_logs_",sensor,'.avsc')
-  SchmFlags <- base::paste0(base::readLines(SchmFlags),collapse='')
+    SchmData<-base::paste0(SchmBase,"/",sensor,"/",sensor,'_filled.avsc')
+    SchmData <- base::paste0(base::readLines(SchmData),collapse='')
+    SchmFlags<-base::paste0(SchmBase,"/",sensor,"/flags_logs_",sensor,'.avsc')
+    SchmFlags <- base::paste0(base::readLines(SchmFlags),collapse='')
+  }
+
+  # map streamed names to logged names for each sensor type
+  if(!is.null(streamedData)){
+    if(sensor=="exo2"){
   }
   
   #!!!!!!!!!!!!!!!!!!!!!!!Adjust streamed data headers to match schemas (For testing; this will get fixed earlier)!!!!!!!!!!!!!!!!!!!!!!!  
   if(sensor=="exo2"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id", "site_id", "readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage") }}
-  if(sensor=="exoconductivity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature") }}
-  if(sensor=="exodissolvedoxygen"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat") }}
-  if(sensor=="exophorp"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","pH","pHvoltage") }}
-  if(sensor=="exoturbidity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","turbidity") }}
-  if(sensor=="exofdom"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","fDOM") }}
-  if(sensor=="exototalalgae"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin") }}
-  if(sensor=="exo2"){if(!is.null(loggedData)){colnames(loggedData) <- c("source_id", "site_id", "readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage") }}
-  if(sensor=="exoconductivity"){if(!is.null(loggedData)){colnames(loggedData) <- c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature") }}
-  if(sensor=="exodissolvedoxygen"){if(!is.null(loggedData)){colnames(loggedData) <- c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat") }}
-  if(sensor=="exophorp"){if(!is.null(loggedData)){colnames(loggedData) <- c("source_id","site_id","readout_time","pH","pHvoltage") }}
-  if(sensor=="exoturbidity"){if(!is.null(loggedData)){colnames(loggedData) <- c("source_id","site_id","readout_time","turbidity") }}
-  if(sensor=="exofdom"){if(!is.null(loggedData)){colnames(loggedData) <- c("source_id","site_id","readout_time","fDOM") }}
-  if(sensor=="exototalalgae"){if(!is.null(loggedData)){colnames(loggedData) <- c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin") }}
+  if(sensor=="exo2conductivity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature") }}
+  if(sensor=="exo2dissolvedoxygen"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat") }}
+  if(sensor=="exo2phorp"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","pH","pHvoltage") }}
+  if(sensor=="exo2turbidity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","turbidity") }}
+  if(sensor=="exo2fdom"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","fDOM") }}
+  if(sensor=="exo2totalalgae"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin") }}
   #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
   # Add log data flags based on sensor type
@@ -116,17 +115,17 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   if(!is.null(loggedData)){loggedData$logDataQF<-1} # First a generic flag used only temporarily for filtering
   if(sensor=="exo2"){if(!is.null(streamedData)){streamedData$sensorDepthLogDataQF<-0 };
             if(!is.null(loggedData)){loggedData$sensorDepthLogDataQF<-1}}
-  if(sensor=="exoconductivity"){if(!is.null(streamedData)){streamedData$specificCondLogDataQF<-0;streamedData$surfaceWaterTempLogDataQF<-0 };
+  if(sensor=="exo2conductivity"){if(!is.null(streamedData)){streamedData$specificCondLogDataQF<-0;streamedData$surfaceWaterTempLogDataQF<-0 };
             if(!is.null(loggedData)){loggedData$specificCondLogDataQF<-1;loggedData$surfaceWaterTempLogDataQF<-1}}
-  if(sensor=="exodissolvedoxygen"){if(!is.null(streamedData)){streamedData$dissolvedOxygenLogDataQF<-0;streamedData$seaLevelDOSatLogDataQF<-0;streamedData$localDOSatLogDataQF<-0 };
+  if(sensor=="exo2dissolvedoxygen"){if(!is.null(streamedData)){streamedData$dissolvedOxygenLogDataQF<-0;streamedData$seaLevelDOSatLogDataQF<-0;streamedData$localDOSatLogDataQF<-0 };
             if(!is.null(loggedData)){loggedData$dissolvedOxygenLogDataQF<-1;loggedData$seaLevelDOSatLogDataQF<-1;loggedData$localDOSatLogDataQF<-1 }}
-  if(sensor=="exophorp"){if(!is.null(streamedData)){streamedData$pHLogDataQF<-0 };
+  if(sensor=="exo2phorp"){if(!is.null(streamedData)){streamedData$pHLogDataQF<-0 };
             if(!is.null(loggedData)){loggedData$pHLogDataQF<-1 }}
-  if(sensor=="exoturbidity"){if(!is.null(streamedData)){streamedData$turbidityLogDataQF<-0 };
+  if(sensor=="exo2turbidity"){if(!is.null(streamedData)){streamedData$turbidityLogDataQF<-0 };
             if(!is.null(loggedData)){loggedData$turbidityLogDataQF<-1 }}
-  if(sensor=="exofdom"){if(!is.null(streamedData)){streamedData$fdomLogDataQF<-0};
+  if(sensor=="exo2fdom"){if(!is.null(streamedData)){streamedData$fdomLogDataQF<-0};
             if(!is.null(loggedData)){loggedData$fdomLogDataQF<-1}}
-  if(sensor=="exototalalgae"){if(!is.null(streamedData)){streamedData$chlorophyllLogDataQF<-0;streamedData$chlaRelativeFluorLogDataQF<-0 };
+  if(sensor=="exo2totalalgae"){if(!is.null(streamedData)){streamedData$chlorophyllLogDataQF<-0;streamedData$chlaRelativeFluorLogDataQF<-0 };
             if(!is.null(loggedData)){loggedData$chlorophyllLogDataQF<-0;loggedData$chlaRelativeFluorLogDataQF<-0 }}
 
   # If there is only streamed data use that.

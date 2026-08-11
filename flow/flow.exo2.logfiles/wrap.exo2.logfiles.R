@@ -41,12 +41,12 @@
 # FileIn <- "~/pfs/exo2_logjam_load_files_testprod/55949/cc6e671c6b5b12507e28b75a63ad4373.csv"
 # DirOutBase="~/pfs/out/exo2_logfile_output"
 # SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
-# SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoconductivity_calibrated.avsc'),collapse='')
-# SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exodissolvedoxygen_calibrated.avsc'),collapse='')
-# SchmPh <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exophorp_calibrated.avsc'),collapse='')
-# SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exoturbidity_calibrated.avsc'),collapse='')
-# SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exofdom_calibrated.avsc'),collapse='')
-# SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exototalalgae_calibrated.avsc'),collapse='')
+# SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2conductivity_calibrated.avsc'),collapse='')
+# SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2dissolvedoxygen_calibrated.avsc'),collapse='')
+# SchmPh <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2phorp_calibrated.avsc'),collapse='')
+# SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2turbidity_calibrated.avsc'),collapse='')
+# SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2fdom_calibrated.avsc'),collapse='')
+# SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2totalalgae_calibrated.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'                               
 #' @changelog
@@ -227,7 +227,7 @@ wrap.exo2.logfiles <- function(FileIn,
     dataTable <- dataTable[, names(dataTable) %in% keep_cols]
     dataTable <- dataTable[-(1:2), ] #Removes header info from data field
     # Add fields for source_id and site_id to match schemas (will be populated later)
-    dataTable$source_id<-NA
+    dataTable$source_id<-99999
     dataTable$site_id<-NA
     
     # Calculate readout date and time
@@ -334,7 +334,7 @@ wrap.exo2.logfiles <- function(FileIn,
       if(!"dissolvedOxygen" %in% names(doTable)){doTable$dissolvedOxygen <- NA}
       if(!"dissolvedOxygenSaturation" %in% names(doTable)){doTable$dissolvedOxygenSaturation <- NA}
       if(!"localDissolvedOxygenSat" %in% names(doTable)){doTable$localDissolvedOxygenSat <- NA}
-      currentTable <- doTable[, c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat")]
+      currentTable <- doTable[, c("source_id","site_id","readout_time","dissolvedOxygenSaturation","localDissolvedOxygenSat","dissolvedOxygen")]
       ###subset into 1-day data files
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){
@@ -465,7 +465,7 @@ wrap.exo2.logfiles <- function(FileIn,
       if(!"chlaRelativeFluorescence" %in% names(chlTable)){chlTable$chlaRelativeFluorescence <- NA}
       if(!"blueGreenAlgaePhycocyanin" %in% names(chlTable)){chlTable$blueGreenAlgaePhycocyanin <- NA}
       
-      currentTable <- chlTable[, c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin")]
+      currentTable <- chlTable[, c("source_id","site_id","readout_time","blueGreenAlgaePhycocyanin","chlorophyll","chlaRelativeFluorescence")]
       ###subset into 1-day data files
       all_days<-split(currentTable, as.Date(currentTable$readout_time))
       for(j in 1:length(all_days)){

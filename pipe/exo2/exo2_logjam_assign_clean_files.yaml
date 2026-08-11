@@ -29,31 +29,31 @@ input:
   - pfs:
       name: SCHEMA_EXO2
       repo: exo2_avro_schemas
-      glob: /exo2/exo2_calibrated.avsc
+      glob: /exo2/exo2_log_data.avsc
   - pfs:
       name: SCHEMA_COND
       repo: exo2_avro_schemas
-      glob: /exoconductivity/exoconductivity_calibrated.avsc
+      glob: /exo2conductivity/exo2conductivity_log_data.avsc
   - pfs:
       name: SCHEMA_DO
       repo: exo2_avro_schemas
-      glob: /exodissolvedoxygen/exodissolvedoxygen_calibrated.avsc
+      glob: /exo2dissolvedoxygen/exo2dissolvedoxygen_log_data.avsc
   - pfs:
       name: SCHEMA_PH
       repo: exo2_avro_schemas
-      glob: /exophorp/exophorp_calibrated.avsc
+      glob: /exo2phorp/exo2phorp_log_data.avsc
   - pfs:
       name: SCHEMA_TURB
       repo: exo2_avro_schemas
-      glob: /exoturbidity/exoturbidity_calibrated.avsc
+      glob: /exo2turbidity/exo2turbidity_log_data.avsc
   - pfs:
       name: SCHEMA_FDOM
       repo: exo2_avro_schemas
-      glob: /exofdom/exofdom_calibrated.avsc
+      glob: /exo2fdom/exo2fdom_log_data.avsc
   - pfs:
       name: SCHEMA_CHL
       repo: exo2_avro_schemas
-      glob: /exototalalgae/exototalalgae_calibrated.avsc
+      glob: /exo2totalalgae/exo2totalalgae_log_data.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true
