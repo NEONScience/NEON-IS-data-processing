@@ -13,47 +13,36 @@ transform:
     IFS=$'\n\t'
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf $OUT_PATH_LIMIT_LOGFILES
-    rm -rf $OUT_PATH_JOIN_SOURCES
-    mkdir -p $OUT_PATH_LIMIT_LOGFILES # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
-    mkdir -p $OUT_PATH_JOIN_SOURCES # R modules must have pfs in the repo structure
+    #rm -rf /tmp/pfs/join_sources
+    mkdir -p $OUT_PATH_JOIN_SOURCES # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     
-    # If we have log files, limit them to the dates in the date_control pipeline
-    echo "Running filter-joiner to limit log files"
-    export CONFIG=$CONFIG_LIMIT_LOGFILES
-    export OUT_PATH=$OUT_PATH_LIMIT_LOGFILES
-    python3 -m filter_joiner.filter_joiner_main
     
+    # Run filter-joiner module to merge all data sources
+    echo "Running filter-joiner to merge all data sources"
+    export OUT_PATH=$OUT_PATH_JOIN_SOURCES
+    python3 -m filter_joiner.filter_joiner_main   
       
     EOF
   env:
     # Environment variables for filter-joiner.
-    CONFIG_LIMIT_LOGFILES: |
+    CONFIG: |
       ---
-      # Configuration for filter-joiner module that will limit log files to the dates in
-      # the date control pipeline
-      # Make sure the DATE_CONTROL path is second. We actually don't want these files and 
-      # they won't be copied if log files for the site are present
+      # Configuration for filter-joiner module that will bring together L0 sources of data
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
             name: DATA_PATH_LOG
-            # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_LOG/*/*/**
-            # Join on y/m/d
-            join_indices: [3,4,5]
-            outer_join: True
+            glob_pattern: /pfs/DATA_PATH_LOG/*/*/*/**
+            join_indices: [3,4,5,6]
+            outer_join: true
         - path:
-            name: DATE_CONTROL
-            # Filter for data directory
-            glob_pattern: /pfs/DATE_CONTROL/*/*/**
-            # Join on y/m/d and sourceID 
-            join_indices: [3,4,5]
-            outer_join: True
+            name: DATA_PATH_STREAM
+            glob_pattern: /pfs/DATA_PATH_STREAM/*/*/*/**
+            join_indices: [3,4,5,6]
+            outer_join: true
     
-    OUT_PATH_LIMIT_LOGFILES: /pfs/out #/tmp/log_limited 
-    OUT_PATH_JOIN_SOURCES: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    OUT_PATH_JOIN_SOURCES: /pfs/out #/tmp/pfs/join_sources # Note that R modules use "pfs" in the path structure to determine datums
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
@@ -63,15 +52,15 @@ input:
     - pfs:
         name: DATA_PATH_LOG
         repo: exo2_regularize_log_data
-        glob: /(*)/(2025/09/05) #sensor/Y/M/D
-        joinOn: $1/$2/$3/$4
+        glob: /(*/*/*/*) #sensor/Y/M/D
+        joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
     - pfs:
-        name: DATE_CONTROL
-        repo: exo2_all_probes_cron_daily_and_date_control
-        glob: /(*)/(2025/09/05) #sensor/Y/M/D
-        joinOn: $1/$2/$3/$4
+        name: DATA_PATH_STREAM
+        repo: exo2_regularize_stream_data
+        glob: /(*/*/*/*) #sensor/Y/M/D
+        joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
 parallelism_spec:
