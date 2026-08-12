@@ -108,7 +108,7 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   if(!is.null(SchmFlagsBase)){
     SchmNames <- base::list.files(SchmFlagsBase,full.names=FALSE)
     if(sensor =="exo2"){
-      SchmFlagsFile <- SchmNames[grepl("exo2_",SchmNames)]
+      SchmFlagsFile <- SchmNames[grepl("exo2.avsc",SchmNames)]
     }else{
       SchmFlagsFile <- SchmNames[grepl(sensor,SchmNames)]
     }
