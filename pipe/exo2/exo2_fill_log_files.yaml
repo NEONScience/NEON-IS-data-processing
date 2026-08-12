@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-group-fill:sha-49cb2da
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-group-fill:sha-051ed3b
   cmd:
   - sh
   - "-c"

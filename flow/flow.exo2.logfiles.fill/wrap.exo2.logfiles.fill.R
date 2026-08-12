@@ -95,6 +95,9 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
     SchmData <- base::paste0(base::readLines(SchmData),collapse='')
     SchmFlags<-base::paste0(SchmBase,"/",sensor,"/flags_logs_",sensor,'.avsc')
     SchmFlags <- base::paste0(base::readLines(SchmFlags),collapse='')
+  }else{
+    SchmData<-NULL
+    SchmFlags<-NULL
   }
   
   #!!!!!!!!!!!!!!!!!!!!!!!Adjust streamed data headers to match schemas (For testing; this will get fixed earlier)!!!!!!!!!!!!!!!!!!!!!!!  
