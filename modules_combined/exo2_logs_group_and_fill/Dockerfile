@@ -19,52 +19,36 @@ WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
-RUN set -eux; \
-    apt-get update -o Acquire::Retries=5; \
-    apt-get install -y --no-install-recommends --fix-missing \
-        python3.9 \
-        python3.9-venv \
-        python3-pip; \
-    rm -rf /var/lib/apt/lists/*; \
-    python3.9 -m venv /opt/venv
-    
-ENV VIRTUAL_ENV=/opt/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-    
-RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${COMMON_DIR}/requirements.txt && \
-    apt-get autoremove -y && \
-	    apt-get autoclean -y && \
-	    rm -rf /var/lib/apt/lists/* && \
-    groupadd -g 9999 appuser && \
-    useradd -r -u 9999 -g appuser appuser 
+RUN apt update && \
+    apt-get install -y --no-install-recommends \
+        python3.9 && \
+    apt install -y python3-pip && \
+    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+   apt-get autoremove -y && \
+	 apt-get autoclean -y && \
+	 rm -rf /var/lib/apt/lists/* 
 
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
-# Load kafka combiner
-# Copy the lockfile and restore known working versions of R dependency packages
-# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./flow/flow.kfka.comb/renv.lock .
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
-
-# Copy in R code
-COPY ./flow/flow.kfka.comb/flow.kfka.comb.R .
-COPY ./flow/flow.kfka.comb/wrap.kfka.comb.R .
 
 # Build in the log file filler module
-ARG MODULE_DIR="flow"
+ARG FLOW_DIR="flow"
 ARG APP_DIR_1="flow.exo2.logfiles.fill"
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./flow/flow.exo2.logfiles.fill/renv.lock .
+COPY ${FLOW_DIR}/${APP_DIR_1}/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
+# Create app user
+RUN groupadd appuser && \
+    useradd appuser -g appuser
+
 # Copy in R code
-COPY ./flow/flow.exo2.logfiles.fill/flow.exo2.logfiles.fill.R .
-COPY ./flow/flow.exo2.logfiles.fill/wrap.exo2.logfiles.fill.R .
+COPY ${FLOW_DIR}/${APP_DIR_1}/flow.exo2.logfiles.fill.R .
+COPY ${FLOW_DIR}/${APP_DIR_1}/wrap.exo2.logfiles.fill.R .
 
 # Run as app user
 USER appuser
