@@ -4,4 +4,4 @@ kind: Kustomization
 namespace: argo-workflows-dev
 resources:
   - assign-calibrations-config.yaml
-  - assign-calibrations-wftmpl.yaml
+  - assign-calibrations-wft.yaml

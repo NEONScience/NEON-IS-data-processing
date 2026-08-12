@@ -4,4 +4,4 @@ kind: Kustomization
 namespace: argo-workflows-dev
 resources:
   - assign-science-review-flags-config.yaml
-  - assign-science-review-flags-wftmpl.yaml
+  - assign-science-review-flags-wft.yaml

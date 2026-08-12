@@ -4,4 +4,4 @@ kind: Kustomization
 namespace: argo-workflows-dev
 resources:
   - assign-groups-config.yaml
-  - assign-groups-wftmpl.yaml
+  - assign-groups-wft.yaml

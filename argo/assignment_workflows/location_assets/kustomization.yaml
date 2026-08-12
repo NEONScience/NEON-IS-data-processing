@@ -4,4 +4,4 @@ kind: Kustomization
 namespace: argo-workflows-dev
 resources:
   - assign-location-assets-config.yaml
-  - assign-location-assets-wftmpl.yaml
+  - assign-location-assets-wft.yaml

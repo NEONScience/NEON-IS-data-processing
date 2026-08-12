@@ -4,4 +4,4 @@ kind: Kustomization
 namespace: argo-workflows-dev
 resources:
   - assign-location-active-dates-config.yaml
-  - assign-location-active-dates-wftmpl.yaml
+  - assign-location-active-dates-wft.yaml
