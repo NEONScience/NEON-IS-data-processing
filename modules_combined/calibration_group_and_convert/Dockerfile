@@ -28,19 +28,41 @@ RUN apt update && \
     apt-get install -y --no-install-recommends \
         software-properties-common \
         gnupg \
-        jq && \
+        jq \
+        build-essential \
+        ca-certificates \
+        wget \
+        libssl-dev \
+        zlib1g-dev \
+        libbz2-dev \
+        libreadline-dev \
+        libsqlite3-dev \
+        libffi-dev \
+        liblzma-dev \
+        xz-utils \
+        tk-dev \
+        libgdbm-dev \
+        libnss3-dev \
+        uuid-dev && \
     rm -rf /var/lib/apt/lists/* 
-    
-RUN add-apt-repository ppa:deadsnakes/ppa -y
-RUN apt update
-RUN apt-get install -y python3.10 python3.10-venv python3-pip
+
+ARG PYTHON_VERSION=3.10.14
+RUN wget -q https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+    tar -xzf Python-${PYTHON_VERSION}.tgz && \
+    cd Python-${PYTHON_VERSION} && \
+    ./configure --enable-optimizations --with-ensurepip=install && \
+    make -j"$(nproc)" && \
+    make altinstall && \
+    cd / && \
+    rm -rf /usr/src/app/Python-${PYTHON_VERSION} /usr/src/app/Python-${PYTHON_VERSION}.tgz
+
 RUN python3.10 -m venv /opt/venv
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
     apt-get autoremove -y && \
     apt-get autoclean -y && \
     groupadd -g 9999 appuser && \
