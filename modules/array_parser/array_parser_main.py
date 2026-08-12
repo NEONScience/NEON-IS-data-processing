@@ -43,7 +43,7 @@ def main() -> None:
     file_version: str | None = env.str("FILE_VERSION", "v2")
     common_path: str | None = env.str("COMMON_PATH", "app/common/", None)
     utils_path: str | None = env.str("UTILS_PATH", "app/neon_avro_kafka_utils/", None)
-    update_trigger_table: bool | None = env.str("UPDATE_TRIGGER_TABLE", False)
+    update_trigger_table: bool | None = env.bool("UPDATE_TRIGGER_TABLE", False)
     log_config.configure(log_level)
     log.debug(f"data_path: {data_path} schema_path: {schema_path} out_path: {out_path}")
     config = Config(
