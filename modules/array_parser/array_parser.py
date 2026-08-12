@@ -39,7 +39,7 @@ def parse(config: Config) -> None:
     max_date_per_site = None
     gen_path = (
         import_module.import_base_module(
-            "gen_path", common_modules_path + "gen_path.py"
+            "gen_path", str(Path(common_modules_path) / "gen_path.py")
         )
         if common_modules_path
         else None
