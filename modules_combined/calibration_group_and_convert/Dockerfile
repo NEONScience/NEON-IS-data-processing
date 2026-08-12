@@ -33,8 +33,8 @@ RUN apt update && \
     
 RUN add-apt-repository ppa:deadsnakes/ppa -y
 RUN apt update
-RUN apt-get install -y python3.9 python3.9-venv python3-pip
-RUN python3.9 -m venv /opt/venv
+RUN apt-get install -y python3.10 python3.10-venv python3-pip
+RUN python3.10 -m venv /opt/venv
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
