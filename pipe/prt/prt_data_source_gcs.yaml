@@ -60,16 +60,17 @@ input:
       branch: master
 output_branch: master
 parallelism_spec:
-  constant: 5
+  constant: 20
 autoscaling: true
 resource_requests:
-  memory: 600M
-  cpu: 0.5
-resource_limits:
   memory: 1G
+  cpu: 0.35
+  disk: 2G
+resource_limits:
+  memory: 3G
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 2.8G
+  memory: 3.5G
   cpu: 0.5
 datum_set_spec:
   number: 1

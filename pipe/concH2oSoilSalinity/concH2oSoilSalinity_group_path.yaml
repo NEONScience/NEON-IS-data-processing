@@ -2,7 +2,7 @@
 pipeline:
   name: concH2oSoilSalinity_group_path
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.2
   cmd:
   - /bin/bash
   stdin:
@@ -52,11 +52,12 @@ input:
       glob: /(*/*/*)
       joinOn: $1
 parallelism_spec:
-  constant: 5
+  constant: 12
 autoscaling: true
 resource_requests:
   memory: 2G
   cpu: 0.6
+  disk: 2G
 resource_limits:
   memory: 2.5G
   cpu: 1.2

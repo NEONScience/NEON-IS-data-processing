@@ -2,7 +2,7 @@
 pipeline:
   name: prt_ingest_days
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v2.0.0
   env:
     SOURCE_TYPE_INDEX: "3"
     YEAR_INDEX: "4"
@@ -69,8 +69,8 @@ input:
   # Run on a cron as well so that we can create a cron trigger file for use in later modules
   - cron:
       name: tick
-      #spec: "@never"
-      spec: "0 0 * * *" # Run at 00:00 GMT
+      spec: "@never"
+      #spec: "0 0 * * *" # Run at 00:00 GMT 
       overwrite: true
   - pfs:
       name: INGEST_MANIFEST

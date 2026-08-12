@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_stats_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.7
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.8
   cmd:
   - sh
   - "-c"
@@ -50,7 +50,7 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '4' # Option for stats module
+    PARALLELIZATION_INTERNAL: '2' # Option for stats module
 input:
   cross:
   - pfs:
@@ -71,14 +71,15 @@ input:
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 8
+  constant: 20
 autoscaling: true
-resource_requests: 
+resource_requests:
   memory: 3G
-  cpu: 5
+  cpu: 2
+  disk: 3G
 resource_limits:
   memory: 4.5G
-  cpu: 8
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 3G
   cpu: 1.2
