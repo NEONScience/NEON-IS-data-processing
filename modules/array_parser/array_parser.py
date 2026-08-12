@@ -46,8 +46,10 @@ def parse(config: Config) -> None:
     )
     update_trigger_table = None
     if trigger_table_update:
-        neon_avro_kafka_utils = import_module.import_base_module(
-            "neon_avro_kafka_utils", utils_path + "__init__.py"
+        if not utils_path:
+            raise ValueError("UTILS_PATH must be set when UPDATE_TRIGGER_TABLE is True")
+        import_module.import_base_module(
+            "neon_avro_kafka_utils", str(Path(utils_path) / "__init__.py")
         )
         update_trigger_table = importlib.import_module(
             "neon_avro_kafka_utils.update_trigger_table"
