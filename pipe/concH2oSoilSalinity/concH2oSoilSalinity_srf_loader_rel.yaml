@@ -1,0 +1,48 @@
+---
+# _rel variant of concH2oSoilSalinity_srf_loader.
+# Pulls current SRFs from PDR. Triggered by commits to
+# concH2oSoilSalinity_cron_daily_and_date_control_rel - mirrors the prod pattern
+# where srf_loader triggers off ingest_days, except _rel has no ingest_days
+# so it hangs directly off the cron_daily output. One cron heartbeat drives
+# the whole _rel chain. Coexists alongside production
+# concH2oSoilSalinity_srf_loader.
+pipeline:
+  name: concH2oSoilSalinity_srf_loader_rel
+transform:
+  cmd:
+    - /bin/bash
+  env:
+    GROUP_PREFIX: conc-h2o-soil-salinity-split_
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m srf_loader.srf_loader_main
+input:
+  # Triggered by the /tick/<timestamp> file that
+  # concH2oSoilSalinity_cron_daily_and_date_control_rel writes on every cron tick. Each
+  # tick creates a NEW timestamped file inside /tick, which changes the datum
+  # hash and forces srf_loader_rel to rerun (i.e., re-poll PDR). Mirrors the
+  # prod pattern where srf_loader globs /tick/ on enviroscan_ingest_days.
+  pfs:
+    repo: concH2oSoilSalinity_cron_daily_and_date_control_rel
+    branch: master
+    glob: /tick/
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 50M
+  cpu: 0.1
+resource_limits:
+  memory: 300M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 200M
+  cpu: 0.3
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

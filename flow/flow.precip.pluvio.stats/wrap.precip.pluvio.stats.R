@@ -69,8 +69,13 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-07-21)
 #     Initial creation
-#   Teresa Burlingame  (2025-04-08)
+#   Teresa Burlingame  (2026-04-08)
 #     change sum logic to be NA when all 30 mins are NA. 
+#   Teresa Burlingame  (2026-06-26)
+#     update ucrt to be set to a minimum of 0.03 mm based on 0.1 mm gauge resolution, which converts to standard uncertainty (res / sqrt(12)).
+#   Teresa Burlingame  (2026-08-04)
+#     extremePrecipQF now flags the full 30-minute window on any 1-minute occurrence, per ATBD, instead of the 10% rule
+
 ##############################################################################################
 wrap.precip.pluvio.stats <- function(DirIn,
                                DirOutBase,
@@ -256,8 +261,9 @@ wrap.precip.pluvio.stats <- function(DirIn,
   #apply UCRT to combined
   data[, combinedUcrt := uCvalA1 * accu_nrt]
     
-  #if ucrt less than 0.1mm, change to 0.1mm (manufacturer accuracy spec)
-  data[, combinedUcrt := fifelse(combinedUcrt < 0.1, 0.1, combinedUcrt)]
+  # Minimum standard uncertainty set to 0.03 mm based on 0.1 mm gauge resolution.
+  # Resolution converted to standard uncertainty (res / sqrt(12)).
+  data[, combinedUcrt := fifelse(combinedUcrt < 0.03, 0.03, combinedUcrt)]
     
   # More efficient aggregation using data.table
   data[, `:=`(
@@ -271,7 +277,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
     startDateTime = round_date(readout_time, '1 minute'),
     endDateTime = round_date(readout_time, '1 minute') + minutes(1),
     precipBulk = accu_nrt,
-    precipBulkExpUncert = combinedUcrt,
+    precipBulkExpUncert = combinedUcrt * 2, # Convert to expanded uncertainty (2x standard uncertainty)
     precipNumPts = ifelse(is.na(accu_nrt), 0L, 1L), # 1 if data exists, 0 if NA
     nullQF = nullQF,
     extremePrecipQF = rangeQF,
@@ -292,11 +298,12 @@ wrap.precip.pluvio.stats <- function(DirIn,
     startDateTime = min(startDateTime),
     endDateTime = max(endDateTime),
     precipBulk =  ifelse(all(is.na(precipBulk)), NA_real_, sum(precipBulk, na.rm = TRUE)),
-    precipBulkExpUncert = ifelse(all(is.na(precipBulkExpUncert)), NA_real_, sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2), # Quadrature sum with 2x multiplier
+    precipBulkExpUncert = ifelse(all(is.na(precipBulkExpUncert)), NA_real_, sqrt(sum((precipBulkExpUncert / 2)^2, na.rm = TRUE)) * 2), # RSS on standard uncertainties (divide out k=2), then re-apply k=2
     precipNumPts = sum(precipNumPts, na.rm = TRUE), # Sum the counts from 1-minute intervals
     nullQF = as.integer(ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                ifelse(all(is.na(nullQF)), NA_integer_, min(nullQF, na.rm = TRUE)))),
-    extremePrecipQF = as.integer(ifelse(mean(extremePrecipQF == 1, na.rm = TRUE) >= 0.1, 1L, 
+    # Per ATBD: any 1-minute extremePrecipQF flag raises the whole 30-minute window (not the general 10% rule)
+    extremePrecipQF = as.integer(ifelse(any(extremePrecipQF == 1, na.rm = TRUE), 1L, 
                                         ifelse(all(is.na(extremePrecipQF)), NA_integer_, min(extremePrecipQF, na.rm = TRUE)))),
     sensorErrorQF = as.integer(ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, 
                                       ifelse(all(is.na(sensorErrorQF)), NA_integer_, min(sensorErrorQF, na.rm = TRUE)))),

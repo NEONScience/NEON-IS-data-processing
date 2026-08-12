@@ -120,9 +120,10 @@ test_that("Unit test of wrap.precip.pluvio.stats.R", {
   testthat::expect_true(all(stats_030$precipBulk >= 0, na.rm = TRUE))
 
   # --------------------------------------------------------------------------------------------
-  # Test 7: precipBulkExpUncert meets the minimum 0.1 mm manufacturer accuracy spec
+  # Test 7: precipBulkExpUncert meets the minimum ucrt spec.
   # --------------------------------------------------------------------------------------------
-  testthat::expect_true(all(stats_001$precipBulkExpUncert >= 0.1, na.rm = TRUE))
+  # float32 round-trip of 0.06 is ~0.059999999; use tolerance sufficient for single precision
+  testthat::expect_true(all(stats_001$precipBulkExpUncert >= 0.06 - 1e-6, na.rm = TRUE))
 
   # --------------------------------------------------------------------------------------------
   # Test 8: 30-min precipBulk is the sum of the corresponding 1-min precipBulk values
