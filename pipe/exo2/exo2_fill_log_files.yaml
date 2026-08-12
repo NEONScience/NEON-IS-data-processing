@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-group-fill:sha-fa1b3ff
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-group-fill:sha-60ce231
   cmd:
   - sh
   - "-c"
@@ -34,7 +34,9 @@ transform:
     Rscript ./flow.exo2.logfiles.fill.R \
       DirIn=$OUT_PATH_JOIN_SOURCES \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums
+      DirErr=/pfs/out/errored_datums \
+      DirSchmData=$DIR_SCHEMA_DATA \
+      DirSchmFlags=$DIR_SCHEMA_FLAGS
       
     EOF
   env:
@@ -84,6 +86,14 @@ transform:
     
 input:
   cross:
+  - pfs:
+      name: DIR_SCHEMA_DATA
+      repo: exo2_avro_schemas
+      glob: /exo2/exo2_filled_schemas/data_schemas
+  - pfs:
+      name: DIR_SCHEMA_FLAGS
+      repo: exo2_avro_schemas
+      glob: /exo2/exo2_filled_schemas/flag_schemas
   - join:
     - pfs:
         name: DATA_PATH_LOG
