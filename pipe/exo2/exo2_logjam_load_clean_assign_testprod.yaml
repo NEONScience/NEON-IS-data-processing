@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_logjam_load_clean_assign_testprod
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-43f0361
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-8534fd9
   stdin:
   - "#!/bin/bash"
   - Rscript ./flow.exo2.logfiles.R \

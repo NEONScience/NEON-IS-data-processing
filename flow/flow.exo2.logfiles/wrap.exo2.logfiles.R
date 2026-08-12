@@ -40,13 +40,13 @@
 # FileIn <- "~/pfs/exo2_logjam_load_files_testprod/55949/02f7a3866774546f7ec6ca85ba3cdbf7.csv"
 # FileIn <- "~/pfs/exo2_logjam_load_files_testprod/55949/cc6e671c6b5b12507e28b75a63ad4373.csv"
 # DirOutBase="~/pfs/out/exo2_logfile_output"
-# SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_calibrated.avsc'),collapse='')
-# SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2conductivity_calibrated.avsc'),collapse='')
-# SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2dissolvedoxygen_calibrated.avsc'),collapse='')
-# SchmPh <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2phorp_calibrated.avsc'),collapse='')
-# SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2turbidity_calibrated.avsc'),collapse='')
-# SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2fdom_calibrated.avsc'),collapse='')
-# SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2totalalgae_calibrated.avsc'),collapse='')
+# SchmExo2 <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2_log_data.avsc'),collapse='')
+# SchmCond <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2conductivity_log_data.avsc'),collapse='')
+# SchmDO <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2dissolvedoxygen_log_data.avsc'),collapse='')
+# SchmPh <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2phorp_log_data.avsc'),collapse='')
+# SchmTurb <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2turbidity_log_data.avsc'),collapse='')
+# SchmFdom <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2fdom_log_data.avsc'),collapse='')
+# SchmChl <-base::paste0(base::readLines('~/pfs/exo2_avro_schemas/exo2algae_log_data.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #'                               
 #' @changelog

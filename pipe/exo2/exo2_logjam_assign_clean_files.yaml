@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_logjam_assign_clean_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-7b264a4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-8534fd9
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -53,7 +53,7 @@ input:
   - pfs:
       name: SCHEMA_CHL
       repo: exo2_avro_schemas
-      glob: /exo2totalalgae/exo2totalalgae_log_data.avsc
+      glob: /exo2algae/exo2algae_log_data.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

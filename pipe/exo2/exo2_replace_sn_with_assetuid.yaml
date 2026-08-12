@@ -31,7 +31,7 @@ input:
   - pfs:
       name: DATA_PATH
       repo: exo2_logjam_assign_clean_files
-      glob: /(*)/(*)/(*)/(*)/(*) #sensor/year/month/day/sn
+      glob: /(*)/(2025)/(09)/(*)/(*) #sensor/year/month/day/sn
       joinOn: $1
 parallelism_spec:
   constant: 1
