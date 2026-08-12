@@ -46,6 +46,12 @@ def main() -> None:
     update_trigger_table: bool | None = env.bool("UPDATE_TRIGGER_TABLE", False)
     log_config.configure(log_level)
     log.debug(f"data_path: {data_path} schema_path: {schema_path} out_path: {out_path}")
+
+    if not using_filesystem and parse_calibration:
+        raise ValueError(
+            "Calibration parsing is not yet cloud-enabled. Check that PARSE_CALIBRATION is False."
+        )
+
     config = Config(
         data_path=data_path,
         schema_path=schema_path,
@@ -70,6 +76,7 @@ def main() -> None:
         utils_path=utils_path,
         update_trigger_table=update_trigger_table,
     )
+
     array_parser.parse(config)
 
 

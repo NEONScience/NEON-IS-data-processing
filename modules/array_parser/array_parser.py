@@ -42,16 +42,14 @@ def parse(config: Config) -> None:
         if common_modules_path
         else None
     )
-    neon_avro_kafka_utils = (
-        import_module.import_base_module(
+    update_trigger_table = None
+    if trigger_table_update:
+        neon_avro_kafka_utils = import_module.import_base_module(
             "neon_avro_kafka_utils", utils_path + "__init__.py"
         )
-        if utils_path
-        else None
-    )
-    update_trigger_table = importlib.import_module(
-        "neon_avro_kafka_utils.update_trigger_table"
-    )
+        update_trigger_table = importlib.import_module(
+            "neon_avro_kafka_utils.update_trigger_table"
+        )
 
     if using_filesystem:
         for path in data_path.rglob("*"):
@@ -127,6 +125,7 @@ def parse(config: Config) -> None:
                 data_date,
             )
     if max_date_per_site and trigger_table_update:
+        assert update_trigger_table is not None
         for site in max_date_per_site:
             log.info(f"Updating trigger table for {site}")
             update_trigger_table.call_update_trigger_table(
