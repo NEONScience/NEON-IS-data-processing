@@ -7,7 +7,6 @@ exo2_sn_assetuid_mapping_loader.yaml
 exo2_replace_sn_with_assetuid.yaml
 exo2_regularize_log_data.yaml
 exo2_regularize_stream_data.yaml
-
 exo2_fill_log_files.yaml
 
 exo2_calibration_list_files.yaml
