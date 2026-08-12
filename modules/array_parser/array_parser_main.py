@@ -13,15 +13,8 @@ log = structlog.get_logger()
 
 def main() -> None:
     env = environs.Env()
-    common_path: str | None = env.str("COMMON_PATH", "app/common/", None)
-    utils_path: str | None = env.str("UTILS_PATH", "app/neon_avro_kafka_utils/", None)
-    if not common_path:
-        data_path: Path = env.path("DATA_PATH")
-    else:
-        gen_path = import_module.import_base_module(
-            "gen_path", common_path + "gen_path.py"
-        )
-        data_path: Path | CloudPath = gen_path.get_path(env.str("DATA_PATH"))
+    common_path: str | None = env.str("COMMON_PATH", "app/common/")
+    utils_path: str | None = env.str("UTILS_PATH", "app/neon_avro_kafka_utils/")
     schema_path: Path = env.path("SCHEMA_PATH")
     out_path: Path = env.path("OUT_PATH")
     source_type: str | None = env.str("SOURCE_TYPE", None)
@@ -41,9 +34,16 @@ def main() -> None:
     test_mode: bool = env.bool("TEST_MODE", False)
     using_filesystem: bool = env.bool("USING_FILESYSTEM", True)
     file_version: str | None = env.str("FILE_VERSION", "v2")
-    common_path: str | None = env.str("COMMON_PATH", "app/common/", None)
-    utils_path: str | None = env.str("UTILS_PATH", "app/neon_avro_kafka_utils/", None)
+
     update_trigger_table: bool | None = env.bool("UPDATE_TRIGGER_TABLE", False)
+    if using_filesystem:
+        data_path: Path = env.path("DATA_PATH")
+    else:
+        assert common_path is not None
+        gen_path = import_module.import_base_module(
+            "gen_path", common_path + "gen_path.py"
+        )
+        data_path: Path | CloudPath = gen_path.get_path(env.str("DATA_PATH"))
     log_config.configure(log_level)
     log.debug(f"data_path: {data_path} schema_path: {schema_path} out_path: {out_path}")
 
