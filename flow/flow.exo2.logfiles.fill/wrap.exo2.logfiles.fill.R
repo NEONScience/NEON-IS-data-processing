@@ -12,7 +12,9 @@
 #' @param DirOutBase Character value. The base output path that replaces the BASE_REPO part of DirInBase.
 #' Sub-folders for data and log flag will be created in this directory. 
 #' 
-#' @param SchmBase (optional), Base directory containing schema for exo2 multisonde data streams.
+#' @param SchmDataBase (optional), Base directory containing schema for exo2 multisonde data streams.
+#' 
+#' @param SchmFlagsBase (optional), Base directory containing schema for exo2 multisonde log flags.
 #' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
@@ -41,7 +43,8 @@
 
 wrap.exo2.logfiles.fill <- function(DirInBase,
                                     DirOutBase,
-                                    SchmBase=NULL,
+                                    SchmDataBase=NULL,
+                                    SchmFlagsBase=NULL,
                                     log=NULL
 ){
   
@@ -90,25 +93,30 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   }
 
   # Set corrected schema based on sensor type
-  if(!is.null(SchmBase)){
-    SchmData<-base::paste0(SchmBase,"/",sensor,"/",sensor,'_filled.avsc')
-    SchmData <- base::paste0(base::readLines(SchmData),collapse='')
-    SchmFlags<-base::paste0(SchmBase,"/",sensor,"/flags_logs_",sensor,'.avsc')
-    SchmFlags <- base::paste0(base::readLines(SchmFlags),collapse='')
+  if(!is.null(SchmDataBase)){
+    SchmNames <- base::list.files(SchmDataBase,full.names=FALSE)
+    if(sensor =="exo2"){
+      SchmDataFile <- SchmNames[grepl("exo2_",SchmNames)]
+    }else{
+      SchmDataFile <- SchmNames[grepl(sensor,SchmNames)]
+    }
+    SchmData <- base::paste0(SchmDataBase,"/",SchmDataFile)
+    SchmData <- base::paste0(base::readLines(SchmData),collapse='')    
   }else{
     SchmData<-NULL
+  }
+  if(!is.null(SchmFlagsBase)){
+    SchmNames <- base::list.files(SchmFlagsBase,full.names=FALSE)
+    if(sensor =="exo2"){
+      SchmFlagsFile <- SchmNames[grepl("exo2_",SchmNames)]
+    }else{
+      SchmFlagsFile <- SchmNames[grepl(sensor,SchmNames)]
+    }
+    SchmFlags <- base::paste0(SchmFlagsBase,"/",SchmFlagsFile)
+    SchmFlags <- base::paste0(base::readLines(SchmFlags),collapse='')    
+  }else{
     SchmFlags<-NULL
   }
-  
-  #!!!!!!!!!!!!!!!!!!!!!!!Adjust streamed data headers to match schemas (For testing; this will get fixed earlier)!!!!!!!!!!!!!!!!!!!!!!!  
-  # if(sensor=="exo2"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id", "site_id", "readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage") }}
-  # if(sensor=="exo2conductivity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature") }}
-  # if(sensor=="exo2dissolvedoxygen"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat") }}
-  # if(sensor=="exo2phorp"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","pH","pHvoltage") }}
-  # if(sensor=="exo2turbidity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","turbidity") }}
-  # if(sensor=="exo2fdom"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","fDOM") }}
-  # if(sensor=="exo2algae"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin") }}
-  # #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
   # Add log data flags based on sensor type
   if(!is.null(streamedData)){streamedData$logDataQF<-0} # First a generic flag used only temporarily for filtering

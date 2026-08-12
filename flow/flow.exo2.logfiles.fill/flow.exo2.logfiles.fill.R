@@ -16,11 +16,11 @@
 #' 
 #' 4. "DirErr=value", The output path to for errored datums.
 #' 
-#' 4. "DirSchm=value" (optional), The base path for the avro schema for the output data 
-#' file. Within this directory should be sub-folders for data and log flags. 
+#' 5. "DirSchmData=value" (optional), The base path for the avro schema for the output data files.
 #' 
+#' 6. "DirSchmFlags=value" (optional), The base path for the avro schema for the output log flags files.
 #' 
-#'
+#' #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #' 
@@ -36,7 +36,8 @@
 # arg <- c("DirIn=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_testing/exo2conductance/2025/09/08/26669",
 #          "DirOut=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_log_filled",
 #          "DirErr=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_errored_datums",
-#          "DirSchm=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/schemas")
+#          "DirSchmData=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/schemas/data",
+#          "DirSchmFlags=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/schemas/flags")
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 
 #' @seealso None currently
@@ -76,15 +77,17 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),
-                                      NameParaOptn = c("DirSchm"),log = log)
+                                      NameParaOptn = c("DirSchmData", "DirSchmFlags"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Base input directory: ', Para$DirIn))
 log$debug(base::paste0('Base output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Base schema directory: ', Para$DirSchm))
+log$debug(base::paste0('Base schema data directory: ', Para$DirSchmData))
+log$debug(base::paste0('Base schema flags directory: ', Para$DirSchmFlags))
 
-if(base::is.null(Para$DirSchm) || Para$DirSchm == 'NA'){SchmBase <- NULL}else {SchmBase <- Para$DirSchm}
+if(base::is.null(Para$DirSchmData) || Para$DirSchmData == 'NA'){SchmDataBase <- NULL}else {SchmDataBase <- Para$DirSchmData}
+if(base::is.null(Para$DirSchmFlags) || Para$DirSchmFlags == 'NA'){SchmFlagsBase <- NULL}else {SchmFlagsBase <- Para$DirSchmFlags}
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
@@ -104,7 +107,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.exo2.logfiles.fill(
         DirInBase=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmBase=SchmBase,
+        SchmDataBase=SchmDataBase,
+        SchmFlagsBase=SchmFlagsBase,
         log=log
       ),
       error = function(err) {
