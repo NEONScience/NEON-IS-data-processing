@@ -146,7 +146,9 @@ def write_restructured_file(
         site_file_path.touch()
 
     # Update max date per site
-    if data_date and (
-        site not in max_date_per_site or data_date > max_date_per_site[site]
+    if (
+        data_date
+        and max_date_per_site is not None
+        and (site not in max_date_per_site or data_date > max_date_per_site[site])
     ):
         max_date_per_site[site] = data_date
