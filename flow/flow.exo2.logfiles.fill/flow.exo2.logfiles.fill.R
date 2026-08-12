@@ -52,6 +52,7 @@ options(digits.secs = 3)
 library(foreach)
 library(doParallel)
 library(lubridate)
+library(dplyr)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.exo2.logfiles.fill.R")
