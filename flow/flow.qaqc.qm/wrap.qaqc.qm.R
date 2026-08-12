@@ -417,7 +417,7 @@ wrap.qaqc.qm <- function(DirIn,
     fileQmOut <- base::paste(fileQmOutSplt,collapse='_')
     NameFileOutQm <- base::paste0(dirOutQm,'/',fileQmOut)
     
-    rptWrte <- base::try(NEONprocIS.base::def.wrte.parq(data=rpt,NameFile=NameFileOutQm,NameFileSchm=NULL,Schm=SchmQm),silent=FALSE)
+    rptWrte <- base::try(NEONprocIS.base::def.wrte.parq(data=rpt,NameFile=NameFileOutQm,NameFileSchm=NULL,Schm=SchmQm),silent=TRUE)
     if(base::class(rptWrte) == 'try-error'){
       log$error(base::paste0('Cannot write quality metrics file ', NameFileOutQm,'. ',attr(rptWrte,"condition"))) 
       stop()

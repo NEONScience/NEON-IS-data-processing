@@ -16,11 +16,15 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "FileSchmData=value" (optional), The avro schema for the input and output data file.
+#' 4. "SensWind=value", where the value is the name for the wind sensor.
 #' 
-#' 5. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
+#' 5. "SensCompass=value", where the value is the name for the compass sensor.
 #' 
-#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' 6. "FileSchmData=value" (optional), The avro schema for the input and output data file.
+#' 
+#' 7. "FileSchmQf=value" (optional), The avro schema for the combined flag file.   
+#' 
+#' 8. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
 #' pipes, that are to be copied with a symbolic link to the output path. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -43,6 +47,8 @@
 #          "DirOut=/home/ncatolico/Git/pfs/wind_buoy_specific_flags",
 #          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums",
 #          "DirSubCopy=location|threshold",
+#          "SensWind=rmyoung",
+#          "SensCompass=hmr3300",
 #          "FileSchmQf=/home/ncatolico/Git/pfs/windBuoy_avro_schemas/windBuoy/windBuoy_flags_deadcalm.avsc",
 #          "FileSchmData=/home/ncatolico/Git/pfs/windBuoy_avro_schemas/windBuoy/windBuoy_compass_corrected.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
@@ -51,8 +57,10 @@
 
 # changelog and author contributions / copyrights
 #' Nora Catolico (2026-07-10)
-#' Initial creation
-
+#'  Initial creation
+#' Nora Catolico (2026-08-12)
+#'  Added SensWind and SensCompass parameters. 
+#'  Added floor date standardization to 4 second intervals for both wind and compass data.
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -82,7 +90,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),
-                                      NameParaOptn = c("FileSchmData","FileSchmQf","DirSubCopy"),
+                                      NameParaOptn = c("FileSchmData","FileSchmQf","DirSubCopy","SensWind","SensCompass"),
                                       log = log)
 
 
@@ -93,6 +101,20 @@ log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
 log$debug(base::paste0('Director to copy: ', Para$DirSubCopy))
+
+if(base::is.null(Para$SensWind) || Para$SensWind == 'NA'){
+  SensWind <- 'rmyoung'
+} else {
+  SensWind <- Para$SensWind
+}
+log$debug(base::paste0('Sensor for wind: ', SensWind))
+
+if(base::is.null(Para$SensCompass) || Para$SensCompass == 'NA'){
+  SensCompass <- 'hmr3300'
+} else {
+  SensCompass <- Para$SensCompass
+}
+log$debug(base::paste0('Sensor for compass: ', SensCompass))
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'data'))
@@ -113,7 +135,7 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
 # Find all the input paths (datums). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
-                              nameDirSub = c('rmyoung'),
+                              nameDirSub = c(SensWind),
                               log = log)
 
 # Process each datum path
@@ -126,6 +148,8 @@ foreach::foreach(idxFileIn = DirIn) %dopar% {
       wrap.wind.buoy.compass.correction(
         DirIn=idxFileIn,
         DirOutBase=Para$DirOut,
+        SensWind=SensWind,
+        SensCompass=SensCompass,
         SchmDataOut=SchmDataOut,
         SchmFlagsOut=SchmFlagsOut,
         DirSubCopy=DirSubCopy,
