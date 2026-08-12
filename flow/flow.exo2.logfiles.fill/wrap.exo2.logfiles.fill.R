@@ -34,7 +34,9 @@
 #' Bobby Hensley (2026-08-05)
 #'   Initial creation.
 #' Bobby Hensley (2026-08-10)
-#'   Simplified to use single directories for input data and schmema.   
+#'   Simplified to use single directories for input data and schema.  
+#' Nora Catolico (2026-08-12) 
+#'   updated to work with final input structure and added schema support 
 ##############################################################################################
 
 wrap.exo2.logfiles.fill <- function(DirInBase,
@@ -82,7 +84,7 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   # Determine which sensor the data comes from. 
   sensor <- base::strsplit(InfoDirIn$dirRepo,'[/]')[[1]][2]
   #check that sensor is one of the expected types. If not, log an error and stop.
-  if(!sensor %in% c("exo2","exo2conductivity","exo2dissolvedoxygen","exo2phorp","exo2turbidity","exo2fdom","exo2totalalgae")){
+  if(!sensor %in% c("exo2","exo2conductivity","exo2dissolvedoxygen","exo2phorp","exo2turbidity","exo2fdom","exo2algae")){
     log$error(base::paste0('Sensor type ', sensor, ' is not recognized.'))
     base::stop()
   }
@@ -94,21 +96,16 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
     SchmFlags<-base::paste0(SchmBase,"/",sensor,"/flags_logs_",sensor,'.avsc')
     SchmFlags <- base::paste0(base::readLines(SchmFlags),collapse='')
   }
-
-  # map streamed names to logged names for each sensor type
-  if(!is.null(streamedData)){
-    if(sensor=="exo2"){
-  }
   
   #!!!!!!!!!!!!!!!!!!!!!!!Adjust streamed data headers to match schemas (For testing; this will get fixed earlier)!!!!!!!!!!!!!!!!!!!!!!!  
-  if(sensor=="exo2"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id", "site_id", "readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage") }}
-  if(sensor=="exo2conductivity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature") }}
-  if(sensor=="exo2dissolvedoxygen"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat") }}
-  if(sensor=="exo2phorp"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","pH","pHvoltage") }}
-  if(sensor=="exo2turbidity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","turbidity") }}
-  if(sensor=="exo2fdom"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","fDOM") }}
-  if(sensor=="exo2totalalgae"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin") }}
-  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # if(sensor=="exo2"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id", "site_id", "readout_time","sensorDepth","sondeSurfaceWaterPressure","wiperPosition","batteryVoltage","sensorVoltage") }}
+  # if(sensor=="exo2conductivity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","conductance","specificConductance","surfaceWaterTemperature") }}
+  # if(sensor=="exo2dissolvedoxygen"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","dissolvedOxygen","dissolvedOxygenSaturation","localDissolvedOxygenSat") }}
+  # if(sensor=="exo2phorp"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","pH","pHvoltage") }}
+  # if(sensor=="exo2turbidity"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","turbidity") }}
+  # if(sensor=="exo2fdom"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","fDOM") }}
+  # if(sensor=="exo2algae"){if(!is.null(streamedData)){colnames(streamedData) <- c("source_id","site_id","readout_time","chlorophyll","chlaRelativeFluorescence","blueGreenAlgaePhycocyanin") }}
+  # #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
   # Add log data flags based on sensor type
   if(!is.null(streamedData)){streamedData$logDataQF<-0} # First a generic flag used only temporarily for filtering
@@ -125,7 +122,7 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
             if(!is.null(loggedData)){loggedData$turbidityLogDataQF<-1 }}
   if(sensor=="exo2fdom"){if(!is.null(streamedData)){streamedData$fdomLogDataQF<-0};
             if(!is.null(loggedData)){loggedData$fdomLogDataQF<-1}}
-  if(sensor=="exo2totalalgae"){if(!is.null(streamedData)){streamedData$chlorophyllLogDataQF<-0;streamedData$chlaRelativeFluorLogDataQF<-0 };
+  if(sensor=="exo2algae"){if(!is.null(streamedData)){streamedData$chlorophyllLogDataQF<-0;streamedData$chlaRelativeFluorLogDataQF<-0 };
             if(!is.null(loggedData)){loggedData$chlorophyllLogDataQF<-0;loggedData$chlaRelativeFluorLogDataQF<-0 }}
 
   # If there is only streamed data use that.
@@ -141,7 +138,7 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
       group_by(bin_time) %>%
       slice_max(order_by = logDataQF, n = 1, with_ties = FALSE) %>%
       dplyr::ungroup()
-      dataOut <- subset(dataOut, select = -c(bin_time))
+    dataOut <- subset(dataOut, select = -c(bin_time))
   }
   dataOut <- subset(dataOut, select = -c(logDataQF))
   
@@ -156,14 +153,14 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   flagsFileName <-paste0(sensor,'_',assetuid,'_',format(timeBgn,format = "%Y-%m-%d"),'_log_flags')
   
   rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, NameFile = base::paste0(DirOutData,'/',outputFileName,".parquet"),
-                                               Schm = NULL),silent=TRUE)
+                                               Schm = SchmData),silent=TRUE)
   if(class(rptOut)[1] == 'try-error'){
     log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutData,'/',outputFileName,".parquet"),'. ',attr(rptOut, "condition")))
     stop()
   } else {log$info(base::paste0('Data written successfully in ', base::paste0(DirOutData,'/',outputFileName,".parquet")))}
   
   rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = logFlags, NameFile = base::paste0(DirOutFlags,'/',flagsFileName,".parquet"),
-                                                    Schm = NULL),silent=TRUE)
+                                                    Schm = SchmFlags),silent=TRUE)
   if(class(rptOutFlags)[1] == 'try-error'){
     log$error(base::paste0('Cannot write Flags to ',base::paste0(DirOutFlags,'/',flagsFileName,".parquet"),'. ',attr(rptOutFlags, "condition")))
     stop()

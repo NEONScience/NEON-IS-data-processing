@@ -32,18 +32,20 @@
 #' @keywords Currently none
 
 #' @examples
-setwd("//wsl.localhost/Ubuntu/home/hensley/Git/NEON-IS-data-processing/flow/flow.exo2.logfiles.fill")
-arg <- c("DirIn=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_testing/exo2conductance/2025/09/08/26669",
-         "DirOut=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_log_filled",
-         "DirErr=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_errored_datums",
-         "DirSchm=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/schemas")
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# setwd("//wsl.localhost/Ubuntu/home/hensley/Git/NEON-IS-data-processing/flow/flow.exo2.logfiles.fill")
+# arg <- c("DirIn=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_testing/exo2conductance/2025/09/08/26669",
+#          "DirOut=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_log_filled",
+#          "DirErr=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/exo2_errored_datums",
+#          "DirSchm=//wsl.localhost/Ubuntu/home/hensley/Git/pfs/schemas")
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 
 #' @seealso None currently
 
-# changelog and author contributions / copyrights
-#   Bobby Hensley (2026-08-10) original creation
-#   Bobby Hensley \email{hensley@battelleecology.org}
+# changelog and author contributions / copyrights 
+#   Bobby Hensley (2026-08-10) 
+#     original creation
+#   Nora Catolico (2026-08-12) 
+#     updated to work with final input structure and added schema support
 
 ##############################################################################################
 options(digits.secs = 3)
@@ -81,15 +83,18 @@ log$debug(base::paste0('Base output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Base schema directory: ', Para$DirSchm))
 
+if(base::is.null(Para$DirSchm) || Para$DirSchm == 'NA'){SchmBase <- NULL}else {SchmBase <- Para$DirSchm}
+
 # Find all the input paths (datums). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
-                              nameDirSub = "streamed",
+                              nameDirSub = "data",
                               log = log)
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
+  #idxDirIn<-DirIn[1]
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
   # Run the wrapper function for each datum, with error routing
@@ -98,7 +103,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.exo2.logfiles.fill(
         DirInBase=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmBase=Para$DirSchm,
+        SchmBase=SchmBase,
         log=log
       ),
       error = function(err) {
