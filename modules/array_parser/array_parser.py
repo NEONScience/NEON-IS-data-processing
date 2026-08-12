@@ -3,7 +3,9 @@ import importlib
 from pathlib import Path
 
 import structlog
-from array_parser import calibration_file_parser, data_file_parser, schema_parser
+import array_parser.calibration_file_parser as calibration_file_parser
+import array_parser.data_file_parser as data_file_parser
+import array_parser.schema_parser as schema_parser
 from array_parser.array_parser_config import Config
 from array_parser.path_parser import PathParser
 from array_parser.schema_parser import SchemaData
@@ -102,6 +104,7 @@ def parse(config: Config) -> None:
                 # Copy/link over other files in the directory
                 log.debug(f"Linking file: {path} to {Path(common_path, data_type)}")
                 link_data_file(path, Path(common_path, data_type))
+        else:
             assert gen_path is not None
             if source_type_out is None:
                 raise ValueError("SOURCE_TYPE_OUT must be set when USING_FILESYSTEM is False")

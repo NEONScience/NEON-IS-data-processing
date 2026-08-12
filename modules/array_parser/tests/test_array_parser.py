@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -157,3 +158,117 @@ class ArrayParserTest(TestCase):
         self.assertTrue(calibration_path_7.exists())
         self.assertTrue(calibration_path_8.exists())
         self.assertTrue(calibration_path_9.exists())
+
+
+class CloudParserTest(TestCase):
+
+    def setUp(self) -> None:
+        self.setUpPyfakefs()
+
+        self.out_path = Path('/out')
+        self.data_path = Path('/cloud_data')
+        self.schema_path = Path('/in/schema/tchain_parsed.avsc')
+        self.source_type = 'tchain'
+        self.data_date = '2019-01-12'
+        self.source_id = '32610'
+        self.source_type_out = 'tchain'
+        self.file_version = 'v2'
+        self.common_path = '/common/'
+
+        actual_schema = Path(os.path.dirname(__file__), 'tchain_parsed.avsc')
+        self.fs.add_real_file(actual_schema, target_path=self.schema_path)
+
+        # Create a fake data file at the hivestyle path that gen_path will return
+        self.hivestyle_path = Path('/cloud_data/v2/tchain/2019/01/12/32610')
+        self.data_file = Path(self.hivestyle_path, 'tchain_32610_2019-01-12.parquet')
+        self.data_file.parent.mkdir(parents=True, exist_ok=True)
+        self.data_file.touch()
+
+    def _make_config(self, **kwargs) -> Config:
+        defaults = dict(
+            data_path=self.data_path,
+            schema_path=self.schema_path,
+            out_path=self.out_path,
+            parse_calibration=False,
+            source_type_index=None,
+            source_type_out=self.source_type_out,
+            replace_schema_name=False,
+            write_site_file=False,
+            year_index=None,
+            month_index=None,
+            day_index=None,
+            source_id_index=None,
+            data_type_index=None,
+            test_mode=False,
+            source_type=self.source_type,
+            data_date=self.data_date,
+            source_id_list=self.source_id,
+            using_filesystem=False,
+            file_version=self.file_version,
+            common_path=self.common_path,
+        )
+        defaults.update(kwargs)
+        return Config(**defaults)
+
+    @patch('array_parser.array_parser.data_file_parser.write_restructured_file')
+    @patch('array_parser.array_parser.import_module.import_base_module')
+    def test_cloud_parse(self, mock_import_base, mock_write) -> None:
+        out_file = Path('/out/v2/tchain/2019/01/12/32610/tchain_32610_2019-01-12.parquet')
+        mock_gen_path = MagicMock()
+        mock_gen_path.get_hivestyle_path.return_value = self.hivestyle_path
+        mock_gen_path.get_hivestyle_glob.return_value = '*.parquet'
+        mock_gen_path.create_output_path.return_value = out_file
+        mock_import_base.return_value = mock_gen_path
+
+        array_parser.parse(self._make_config())
+
+        mock_gen_path.get_hivestyle_path.assert_called_once_with(
+            self.data_path,
+            self.file_version,
+            self.data_date,
+            self.source_type,
+            self.source_id,
+        )
+        mock_write.assert_called_once_with(
+            self.data_file,
+            out_file,
+            self.schema_path,
+            False,
+            False,
+            {},
+            self.data_date,
+        )
+
+    @patch('array_parser.array_parser.importlib.import_module')
+    @patch('array_parser.array_parser.data_file_parser.write_restructured_file')
+    @patch('array_parser.array_parser.import_module.import_base_module')
+    def test_cloud_parse_trigger_table_update(self, mock_import_base, mock_write, mock_importlib) -> None:
+        out_file = Path('/out/v2/tchain/2019/01/12/32610/tchain_32610_2019-01-12.parquet')
+        mock_gen_path = MagicMock()
+        mock_gen_path.get_hivestyle_path.return_value = self.hivestyle_path
+        mock_gen_path.get_hivestyle_glob.return_value = '*.parquet'
+        mock_gen_path.create_output_path.return_value = out_file
+        mock_update_trigger_table = MagicMock()
+
+        def import_base_side_effect(name, path):
+            if name == 'gen_path':
+                return mock_gen_path
+            return MagicMock()
+
+        mock_import_base.side_effect = import_base_side_effect
+        mock_importlib.return_value = mock_update_trigger_table
+
+        site = 'CRAM'
+
+        def write_side_effect(path, out_path, schema, replace_schema, write_site, max_date_per_site=None, data_date=None):
+            if max_date_per_site is not None and data_date is not None:
+                max_date_per_site[site] = data_date
+
+        mock_write.side_effect = write_side_effect
+
+        config = self._make_config(update_trigger_table=True, utils_path='/utils/')
+        array_parser.parse(config)
+
+        mock_update_trigger_table.call_update_trigger_table.assert_called_once_with(
+            site, self.source_type_out, max_date=self.data_date
+        )
