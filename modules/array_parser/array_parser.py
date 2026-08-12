@@ -102,8 +102,9 @@ def parse(config: Config) -> None:
                 # Copy/link over other files in the directory
                 log.debug(f"Linking file: {path} to {Path(common_path, data_type)}")
                 link_data_file(path, Path(common_path, data_type))
-        else:
             assert gen_path is not None
+            if source_type_out is None:
+                raise ValueError("SOURCE_TYPE_OUT must be set when USING_FILESYSTEM is False")
             out_file = gen_path.create_output_path(
                 source_type,
                 Path(
