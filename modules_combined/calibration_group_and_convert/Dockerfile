@@ -26,8 +26,6 @@ COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_
  
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        software-properties-common \
-        gnupg \
         jq \
         build-essential \
         ca-certificates \
@@ -39,14 +37,10 @@ RUN apt update && \
         libsqlite3-dev \
         libffi-dev \
         liblzma-dev \
-        xz-utils \
-        tk-dev \
-        libgdbm-dev \
-        libnss3-dev \
-        uuid-dev && \
+        xz-utils && \
     rm -rf /var/lib/apt/lists/* 
 
-ARG PYTHON_VERSION=3.10.14
+ARG PYTHON_VERSION=3.11.9
 RUN wget -q https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
     tar -xzf Python-${PYTHON_VERSION}.tgz && \
     cd Python-${PYTHON_VERSION} && \
@@ -56,7 +50,7 @@ RUN wget -q https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_
     cd / && \
     rm -rf /usr/src/app/Python-${PYTHON_VERSION} /usr/src/app/Python-${PYTHON_VERSION}.tgz
 
-RUN python3.10 -m venv /opt/venv
+RUN python3.11 -m venv /opt/venv
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
