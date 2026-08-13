@@ -27,6 +27,7 @@ def parse(config: Config) -> None:
     source_id_list_str: str = config.source_id_list
     using_filesystem: bool = config.using_filesystem
     file_version: str = config.file_version
+    relative_path_index: int = config.relative_path_index
     common_modules_path: str = config.common_path
     utils_path: str = config.utils_path
     trigger_table_update: bool = config.update_trigger_table
@@ -115,7 +116,7 @@ def parse(config: Config) -> None:
                 Path(
                     out_path / file_version,
                     source_type_out,
-                    *Path(str(path)).parts[4:-1],
+                    *Path(str(path)).parts[relative_path_index:-1],
                 ),
                 rm_offsets=True,
                 replace_source_type=False,

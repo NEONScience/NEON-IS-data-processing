@@ -25,6 +25,7 @@ class Config(NamedTuple):
     source_id_list: str | None = None
     using_filesystem: bool | None = None
     file_version: str | None = None
+    relative_path_index: int | None = None
     common_path: str | None = None
     utils_path: str | None = None
     update_trigger_table: bool | None = None

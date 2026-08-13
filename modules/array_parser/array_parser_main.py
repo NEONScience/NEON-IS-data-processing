@@ -34,6 +34,7 @@ def main() -> None:
     test_mode: bool = env.bool("TEST_MODE", False)
     using_filesystem: bool = env.bool("USING_FILESYSTEM", True)
     file_version: str | None = env.str("FILE_VERSION", "v2")
+    relative_path_index: int | None = env.int("RELATIVE_PATH_INDEX", 4)
 
     update_trigger_table: bool | None = env.bool("UPDATE_TRIGGER_TABLE", False)
     if using_filesystem:
@@ -72,6 +73,7 @@ def main() -> None:
         test_mode=test_mode,
         using_filesystem=using_filesystem,
         file_version=file_version,
+        relative_path_index=relative_path_index,
         common_path=common_path,
         utils_path=utils_path,
         update_trigger_table=update_trigger_table,
