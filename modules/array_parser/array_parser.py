@@ -3,9 +3,7 @@ import importlib
 from pathlib import Path
 
 import structlog
-import array_parser.calibration_file_parser as calibration_file_parser
-import array_parser.data_file_parser as data_file_parser
-import array_parser.schema_parser as schema_parser
+from array_parser import calibration_file_parser, data_file_parser, schema_parser
 from array_parser.array_parser_config import Config
 from array_parser.path_parser import PathParser
 from array_parser.schema_parser import SchemaData
@@ -29,11 +27,11 @@ def parse(config: Config) -> None:
     source_id_list_str: str = config.source_id_list
     using_filesystem: bool = config.using_filesystem
     file_version: str = config.file_version
+    relative_path_index: int = config.relative_path_index
     common_modules_path: str = config.common_path
     utils_path: str = config.utils_path
     trigger_table_update: bool = config.update_trigger_table
     schema_data: SchemaData = schema_parser.parse_schema_file(schema_path)
-    parser = PathParser(config)
     files_to_parse = []
     # max date per site for trigger table update
     max_date_per_site = None
@@ -41,12 +39,12 @@ def parse(config: Config) -> None:
         import_module.import_base_module(
             "gen_path", str(Path(common_modules_path) / "gen_path.py")
         )
-        if common_modules_path
+        if common_modules_path is not None and Path(common_modules_path).exists()
         else None
     )
     update_trigger_table = None
     if trigger_table_update:
-        if not utils_path:
+        if utils_path is None or not Path(common_modules_path).exists():
             raise ValueError("UTILS_PATH must be set when UPDATE_TRIGGER_TABLE is True")
         import_module.import_base_module(
             "neon_avro_kafka_utils", str(Path(utils_path) / "__init__.py")
@@ -79,6 +77,7 @@ def parse(config: Config) -> None:
         max_date_per_site = {}
     for path in files_to_parse:
         if using_filesystem:
+            parser = PathParser(config)
             source_type, year, month, day, source_id, data_type = parser.parse(path)
             if source_type_out is not None:
                 common_path = Path(
@@ -109,13 +108,15 @@ def parse(config: Config) -> None:
         else:
             assert gen_path is not None
             if source_type_out is None:
-                raise ValueError("SOURCE_TYPE_OUT must be set when USING_FILESYSTEM is False")
+                raise ValueError(
+                    "SOURCE_TYPE_OUT must be set when USING_FILESYSTEM is False"
+                )
             out_file = gen_path.create_output_path(
                 source_type,
                 Path(
                     out_path / file_version,
                     source_type_out,
-                    *Path(str(path)).parts[4:-1],
+                    *Path(str(path)).parts[relative_path_index:-1],
                 ),
                 rm_offsets=True,
                 replace_source_type=False,
