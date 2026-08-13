@@ -1,0 +1,190 @@
+---
+# _gcs variant of concH2oSoilSalinity_group_path.
+#
+# Prod concH2oSoilSalinity_group_path takes tempSoil_level1_group_consolidate_srf
+# as a pfs input. This variant drops that pfs dependency and hydrates the same
+# data directly from GCS, so the concH2o chain can run without the tempSoil L1
+# chain being present in Pachyderm.
+#
+# Two GCS legs per day (day list comes from the datum's GROUP_ASSIGNMENT_PATH
+# YYYY/MM/DD tree):
+#
+#   1. v2/temp-soil/005/group=*/ms=YYYY-MM/*_YYYY-MM-DD_*.parquet
+#      5-min tempSoil L1 parquet, mirrored by tempSoil_level1_group_consolidate_srf's
+#      trailing rclone. Narrowed to avg_int 005 only (the sole averaging period
+#      the downstream concH2o chain consumes) so per-datum GCS bytes pulled are
+#      much smaller than a full Pachyderm join would bring in.
+#
+#   2. pre-l1/tempSoil_group_path/YYYY/MM/DD/temp-soil_*/{location,group}/**
+#      Per-CFGLOC location + group JSONs, mirrored by tempSoil_group_path_gcs
+#      (the tempSoil L1 rclone only exports parquet, so these live under
+#      pre-l1/ separately). Required downstream: flow.envscn.temp.flags reads
+#      *_locations.json to extract sensor z_offset - without it,
+#      def.load.temp.sensors.R returns empty and the temperature QC step
+#      silently no-ops.
+#
+# Fails fast (exit 1) if either GCS prefix is empty for the datum's day(s) -
+# that means an upstream tempSoil pipeline hasn't run yet, and continuing
+# would silently produce empty output. Individual missing per-CFGLOC files
+# (e.g. legit dead-sensor days) are permitted.
+#
+# Depends on tempSoil_group_path_gcs.yaml having been deployed and run for the
+# date range - it populates the pre-l1/tempSoil_group_path/ prefix.
+#
+# Pipeline name matches prod (concH2oSoilSalinity_group_path), so downstream
+# reads from the same repo regardless of which variant is deployed. Deploy
+# only one of the two at a time.
+pipeline:
+  name: concH2oSoilSalinity_group_path
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.2
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Image lacks `find`; use bash recursive globs instead.
+    shopt -s globstar nullglob
+
+    rm -rf /tmp/group_focus /tmp/gcs_stage /tmp/group_path_out
+    mkdir -p /tmp/group_focus /tmp/gcs_stage /tmp/group_path_out
+
+    # ---- STEP 0: hydrate tempSoil L1 5-min parquet + location/group JSONs from GCS ----
+    # Each datum is one YYYY/MM/DD (join glob is /conc-h2o-soil-salinity/(*/*/*)),
+    # so we pull only the day(s) present in this datum's group_assignment tree.
+    for ymd_dir in /pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity/*/*/*; do
+      [[ -d "$ymd_dir" ]] || continue
+      rel="${ymd_dir#/pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity/}"
+      IFS=/ read -r year month day <<< "$rel"
+      echo "Hydrating tempSoil L1 for ${year}-${month}-${day}"
+
+      # -- Leg 1: 5-min parquet (avg_int 005) from v2/temp-soil/005/... --
+      # Filter to files whose relative path ends in _YYYY-MM-DD_*.parquet inside
+      # the month directory. Include pattern is anchored to the src prefix.
+      rclone --gcs-bucket-policy-only --gcs-no-check-bucket \
+             --include "group=*/ms=${year}-${month}/*_${year}-${month}-${day}_*.parquet" \
+             copy ":gcs://${BUCKET_NAME}/v2/temp-soil/005" /tmp/gcs_stage
+
+      # -- Leg 2: location + group JSONs from pre-l1/tempSoil_group_path/... --
+      # tempSoil_group_path_gcs already filters its export to just group/ and
+      # location/ subdirs, so nothing else lives under this prefix - no need
+      # for --include filters here, just copy the whole day.
+      mkdir -p "/tmp/group_focus/${year}/${month}/${day}"
+      rclone --gcs-bucket-policy-only --gcs-no-check-bucket \
+             copy ":gcs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/${year}/${month}/${day}" \
+             "/tmp/group_focus/${year}/${month}/${day}"
+    done
+
+    # Gate: fail fast if the tempSoil chain hasn't populated GCS for this
+    # datum's day(s). Both prefixes must have content:
+    #   - v2/temp-soil/005/            (tempSoil L1 5-min parquet)
+    #   - pre-l1/tempSoil_group_path/  (tempSoil group_path location/group JSONs)
+    # Individual missing per-CFGLOC files are OK (dead sensor day), but a
+    # totally empty prefix means the upstream pipeline hasn't run - downstream
+    # would silently produce empty output.
+    staged_parquet=(/tmp/gcs_stage/**/*.parquet)
+    if [[ "${#staged_parquet[@]}" -eq 0 ]]; then
+      echo "ERROR: no tempSoil L1 5-min parquet found on GCS at gs://${BUCKET_NAME}/v2/temp-soil/005/ for any date in this datum. The tempSoil L1 chain may not have completed for these days yet." >&2
+      exit 1
+    fi
+
+    staged_locations=(/tmp/group_focus/**/location/*)
+    if [[ "${#staged_locations[@]}" -eq 0 ]]; then
+      echo "ERROR: no location/ contents hydrated from gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/ for any date in this datum. tempSoil_group_path may not have run for these days yet." >&2
+      exit 1
+    fi
+
+    # Reshape gcs_stage from GCS's hive-style layout (group=X/ms=YYYY-MM/) into
+    # the YYYY/MM/DD/group/data/ layout group_path_main expects. Final path
+    # indices resolve identically to the GROUP_FOCUS_*_INDEX env values below:
+    #   /tmp(1)/group_focus(2)/YYYY(3)/MM(4)/DD(5)/group(6)/data(7)/*.parquet
+    if [[ -d /tmp/gcs_stage ]]; then
+      for f in /tmp/gcs_stage/**/*.parquet; do
+        [[ -f "$f" ]] || continue
+        fname="${f##*/}"
+        # Example: temp-soil_ABBY001501_2026-06-15_ST_5_minute_005.parquet
+        # Capture group name + date; everything after the date is ignored.
+        if [[ "$fname" =~ ^(temp-soil_[A-Za-z0-9]+)_([0-9]{4})-([0-9]{2})-([0-9]{2})_ ]]; then
+          fgroup="${BASH_REMATCH[1]}"
+          fyear="${BASH_REMATCH[2]}"
+          fmonth="${BASH_REMATCH[3]}"
+          fday="${BASH_REMATCH[4]}"
+          dest_dir="/tmp/group_focus/${fyear}/${fmonth}/${fday}/${fgroup}/data"
+          mkdir -p "$dest_dir"
+          mv "$f" "$dest_dir/$fname"
+        fi
+      done
+      rm -rf /tmp/gcs_stage
+    fi
+
+    # ---- STEP 1: run group_path against local group_focus + pfs location_focus ----
+    export GROUP_FOCUS_PATH=/tmp/group_focus
+    export OUT_PATH=/tmp/group_path_out
+    python3 -m group_path.group_path_main
+
+    # ---- STEP 2: dereference symlinks so Pachyderm output has real files ----
+    # group_path uses symlink_to() internally. For group_focus symlinks that
+    # point at /tmp files, those must be materialized as real files in /pfs/out
+    # or downstream containers won't be able to resolve them.
+    cp -rL /tmp/group_path_out/. /pfs/out/
+    rm -rf /tmp/group_focus /tmp/group_path_out
+    EOF
+  env:
+    GROUP: conc-h2o-soil-salinity_
+    LOG_LEVEL: INFO
+    ERR_PATH: /pfs/out/errored_datums
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    LOCATION_FOCUS_SOURCE_TYPE_INDEX: '3'
+    LOCATION_FOCUS_YEAR_INDEX: '4'
+    LOCATION_FOCUS_MONTH_INDEX: '5'
+    LOCATION_FOCUS_DAY_INDEX: '6'
+    LOCATION_FOCUS_LOCATION_INDEX: '7'
+    LOCATION_FOCUS_DATA_TYPE_INDEX: '8'
+    # Local layout /tmp/group_focus/YYYY/MM/DD/group/... resolves at the same
+    # indices as the prod /pfs/GROUP_FOCUS_PATH/YYYY/MM/DD/group/... layout.
+    GROUP_FOCUS_YEAR_INDEX: '3'
+    GROUP_FOCUS_MONTH_INDEX: '4'
+    GROUP_FOCUS_DAY_INDEX: '5'
+    GROUP_FOCUS_GROUP_INDEX: '6'
+  secrets:
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+input:
+  # GROUP_FOCUS_PATH pfs input dropped vs prod - hydrated from GCS in STEP 0.
+  # Still joins group_assignment x location_focus by day.
+  join:
+  - pfs:
+      name: GROUP_ASSIGNMENT_PATH
+      repo: concH2oSoilSalinity_group_assignment
+      glob: /conc-h2o-soil-salinity/(*/*/*)
+      joinOn: $1
+  - pfs:
+      name: LOCATION_FOCUS_PATH
+      repo: enviroscan_fill_date_gaps_and_regularize
+      glob: /*/(*/*/*)
+      joinOn: $1
+parallelism_spec:
+  constant: 12
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 0.6
+  disk: 2G
+resource_limits:
+  memory: 2.5G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
