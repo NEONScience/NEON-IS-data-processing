@@ -31,30 +31,72 @@ transform:
 
     # exo2 body
     export SOURCE_TYPE=$SOURCE_TYPE_1
+    export SITE_FILE=$SITE_FILE_REGULAR
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # exo2conductivity
     export SOURCE_TYPE=$SOURCE_TYPE_2
+    export SITE_FILE=$SITE_FILE_REGULAR
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # exo2turbidity
     export SOURCE_TYPE=$SOURCE_TYPE_3
+    export SITE_FILE=$SITE_FILE_REGULAR
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # exo2fdom
     export SOURCE_TYPE=$SOURCE_TYPE_4
+    export SITE_FILE=$SITE_FILE_REGULAR
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # exo2phorp
     export SOURCE_TYPE=$SOURCE_TYPE_5
+    export SITE_FILE=$SITE_FILE_REGULAR
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # exo2dissolvedoxygen
     export SOURCE_TYPE=$SOURCE_TYPE_6
+    export SITE_FILE=$SITE_FILE_REGULAR
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # exo2algae
     export SOURCE_TYPE=$SOURCE_TYPE_7
+    export SITE_FILE=$SITE_FILE_REGULAR
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+
+    # buoy exo2 body
+    export SOURCE_TYPE=$SOURCE_TYPE_1
+    export SITE_FILE=$SITE_FILE_BUOY
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+    
+    # buoy exo2conductivity
+    export SOURCE_TYPE=$SOURCE_TYPE_2
+    export SITE_FILE=$SITE_FILE_BUOY
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+    
+    # buoy exo2turbidity
+    export SOURCE_TYPE=$SOURCE_TYPE_3
+    export SITE_FILE=$SITE_FILE_BUOY
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+    
+    # buoy exo2fdom
+    export SOURCE_TYPE=$SOURCE_TYPE_4
+    export SITE_FILE=$SITE_FILE_BUOY
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+    
+    # buoy exo2phorp
+    export SOURCE_TYPE=$SOURCE_TYPE_5
+    export SITE_FILE=$SITE_FILE_BUOY
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+    
+    # buoy exo2dissolvedoxygen
+    export SOURCE_TYPE=$SOURCE_TYPE_6
+    export SITE_FILE=$SITE_FILE_BUOY
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+    
+    # buoy exo2algae
+    export SOURCE_TYPE=$SOURCE_TYPE_7
+    export SITE_FILE=$SITE_FILE_BUOY
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     EOF
@@ -67,9 +109,13 @@ input:
       # spec: "0 0 * * *" # Run at 00:00 GMT
       overwrite: true
   - pfs:
-      name: SITE_FILE
+      name: SITE_FILE_REGULAR
       repo: exo2_site_list
       glob: /site-list.json
+  - pfs:
+      name: SITE_FILE_BUOY
+      repo: exo2_site_list
+      glob: /site-list-buoy.json
 resource_requests:
   memory: 100M
   cpu: 1
