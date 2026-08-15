@@ -119,6 +119,31 @@ transform:
       rm -rf /tmp/gcs_stage
     fi
 
+    # Flatten Leg 2 location JSONs from tempSoil_group_path's per-CFGLOC layout
+    # (temp-soil_XXX/prt/CFGLOC/location/*) into the flat layout
+    # (temp-soil_XXX/location/*) that tempSoil_level1_group_consolidate_srf's
+    # filter_joiner produces in prod. group_path_main preserves whatever
+    # remainder follows the group segment, so without this flatten our output
+    # would carry a prt/CFGLOC/ intermediate that downstream doesn't expect.
+    for f in /tmp/group_focus/*/*/*/*/prt/*/location/*; do
+      [[ -f "$f" ]] || continue
+      fname="${f##*/}"
+      # /tmp/group_focus/YYYY/MM/DD/temp-soil_XXX/prt/CFGLOC/location/file
+      #  -> strip filename, location/, CFGLOC/, prt/ to reach temp-soil_XXX dir
+      temp_soil_dir="${f%/*}"           # ...prt/CFGLOC/location
+      temp_soil_dir="${temp_soil_dir%/*}" # ...prt/CFGLOC
+      temp_soil_dir="${temp_soil_dir%/*}" # ...prt
+      temp_soil_dir="${temp_soil_dir%/*}" # ...temp-soil_XXX
+      dest="${temp_soil_dir}/location"
+      mkdir -p "$dest"
+      mv "$f" "$dest/$fname"
+    done
+    # Remove now-empty prt/ subtrees left behind by the flatten
+    for d in /tmp/group_focus/*/*/*/*/prt; do
+      [[ -d "$d" ]] || continue
+      rm -rf "$d"
+    done
+
     # ---- STEP 1: run group_path against local group_focus + pfs location_focus ----
     export GROUP_FOCUS_PATH=/tmp/group_focus
     export OUT_PATH=/tmp/group_path_out
