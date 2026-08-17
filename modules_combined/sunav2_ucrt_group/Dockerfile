@@ -20,13 +20,38 @@ COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/r
 
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        python3.8 && \
-    apt install -y python3-pip && \
-    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-   apt-get autoremove -y && \
-	 apt-get autoclean -y && \
-	 rm -rf /var/lib/apt/lists/* && \
+        jq \
+        build-essential \
+        ca-certificates \
+        wget \
+        libssl-dev \
+        zlib1g-dev \
+        libbz2-dev \
+        libreadline-dev \
+        libsqlite3-dev \
+        libffi-dev \
+        liblzma-dev \
+        xz-utils && \
+    rm -rf /var/lib/apt/lists/*
+
+ARG PYTHON_VERSION=3.11.9
+RUN wget -q https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+    tar -xzf Python-${PYTHON_VERSION}.tgz && \
+    cd Python-${PYTHON_VERSION} && \
+    ./configure --enable-optimizations --with-ensurepip=install && \
+    make -j"$(nproc)" && \
+    make altinstall && \
+    cd / && \
+    rm -rf /usr/src/app/Python-${PYTHON_VERSION} /usr/src/app/Python-${PYTHON_VERSION}.tgz
+
+RUN python3.11 -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    apt-get autoremove -y && \
+    apt-get autoclean -y && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
