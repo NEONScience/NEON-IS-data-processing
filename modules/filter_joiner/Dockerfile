@@ -21,6 +21,7 @@ RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
     microdnf install -y --disableplugin=subscription-manager \
             shadow-utils \
+            findutils \
             gcc \
             make \
             wget \
