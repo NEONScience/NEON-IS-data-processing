@@ -30,7 +30,6 @@ RUN update-ca-trust && \
             bzip2-devel \
             openssl-devel \
             libffi-devel \
-            readline-devel \
             sqlite-devel \
             xz-devel \
             libzstd && \
