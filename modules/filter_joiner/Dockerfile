@@ -24,6 +24,7 @@ RUN update-ca-trust && \
             gcc \
             make \
             wget \
+            gzip \
             tar \
             xz \
             zlib-devel \
