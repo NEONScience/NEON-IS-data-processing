@@ -91,31 +91,31 @@ transform:
     staged_parquet=(/tmp/gcs_stage/**/*.parquet)
     staged_locations=(/tmp/group_focus/**/location/*)
 
-    # ---- (A) Route to errored_datums (ACTIVE) ----
-    if [[ "${#staged_parquet[@]}" -eq 0 ]] || [[ "${#staged_locations[@]}" -eq 0 ]]; then
-      reasons=""
-      [[ "${#staged_parquet[@]}" -eq 0 ]] && reasons+="no tempSoil L1 5-min parquet at gs://${BUCKET_NAME}/v2/temp-soil/005/; "
-      [[ "${#staged_locations[@]}" -eq 0 ]] && reasons+="no tempSoil location JSONs at gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/; "
-      for ymd_dir in /pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity/*/*/*; do
-        [[ -d "$ymd_dir" ]] || continue
-        rel="${ymd_dir#/pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity/}"
-        err_dir="/pfs/out/errored_datums/${rel}"
-        mkdir -p "$err_dir"
-        printf "Upstream tempSoil GCS data not available for %s: %s\n" "$rel" "$reasons" > "$err_dir/error.txt"
-        echo "Routed ${rel} to errored_datums: ${reasons}"
-      done
-      exit 0
-    fi
+    # ---- (A) Route to errored_datums (TESTING) ----
+    # if [[ "${#staged_parquet[@]}" -eq 0 ]] || [[ "${#staged_locations[@]}" -eq 0 ]]; then
+    #   reasons=""
+    #   [[ "${#staged_parquet[@]}" -eq 0 ]] && reasons+="no tempSoil L1 5-min parquet at gs://${BUCKET_NAME}/v2/temp-soil/005/; "
+    #   [[ "${#staged_locations[@]}" -eq 0 ]] && reasons+="no tempSoil location JSONs at gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/; "
+    #   for ymd_dir in /pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity/*/*/*; do
+    #     [[ -d "$ymd_dir" ]] || continue
+    #     rel="${ymd_dir#/pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity/}"
+    #     err_dir="/pfs/out/errored_datums/${rel}"
+    #     mkdir -p "$err_dir"
+    #     printf "Upstream tempSoil GCS data not available for %s: %s\n" "$rel" "$reasons" > "$err_dir/error.txt"
+    #     echo "Routed ${rel} to errored_datums: ${reasons}"
+    #   done
+    #   exit 0
+    # fi
 
-    # ---- (B) Hard-fail (COMMENTED OUT - alternative to A above) ----
-    # if [[ "${#staged_parquet[@]}" -eq 0 ]]; then
-    #   echo "ERROR: no tempSoil L1 5-min parquet found on GCS at gs://${BUCKET_NAME}/v2/temp-soil/005/ for any date in this datum. The tempSoil L1 chain may not have completed for these days yet." >&2
-    #   exit 1
-    # fi
-    # if [[ "${#staged_locations[@]}" -eq 0 ]]; then
-    #   echo "ERROR: no location/ contents hydrated from gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/ for any date in this datum. tempSoil_group_path may not have run for these days yet." >&2
-    #   exit 1
-    # fi
+    # ---- (B) Hard-fail (PRODUCTION) ----
+    if [[ "${#staged_parquet[@]}" -eq 0 ]]; then
+      echo "ERROR: no tempSoil L1 5-min parquet found on GCS at gs://${BUCKET_NAME}/v2/temp-soil/005/ for any date in this datum. The tempSoil L1 chain may not have completed for these days yet." >&2
+      exit 1
+    fi
+    if [[ "${#staged_locations[@]}" -eq 0 ]]; then
+      echo "ERROR: no location/ contents hydrated from gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/ for any date in this datum. tempSoil_group_path may not have run for these days yet." >&2
+      exit 1
+    fi
 
     # Reshape gcs_stage from GCS's hive-style layout (group=X/ms=YYYY-MM/) into
     # the YYYY/MM/DD/group/data/ layout group_path_main expects. Final path
