@@ -87,7 +87,7 @@ transform:
     PAD_DIR: data
     COPY_DIR: location,uncertainty_coef,uncertainty_data # Can be multiple, separated by commas without spaces. Directories other than the pad directory to copy to the output
     RELATIVE_PATH_INDEX: '3'
-    PARALLELIZATION_INTERNAL: '5' # For threshold select module
+    PARALLELIZATION_INTERNAL: '2' # For threshold select module
 output_branch: master
 input:
   cross:
@@ -100,14 +100,14 @@ input:
       repo: concH2oSoilSalinity_threshold
       glob: /thresholds.json
 parallelism_spec:
-  constant: 5
+  constant: 14
 autoscaling: true
 resource_requests:
-  memory: 1.5G
-  cpu: 5.5
+  memory: 2.5G
+  cpu: 2
 resource_limits:
-  memory: 3G
-  cpu: 6.5
+  memory: 4G
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 4G
   cpu: 1

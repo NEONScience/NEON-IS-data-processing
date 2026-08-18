@@ -13,6 +13,10 @@ ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
+# For rclone
+ARG TARGETPLATFORM
+ARG RCLONE_VERSION=v1.62.2
+
 WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
@@ -36,6 +40,13 @@ RUN update-ca-trust && \
     microdnf clean all --disableplugin=subscription-manager && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
+
+# Multi-platform package install for rclone
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; \
+    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm-v7; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=arm64; \
+    else ARCHITECTURE=amd64; fi &&\
+    rpm -Uvh "https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-${ARCHITECTURE}.rpm"
 
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}

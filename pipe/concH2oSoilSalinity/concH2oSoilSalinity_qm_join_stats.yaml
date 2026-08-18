@@ -3,7 +3,7 @@
 pipeline:
   name: concH2oSoilSalinity_qm_join_stats
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.5
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.6
   cmd:
   - sh
   - "-c"
@@ -163,7 +163,7 @@ transform:
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY
-    PARALLELIZATION_INTERNAL: '3'
+    PARALLELIZATION_INTERNAL: '2'
 input:
   cross:
   - pfs:
@@ -190,17 +190,18 @@ input:
         joinOn: $1
         empty_files: false
 parallelism_spec:
-  constant: 5
+  constant: 12
 autoscaling: true
 resource_requests:
-  memory: 900M
-  cpu: 3.5
-resource_limits:
   memory: 2G
-  cpu: 5
+  cpu: 2
+  disk: 3G
+resource_limits:
+  memory: 3G
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
