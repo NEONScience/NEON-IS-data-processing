@@ -2,7 +2,7 @@
 import csv
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
@@ -19,6 +19,7 @@ from pub_files.main import get_timestamp
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsDatabase
 from pub_files.output_files.sensor_positions.sensor_positions_file import _add_reference_position_data
 from pub_files.output_files.sensor_positions.sensor_positions_file import _create_base_row_data
+from pub_files.output_files.sensor_positions.sensor_positions_file import _reference_coordinates
 from pub_files.output_files.sensor_positions.sensor_positions_file import get_column_names
 from pub_files.output_files.sensor_positions.sensor_positions_file import write_file
 from pub_files.output_files.sensor_positions.sensor_specific_processors import create_tchain_rows
@@ -218,6 +219,16 @@ class _FakeGeolocation:
         self.offset_name = offset_name
 
 
+class ReferenceCoordinatesTest(TestCase):
+
+    def test_invalid_geometry_includes_geometry_in_error(self):
+        reference_geolocation = _FakeGeolocation()
+        reference_geolocation.geometry = 'LINESTRING (1 2, 3 4)'
+
+        with self.assertRaisesRegex(ValueError, "LINESTRING \\(1 2, 3 4\\)"):
+            _reference_coordinates(reference_geolocation, {})
+
+
 class TchainRowShapeTest(TestCase):
     """create_tchain_rows produces one row per thermistor depth. The cfgloc-geo x
     ref_geolocation intersection (computed upstream and carried on the row data
@@ -339,6 +350,12 @@ class ReferencePositionOverlapTest(TestCase):
     def test_row_produced_when_windows_overlap(self):
         sensor = self._geolocation(datetime(2020, 1, 1), datetime(2020, 6, 1))
         reference = self._geolocation(datetime(2019, 1, 1), None)
+        rows = self._rows_for(sensor, [reference])
+        self.assertEqual(len(rows), 1)
+
+    def test_row_produced_for_open_start_and_mixed_timezone_windows(self):
+        sensor = self._geolocation(None, datetime(2020, 6, 1))
+        reference = self._geolocation(datetime(2020, 1, 1, tzinfo=timezone.utc), None)
         rows = self._rows_for(sensor, [reference])
         self.assertEqual(len(rows), 1)
 

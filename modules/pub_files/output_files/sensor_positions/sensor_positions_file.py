@@ -153,11 +153,7 @@ def _match_reference_geolocation(ref_geolocations: List, entry: Dict):
     entry_start = _strip_tz(_parse_iso(entry.get('position_start_date')))
     entry_end = _strip_tz(_parse_iso(entry.get('position_end_date')))
     for ref in ref_geolocations:
-        ref_start = _strip_tz(ref.start_date)
-        ref_end = _strip_tz(ref.end_date)
-        if entry_end is not None and ref_start is not None and entry_end <= ref_start:
-            continue
-        if entry_start is not None and ref_end is not None and entry_start >= ref_end:
+        if not _dates_overlap(entry_start, entry_end, ref.start_date, ref.end_date):
             continue
         return ref
     # Fall back to the first available so downstream still gets azimuth-based east/north math.
@@ -177,6 +173,15 @@ def _strip_tz(dt: Optional[datetime]) -> Optional[datetime]:
     if dt is None:
         return None
     return dt.replace(tzinfo=None) if dt.tzinfo is not None else dt
+
+
+def _dates_overlap(start_a: Optional[datetime], end_a: Optional[datetime],
+                   start_b: Optional[datetime], end_b: Optional[datetime]) -> bool:
+    """Return whether two half-open date ranges overlap; None bounds are open-ended."""
+    start_a, end_a = _strip_tz(start_a), _strip_tz(end_a)
+    start_b, end_b = _strip_tz(start_b), _strip_tz(end_b)
+    return not ((end_a is not None and start_b is not None and end_a <= start_b) or
+                (start_a is not None and end_b is not None and start_a >= end_b))
 
 
 def _intersect_dates(start_a: Optional[datetime], end_a: Optional[datetime],
@@ -224,20 +229,9 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     complete_rows = []
     
     for reference_geolocation in database.get_geolocations(offset_name):
-        
-        # Determine if this reference position is applicable based on the time.
-        # If reference location and geolocation don't overlap, skip
-        if (reference_geolocation.end_date is None) and (geolocation.end_date is not None):
-            if geolocation.end_date <= reference_geolocation.start_date:
-                continue
-        elif (geolocation.end_date is None) and (reference_geolocation.end_date is not None):
-            if geolocation.start_date >= reference_geolocation.end_date:
-                continue
-        elif (geolocation.end_date is not None) and (reference_geolocation.end_date is not None):
-            if geolocation.end_date <= reference_geolocation.start_date:
-                continue
-            elif geolocation.start_date >= reference_geolocation.end_date:
-                continue
+        if not _dates_overlap(geolocation.start_date, geolocation.end_date,
+                              reference_geolocation.start_date, reference_geolocation.end_date):
+            continue
         
         reference_position = get_position(reference_geolocation, geolocation.x_offset, geolocation.y_offset)
 
@@ -277,7 +271,10 @@ def _reference_coordinates(reference_geolocation, base_data: Dict) -> Tuple:
         return (base_data.get('row_reference_location_latitude'),
                 base_data.get('row_reference_location_longitude'),
                 base_data.get('row_reference_location_elevation'))
-    (latitude, longitude, elevation) = parse_coordinates(geometry)
+    try:
+        (latitude, longitude, elevation) = parse_coordinates(geometry)
+    except Exception as error:
+        raise ValueError(f'Unable to parse reference geolocation geometry: {geometry!r}') from error
     return (round(latitude, 6) if latitude is not None else None,
             round(longitude, 6) if longitude is not None else None,
             round(elevation, 2) if elevation is not None else None)
