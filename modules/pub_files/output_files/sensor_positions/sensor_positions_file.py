@@ -6,6 +6,7 @@ from typing import Tuple, List, Dict, Optional
 
 import common.date_formatter as date_formatter
 from pub_files.database.geolocation_geometry import Geometry
+from pub_files.geometry import parse_coordinates
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.sensor_positions.sensor_position import get_position
@@ -246,8 +247,15 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
             geolocation.start_date, geolocation.end_date,
             reference_geolocation.start_date, reference_geolocation.end_date)
 
+        # Coordinates must come from this reference geolocation, not the named location's
+        # first geolocation, so a reference that moved reports the position in effect.
+        (latitude, longitude, elevation) = _reference_coordinates(reference_geolocation, base_data)
+
         complete_row_data = base_data.copy()
         complete_row_data.update({
+            'row_reference_location_latitude': latitude,
+            'row_reference_location_longitude': longitude,
+            'row_reference_location_elevation': elevation,
             'row_effective_start_date': format_date(effective_start_date),
             'row_effective_end_date': format_date(effective_end_date),
             'row_x_azimuth': round(reference_position.x_azimuth, 2) if reference_position.x_azimuth is not None else '',
@@ -260,6 +268,19 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
         complete_rows.append(complete_row_data)
     
     return complete_rows
+
+
+def _reference_coordinates(reference_geolocation, base_data: Dict) -> Tuple:
+    """Return the latitude, longitude and elevation of the given reference geolocation."""
+    geometry = getattr(reference_geolocation, 'geometry', None)
+    if not geometry:
+        return (base_data.get('row_reference_location_latitude'),
+                base_data.get('row_reference_location_longitude'),
+                base_data.get('row_reference_location_elevation'))
+    (latitude, longitude, elevation) = parse_coordinates(geometry)
+    return (round(latitude, 6) if latitude is not None else None,
+            round(longitude, 6) if longitude is not None else None,
+            round(elevation, 2) if elevation is not None else None)
 
 
 def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
