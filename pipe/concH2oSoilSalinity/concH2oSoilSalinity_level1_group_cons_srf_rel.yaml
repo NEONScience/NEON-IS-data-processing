@@ -1,0 +1,188 @@
+---
+# Release-window L1 consolidate for concH2oSoilSalinity (_rel).
+# Coexists alongside production concH2oSoilSalinity_level1_group_consolidate_srf.
+#
+# Reads pre-L1 input (group_split) from GCS - the L1 bucket under the pre-l1/
+# prefix, populated by the earlier "first pass on PROD" run
+# (concH2oSoilSalinity_group_split_gcs). Same transform shape as production;
+# the only difference is STEP 0 (GCS hydration) replaces production's Pachyderm
+# input hydration.
+#
+# Join semantics match production: outer_join on the cron_daily leg
+# (import_trigger) so every day in the release window fires whether or not an
+# SRF exists. Full L1 parquet lands in /pfs/out and rclones to the L1 bucket
+# (STEP 5), so downstream pub_group_rel reads from Pachyderm just like prod's
+# pub_group reads from concH2oSoilSalinity_level1_group_consolidate_srf.
+#
+# Note: the conch level1 is structurally simpler than tempSoil's because
+# `group_split` already combined stats+qm+location upstream. So we only need ONE
+# hydration path (/tmp/group_split) and the pipe keeps its single filter-joiner
+# (STATISTICS_PATH + SRF_PATH).
+pipeline:
+  name: concH2oSoilSalinity_level1_group_cons_srf_rel
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.5
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Hydrated input lands at /tmp/group_split with two leading path segments
+    # (tmp/group_split) so the filter-joiner CONFIG glob resolves group ID at
+    # index 6 - same as production /pfs/STATISTICS_PATH/YYYY/MM/DD/group/**.
+    rm -rf /tmp/interimB /tmp/pfs/interimC /tmp/group_split
+    mkdir -p /tmp/interimB /tmp/pfs/interimC /tmp/group_split
+
+    # ---- STEP 0: Hydrate group_split output from GCS for the datum's day ----
+    # Iterate import_trigger (the _rel cron output, one entry per day in the
+    # 2016 -> Jun 2026 window).
+    for ymd_dir in /pfs/import_trigger/enviroscan/*/*/*; do
+      [[ -d "$ymd_dir" ]] || continue
+      rel="${ymd_dir#/pfs/import_trigger/enviroscan/}"
+      echo "Hydrating GCS inputs for ${rel}"
+      rclone --gcs-bucket-policy-only --gcs-no-check-bucket copy \
+             ":gcs://${BUCKET_NAME}/pre-l1/concH2oSoilSalinity_group_split/${rel}" \
+             "/tmp/group_split/${rel}" || true
+    done
+
+    if [[ -z "$(ls -A /tmp/group_split 2>/dev/null)" ]]; then
+      echo "No GCS inputs for the SRF datums in this run. Nothing to do."
+      exit 0
+    fi
+
+    # ---- STEP 1: filter-joiner - bring in SRF ----
+    export OUT_PATH=$OUT_PATH_2
+    python3 -m filter_joiner.filter_joiner_main
+
+    # ---- STEP 2: level1_consolidate -> consolidated-group tree ----
+    export OUT_PATH=$OUT_PATH_3
+    python3 -m level1_consolidate.level1_consolidate_main
+
+    # ---- STEP 3: pub_workbook_loader ----
+    python3 -m pub_workbook_loader.pub_workbook_loader_main
+
+    # ---- STEP 4: pub tables + SRF apply (EXISTING R script) ----
+    Rscript ./flow.pub.tabl.srf.R \
+      DirIn=/tmp/pfs/interimC \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirData=stats|quality_metrics" \
+      PathPubWb=$PUB_WORKBOOKS \
+      "DirSubCopy=science_review_flags|group|location"
+
+    # ---- STEP 5: Export Level 1 data to L1 bucket (same as production) ----
+    export OUT_PATH=/pfs/out
+    linkdir=$(mktemp -d)
+    shopt -s globstar
+    out_parquet_glob="${OUT_PATH}/**/*.parquet"
+    echo "Linking output files to ${linkdir}"
+    fname=""
+    for f in $out_parquet_glob; do
+      if [[ -f "$f" ]]; then
+        [[ "$f" =~ ^$OUT_PATH/([0-9]+)/([0-9]+)/([0-9]+)/(${GROUP_PREFIX}_[A-Za-z0-9]+)/data/(.*)$ ]]
+        fyear="${BASH_REMATCH[1]}"
+        fmonth="${BASH_REMATCH[2]}"
+        fday="${BASH_REMATCH[3]}"
+        fgroup="${BASH_REMATCH[4]}"
+        fname="${BASH_REMATCH[5]}"
+        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_([A-Za-z0-9]+)_[A-Za-z0-9]+_[A-Za-z0-9]+_([A-Za-z0-9]+).parquet ]]
+        avg_int="${BASH_REMATCH[2]}"
+        outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname}"
+      fi
+    done
+    if [[ "${fname}" ]]; then
+      echo "Syncing files to bucket"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        copy \
+        "${linkdir}" \
+        ":gcs://${BUCKET_NAME}"
+      echo "Removing temporary files"
+      rm -rf $linkdir
+    fi
+    EOF
+  env:
+    # filter-joiner CONFIG - STATISTICS_PATH now points at /tmp/group_split
+    # (hydrated from GCS). SRF still comes from /pfs/SRF_PATH.
+    # Path layout: /tmp(1)/group_split(2)/YYYY(3)/MM(4)/DD(5)/group(6)/** -> group at index 6.
+    CONFIG: |
+      ---
+      input_paths:
+        - path:
+            name: STATISTICS_PATH
+            glob_pattern: /tmp/group_split/*/*/*/*/**
+            join_indices: [6]
+            outer_join: True
+        - path:
+            name: SRF_PATH
+            glob_pattern: /pfs/SRF_PATH/*/*/*/*/**
+            join_indices: [6]
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY
+    LOG_LEVEL: INFO
+    OUT_PATH_2: /tmp/interimB
+
+    IN_PATH: /tmp/interimB
+    OUT_PATH_3: /tmp/pfs/interimC
+    GROUP_INDEX: "6"
+    GROUP_METADATA_INDEX: "7"
+    GROUP_METADATA_NAMES: group,science_review_flags
+    DATA_TYPE_INDEX: "8"
+    DATA_TYPE_NAMES: stats,quality_metrics,location
+
+    OUT_PATH_WORKBOOK: /tmp/pub_workbooks
+    PRODUCTS: NEON.DOM.SITE.DP1.00094.001
+    PUB_WORKBOOKS: /tmp/pub_workbooks
+    PARALLELIZATION_INTERNAL: '4'
+    GROUP_PREFIX: conc-h2o-soil-salinity-split
+
+  # Only the L1 bucket secret is needed - pre-l1/ input hydration reads from
+  # the same bucket as the v2/ pub output.
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+
+input:
+  join:
+  - pfs:
+      name: import_trigger
+      repo: concH2oSoilSalinity_cron_daily_and_date_control_rel
+      glob: /enviroscan/(*/*/*)
+      joinOn: $1
+      outer_join: true # Every cron day fires with or without SRFs
+  - pfs:
+      name: SRF_PATH
+      repo: concH2oSoilSalinity_srf_assignment_rel
+      glob: /(*/*/*)
+      joinOn: $1
+      empty_files: false
+
+output_branch: master
+parallelism_spec:
+  constant: 24
+autoscaling: true
+resource_requests:
+  memory: 4G
+  cpu: 2
+resource_limits:
+  memory: 5G
+  cpu: 2.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 1.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
