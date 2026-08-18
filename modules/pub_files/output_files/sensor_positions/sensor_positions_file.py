@@ -67,7 +67,7 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                             file_rows.append(row)
 
         # Sort by HOR.VER column (index 0), then by effectiveStartDateTime (index 3)
-        file_rows.sort(key=lambda row: (row[0], row[3]))
+        file_rows.sort(key=lambda row: (row[0], row[3] or ''))
         writer.writerows(file_rows)
     return file_path
 
