@@ -135,6 +135,9 @@ transform:
           dest_dir="/tmp/group_focus/${fyear}/${fmonth}/${fday}/${fgroup}/data"
           mkdir -p "$dest_dir"
           mv "$f" "$dest_dir/$fname"
+        else
+          echo "ERROR: unexpected tempSoil parquet filename '$fname' (cannot derive group/date); refusing to drop it. Source path: $f" >&2
+          exit 1
         fi
       done
       rm -rf /tmp/gcs_stage
