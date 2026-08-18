@@ -77,24 +77,45 @@ transform:
              "/tmp/group_focus/${year}/${month}/${day}"
     done
 
-    # Gate: fail fast if the tempSoil chain hasn't populated GCS for this
-    # datum's day(s). Both prefixes must have content:
+    # Gate: check that both GCS prefixes had content for this datum:
     #   - v2/temp-soil/005/            (tempSoil L1 5-min parquet)
     #   - pre-l1/tempSoil_group_path/  (tempSoil group_path location/group JSONs)
-    # Individual missing per-CFGLOC files are OK (dead sensor day), but a
-    # totally empty prefix means the upstream pipeline hasn't run - downstream
-    # would silently produce empty output.
+    # Individual missing per-CFGLOC files are OK (legit dead-sensor days); a
+    # totally empty prefix means the upstream pipeline hasn't run yet.
+    #
+    # Two behaviors below - pick one, comment the other:
+    #   (A) Route the datum to errored_datums (Pachyderm-native) and exit 0.
+    #       Pipeline stays green, day is auditable, downstream skips it.
+    #   (B) Hard-fail with exit 1. Pipeline goes red, blocking downstream
+    #       loudly until the upstream tempSoil data is available.
     staged_parquet=(/tmp/gcs_stage/**/*.parquet)
-    if [[ "${#staged_parquet[@]}" -eq 0 ]]; then
-      echo "ERROR: no tempSoil L1 5-min parquet found on GCS at gs://${BUCKET_NAME}/v2/temp-soil/005/ for any date in this datum. The tempSoil L1 chain may not have completed for these days yet." >&2
-      exit 1
+    staged_locations=(/tmp/group_focus/**/location/*)
+
+    # ---- (A) Route to errored_datums (ACTIVE) ----
+    if [[ "${#staged_parquet[@]}" -eq 0 ]] || [[ "${#staged_locations[@]}" -eq 0 ]]; then
+      reasons=""
+      [[ "${#staged_parquet[@]}" -eq 0 ]] && reasons+="no tempSoil L1 5-min parquet at gs://${BUCKET_NAME}/v2/temp-soil/005/; "
+      [[ "${#staged_locations[@]}" -eq 0 ]] && reasons+="no tempSoil location JSONs at gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/; "
+      for ymd_dir in /pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity/*/*/*; do
+        [[ -d "$ymd_dir" ]] || continue
+        rel="${ymd_dir#/pfs/GROUP_ASSIGNMENT_PATH/conc-h2o-soil-salinity/}"
+        err_dir="/pfs/out/errored_datums/${rel}"
+        mkdir -p "$err_dir"
+        printf "Upstream tempSoil GCS data not available for %s: %s\n" "$rel" "$reasons" > "$err_dir/error.txt"
+        echo "Routed ${rel} to errored_datums: ${reasons}"
+      done
+      exit 0
     fi
 
-    staged_locations=(/tmp/group_focus/**/location/*)
-    if [[ "${#staged_locations[@]}" -eq 0 ]]; then
-      echo "ERROR: no location/ contents hydrated from gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/ for any date in this datum. tempSoil_group_path may not have run for these days yet." >&2
-      exit 1
-    fi
+    # ---- (B) Hard-fail (COMMENTED OUT - alternative to A above) ----
+    # if [[ "${#staged_parquet[@]}" -eq 0 ]]; then
+    #   echo "ERROR: no tempSoil L1 5-min parquet found on GCS at gs://${BUCKET_NAME}/v2/temp-soil/005/ for any date in this datum. The tempSoil L1 chain may not have completed for these days yet." >&2
+    #   exit 1
+    # fi
+    # if [[ "${#staged_locations[@]}" -eq 0 ]]; then
+    #   echo "ERROR: no location/ contents hydrated from gs://${BUCKET_NAME}/pre-l1/tempSoil_group_path/ for any date in this datum. tempSoil_group_path may not have run for these days yet." >&2
+    #   exit 1
+    # fi
 
     # Reshape gcs_stage from GCS's hive-style layout (group=X/ms=YYYY-MM/) into
     # the YYYY/MM/DD/group/data/ layout group_path_main expects. Final path
