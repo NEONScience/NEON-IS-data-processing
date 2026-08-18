@@ -68,6 +68,7 @@ RUN R -e 'renv::restore(lockfile="./renv.lock")'
 # Copy in R code
 COPY ./flow/flow.discharge.predict/flow.discharge.predict.R .
 COPY ./flow/flow.discharge.predict/wrap.discharge.predict.R .
+COPY ./flow/flow.discharge.predict/def.dir.in.partial.R .
 
 
 

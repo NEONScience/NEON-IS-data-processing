@@ -24,7 +24,7 @@ input:
   pfs:
     name: IN_PATH
     repo: l4discharge_csd_list_files
-    glob: /*/*/*/v2-dev/csd_corrected/2025/
+    glob: /*/*/*/v2-dev/csd_corrected/2024/
     empty_files: true
 parallelism_spec:
   constant: 10
