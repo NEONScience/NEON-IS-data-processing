@@ -1,38 +1,41 @@
 #!/usr/bin/env python3
-import pyarrow.parquet as pq
-import pyarrow as pa
-from pathlib import Path
-import structlog
-from typing import List
-import re
 import json
+from pathlib import Path
 
-import array_parser.schema_parser as schema_parser
+import pyarrow as pa
+import pyarrow.parquet as pq
+import structlog
+from array_parser import schema_parser
 from array_parser.schema_parser import SchemaData
+from cloudpathlib import CloudPath
 
 log = structlog.getLogger()
 
 
 def get_metadata(schema_data: SchemaData) -> dict:
     """Get the metadata for the new file."""
-    return {'parquet.avro.schema': schema_data.schema, 'writer.model.name': 'avro'}
+    return {"parquet.avro.schema": schema_data.schema, "writer.model.name": "avro"}
 
 
-def create_columns(field_names: List[str]) -> List[list]:
+def create_columns(field_names: list[str]) -> list[list]:
     """
     Create an empty column for each schema field name.
 
     :param field_names: The schema data.
     :return: The empty columns.
     """
-    columns: List[list] = []
-    for n in range(0, len(field_names)):
+    columns: list[list] = []
+    for n in range(len(field_names)):
         columns.append([])
     return columns
 
 
-def populate_columns(table: pa.Table, field_names: List[str],
-                     data_array: pa.ChunkedArray, new_columns: List[list]) -> None:
+def populate_columns(
+    table: pa.Table,
+    field_names: list[str],
+    data_array: pa.ChunkedArray,
+    new_columns: list[list],
+) -> None:
     """
     Add data values from the original data array to the new columns.
 
@@ -43,19 +46,27 @@ def populate_columns(table: pa.Table, field_names: List[str],
     :return: None
     """
     # loop over each table row, pull data values, and add them to the new columns
-    for row_index in range(0, table.num_rows):
-        for field_name_index in range(0, len(field_names)):
+    for row_index in range(table.num_rows):
+        for field_name_index in range(len(field_names)):
             try:
                 # get values from the file's 2D data array
                 value = data_array[row_index][field_name_index].as_py()
-            except (IndexError,TypeError) as e:
-                    # If the array is NULL or there are more field names than data values, fill extra columns with None.
-                    value = None
+            except (IndexError, TypeError):
+                # If the array is NULL or there are more field names than data values, fill extra columns with None.
+                value = None
             # populate new columns
             new_columns[field_name_index].append(value)
 
 
-def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_schema_name: bool, write_site_file: bool) -> None:
+def write_restructured_file(
+    path: Path | CloudPath,
+    out_path: Path,
+    schema: Path,
+    replace_schema_name: bool,
+    write_site_file: bool,
+    max_date_per_site: dict | None = None,
+    data_date: str | None = None,
+) -> None:
     """
     Reorder the data value array to columns labelled with the appropriate schema field names
     and write the new file.
@@ -64,57 +75,64 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_sc
     :param out_path: The path to write the new file.
     :param schema: The new schema for the reordered file.
     :param replace_schema_name: Boolean. Replace the schema name in the file name with the new schema name?
-    :param write_site_file: Boolean. Write a zero-byte file named for the NEON site ID at out_path.parent/site/<SITE> 
+    :param write_site_file: Boolean. Write a zero-byte file named for the NEON site ID at out_path.parent/site/<SITE>
+    :param max_date_per_site: max data date found per site. Optional for backwards compatibility.
+    :param data_date: the data date of the file. Optional for backwards compatibility.
     :return: None
     """
-    
+
     # Read the schema
     schema_data: SchemaData = schema_parser.parse_schema_file(schema)
     field_names = schema_data.field_names
 
     # Parse the array(s) into the new table
-    table = pq.read_table(path)
+    table = pq.read_table(path, partitioning=None)
     column_names = table.column_names
-    
-    if write_site_file is True:
-        site=table['site_id'][0].as_py()
-    
+
+    site = table["site_id"][0].as_py()
+
     array_names = set(schema_data.data_mapping.values())
     for array_name in array_names:
         column_index = column_names.index(array_name)
         data_values = table.column(column_index)
-        array_field_names=[key for key, value in schema_data.data_mapping.items() if value == array_name] # field names pertaining to this array
-        parsed_columns: List[list] = create_columns(array_field_names)
+        array_field_names = [
+            key
+            for key, value in schema_data.data_mapping.items()
+            if value == array_name
+        ]  # field names pertaining to this array
+        parsed_columns: list[list] = create_columns(array_field_names)
         data_type: pa.lib.ListType = data_values.type
         populate_columns(table, array_field_names, data_values, parsed_columns)
-        
+
         # convert to arrays with the appropriate type
-        for i in range(0, len(parsed_columns)):
+        for i in range(len(parsed_columns)):
             column: pa.Array = pa.array(parsed_columns[i], data_type.value_type)
-            table: pa.Table = table.append_column(array_field_names[i], column)  # add column to table
-    
+            table: pa.Table = table.append_column(
+                array_field_names[i], column
+            )  # add column to table
+
     # remove original data arrays from table
     for array_name in array_names:
         column_names = table.column_names
         column_index = column_names.index(array_name)
-        table = table.remove_column(column_index)  
-        
-    # Rearrange columns to match the parsed schema   
-    table=table.select(field_names)
+        table = table.remove_column(column_index)
+
+    # Rearrange columns to match the parsed schema
+    table = table.select(field_names)
     metadata = get_metadata(schema_data)
     table = table.replace_schema_metadata(metadata)
-    log.debug(f'modified_table:\n{table}')
-    
+    log.debug(f"modified_table:\n{table}")
+
     # If selected, replace the non-parsed schema name in the file name with the parsed schema name
     if replace_schema_name is True:
         f = pq.ParquetFile(path)
-        old_schema = f.metadata.metadata.get(b'parquet.avro.schema')
+        old_schema = f.metadata.metadata.get(b"parquet.avro.schema")
         old_schema_data = json.loads(old_schema)
         old_schema_name = old_schema_data["name"]
-        file_name = path.name.replace(old_schema_name,schema_data.name)
+        file_name = path.name.replace(old_schema_name, schema_data.name)
     else:
         file_name = path.name
-        
+
     # Output
     file_path = Path(out_path, file_name)
     file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -123,6 +141,14 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path, replace_sc
 
     # Output site file
     if write_site_file is True:
-        site_file_path = Path(out_path.parent,'site',site)
+        site_file_path = Path(out_path.parent, "site", site)
         site_file_path.parent.mkdir(parents=True, exist_ok=True)
         site_file_path.touch()
+
+    # Update max date per site
+    if (
+        data_date
+        and max_date_per_site is not None
+        and (site not in max_date_per_site or data_date > max_date_per_site[site])
+    ):
+        max_date_per_site[site] = data_date
