@@ -76,10 +76,10 @@ resource_limits:
   memory: 2G
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 1
 datum_set_spec:
-  number: 1
+  number: 10
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class

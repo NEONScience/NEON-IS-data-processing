@@ -2,7 +2,7 @@
 pipeline:
   name: windBuoy_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-4730067
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.3.0
   cmd:
   - sh
   - "-c"
@@ -130,12 +130,12 @@ resource_requests:
   cpu: 1.2
 resource_limits:
   memory: 800M
-  cpu: 1.2
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3.5G
+  memory: 1G
   cpu: 0.4
 datum_set_spec:
-  number: 5
+  number: 10
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class

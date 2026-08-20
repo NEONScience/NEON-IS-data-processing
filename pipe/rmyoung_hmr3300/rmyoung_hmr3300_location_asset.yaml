@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_hmr3300_location_asset
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-asset-loader:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-asset-loader:v1.1.2
   cmd:
   - /bin/bash
   stdin:
@@ -23,8 +23,9 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: rmyoung_hmr3300_cron_daily_and_date_control_tick
-    glob: /*
+    repo: rmyoung_hmr3300_ingest_days
+    glob: /tick/
+    branch: master
     empty_files: true
 autoscaling: true
 resource_requests:

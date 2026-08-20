@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: hmr3300_ingest_days
+  name: rmyoung_hmr3300_ingest_days
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gcs-data:v2.0.0
   env:
@@ -72,6 +72,11 @@ input:
       spec: "@never"
       #spec: "0 0 * * *" # Run at 00:00 GMT
       overwrite: true
+  - pfs:
+      name: INGEST_MANIFEST
+      repo: rmyoung_ingest_trigger
+      glob: /rmyoung/*/*/*/manifest.json
+      branch: master
   - pfs:
       name: INGEST_MANIFEST
       repo: hmr3300_ingest_trigger

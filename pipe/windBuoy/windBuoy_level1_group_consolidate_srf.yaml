@@ -137,7 +137,7 @@ transform:
     OUT_PATH_1: /tmp/interimA # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
 
 # Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 
 # Can't do this in first filter-joiner bc there are only data in the srf assignment
@@ -180,7 +180,7 @@ transform:
   
 # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /tmp/pub_workbooks
-    PARALLELIZATION_INTERNAL: '2'
+    PARALLELIZATION_INTERNAL: '1'
 
 # Environment variables for the L1 archiver
     GROUP_PREFIX: wind-buoy # no ending "_"
@@ -233,12 +233,12 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 1G
-  cpu: 2.2
+  cpu: 1.2
 resource_limits:
   memory: 2G
-  cpu: 3.5
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 0.5
 datum_set_spec:
   number: 1

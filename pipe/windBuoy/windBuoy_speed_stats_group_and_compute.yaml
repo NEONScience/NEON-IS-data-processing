@@ -50,7 +50,7 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '5' # Option for stats module
+    PARALLELIZATION_INTERNAL: '1' # Option for stats module
 input:
   cross:
   - pfs:
@@ -73,17 +73,17 @@ input:
 parallelism_spec:
   constant: 5
 resource_requests: 
-  memory: 1.5G
-  cpu: 3
+  memory: 500M
+  cpu: 1.2
 resource_limits:
-  memory: 2G
-  cpu: 7
+  memory: 1G
+  cpu: 2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.7
+  memory: 1G
+  cpu: 0.5
 autoscaling: true
 datum_set_spec:
-  number: 1
+  number: 10
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class

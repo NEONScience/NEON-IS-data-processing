@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_hmr3300_fill_date_gaps
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:v1.0.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:v1.1.0
   cmd:
   - sh
   - "-c"
@@ -63,7 +63,7 @@ transform:
     EOF
   env:
     # Environment variables for date gap filler
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     OUT_PATH: /tmp/pfs/date_filled
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
@@ -79,7 +79,7 @@ transform:
     EMPTY_FILE_TYPE_INDEX: '4'
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     # Environment variables for regularizer
-    PARALLELIZATION_INTERNAL: '3' # Parallelization within R. If increased, adjust resource requests appropriately.
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
@@ -129,16 +129,16 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 3.3
+  memory: 300M
+  cpu: 1.2
 resource_limits:
-  memory: 3G
-  cpu: 4.5
+  memory: 1G
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 0.5
 datum_set_spec:
-  number: 1
+  number: 10
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
