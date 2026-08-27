@@ -25,10 +25,12 @@ RUN apt-get update && \
         ca-certificates \
         curl \
         findutils \
+        git \
         gnupg \
         gzip \
         jq \
         libzstd1 \
+        openssh-client \
         passwd \
         software-properties-common \
         tar \
