@@ -1,0 +1,63 @@
+---
+# _rel variant of tempSoil_pub_group. Same transform and env as production -
+# just reads from tempSoil_level1_group_consolidate_srf_rel and joins with
+# tempSoil_cron_monthly_and_pub_control_rel.
+pipeline:
+  name: tempSoil_pub_group_rel
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.3.0
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - '# Run module - pub_grouper (using environment variables below as input parameters)'
+  - python3 -m pub_grouper.pub_grouper_main
+
+  env:
+    # Environment variables for 1st module: pub_grouper.
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH_GROUPER: "pfs/out/errored_datums"
+    YEAR_INDEX: '3'
+    GROUP_INDEX: '6'
+    DATA_TYPE_INDEX: '7'
+    GROUP_METADATA_DIR: group
+    PUBLOC_KEY: site
+    LINK_TYPE: SYMLINK
+
+  secrets:
+    - name: pdr-secret
+      mount_path: /var/db_secret
+    - name: github-neonscience-app-secret
+      mount_path: /var/github_secret
+
+input:
+  join:
+  - pfs:
+      name: DATA_PATH
+      repo: tempSoil_level1_group_consolidate_srf_rel
+      # Glob should be daily or monthly, must be joined monthly with pub_control to hold pub until month is likely complete
+      glob: /(*/*)/*
+      joinOn: $1
+  - pfs:
+      repo: tempSoil_cron_monthly_and_pub_control_rel
+      glob: /(*/*)
+      joinOn: $1
+      empty_files: true
+parallelism_spec:
+  constant: 3
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.8
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 5G
+  cpu: 0.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot

@@ -1,11 +1,13 @@
-name: PROD-pluvio-update-dag
+name: PROD-prt-tempProducts-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'prod'
     paths:
-      - 'pipe/pluvio/*.yaml'
-      - 'pipe/pluvio/pipe_list_pluvio.txt'
+      - 'pipe/prt/*.yaml'
+      - 'pipe/prt/pipe_list_prt.txt'
+      - 'pipe/tempSoil/*.yaml'
+      - 'pipe/tempSoil/pipe_list_tempSoil_gcs.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
@@ -27,6 +29,7 @@ jobs:
   # ----------------------------------------------------------------------------------------------
   # Event `push`: Compare the preceding remote commit -> to the current commit of the main branch 
   # ----------------------------------------------------------------------------------------------
+
 
   changed_files:
     runs-on: ubuntu-latest  # windows-latest || macos-latest
@@ -50,7 +53,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
-      PATHS: 'pipe/pluvio=pipe_list_pluvio.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      PATHS: 'pipe/prt=pipe_list_prt.txt,pipe/tempSoil=pipe_list_tempSoil_gcs.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
