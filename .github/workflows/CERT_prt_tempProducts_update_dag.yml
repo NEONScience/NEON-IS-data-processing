@@ -2,7 +2,7 @@ name: CERT-prt-tempProducts-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/prt/*.yaml'
       - 'pipe/prt/pipe_list_prt.txt'
