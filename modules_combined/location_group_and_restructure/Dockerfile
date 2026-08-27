@@ -26,7 +26,9 @@ COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_
  
 RUN apt update && \
     apt-get install -y --no-install-recommends \
+        git \
         jq \
+        openssh-client \
         build-essential \
         ca-certificates \
         wget \
