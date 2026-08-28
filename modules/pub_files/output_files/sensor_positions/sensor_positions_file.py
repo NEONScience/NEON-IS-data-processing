@@ -6,6 +6,7 @@ from typing import Tuple, List, Dict, Optional
 
 import common.date_formatter as date_formatter
 from pub_files.database.geolocation_geometry import Geometry
+from pub_files.geometry import parse_coordinates
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.sensor_positions.sensor_position import get_position
@@ -25,17 +26,11 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
     history into every monthly sensor_positions.csv.
     """
 
-    # Effective-dates columns are emitted only when the loader-driven JSON codepath is in
-    # play (i.e. this pipeline is concH2oSoilSalinity today). The DB codepath doesn't yet
-    # compute the cfgloc-geo × ref_geolocation intersection needed to fill them, so other
-    # DPs keep their pre-change schema until that follow-up lands.
-    include_effective_dates = position_history_path is not None
-
     filename = get_filename(elements, timestamp=timestamp, file_type='sensor_positions', extension='csv')
     file_path = Path(out_path, filename)
     with open(file_path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(get_column_names(include_effective_dates=include_effective_dates))
+        writer.writerow(get_column_names())
         file_rows = []
         # Parse location file path for the datum elements. Assume we end at site (**/site/location/*/location_file.json)
         site = location_path.parts[-1]
@@ -61,18 +56,18 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                         rows = sensor_specific_processors.create_tchain_rows(
                             database, location, geolocation, row_hor_ver,
                             row_location_id, row_description,
-                            _create_base_row_data, _add_reference_position_data,
-                            include_effective_dates=include_effective_dates)
+                            _create_base_row_data, _add_reference_position_data)
                     else:
                         rows = _create_standard_rows(database, geolocation, row_hor_ver,
-                                                   row_location_id, row_description,
-                                                   include_effective_dates=include_effective_dates)
+                                                   row_location_id, row_description)
 
                     # Add rows, preventing duplicates
                     for row in rows:
                         if row not in file_rows:
                             file_rows.append(row)
 
+        # Sort by HOR.VER column (index 0), then by effectiveStartDateTime (index 3)
+        file_rows.sort(key=lambda row: (row[0], row[3] or ''))
         writer.writerows(file_rows)
     return file_path
 
@@ -158,11 +153,7 @@ def _match_reference_geolocation(ref_geolocations: List, entry: Dict):
     entry_start = _strip_tz(_parse_iso(entry.get('position_start_date')))
     entry_end = _strip_tz(_parse_iso(entry.get('position_end_date')))
     for ref in ref_geolocations:
-        ref_start = _strip_tz(ref.start_date)
-        ref_end = _strip_tz(ref.end_date)
-        if entry_end is not None and ref_start is not None and entry_end <= ref_start:
-            continue
-        if entry_start is not None and ref_end is not None and entry_start >= ref_end:
+        if not _dates_overlap(entry_start, entry_end, ref.start_date, ref.end_date):
             continue
         return ref
     # Fall back to the first available so downstream still gets azimuth-based east/north math.
@@ -182,6 +173,25 @@ def _strip_tz(dt: Optional[datetime]) -> Optional[datetime]:
     if dt is None:
         return None
     return dt.replace(tzinfo=None) if dt.tzinfo is not None else dt
+
+
+def _dates_overlap(start_a: Optional[datetime], end_a: Optional[datetime],
+                   start_b: Optional[datetime], end_b: Optional[datetime]) -> bool:
+    """Return whether two half-open date ranges overlap; None bounds are open-ended."""
+    start_a, end_a = _strip_tz(start_a), _strip_tz(end_a)
+    start_b, end_b = _strip_tz(start_b), _strip_tz(end_b)
+    return not ((end_a is not None and start_b is not None and end_a <= start_b) or
+                (start_a is not None and end_b is not None and start_a >= end_b))
+
+
+def _intersect_dates(start_a: Optional[datetime], end_a: Optional[datetime],
+                    start_b: Optional[datetime], end_b: Optional[datetime]) -> Tuple[Optional[datetime], Optional[datetime]]:
+    """Return the overlap of two date ranges; a None bound means open-ended on that side."""
+    starts = [_strip_tz(s) for s in (start_a, start_b) if s is not None]
+    ends = [_strip_tz(e) for e in (end_a, end_b) if e is not None]
+    start = max(starts) if starts else None
+    end = min(ends) if ends else None
+    return start, end
 
 
 def _create_base_row_data(database: SensorPositionsDatabase, geolocation, 
@@ -219,25 +229,29 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     complete_rows = []
     
     for reference_geolocation in database.get_geolocations(offset_name):
-        
-        # Determine if this reference position is applicable based on the time.
-        # If reference location and geolocation don't overlap, skip
-        if (reference_geolocation.end_date is None) and (geolocation.end_date is not None):
-            if geolocation.end_date <= reference_geolocation.start_date:
-                continue
-        elif (geolocation.end_date is None) and (reference_geolocation.end_date is not None):
-            if geolocation.start_date >= reference_geolocation.end_date:
-                continue
-        elif (geolocation.end_date is not None) and (reference_geolocation.end_date is not None):
-            if geolocation.end_date <= reference_geolocation.start_date:
-                continue
-            elif geolocation.start_date >= reference_geolocation.end_date:
-                continue
+        if not _dates_overlap(geolocation.start_date, geolocation.end_date,
+                              reference_geolocation.start_date, reference_geolocation.end_date):
+            continue
         
         reference_position = get_position(reference_geolocation, geolocation.x_offset, geolocation.y_offset)
-        
+
+        # Effective window = cfgloc-geo x ref_geolocation intersection (both already
+        # confirmed to overlap above), mirroring the loader-driven JSON codepath.
+        (effective_start_date, effective_end_date) = _intersect_dates(
+            geolocation.start_date, geolocation.end_date,
+            reference_geolocation.start_date, reference_geolocation.end_date)
+
+        # Coordinates must come from this reference geolocation, not the named location's
+        # first geolocation, so a reference that moved reports the position in effect.
+        (latitude, longitude, elevation) = _reference_coordinates(reference_geolocation, base_data)
+
         complete_row_data = base_data.copy()
         complete_row_data.update({
+            'row_reference_location_latitude': latitude,
+            'row_reference_location_longitude': longitude,
+            'row_reference_location_elevation': elevation,
+            'row_effective_start_date': format_date(effective_start_date),
+            'row_effective_end_date': format_date(effective_end_date),
             'row_x_azimuth': round(reference_position.x_azimuth, 2) if reference_position.x_azimuth is not None else '',
             'row_y_azimuth': round(reference_position.y_azimuth, 2) if reference_position.y_azimuth is not None else '',
             'row_east_offset': round(reference_position.east_offset, 2) if reference_position.east_offset is not None else '',
@@ -250,15 +264,27 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     return complete_rows
 
 
-def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
-                        row_hor_ver: str, row_location_id: str, row_description: str,
-                        include_effective_dates: bool = False) -> List[List]:
-    """Create a standard sensor rows.
+def _reference_coordinates(reference_geolocation, base_data: Dict) -> Tuple:
+    """Return the latitude, longitude and elevation of the given reference geolocation."""
+    geometry = getattr(reference_geolocation, 'geometry', None)
+    if not geometry:
+        return (base_data.get('row_reference_location_latitude'),
+                base_data.get('row_reference_location_longitude'),
+                base_data.get('row_reference_location_elevation'))
+    try:
+        (latitude, longitude, elevation) = parse_coordinates(geometry)
+    except Exception as error:
+        raise ValueError(f'Unable to parse reference geolocation geometry: {geometry!r}') from error
+    return (round(latitude, 6) if latitude is not None else None,
+            round(longitude, 6) if longitude is not None else None,
+            round(elevation, 2) if elevation is not None else None)
 
-    When `include_effective_dates` is True, the row leaves two blank cells for
-    `effectiveStartDateTime` / `effectiveEndDateTime` so it aligns with the header the
-    JSON codepath emits. The DB codepath doesn't yet compute the intersection needed to
-    populate them; when it does, this parameter's default can flip.
+
+def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
+                        row_hor_ver: str, row_location_id: str, row_description: str) -> List[List]:
+    """Create a standard sensor rows, including the cfgloc-geo x ref_geolocation
+    intersection (computed in `_add_reference_position_data`) in the
+    `effectiveStartDateTime` / `effectiveEndDateTime` cells.
     """
     base_data = _create_base_row_data(database, geolocation, row_hor_ver, row_location_id, row_description)
     complete_rows = _add_reference_position_data(database, base_data, geolocation, geolocation.offset_name)
@@ -271,9 +297,9 @@ def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
                 row_data['row_hor_ver'],
                 row_data['row_location_id'],
                 row_data['row_description'],
+                row_data.get('row_effective_start_date', ''),
+                row_data.get('row_effective_end_date', ''),
             ]
-            if include_effective_dates:
-                leading.extend(['', ''])
             row = leading + [
                 row_data['row_position_start_date'],
                 row_data['row_position_end_date'],
@@ -299,41 +325,37 @@ def _create_standard_rows(database: SensorPositionsDatabase, geolocation,
     return rows
 
 
-def get_column_names(include_effective_dates: bool = False) -> List[str]:
+def get_column_names() -> List[str]:
     """Return the CSV header for sensor_positions.csv.
 
-    When `include_effective_dates` is True, two extra columns
-    (`effectiveStartDateTime` / `effectiveEndDateTime`) are inserted between
-    `sensorLocationDescription` and `positionStartDateTime`. These carry the
-    non-overlapping timeline that combines position and reference-location date
-    ranges; only the JSON codepath (concH2oSoilSalinity loader) populates them
-    today. The DB codepath keeps the pre-change schema until it's separately
-    updated to compute the cfgloc-geo × ref_geolocation intersection.
+    `effectiveStartDateTime` / `effectiveEndDateTime` carry the cfgloc-geo x
+    ref_geolocation intersection, computed by both the DB codepath and the
+    loader-driven JSON codepath (concH2oSoilSalinity loader).
     """
     columns = ['HOR.VER',
                'sensorLocationID',
-               'sensorLocationDescription']
-    if include_effective_dates:
-        columns.extend(['effectiveStartDateTime', 'effectiveEndDateTime'])
-    columns.extend(['positionStartDateTime',
-                    'positionEndDateTime',
-                    'referenceLocationID',
-                    'referenceLocationIDDescription',
-                    'referenceLocationIDStartDateTime',
-                    'referenceLocationIDEndDateTime',
-                    'xOffset',
-                    'yOffset',
-                    'zOffset',
-                    'pitch',
-                    'roll',
-                    'azimuth',
-                    'locationReferenceLatitude',
-                    'locationReferenceLongitude',
-                    'locationReferenceElevation',
-                    'eastOffset',
-                    'northOffset',
-                    'xAzimuth',
-                    'yAzimuth'])
+               'sensorLocationDescription',
+               'effectiveStartDateTime',
+               'effectiveEndDateTime',
+               'positionStartDateTime',
+               'positionEndDateTime',
+               'referenceLocationID',
+               'referenceLocationIDDescription',
+               'referenceLocationIDStartDateTime',
+               'referenceLocationIDEndDateTime',
+               'xOffset',
+               'yOffset',
+               'zOffset',
+               'pitch',
+               'roll',
+               'azimuth',
+               'locationReferenceLatitude',
+               'locationReferenceLongitude',
+               'locationReferenceElevation',
+               'eastOffset',
+               'northOffset',
+               'xAzimuth',
+               'yAzimuth']
     return columns
 
 
