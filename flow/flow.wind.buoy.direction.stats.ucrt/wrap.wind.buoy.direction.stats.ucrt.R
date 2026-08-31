@@ -29,7 +29,7 @@
 #'                                                                                                                                                                                          
 #' @changelog
 #' Nora Catolico (2026-07-13)
-#' Initial creation
+#' Initial creation 
 ##############################################################################################
 wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
                                   DirOutBase,

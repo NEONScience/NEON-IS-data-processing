@@ -57,10 +57,12 @@ test_that("Unit test of wrap.wind.buoy.compass.correction.R", {
     unlink(testDirOut, recursive = TRUE)
   }
 
-  # Test 1: NULL output schemas are accepted and expected outputs are written.
+  # Test 1: NULL output schemas are accepted and expected outputs are written. 
   wrap.wind.buoy.compass.correction(
       DirIn = testDirIn,
       DirOutBase = testDirOut,
+      SensWind = "rmyoung",
+      SensCompass = "hmr3300",
       log = log
     )
   testthat::expect_true (file.exists(testDirOutPath, recursive = TRUE))
@@ -72,6 +74,8 @@ test_that("Unit test of wrap.wind.buoy.compass.correction.R", {
   wrap.wind.buoy.compass.correction(
       DirIn = testDirIn,
       DirOutBase = testDirOut,
+      SensWind = "rmyoung",
+      SensCompass = "hmr3300",
       SchmDataOut = testDataSchmOut,
       SchmFlagsOut = testFlagSchmOut,
       log = log
@@ -104,8 +108,8 @@ test_that("Unit test of wrap.wind.buoy.compass.correction.R", {
   testthat::expect_true('direction' %in% names(windData))
   testthat::expect_true('direction_rad' %in% names(windData))
   testthat::expect_true('vectorAverageHeading' %in% names(windData))
-  testthat::expect_true('buoyWindDirDeadZone' %in% names(windFlags))
-  testthat::expect_true('buoyWindDirCalmWind' %in% names(windFlags))
+  testthat::expect_true('buoyWindDirDeadZoneQF' %in% names(windFlags))
+  testthat::expect_true('buoyWindDirCalmWindQF' %in% names(windFlags))
 
   validDir <- windData$direction[!is.na(windData$direction)]
   testthat::expect_true(all(validDir >= 0 & validDir < 360))
