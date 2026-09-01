@@ -231,9 +231,7 @@ def format_column(dataframe: DataFrame, column: str, column_format: str):
         # dataframe[column] = dataframe[column].map(py_format.format)
         
     if column_format == 'integer':
-        dataframe[column] = dataframe[column].astype(float).round().map(
-            lambda x: '{:.0f}'.format(x) if pd.notna(x) else ''
-        )
+        dataframe[column] = dataframe[column].round().map('{:.0f}'.format)
 
 
 def format_sig(element, n_digits):
