@@ -26,7 +26,8 @@
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
 
-#' @return The input data frame, with the columns specified in input \code{varConv} updated with 
+#' @return The input data frame, with original columns retained and new columns added. 
+#' The new columns consist of the columns specified in input \code{varConv} updated with 
 #' calibrations applied.
 
 #' @references
