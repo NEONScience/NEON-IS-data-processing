@@ -94,7 +94,7 @@ stack-data==0.6.3
 structlog==25.5.0
 testfixtures==8.0.0
 tinycss2==1.4.0
-tornado==6.5.2
+tornado==6.5.8
 traitlets==5.14.3
 typing_extensions==4.15.0
 tzdata==2025.2
