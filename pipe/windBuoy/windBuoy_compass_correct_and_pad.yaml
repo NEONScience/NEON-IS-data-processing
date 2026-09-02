@@ -1,0 +1,75 @@
+---
+pipeline:
+  name: windBuoy_compass_correct_and_pad
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-compass-correct-and-pad:sha-34e6052
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/compass_correction
+    rm -rf /tmp/compass_correction_copy
+    mkdir -p /tmp/compass_correction
+    
+    # Run first module - compass correction
+    Rscript ./flow.wind.buoy.compass.correction.R \
+      DirIn=$DIR_IN \
+      DirOut=/tmp/compass_correction \
+      DirErr=/pfs/out/errored_datums \
+      "DirSubCopy=location|threshold" \
+      FileSchmData=$SCHEMA_DATA \
+      FileSchmQf=$SCHEMA_QF
+
+    cp -rL /tmp/compass_correction /tmp/compass_correction_copy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/compass_correction 
+
+    # Run second module - timeseries_padder
+    python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+    
+    EOF
+  env:
+    DATA_PATH: /tmp/compass_correction_copy
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    PAD_DIR: data
+    COPY_DIR: location,flags # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
+    RELATIVE_PATH_INDEX: '3'
+    PARALLELIZATION_INTERNAL: '1' # For threshold select module
+output_branch: master
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: windBuoy_threshold_select
+      glob: /*/*/*
+  - pfs:
+      name: SCHEMA_DATA
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_compass_corrected.avsc
+  - pfs:
+      name: SCHEMA_QF
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_flags_deadcalm.avsc
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 1.2
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.3
+datum_set_spec:
+  number: 10
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

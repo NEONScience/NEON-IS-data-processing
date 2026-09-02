@@ -1,19 +1,17 @@
-# Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, array parser, 
-# calibration assignment and calibration Conversion
+# Dockerfile for NEON IS Data Processing - buoy wind-specific direction statistics and uncertainty calculations 
+# combined with filter joiner
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
-# docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
+# docker build -t neon-is-wind-buoy-direction-stats-ucrt -f ./modules_combined/windBuoy_direction_stats_ucrt/Dockerfile .
 
-# Start with the calibration package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:sha-01b804b
-
+# Start with the neon-is-pack-stat-r image. 
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.14
 
 # maintainer handle
-MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
+MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
 
-# Add in the python-based filter-joiner module
+# Build in the timeseries padder python module
 ARG MODULE_DIR="modules"
 ARG APP_DIR="filter_joiner"
-ARG APP_DIR_2="array_parser"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
@@ -21,9 +19,8 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
-COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
 
- 
+
 RUN apt update && \
     apt-get install -y --no-install-recommends \
         jq \
@@ -38,7 +35,7 @@ RUN apt update && \
         libffi-dev \
         liblzma-dev \
         xz-utils && \
-    rm -rf /var/lib/apt/lists/* 
+    rm -rf /var/lib/apt/lists/*
 
 ARG PYTHON_VERSION=3.11.9
 RUN wget -q https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
@@ -56,41 +53,28 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
     apt-get autoremove -y && \
-    apt-get autoclean -y && \
-    groupadd -g 9999 appuser && \
+    apt-get autoclean -y
+
+RUN groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${MODULE_DIR}/${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
+# Build in the threshold selection module 
+ARG MODULE_DIR="flow"
+ARG APP_DIR="flow.wind.buoy.direction.stats.ucrt"
 
-# Load kafka combiner
+
 # Copy the lockfile and restore known working versions of R dependency packages
-# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./flow/flow.kfka.comb/renv.lock .
+COPY ./${MODULE_DIR}/${APP_DIR}/renv.lock ./renv.lock
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
-# Copy in R code
-COPY ./flow/flow.kfka.comb/flow.kfka.comb.R .
-COPY ./flow/flow.kfka.comb/wrap.kfka.comb.R .
-
-# Load calibration conversion module
-# Copy the lockfile and restore known working versions of R dependency packages
-# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./flow/flow.cal.asgn/renv.lock .
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
-COPY ./flow/flow.cal.conv/renv.lock .
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
-
-# Copy in calibration R code
-COPY ./flow/flow.cal.conv/flow.cal.conv.R .
-COPY ./flow/flow.cal.conv/wrap.cal.conv.R .
-COPY ./flow/flow.cal.asgn/flow.cal.asgn.R .
-COPY ./flow/flow.cal.asgn/wrap.cal.asgn.R .
+# Copy in application code
+COPY ./${MODULE_DIR}/${APP_DIR}/flow.wind.buoy.direction.stats.ucrt.R .
+COPY ./${MODULE_DIR}/${APP_DIR}/wrap.wind.buoy.direction.stats.ucrt.R .
 
 # Run as app user
 USER appuser
