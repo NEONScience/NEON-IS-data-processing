@@ -2,7 +2,7 @@ name: DEV-rmyoung-hmr3300-windBuoy-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'master'
     paths:
       - 'pipe/rmyoung_hmr3300/*.yaml'
       - 'pipe/rmyoung/pipe_list_rmyoung_hmr3300.txt'
