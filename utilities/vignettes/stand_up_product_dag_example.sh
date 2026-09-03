@@ -9,12 +9,12 @@
 
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
-git_path_pipelines='/home/NEON/ncatolico/R/NEON-IS-data-processing/pipe'
-git_path_avro='/home/NEON/ncatolico/R/NEON-IS-avro-schemas'
-#git_path_avro_l0='/home/NEON/ncatolico/neon-avro-schemas'
+git_path_pipelines='/home/ncatolico/Git/NEON-IS-data-processing/pipe'
+git_path_avro='/home/ncatolico/Git/NEON-IS-avro-schemas'
+git_path_avro_l0='/home/ncatolico/Git/neon-avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='sunav2'
-product='nitrate'
+source_type='rmyoung'
+product='windBuoy'
 
 # Define paths based on base paths and product information above 
 spec_path_source_type=$git_path_pipelines/$source_type

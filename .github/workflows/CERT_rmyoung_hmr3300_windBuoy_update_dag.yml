@@ -2,7 +2,7 @@ name: CERT-rmyoung-hmr3300-windBuoy-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'cert'
     paths:
       - 'pipe/rmyoung_hmr3300/*.yaml'
       - 'pipe/rmyoung_hmr3300/pipe_list_rmyoung_hmr3300.txt'
