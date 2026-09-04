@@ -3,7 +3,13 @@
 	"site" : "BARC"
 	},
 	{
+	"site" : "BLWA"
+	},
+	{
 	"site" : "CRAM"
+	},
+	{
+	"site" : "FLNT"
 	},
 	{
 	"site" : "LIRO"
@@ -16,6 +22,9 @@
 	},
 	{
 	"site" : "SUGG"
+	},
+	{
+	"site" : "TOMB"
 	},
 	{
 	"site" : "TOOK"
