@@ -51,6 +51,9 @@
 #     reorganized input directories and added error logging
 #   Nora Catolico(2026-07-23)
 #     updated dates to POSIX
+#   Nora Catolico(2026-09-07)
+#     updated to write out parquet files
+
 ##############################################################################################
 options(digits.secs = 3)
 library(lubridate)
