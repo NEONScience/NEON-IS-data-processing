@@ -245,11 +245,11 @@ wrap.discharge.predict <- function(DirIn,
     
       # Read in the curveIdentification data - stashed locally from pachctl query
       gaugePressureRelationship  <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
-                       "NEON.DOM.SITE.DP1.00133.001.sdrc_gaugePressureRelationship_pub.parquet",
+                       "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.parquet",
                        sep = "/"),log = log),silent = FALSE)
       if (base::any(base::class(gaugePressureRelationship) == 'try-error')) {
         # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_gaugePressureRelationship_pub.parquet is unreadable"))
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.parquet is unreadable"))
         base::stop()
       }
       gaugePress <- gaugePressureRelationship[

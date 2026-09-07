@@ -239,7 +239,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
             data = sdrc_stageDischargeCurveInfo_pub[sdrc_stageDischargeCurveInfo_pub$curveID
                                       %in%curveID,],
             NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.sdrc_stageDischargeCurveInfo_pub.parquet",
+                             "NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.parquet",
                              sep = "/"),
             Schm = NULL,
             log=log
@@ -255,7 +255,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
             data = sdrc_gaugeDischargeMeas_pub[sdrc_gaugeDischargeMeas_pub$curveID
                                       %in%curveID,],
             NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.sdrc_gaugeDischargeMeas_pub.parquet",
+                             "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet",
                              sep = "/"),
             Schm = NULL,
             log=log
