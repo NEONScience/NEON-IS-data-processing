@@ -53,6 +53,8 @@
 #     added error logging, updates to better interact with pachyderm
 #   Nora Catolico (2026-08-03) 
 #     change BaM_beta source
+#   Nora Catolico(2026-09-07)
+#     updated to use parquet files
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)

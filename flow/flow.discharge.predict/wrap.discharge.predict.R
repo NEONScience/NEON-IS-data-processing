@@ -55,6 +55,8 @@
 #     added error logging, updates to better interact with pachyderm
 #   Nora Catolico (2026-08-03) 
 #     change BaM_beta source
+#   Nora Catolico(2026-09-07)
+#     updated to use parquet files
 ##############################################################################################
 wrap.discharge.predict <- function(DirIn,
                                    DirOutBase,
@@ -189,16 +191,12 @@ wrap.discharge.predict <- function(DirIn,
     # Determine if modeling with a current or previous regression ####
     
     # Read in the gaugeWaterColumnRegression data - stashed local from pachctl query
-    gaugeWaterColumnRegression <- base::try(read.csv(
-      paste(DirInOSData,
-            "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv",
-            sep="/"),
-      header = TRUE,
-      encoding = "UTF-8"
-    ))
+    gaugeWaterColumnRegression  <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                       "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.parquet",
+                       sep = "/"),log = log),silent = FALSE)
     if (base::any(base::class(gaugeWaterColumnRegression) == 'try-error')) {
       # Generate error and stop execution
-      log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv is unreadable"))
+      log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.parquet is unreadable"))
       base::stop()
     }
     # Check if there is a regression available 
@@ -246,16 +244,12 @@ wrap.discharge.predict <- function(DirIn,
       # Model stage and estimate systematic uncertainty ####
     
       # Read in the curveIdentification data - stashed locally from pachctl query
-      gaugePressureRelationship <- base::try(read.csv(
-        paste(DirInOSData,
-              "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv",
-              sep="/"),
-        header = TRUE,
-        encoding = "UTF-8"
-      ))
+      gaugePressureRelationship  <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                       "NEON.DOM.SITE.DP1.00133.001.sdrc_gaugePressureRelationship_pub.parquet",
+                       sep = "/"),log = log),silent = FALSE)
       if (base::any(base::class(gaugePressureRelationship) == 'try-error')) {
         # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv is unreadable"))
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_gaugePressureRelationship_pub.parquet is unreadable"))
         base::stop()
       }
       gaugePress <- gaugePressureRelationship[
@@ -300,16 +294,12 @@ wrap.discharge.predict <- function(DirIn,
     # Determine if modeling with a current or previous rating curve ####
     
     # Read in the curveIdentification data - stashed locally from pachctl query
-    curveIdentification <- base::try(read.csv(
-      paste(DirInOSData,
-            "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv",
-            sep="/"),
-      header = TRUE,
-      encoding = "UTF-8"
-    ))
+    curveIdentification <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                       "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet",
+                       sep = "/"),log = log),silent = FALSE)
     if (base::any(base::class(curveIdentification) == 'try-error')) {
       # Generate error and stop execution
-      log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv is unreadable"))
+      log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet is unreadable"))
       base::stop()
     }
 
@@ -357,16 +347,12 @@ wrap.discharge.predict <- function(DirIn,
       
       # Read in the controlInfo data - stashed locally from pachctl query
       surveyDate <- as.Date(currCurve$controlSurveyEndDateTime)
-      controlInfo <- base::try(read.csv(
-        paste(DirInOSData,
-              "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
-              sep="/"),
-        header = TRUE,
-        encoding = "UTF-8"
-      ))
+      controlInfo <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                       "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet",
+                       sep = "/"),log = log),silent = FALSE)
       if (base::any(base::class(controlInfo) == 'try-error')) {
         # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv is unreadable"))
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet is unreadable"))
         base::stop()
       }
       controlInfo <- controlInfo[
@@ -374,16 +360,12 @@ wrap.discharge.predict <- function(DirIn,
         &as.Date(controlInfo$endDate)==surveyDate,
       ]
       # Read in the priorParameters data - stashed locally from pachctl query
-      priorParameters <- base::try(read.csv(
-        paste(DirInOSData,
-              "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
-              sep="/"),
-        header = TRUE,
-        encoding = "UTF-8"
-      ))
+      priorParameters <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                       "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet",
+                       sep = "/"),log = log),silent = FALSE)
       if (base::any(base::class(priorParameters) == 'try-error')) {
         # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv is unreadable"))
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet is unreadable"))
         base::stop()
       }
       priorParameters <- priorParameters[
@@ -471,17 +453,13 @@ wrap.discharge.predict <- function(DirIn,
       
       # Configure gaugings for BaM! predictive model ####
       
-      # Read in the priorParameters data - stashed locally from pachctl query
-      gaugeDischargeMeas <- try(read.csv(
-        paste(DirInOSData,
-              "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv",
-              sep="/"),
-        header = TRUE,
-        encoding = "UTF-8"
-      ))
+      # Read in the priorParameters data - stashed locally from pachctl query      
+      gaugeDischargeMeas <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                       "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet",
+                       sep = "/"),log = log),silent = FALSE)
       if (base::any(base::class(gaugeDischargeMeas) == 'try-error')) {
         # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv is unreadable"))
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet is unreadable"))
         base::stop()
       }
       gaugeDischargeMeas <- gaugeDischargeMeas[
@@ -516,16 +494,12 @@ wrap.discharge.predict <- function(DirIn,
       # Configure spaghettis for BaM! predictive model ####
       
       # Read in the priorParameters data - stashed locally from pachctl query
-      sampledParameters <- try(read.csv(
-        paste(DirInOSData,
-              "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv",
-              sep="/"),
-        header = TRUE,
-        encoding = "UTF-8"
-      ))
+      sampledParameters <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                       "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.parquet",
+                       sep = "/"),log = log),silent = FALSE)
       if (base::any(base::class(sampledParameters) == 'try-error')) {
         # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv is unreadable"))
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.parquet is unreadable"))
         base::stop()
       }
       sampledParameters <- sampledParameters[
@@ -802,6 +776,11 @@ wrap.discharge.predict <- function(DirIn,
     ),
     silent=TRUE
     )
+  if(inherits(write_CSD_15_min,"try-error")){
+    log$error(base::paste0("Failed to write CSD_15_min file: ", outFileName))
+  }else{
+    log$info(base::paste0("Successfully wrote CSD_15_min file: ", outFileName))
+  }
 
   return()
 }
