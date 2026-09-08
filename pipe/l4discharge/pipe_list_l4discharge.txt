@@ -12,4 +12,9 @@ l4discharge_group_and_parse.yaml
 l4discharge_bam_list_files.yaml
 l4discharge_bam_load_files.yaml
 l4discharge_predict.yaml
-
+l4discharge_srf_loader.yaml
+l4discharge_srf_assignment.yaml
+l4discharge_level1_group_consolidate.yaml
+l4discharge_pub_group.yaml
+l4discharge_pub_format_and_package.yaml
+l4discharge_pub_egress_and_publish.yaml

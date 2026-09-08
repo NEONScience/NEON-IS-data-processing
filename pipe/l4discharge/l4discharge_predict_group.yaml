@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_predict_group
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:sha-0707bac
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:sha-245fb5b
   cmd:
   - sh
   - "-c"
@@ -52,7 +52,7 @@ input:
   - pfs:
       name: DISCHARGE_GROUP
       repo: l4discharge_group_and_parse
-      glob: /(2024/09/01/l4discharge_BLUE110100)
+      glob: /(2024/09/01/l4discharge_ARIK102100)
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: BAM_EXE
