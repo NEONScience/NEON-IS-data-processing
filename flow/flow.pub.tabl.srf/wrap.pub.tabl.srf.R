@@ -438,9 +438,11 @@ wrap.pub.tabl.srf <- function(DirIn,
       
         # Write out the data for this pub table. File naming convention is GROUPID_YYYY-MM-DD_TABLE_TMI.parquet
         fileOut <- base::paste0(utils::tail(InfoDirIn$dirSplt,1),
-                                  '_',
-                                  tableIdx,
-                                  '.parquet')
+                                '_',
+                                base::format(InfoDirIn$time,'%Y-%m-%d'),
+                                '_',
+                                tableIdx,
+                                '_000.parquet')                         
         pathFileOut <- fs::path(dirOutData,fileOut)
         
         rptWrte <-
