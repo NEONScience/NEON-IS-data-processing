@@ -12,35 +12,11 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
 
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf /tmp/interimA
-    rm -rf /tmp/interimB
-    rm -rf /tmp/pfs/interimC
-    mkdir /tmp/interimA
-    mkdir /tmp/interimB
-    mkdir -p /tmp/pfs/interimC
-
     # Set some environment variables for the first module
     export OUT_PATH=$OUT_PATH_1
 
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
-
-    # Set some environment variables for the second module
-    export OUT_PATH=$OUT_PATH_2
-    export CONFIG=$CONFIG2
-    
-    # Run second module - filter-joiner to bring in SRF (using environment variables below as input parameters)
-    python3 -m filter_joiner.filter_joiner_main
-    # Clean up 1st interim directory (this is the only one we can clean up bc the rest use symlinks)
-    rm -rf /tmp/interimA  
-
-    # Set some environment variables for the 3rd module
-    export OUT_PATH=$OUT_PATH_3
-    
-    # Run third module - level 1 consolidate (using environment variables below as input parameters)
-    python3 -m level1_consolidate.level1_consolidate_main
-
     
     EOF
   env:
@@ -60,17 +36,17 @@ transform:
             join_indices: [3,4,5,6]
         - path:
             name: OS_DATA_PATH
-            # Filter for data directory (only keep os csv's)
-            glob_pattern: /pfs/GROUP_PATH/*/*/*/l4discharge_BLUE110100/data/*.csv* 
+            # Filter for data directory
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/data/*_pub*
             # Join on Y/M/D/group ID 
             join_indices: [3,4,5,6]
         - path:
             name: GROUP_PATH
             # Grab group information
-            glob_pattern: /pfs/GROUP_PATH/*/*/*/l4discharge_BLUE110100/group/**
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
             # Join on Y/M/D/group ID 
             join_indices: [3,4,5,6]
-    OUT_PATH_1: /tmp/interimA # Transfered to OUT_PATH for the first module
+    OUT_PATH_1: /pfs/out #/tmp/interimA # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
     LOG_LEVEL: DEBUG # Shared among all modules
@@ -98,35 +74,7 @@ transform:
             glob_pattern: /pfs/SRF_PATH/*/*/*/*/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
-    OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for the this module
-
-    # Environment variables for level 1 consolidation
-    IN_PATH: /tmp/interimB
-    OUT_PATH_3: /pfs/out #/tmp/pfs/interimC 
-    GROUP_INDEX: "6" # path index of names of group-level metadata to include in the output
-    GROUP_METADATA_INDEX: "7"
-    GROUP_METADATA_NAMES: group,science_review_flags
-    # path index of names of directories to include in the output
-    DATA_TYPE_INDEX: "7"
-    DATA_TYPE_NAMES: data
-
-    # Environment variables for pub_workbook_loader
-    OUT_PATH_WORKBOOK: /tmp/pub_workbooks
-    PRODUCTS: NEON.DOM.SITE.DP4.00130.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
-  
-    # Environment variables for pub table and srf module
-    PUB_WORKBOOKS: /tmp/pub_workbooks
-    PARALLELIZATION_INTERNAL: '2'
-
-    # Environment variables for the L1 archiver
-    GROUP_PREFIX: l4discharge # no ending "_"
-
-  secrets:
-  - name: pdr-secret
-    mount_path: /var/db_secret
-  - name: l1-bucket
-    env_var: BUCKET_NAME
-    key: L1_BUCKET
+    OUT_PATH_2: /pfs/out #/tmp/interimB # This will be transfered to OUT_PATH for the this module
 
 input:
   join:

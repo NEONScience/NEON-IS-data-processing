@@ -31,7 +31,8 @@ transform:
     Rscript ./flow.discharge.predict.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums
+      DirErr=/pfs/out/errored_datums \
+      DirSubCopy=''
     
     EOF
   env:
