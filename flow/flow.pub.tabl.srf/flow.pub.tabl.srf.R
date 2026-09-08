@@ -68,16 +68,21 @@
 #' e.g. "TablPub=SCGW_30_minute|SCGW_5_minute". By default (if this argument is not input) all tables in the 
 #' publication workbooks with a discernible timing index are produced. If only the data files contain no matches
 #' with the fields in the pub workbook, or only match on the start/end times, the table will not be produced and a 
-#' warning will be issue.
+#' warning will be issued.
 #' 
-#' 7. "NameVarTimeBgn=value" (optional), where value is the name of the time variable expected in every timeseries 
+#' 7. "AddTabl=value" (optional), where value is the names of additional tables to produce, separated by pipes,
+#' e.g.""AddTabl=csd_constantBiasShift_pub|csd_gapFillingRegression_pub". These tables may not have a discernible 
+#' timing index and thus would not be produced automatically in TablPub. These tables should be defined in the 
+#' publication workbooks.
+#'
+#' 8. "NameVarTimeBgn=value" (optional), where value is the name of the time variable expected in every timeseries 
 #' file indicating the start time of the aggregation interval. Default is 'startDateTime'.
-#' 
-#' 7. "NameVarTimeEnd=value" (optional), where value is the name of the time variable expected in every timeseries file
+#'
+#' 9. "NameVarTimeEnd=value" (optional), where value is the name of the time variable expected in every timeseries file
 #' indicating the end time of the aggregation interval. If the data are instantaneous output, set NameVarTimeEnd to the 
 #' same variable as NameVarTimeBgn. If any part of the aggregation interval falls within the time range of a SRF, 
 #' the SRF will be applied. Note that the aggregation end time and SRF end time are exclusive, meaning they are not considered 
-#' part of the interval. Default is 'endDateTime'. 
+#' part of the interval. Default is 'endDateTime'.
 #'
 #' 10. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the DirData folders in the that are to be copied with a
@@ -111,6 +116,9 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2023-02-23)
 #     original creation
+#   Nora Catolico (2026-09-07)
+#     added AddTabl parameter
+#
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -146,12 +154,14 @@ Para <-
                      "PathPubWb" 
                      ),
     NameParaOptn = c("TablPub",
+                     "AddTabl",
                      "NameVarTimeBgn",
                      "NameVarTimeEnd",
                      "DirSubCopy"
                      ),
     ValuParaOptn = base::list(
       TablPub = NULL,
+      AddTabl = NULL,
       NameVarTimeBgn = 'startDateTime',
       NameVarTimeEnd = 'endDateTime',
       DirSubCopy = 'group'
@@ -178,6 +188,7 @@ log$debug(
   )
 )
 log$debug(base::paste0('Publication tables selected (empty will attempt to create them all): ', Para$TablPub))
+log$debug(base::paste0('Additional tables to produce (empty will attempt to create none): ', Para$AddTabl))
 log$debug(base::paste0('Time variable in the data indicating start time of aggregation interval: ', Para$NameVarTimeBgn))
 log$debug(base::paste0('Time variable in the data indicating end time of aggregation interval: ', Para$NameVarTimeEnd))
 
@@ -216,6 +227,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         DirData=Para$DirData,
         FilePubWb=FilePubWb,
         TablPub=Para$TablPub,
+        AddTabl=Para$AddTabl,
         NameVarTimeBgn=Para$NameVarTimeBgn,
         NameVarTimeEnd=Para$NameVarTimeEnd,
         DirSubCopy=DirSubCopy,

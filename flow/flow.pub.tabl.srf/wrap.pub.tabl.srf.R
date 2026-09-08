@@ -41,6 +41,8 @@
 #' @param TablPub (optional) Character vector. The table(s) in the pub workbook(s) to produce. By default all of them with a discernible 
 #' timing index are produced. Ensure that the column names in the data files match those in the pub workbook. 
 #' 
+#' @param AddTabl (optional) Character vector. Additional table names to include as data inputs for publication table creation.
+#' 
 #' @param NameVarTimeBgn Character string. The name of the time variable common across all timeseries files indicating 
 #' the start time of the aggregation interval. Default is 'startDateTime'.
 #' 
@@ -84,6 +86,7 @@ wrap.pub.tabl.srf <- function(DirIn,
                           DirData=c('stats','quality_metrics'),
                           FilePubWb,
                           TablPub=NULL,
+                          AddTabl=NULL,
                           NameVarTimeBgn='startDateTime',
                           NameVarTimeEnd='endDateTime',
                           DirSubCopy=NULL,
@@ -188,9 +191,15 @@ wrap.pub.tabl.srf <- function(DirIn,
   # Load the pub WBs 
   pubWb <- NEONprocIS.pub::def.read.pub.wb(NameFile=FilePubWb)
   
+  #use later
+  AddTabl <- base::setdiff(AddTabl,c(NA,''))
+  if(base::length(AddTabl) > 0){
+    addPub <- pubWb[pubWb$table %in% AddTabl,]
+  }
+
   # Constrain to the desired pub tables
   if(base::is.null(TablPub)){
-    TablPub <- base::unique(pubWb$table)
+    TablPub <- base::unique(pubWb$table[!is.na(pubWb$DPNumber) & pubWb$DPNumber != ''])
   }
   pubWb <- pubWb[pubWb$table %in% TablPub,]
   
@@ -253,6 +262,16 @@ wrap.pub.tabl.srf <- function(DirIn,
                   )
   idxTmi <-  base::regexpr(pattern='_[0-9A-Z]{3}\\.',text=nameFileData)
   tmiFile <-  base::substr(nameFileData,start=idxTmi+1,stop=idxTmi+3)
+
+  if(base::length(AddTabl) > 0){
+    idxFileAdd <- base::Reduce(
+      f=`|`,
+      x=base::lapply(AddTabl, base::grepl, x=nameFileData, fixed=TRUE)
+    )
+    addFile <- fileData[idxFileAdd]
+  } else {
+    addFile <- base::character(0)
+  }
  
   # Create each desired pub wb table and apply SRFs
   for(tmiIdx in base::unique(base::setdiff(tmiTablPub,NA))){
@@ -355,6 +374,31 @@ wrap.pub.tabl.srf <- function(DirIn,
     } # End loop around pub tables for the tmi
     
   } # End loop around tmi
+
+
+  #now loop through any additional files
+  if(!base::is.null(addFile)){
+    for(addTablIdx in base::seq_along(AddTabl)){
+      tableIdx <- AddTabl[addTablIdx]
+
+      # Constrain pub workbook to table of interest
+      pubWbIdx <- addPub[addPub$table==tableIdx,]
+      
+      # Remove duplicated field names in the pub table (this can happen when multiple pub workbooks are combined prior to input).
+      pubWbIdx <- pubWbIdx[!base::duplicated(pubWbIdx$fieldName),]
+
+      data<-readr::read_csv(file.path(addFile[grep(tableIdx,addFile)]))
+      
+      # Create the pub table
+      rptPub <- NEONprocIS.pub::def.pub.tabl.crea(data=data,
+                                                  pubWb=pubWbIdx,
+                                                  log=log)
+      dataTabl <- rptPub$dataTabl
+      nameVarMtch <- rptPub$nameVarMtch
+
+
+    }
+  }
 
   
   return()
