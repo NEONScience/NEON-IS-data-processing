@@ -1,4 +1,3 @@
 enviroscan_ingest_days.yaml
 enviroscan_cron_daily_and_date_control.yaml
 enviroscan_data_source_gcs.yaml
-enviroscan_array_parser.yaml

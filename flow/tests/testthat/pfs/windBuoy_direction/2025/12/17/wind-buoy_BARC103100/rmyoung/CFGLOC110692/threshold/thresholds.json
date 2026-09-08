@@ -1,0 +1,30 @@
+{
+   "thresholds":[
+      {
+         "context":"buoy-wind",
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CFGLOC110692",
+         "number_value":         3,
+         "start_date":"2024-12-02T15:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"vectorAverageHeading",
+         "threshold_name":"2D Wind Direction Buoy compass uncertainty"
+      },
+      {
+         "context":"buoy-wind",
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"CFGLOC110692",
+         "number_value":         0.32845,
+         "start_date":"2024-12-02T15:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"vectorAverageHeading",
+         "threshold_name":"2D Wind Direction Buoy Magnetic declination uncertainty"
+      }
+   ]
+}

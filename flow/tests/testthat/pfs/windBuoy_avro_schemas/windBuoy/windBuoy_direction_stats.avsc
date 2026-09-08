@@ -1,0 +1,91 @@
+{
+  "type": "record",
+  "name": "windBuoy_direction_stats",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "Buoy wind direction stats",
+  "__version": "1.0",
+  "fields": [
+    {
+      "name": "startDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is initiated (inclusive)"
+    },
+    {
+      "name": "endDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is completed (exclusive)"
+    },
+    {
+      "name": "source_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Source serial number or MAC address"
+    },
+    {
+      "name": "site_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "NEON site identifier"
+    },
+    {
+      "name": "buoyWindDirMean",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Arithmetic mean of wind direction on buoy",
+      "__neon_units": "degree"
+    },
+    {
+      "name": "buoyWindDirVariance",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Variance in wind direction on buoy",
+      "__neon_units": "degree"
+    },
+    {
+      "name": "buoyWindDirNumPts",
+      "type": [
+        "null",
+        "int16"
+      ],
+      "default": null,
+      "doc": "Number of points used to calculate the arithmetic mean of wind direction on buoy",
+      "__neon_units": "number"
+    },
+    {
+      "name": "buoyWindDirStdErMean",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Standard error of the mean for wind direction on buoy",
+      "__neon_units": "degree"
+    },
+    {
+      "name": "buoyWindDirExpUncert",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Expanded uncertainty for wind direction on buoy",
+      "__neon_units": "degree"
+    }
+  ]
+}
