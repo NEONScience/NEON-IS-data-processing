@@ -77,8 +77,6 @@
 #     reorganized input directories and added error logging
 #   Nora Catolico(2026-07-23)
 #     updated dates to POSIX
-#   Nora Catolico(2026-09-07)
-#     updated to write out parquet files
 ##############################################################################################
 wrap.discharge.parse.os.inputs <- function(DirIn,
                                            csd_constantBiasShift_pub,
@@ -165,15 +163,11 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   # Write out data associated with active curve
 
   # Write curveIdentification
-  write_currCurveData <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = currCurveData,
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)  
+  write_currCurveData<-try(write.csv(currCurveData,
+                                      paste(DirOutData,
+                                            "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv",
+                                            sep = "/"),
+                                      row.names = F))
   if(any(grepl('try-error',class(write_currCurveData)))){
     log$error(base::paste0('Writing the currCurveData output data failed: ',attr(write_currCurveData,"condition")))
     stop()
@@ -192,19 +186,16 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
       surveyLoc <- paste0(site,".AOS.discharge")
     }
   }
-  write_sdrc_controlInfo <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = sdrc_controlInfo_pub[as.Date(sdrc_controlInfo_pub$endDate,
+  write_sdrc_controlInfo<-try(write.csv(
+    sdrc_controlInfo_pub[as.Date(sdrc_controlInfo_pub$endDate,
                                   tz="UTC",
                                   format="%Y-%m-%dT%H:%M:%SZ")
                           %in%surveyDate
                           &sdrc_controlInfo_pub$namedLocation==surveyLoc,],
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)  
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv",
+          sep = "/"),
+    row.names = F))
   if(any(grepl('try-error',class(write_sdrc_controlInfo)))){
     log$error(base::paste0('Writing the sdrc_controlInfo output data failed: ',attr(write_sdrc_controlInfo,"condition")))
     stop()
@@ -212,19 +203,16 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
     log$info("sdrc_controlInfo data written out.")
   }
   
-  write_sdrc_priorParameters <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = sdrc_priorParameters_pub[as.Date(sdrc_priorParameters_pub$endDate,
-                                  tz="UTC",
-                                  format="%Y-%m-%dT%H:%M:%SZ")
-                          %in%surveyDate
-                          &sdrc_priorParameters_pub$namedLocation==surveyLoc,],
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE) 
+  write_sdrc_priorParameters<-try(write.csv(
+    sdrc_priorParameters_pub[as.Date(sdrc_priorParameters_pub$endDate,
+                                      tz="UTC",
+                                      format="%Y-%m-%dT%H:%M:%SZ")
+                              %in%surveyDate
+                              &sdrc_priorParameters_pub$namedLocation==surveyLoc,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv",
+          sep = "/"),
+    row.names = F))
   if(any(grepl('try-error',class(write_sdrc_priorParameters)))){
     log$error(base::paste0('Writing the sdrc_priorParameters output data failed: ',attr(write_sdrc_priorParameters,"condition")))
     stop()
@@ -234,32 +222,27 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   
   # Write the rating curve data associated with this curveID
   curveID <- currCurveData$curveID
-  write_sdrc_stageDischargeCurveInfo <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = sdrc_stageDischargeCurveInfo_pub[sdrc_stageDischargeCurveInfo_pub$curveID
+  write_sdrc_stageDischargeCurveInfo<-try(write.csv(
+    sdrc_stageDischargeCurveInfo_pub[sdrc_stageDischargeCurveInfo_pub$curveID
                                       %in%curveID,],
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE) 
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.csv",
+          sep = "/"),
+    row.names = F))
   if(any(grepl('try-error',class(write_sdrc_stageDischargeCurveInfo)))){
     log$error(base::paste0('Writing the sdrc_stageDischargeCurveInfo output data failed: ',attr(write_sdrc_stageDischargeCurveInfo,"condition")))
     stop()
   } else {
     log$info("sdrc_stageDischargeCurveInfo data written out.")
   }
-  write_sdrc_gaugeDischargeMeas <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = sdrc_gaugeDischargeMeas_pub[sdrc_gaugeDischargeMeas_pub$curveID
-                                      %in%curveID,],
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)
+  
+  write_sdrc_gaugeDischargeMeas<-try(write.csv(
+    sdrc_gaugeDischargeMeas_pub[sdrc_gaugeDischargeMeas_pub$curveID
+                                %in%curveID,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv",
+          sep = "/"),
+    row.names = F))
   if(any(grepl('try-error',class(write_sdrc_gaugeDischargeMeas)))){
     log$error(base::paste0('Writing the sdrc_gaugeDischargeMeas output data failed: ',attr(write_sdrc_gaugeDischargeMeas,"condition")))
     stop()
@@ -267,17 +250,13 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
     log$info("sdrc_gaugeDischargeMeas data written out.")
   }
   
-  
-  write_sdrc_sampledParameters <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = sdrc_sampledParameters_pub[sdrc_sampledParameters_pub$curveID
-                                      %in%curveID,],
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)
+  write_sdrc_sampledParameters<-try(write.csv(
+    sdrc_sampledParameters_pub[sdrc_sampledParameters_pub$curveID
+                                %in%curveID,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv",
+          sep = "/"),
+    row.names = F))
   if(any(grepl('try-error',class(write_sdrc_sampledParameters)))){
     log$error(base::paste0('Writing the sdrc_sampledParameters output data failed: ',attr(write_sdrc_sampledParameters,"condition")))
     stop()
@@ -318,15 +297,11 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   # Write out data associated with active regression
 
   # Write gaugeWaterColumnRegression
-  write_currRegData <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = currRegData,
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)
+  write_currRegData<-try(write.csv(currRegData,
+                                    paste(DirOutData,
+                                          "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv",
+                                          sep = "/"),
+                                    row.names = F))
   if(any(grepl('try-error',class(write_currRegData)))){
     log$error(base::paste0('Writing the currRegData output data failed: ',attr(write_currRegData,"condition")))
     stop()
@@ -336,17 +311,14 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   
   # Write the gauge-pressure relationship data associated with this curveID
   regressionID <- currRegData$regressionID
-  sdrc_gaugePressureRelationship <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = sdrc_gaugePressureRelationship_pub[
-              sdrc_gaugePressureRelationship_pub$regressionID
-              %in%regressionID,],
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)
+  sdrc_gaugePressureRelationship<-try(write.csv(
+    sdrc_gaugePressureRelationship_pub[
+      sdrc_gaugePressureRelationship_pub$regressionID
+      %in%regressionID,],
+    paste(DirOutData,
+          "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv",
+          sep = "/"),
+    row.names = F))
   if(any(grepl('try-error',class(sdrc_gaugePressureRelationship)))){
     log$error(base::paste0('Writing the gaugePressureRelationship output data failed: ',attr(sdrc_gaugePressureRelationship,"condition")))
     stop()
@@ -369,15 +341,11 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   ]
   if(nrow(currGapData)>0){
     # Write dataGapToFillMethodMapping
-    write_currGapData <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = currGapData,
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)
+    write_currGapData<-try(write.csv(currGapData,
+                                     paste(DirOutData,
+                                           "NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.csv",
+                                           sep = "/"),
+                                     row.names = F))
     if(any(grepl('try-error',class(write_currGapData)))){
       log$error(base::paste0('Writing the currGapData output data failed: ',attr(write_currGapData,"condition")))
       stop()
@@ -402,15 +370,11 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
 
   if(nrow(currShiftData)>0){
     # Write constantBiasShift
-    write_currShiftData <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = currShiftData,
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)
+    write_currShiftData<-try(write.csv(currShiftData,
+                                     paste(DirOutData,
+                                           "NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.csv",
+                                           sep = "/"),
+                                     row.names = F))
     if(any(grepl('try-error',class(write_currShiftData)))){
       log$error(base::paste0('Writing the currShiftData output data failed: ',attr(write_currShiftData,"condition")))
       stop()
@@ -435,15 +399,11 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   
   if(nrow(currGapRegData)>0){
     # Write gapFillingRegression
-    write_currGapRegData <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-            data = currGapRegData,
-            NameFile = paste(DirOutData,
-                             "NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.parquet",
-                             sep = "/"),
-            Schm = NULL,
-            log=log
-        ),silent = TRUE)
+    write_currGapRegData<-try(write.csv(currGapRegData,
+                                     paste(DirOutData,
+                                           "NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.csv",
+                                           sep = "/"),
+                                     row.names = F))
     if(any(grepl('try-error',class(write_currGapRegData)))){
       log$error(base::paste0('Writing the currGapRegData output data failed: ',attr(write_currGapRegData,"condition")))
       stop()
