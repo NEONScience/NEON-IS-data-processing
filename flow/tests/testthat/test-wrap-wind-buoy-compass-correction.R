@@ -28,6 +28,8 @@
 #' changelog and author contributions
 #   Nora Catolico (2026-08-11)
 #     Original Creation
+#   Nora Catolico (2026-09-08)
+#     Added test for handling of duplicated readout times in wind and compass data
 #
 ##############################################################################################
 
@@ -199,6 +201,105 @@ test_that("Input validation and error handling", {
   # Clean up.
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
+  }
+})
+
+# Test for duplicate readout time handling
+test_that("Duplicated readout times in wind and compass data are handled", {
+
+  source('../../flow.wind.buoy.compass.correction/wrap.wind.buoy.compass.correction.R')
+  log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+
+  workingDirPath <- getwd()
+  testDirInOrig <- file.path(workingDirPath, 'pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100')
+  testDirInBase <- file.path(workingDirPath, 'pfs/windBuoy_threshold_select_dup')
+  testDirIn <- file.path(testDirInBase, '2025/12/17/wind-buoy_BARC103100')
+  testDirOut <- file.path(workingDirPath, 'pfs/out')
+
+  # Clean up any leftovers from previous runs.
+  if (dir.exists(testDirInBase)) {
+    unlink(testDirInBase, recursive = TRUE)
+  }
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+
+  # Copy the base fixture, then inject a duplicated readout time into both the wind
+  # and compass data files with distinguishing bogus values on the duplicate row.
+  dir.create(file.path(testDirInBase, '2025/12/17'), recursive = TRUE)
+  file.copy(testDirInOrig, file.path(testDirInBase, '2025/12/17'), recursive = TRUE)
+
+  windDataFile <- file.path(testDirIn, 'rmyoung/CFGLOC110692/data/rmyoung_CFGLOC110692_2025-12-17.parquet')
+  compassDataFile <- file.path(testDirIn, 'hmr3300/CFGLOC110692/data/hmr3300_CFGLOC110692_2025-12-17.parquet')
+
+  windData <- NEONprocIS.base::def.read.parq(NameFile = windDataFile, log = log)
+  compassData <- NEONprocIS.base::def.read.parq(NameFile = compassDataFile, log = log)
+
+  numRowsWindOrig <- nrow(windData)
+
+  # Bogus duplicate of the second row's readout_time, inserted after the original so the
+  # original (first occurrence) is expected to be retained and the bogus row dropped.
+  windDup <- windData[2, ]
+  windDup$direction_calibrated <- 999
+  windDataDup <- rbind(windData[1, ], windData[2, ], windDup, windData[3:nrow(windData), ])
+
+  compassDup <- compassData[2, ]
+  compassDup$direction <- 999
+  compassDataDup <- rbind(compassData[1, ], compassData[2, ], compassDup, compassData[3:nrow(compassData), ])
+
+  arrow::write_parquet(windDataDup, windDataFile)
+  arrow::write_parquet(compassDataDup, compassDataFile)
+
+  wrap.wind.buoy.compass.correction(
+      DirIn = testDirIn,
+      DirOutBase = testDirOut,
+      SensWind = "rmyoung",
+      SensCompass = "hmr3300",
+      log = log
+    )
+
+  infoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(testDirIn)
+  testDirRepo <- infoDirIn$dirRepo
+  testDirOutPath <- base::paste0(testDirOut, testDirRepo)
+
+  cfgDirs <- base::list.dirs(file.path(testDirOutPath, 'rmyoung'), recursive = FALSE, full.names = TRUE)
+  cfgDirs <- cfgDirs[grepl('CFGLOC', basename(cfgDirs))]
+  testthat::expect_true(length(cfgDirs) == 1)
+
+  dirOutData <- file.path(cfgDirs[1], 'data')
+  dataFiles <- base::list.files(dirOutData, full.names = TRUE)
+  testthat::expect_true(length(dataFiles) == 1)
+
+  outData <- try(NEONprocIS.base::def.read.parq(NameFile = dataFiles[1], log = log), silent = FALSE)
+  testthat::expect_false(inherits(outData, 'try-error'), info = "Failed to read output data file")
+
+  # No duplicated readout times should remain in the output.
+  testthat::expect_false(any(duplicated(outData$readout_time)),
+                        info = "Duplicate readout times were not removed from output")
+
+  # Row count should match the number of unique readout times in the original (pre-duplicate) input.
+  testthat::expect_equal(nrow(outData), numRowsWindOrig,
+                         info = "Unexpected number of rows after deduplication of wind data")
+
+  # The duplicated readout_time (floored to the 4-second interval) should retain the first
+  # occurrence's value, not the bogus duplicate.
+  dupTimeFloor <- as.POSIXct(floor(as.numeric(windData$readout_time[2]) / 4) * 4, origin = "1970-01-01", tz = "GMT")
+  keptRow <- outData[outData$readout_time == dupTimeFloor, ]
+  testthat::expect_equal(nrow(keptRow), 1, info = "Expected exactly one row for the deduplicated readout_time")
+  testthat::expect_true(keptRow$direction_calibrated != 999,
+                        info = "Bogus duplicate wind value was retained instead of the first occurrence")
+
+  # Compass data duplicates should also be deduplicated, so the bogus value should not surface
+  # in the merged compass_direction_raw output field.
+  testthat::expect_true(all(outData$compass_direction_raw != 999, na.rm = TRUE),
+                        info = "Bogus duplicate compass value was retained instead of the first occurrence")
+
+  # Clean up.
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  if (dir.exists(testDirInBase)) {
+    unlink(testDirInBase, recursive = TRUE)
   }
 })
 
