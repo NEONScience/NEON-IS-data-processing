@@ -43,7 +43,7 @@
 #'                               log=log)
 #' Stepping through the code in R studio                               
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_threshold_select/2025/12/17/wind-buoy_BARC103100",
+# arg <- c("DirIn=/home/ncatolico/Git/pfs/windBuoy_threshold_select/2026/08/02/wind-buoy_BARC103100",
 #          "DirOut=/home/ncatolico/Git/pfs/wind_buoy_specific_flags",
 #          "DirErr=/home/ncatolico/Git/pfs/out/errored_datums",
 #          "DirSubCopy=location|threshold",
@@ -61,6 +61,8 @@
 #' Nora Catolico (2026-08-12)
 #'  Added SensWind and SensCompass parameters. 
 #'  Added floor date standardization to 4 second intervals for both wind and compass data.
+#' Nora Catolico (2026-09-07)
+#'  Added handling for duplicated readout times in both wind and compass data.
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)

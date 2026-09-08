@@ -5,7 +5,7 @@ on:
     # branches:
     #   - 'master'
     tags:
-      - "wind_buoy_compass_correct_and_pad/v*.*.*"
+      - "windBuoy_compass_correct_and_pad/v*.*.*"
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   # Use github and google registries
@@ -47,7 +47,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=wind_buoy_compass_correct_and_pad/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=windBuoy_compass_correct_and_pad/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
