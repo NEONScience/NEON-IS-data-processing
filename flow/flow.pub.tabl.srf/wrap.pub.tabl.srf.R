@@ -197,19 +197,22 @@ wrap.pub.tabl.srf <- function(DirIn,
   AddTabl <- base::setdiff(AddTabl,c(NA,''))
   if(base::length(AddTabl) > 0){
     addPub <- pubWb[pubWb$table %in% AddTabl,]
+    # Issue an error if no matching pub tables
+    if(base::nrow(addPub) == 0){
+      log$error(base::paste0('The publication workbook(s) contain no matches to requested pub table(s). Datum:',
+                            DirIn,
+                            '. Pub Workbook file(s): ',
+                            base::paste0(FilePubWb,collapse=','),
+                            '. Requested pub table(s): ',
+                            base::paste0(AddTabl,collapse=',')
+      ))
+      stop()
+    }
+  }else{
+    addPub <- NULL
   }
 
-  # Issue an error if no matching pub tables
-  if(base::nrow(addPub) == 0){
-    log$error(base::paste0('The publication workbook(s) contain no matches to requested pub table(s). Datum:',
-                          DirIn,
-                          '. Pub Workbook file(s): ',
-                          base::paste0(FilePubWb,collapse=','),
-                          '. Requested pub table(s): ',
-                          base::paste0(AddTabl,collapse=',')
-    ))
-    stop()
-  }
+  
 
   # Constrain to the desired pub tables
   if(base::is.null(TablPub)){
@@ -437,7 +440,7 @@ wrap.pub.tabl.srf <- function(DirIn,
         schmTablPub <- NEONprocIS.pub::def.schm.parq.from.pub.wb(pubWb=pubWbIdx)
       
         # Write out the data for this pub table. File naming convention is GROUPID_YYYY-MM-DD_TABLE_TMI.parquet
-        fileOut <- base::paste0(utils::tail(InfoDirIn$dirSplt,1),
+        fileOut <- base::paste0(utils::tail(InfoDirIn$dirSplt,1),addPub
                                 '_',
                                 base::format(InfoDirIn$time,'%Y-%m-%d'),
                                 '_',
