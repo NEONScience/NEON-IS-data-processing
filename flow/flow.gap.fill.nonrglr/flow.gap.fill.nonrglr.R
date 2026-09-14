@@ -209,7 +209,7 @@ log$debug(base::paste0(
   base::paste0(nameDirSub, collapse = ',')
 ))
 
-WndwDedup <- base::as.numeric(Para$WndwDedup)
+WndwDedup <- if (base::is.null(Para$WndwDedup)) NULL else base::as.numeric(Para$WndwDedup)
 log$debug(base::paste0('Interval for deduplication, in minutes: ',base::paste0(WndwDedup,collapse=',')))
 
 # Find all the input paths (datums). We will process each one.
