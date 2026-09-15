@@ -29,7 +29,7 @@ google-auth==2.43.0
 grpc-interceptor==0.14.2
 grpcio==1.76.0
 grpclib==0.4.8
-h2==4.3.0
+h2==4.4.1
 hpack==4.1.0
 hyperframe==6.1.0
 idna==3.11
