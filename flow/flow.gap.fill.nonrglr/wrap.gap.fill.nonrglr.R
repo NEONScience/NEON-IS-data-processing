@@ -48,6 +48,10 @@
 #'  representing the number of minutes over which any number of measurements are expected. 
 #' For example, "WndwFill=015" refers to a 15-minute interval, while "WndwAgr=030" refers to a 
 #' 30-minute  interval. 
+#' 
+#' @param WndwDedup Character value (optional). The window in minutes used for deduplication of readout times. It represents 
+#' the number of minutes over which only one measurement is expected. 
+#' For example, "WndwDedup=0.06666666666" refers to a 4-second interval.
 #'  
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
@@ -75,12 +79,15 @@
 #     original creation
 #   Nora Catolico (2026-05-29)
 #     remove duplicate timestamps
+#   Nora Catolico (2026-09-14)
+#     added WndwDedup parameter for deduplication of readout times where only one value is desired
 ##############################################################################################
 wrap.gap.fill.nonrglr <- function(DirIn,
                                   DirOutBase,
                                   DirFill,
                                   WndwFill,
-                                  SchmFill,
+                                  WndwDedup=NULL,
+                                  SchmFill=NULL,
                                   DirSubCopy=NULL,
                                   log=NULL
 ){
@@ -102,7 +109,7 @@ wrap.gap.fill.nonrglr <- function(DirIn,
   all_starts <- seq(timeBgn, timeEnd - WndwFill*60, by = WndwFill*60)
   
   # Helper to floor readout_times to window starts
-  floor_15m <- function(x) {
+  floor_wndw <- function(x) {
     as.POSIXct(floor(as.numeric(x) / (WndwFill*60)) * (WndwFill*60),
                origin = "1970-01-01", tz = attr(x, "tzone"))
   }
@@ -150,7 +157,7 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       df$readout_time <- base::as.POSIXlt(df$readout_time)
       
       # Windows that already have at least one observation
-      present <- unique(floor_15m(df$readout_time))
+      present <- unique(floor_wndw(df$readout_time))
       
       # Missing windows
       missing <- all_starts[!all_starts %in% present]
@@ -161,6 +168,14 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       # Combine and sort
       df_filled <- bind_rows(df, blanks)
       df_filled <- df_filled[order(df_filled$readout_time), ]
+
+      # deduplication of readout times where only one value is desired
+      # convert readings to standard floor of each WndwDedup minute interval
+      if (!is.null(WndwDedup) && !is.na(WndwDedup)) {
+        df_filled$readout_time <- as.POSIXct(floor(as.numeric(df_filled$readout_time) / (WndwDedup*60)) * (WndwDedup*60), origin="1970-01-01", tz="GMT")
+        #round to nearest second
+        df_filled$readout_time <- as.POSIXct(round(as.numeric(df_filled$readout_time)), origin="1970-01-01", tz="GMT")
+      }
       
       #remove any duplicated time stamps, keep first instance
       df_filled <- df_filled[!duplicated(df_filled$readout_time),]
@@ -168,7 +183,7 @@ wrap.gap.fill.nonrglr <- function(DirIn,
       #add in source id if needed
       if("source_id" %in% colnames(df_filled)){
         source_id<-unique(df_filled$source_id[!is.na(df_filled$source_id)])
-        if(length(source_id>0)){
+        if(length(source_id) > 0){
           df_filled$source_id[is.na(df_filled$source_id)]<-source_id[1]
         }else{
           df_filled$source_id[is.na(df_filled$source_id)]<-"99999"
