@@ -2,7 +2,7 @@
 pipeline:
   name: rmyoung_hmr3300_fill_date_gaps
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:sha-dd51181
   cmd:
   - sh
   - "-c"
@@ -48,6 +48,7 @@ transform:
         DirErr=/pfs/out/errored_datums \
         "DirFill=data|uncertainty_data|flags" \
         WndwFill="01" \
+        WndwDedup="0.06666666666" \
         "DirSubCopy=location|uncertainty_coef" \
         "FileSchm=data:$SCHEMA_DATA_RMYOUNG|flags:$SCHEMA_FLAGS_RMYOUNG|uncertainty_data:$SCHEMA_UCRT_RMYOUNG"
     elif [ $source_type = "hmr3300" ]; then
@@ -57,6 +58,7 @@ transform:
         DirErr=/pfs/out/errored_datums \
         "DirFill=data" \
         WndwFill="01" \
+        WndwDedup="0.06666666666" \
         "FileSchm=data:$SCHEMA_DATA_HMR3300" \
         "DirSubCopy=location"
     fi
