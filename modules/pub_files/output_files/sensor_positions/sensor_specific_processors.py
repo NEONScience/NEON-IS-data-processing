@@ -22,12 +22,11 @@ def get_thermistor_depths(location) -> Dict[str, Optional[float]]:
 
 def create_tchain_rows(database: SensorPositionsDatabase, location, geolocation,
                       row_hor_ver: str, row_location_id: str, row_description: str,
-                      create_base_row_data_func, add_reference_position_data_func,
-                      include_effective_dates: bool = False) -> List[List]:
+                      create_base_row_data_func, add_reference_position_data_func) -> List[List]:
     """Create multiple rows for tchain sensor, one for each thermistor depth.
 
-    `include_effective_dates` leaves two blank cells for effectiveStart/End to align
-    with the JSON codepath's header; used only when this pipeline's caller enables it.
+    The cfgloc-geo x ref_geolocation intersection (computed by
+    `add_reference_position_data_func`) fills the effectiveStart/End cells.
     """
     base_data = create_base_row_data_func(database, geolocation, row_hor_ver, row_location_id, row_description)
     complete_rows = add_reference_position_data_func(database, base_data, geolocation, geolocation.offset_name)
@@ -50,9 +49,9 @@ def create_tchain_rows(database: SensorPositionsDatabase, location, geolocation,
                     modified_hor_ver,
                     complete_row_data['row_location_id'],
                     complete_row_data['row_description'],
+                    complete_row_data.get('row_effective_start_date', ''),
+                    complete_row_data.get('row_effective_end_date', ''),
                 ]
-                if include_effective_dates:
-                    leading.extend(['', ''])
                 tchain_row = leading + [
                     complete_row_data['row_position_start_date'],
                     complete_row_data['row_position_end_date'],
