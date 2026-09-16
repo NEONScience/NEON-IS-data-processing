@@ -13,12 +13,14 @@ transform:
     IFS=$'\n\t'
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf /tmp/interimA
-    rm -rf /tmp/interimB
-    rm -rf /tmp/pfs/interimC
-    mkdir /tmp/interimA
-    mkdir /tmp/interimB
-    mkdir -p /tmp/pfs/interimC
+    rm -rf /tmp/filterjoined1
+    rm -rf /tmp/filterjoined2
+    rm -rf /tmp/consolidated
+    rm -rf /tmp/pubtblsrf
+    mkdir /tmp/filterjoined1
+    mkdir /tmp/filterjoined2
+    mkdir /tmp/consolidated
+    mkdir /tmp/pubtblsrf
 
     # Set some environment variables for the first module
     export OUT_PATH=$OUT_PATH_1
@@ -34,7 +36,7 @@ transform:
     python3 -m filter_joiner.filter_joiner_main
 
     # Clean up 1st interim directory (this is the only one we can clean up bc the rest use symlinks)
-    rm -rf /tmp/interimA 
+    rm -rf /tmp/filterjoined1 
 
     # Set some environment variables for the 3rd module
     export OUT_PATH=$OUT_PATH_3
@@ -45,15 +47,22 @@ transform:
     # Run fourth module - pub workbook loader (using environment variables below as input parameters)
     python3 -m pub_workbook_loader.pub_workbook_loader_main
 
-    # Run fifth and final module - create pub tables and apply science review flags (if any)
+    # Run fifth module - create pub tables and apply science review flags (if any)
     Rscript ./flow.pub.tabl.srf.R \
-      DirIn=/tmp/pfs/interimC \
-      DirOut=/pfs/out \
+      DirIn=/tmp/consolidated \
+      DirOut=/tmp/pubtblsrf \
       DirErr=/pfs/out/errored_datums \
       "DirData=data" \
       "AddTabl=csd_constantBiasShift_pub|csd_gapFillingRegression_pub|csd_dataGapToFillMethodMapping_pub|csd_gaugeWaterColumnRegression_pub|sdrc_gaugePressureRelationship_pub" \
       PathPubWb=$PUB_WORKBOOKS \
-      "DirSubCopy=science_review_flags|group|location"
+      "DirSubCopy=science_review_flags|group"
+
+    # Set some environment variables for the 6th module - location filter joiner
+    export OUT_PATH=$OUT_PATH_LOC
+    export CONFIG=$CONFIG_LOC
+
+    # Run sixth module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
 
     # Export Level 1 data to bucket
     export OUT_PATH=/pfs/out
@@ -113,25 +122,22 @@ transform:
             glob_pattern: /pfs/DATA_PATH/*/*/*/*/**
             # Join on Y/M/D/group ID 
             join_indices: [3,4,5,6]
+            outer_join: True
         - path:
             name: OS_DATA_PATH
             # Filter for data directory
             glob_pattern: /pfs/GROUP_PATH/*/*/*/*/data/*_pub*
             # Join on Y/M/D/group ID 
             join_indices: [3,4,5,6]
+            outer_join: True
         - path:
             name: GROUP_PATH
             # Grab group information
             glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
             # Join on Y/M/D/group ID 
             join_indices: [3,4,5,6]
-        - path:
-            name: LOCATION_PATH
-            # Grab group information
-            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/location/**
-            # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
-    OUT_PATH_1: /tmp/interimA # Transfered to OUT_PATH for the first module
+            outer_join: True
+    OUT_PATH_1: /tmp/filterjoined1 # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
     LOG_LEVEL: DEBUG # Shared among all modules
@@ -149,7 +155,7 @@ transform:
         - path:
             name: CONSOLIDATED_PATH
             # Filter for data directory
-            glob_pattern: /tmp/interimA/*/*/*/*/**
+            glob_pattern: /tmp/filterjoined1/*/*/*/*/**
             # Join on group ID (already joined below by day)
             join_indices: [6]
             outer_join: True
@@ -159,18 +165,41 @@ transform:
             glob_pattern: /pfs/SRF_PATH/*/*/*/*/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
-    OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for the this module
+    OUT_PATH_2: /tmp/filterjoined2 # This will be transfered to OUT_PATH for the this module
 
     # Environment variables for level 1 consolidation
-    IN_PATH: /tmp/interimB
-    OUT_PATH_3: /tmp/pfs/interimC # This will be transfered to OUT_PATH for the second module
+    IN_PATH: /tmp/filterjoined2
+    OUT_PATH_3: /tmp/consolidated # This will be transfered to OUT_PATH for the second module
     GROUP_INDEX: "6" # path index of names of group-level metadata to include in the output
     GROUP_METADATA_INDEX: "7"
     GROUP_METADATA_NAMES: group,science_review_flags
     # path index of names of directories to include in the output
     DATA_TYPE_INDEX: "7"
-    DATA_TYPE_NAMES: data,location
-    
+    DATA_TYPE_NAMES: data
+
+    # Below are the environment variables for the location filter-joiner 
+    OUT_PATH_LOC: /pfs/out # This will be transfered to OUT_PATH for the location filter-joiner module
+    CONFIG_LOC: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: L1_PATH
+            # Filter for data directory
+            glob_pattern: /tmp/pubtblsrf/*/*/*/*/**
+            # Join on group ID (already joined below by day)
+            join_indices: [6]
+            outer_join: True
+        - path:
+            name: LOCATION_PATH
+            # Grab group information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/location/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
+            outer_join: True
+
     # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /tmp/pub_workbooks
     PRODUCTS: NEON.DOM.SITE.DP4.00130.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
