@@ -440,7 +440,7 @@ wrap.pub.tabl.srf <- function(DirIn,
         schmTablPub <- NEONprocIS.pub::def.schm.parq.from.pub.wb(pubWb=pubWbIdx)
       
         # Write out the data for this pub table. File naming convention is GROUPID_YYYY-MM-DD_TABLE_TMI.parquet
-        fileOut <- base::paste0(utils::tail(InfoDirIn$dirSplt,1),addPub
+        fileOut <- base::paste0(utils::tail(InfoDirIn$dirSplt,1),
                                 '_',
                                 base::format(InfoDirIn$time,'%Y-%m-%d'),
                                 '_',
