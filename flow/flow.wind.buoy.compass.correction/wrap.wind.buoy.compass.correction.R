@@ -42,6 +42,8 @@
 #' Nora Catolico (2026-08-12)
 #'  Added SensWind and SensCompass parameters. 
 #'  Added floor date standardization to 4 second intervals for both wind and compass data.
+#' Nora Catolico (2026-09-07)
+#'  Added handling for duplicated readout times in both wind and compass data.
 ##############################################################################################
 wrap.wind.buoy.compass.correction <- function(DirIn,
                                   DirOutBase,
@@ -160,9 +162,12 @@ wrap.wind.buoy.compass.correction <- function(DirIn,
   # readings occur every 4 seconds for seconds 2 through 42 of each minute typically
   # convert readings to standard floor of each 4 second interval
   data_wind$readout_time <- as.POSIXct(floor(as.numeric(data_wind$readout_time) / 4) * 4, origin="1970-01-01", tz="GMT")
-
+  #if multiple rows for a given readout time in the wind data, keep only the first occurrence
+  data_wind <- data_wind[!duplicated(data_wind$readout_time),]
   if(length(dataFileName_compass)>0){
     data_compass$readout_time <- as.POSIXct(floor(as.numeric(data_compass$readout_time) / 4) * 4, origin="1970-01-01", tz="GMT")
+    #if multiple rows for a given readout time in the compass data, keep only the first occurrence
+    data_compass <- data_compass[!duplicated(data_compass$readout_time),]
     missing<-data_wind$readout_time[!data_wind$readout_time %in% data_compass$readout_time]
     #add rows to data_compass with missing readout times
     if(length(missing) > 0){
