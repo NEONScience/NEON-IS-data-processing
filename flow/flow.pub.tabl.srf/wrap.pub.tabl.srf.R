@@ -445,7 +445,7 @@ wrap.pub.tabl.srf <- function(DirIn,
                                 base::format(InfoDirIn$time,'%Y-%m-%d'),
                                 '_',
                                 tableIdx,
-                                '_000.parquet')                         
+                                '.parquet')                         
         pathFileOut <- fs::path(dirOutData,fileOut)
         
         rptWrte <-
