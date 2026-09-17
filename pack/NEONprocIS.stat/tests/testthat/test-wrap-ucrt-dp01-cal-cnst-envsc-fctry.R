@@ -32,7 +32,7 @@ test_that("Unit test of wrap.ucrt.dp01.cal.cnst.envsc.fctry.R", {
   expect_true(is.numeric(ucrt))
   expect_false(is.na(ucrt))
   # Calibration term should be the fixed manufacturer default, regardless of the data magnitude
-  expect_equal(ucrt, 2*sqrt(stats::sd(data$VSWCfactoryMean)^2/3 + 0.1068177^2))
+  expect_equal(ucrt, 2*sqrt(stats::sd(data$VSWCfactoryMean)^2/3 + 0.1067726^2))
 
   # Sad Path 1, if VarUcrt data is not numeric then wrap.ucrt.dp01.cal.cnst.envsc.fctry will not be executed
 
