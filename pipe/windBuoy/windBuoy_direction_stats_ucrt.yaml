@@ -1,0 +1,107 @@
+---
+pipeline:
+  name: windBuoy_direction_stats_ucrt
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wind-buoy-direction-stats-ucrt:v1.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/rmyoung_filter_joined
+    mkdir -p /tmp/pfs/rmyoung_filter_joined
+
+    # Set some environment variables for the first module
+    export OUT_PATH=$OUT_PATH_1
+    
+    # Run filter-joiner for data (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+
+    # Run second module - wind direction statistics and uncertainty calculations
+    Rscript ./flow.wind.buoy.direction.stats.ucrt.R \
+      DirIn=/tmp/pfs/rmyoung_filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "WndwAgr=002|030" \
+      FileSchmStats=$SCHEMA_STATS
+
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # Configuration for filter-joiner module
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            glob_pattern: /pfs/DATA_PATH/*/*/*/*/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [8]
+        - path:
+            name: THRESHOLD_PATH
+            glob_pattern: /pfs/THRESHOLD_PATH/*/*/*/*/rmyoung/*/threshold/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [8]
+        - path:
+            name: UNCERTAINTY_PATH
+            glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/rmyoung/*/uncertainty_coef/**
+            # Join on named location (already joined below by source type and day)
+            join_indices: [8]
+            outer_join: true
+    LOG_LEVEL: INFO
+    OUT_PATH_1: /tmp/pfs/rmyoung_filter_joined
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. 
+    PARALLELIZATION_INTERNAL: '1'
+input:
+  cross:
+  - pfs:
+      name: SCHEMA_STATS
+      repo: windBuoy_avro_schemas
+      glob: /windBuoy/windBuoy_direction_stats.avsc
+  - join:    
+    - pfs:
+        name: DATA_PATH
+        repo: windBuoy_analyze_pad_and_qaqc_plau
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY.
+    - pfs:
+        name: THRESHOLD_PATH
+        repo: windBuoy_threshold_select
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY.
+    - pfs:
+        name: UNCERTAINTY_PATH
+        repo: windBuoy_group_path
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY.
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 600M
+  cpu: 1.3
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 10
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

@@ -1,0 +1,94 @@
+{
+  "type": "record",
+  "name": "windBuoy_compass_corrected",
+  "namespace": "org.neonscience.schema.dp0p",
+  "doc": "Buoy compass corrected wind speed and direction",
+  "__version": "1.0",
+  "fields": [
+    {
+      "name": "readout_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp of readout expressed in milliseconds since epoch",
+      "__neon_units": "millisecond"
+    },
+    {
+      "name": "source_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Source serial number or MAC address"
+    },
+    {
+      "name": "site_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "NEON site identifier"
+    },
+    {
+      "name": "speed",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Wind speed in meters per second",
+      "__neon_units": "metersPerSecond"
+    },
+    {
+      "name": "vectorAverageHeading",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Raw buoy compass direction",
+      "__neon_units": "degree"
+    },
+    {
+      "name": "direction_calibrated",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Calibrated wind direction in degrees",
+      "__neon_units": "degree"
+    },
+    {
+      "name": "direction",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Wind direction in degrees",
+      "__neon_units": "degree"
+    },
+    {
+      "name": "direction_rad",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "Corrected wind direction in radians",
+      "__neon_units": "radians"
+    },
+    {
+      "name": "azimuth",
+      "type": [
+        "null",
+        "float"
+      ],
+      "default": null,
+      "doc": "wind-monitor on-mast offset",
+      "__neon_units": "degree"
+    }
+  ]
+}

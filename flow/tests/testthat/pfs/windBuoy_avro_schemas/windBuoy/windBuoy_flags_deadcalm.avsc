@@ -1,0 +1,37 @@
+{
+  "type": "record",
+  "name": "windBuoy_flags_deadcalm",
+  "namespace": "org.neonscience.schema.dp0p",
+  "doc": "Dead zone and calm wind flags for buoy wind direction",
+  "fields": [
+    {
+      "name": "readout_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp of readout expressed in milliseconds since epoch",
+      "__neon_units": "millisecond"
+    },
+    {
+      "name": "buoyWindDirDeadZoneQF",
+      "type": [
+        "null",
+        "int8"
+        ],
+      "default": null,
+      "doc": "Quality flag for the dead band test detailed (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "buoyWindDirCalmWindQF",
+      "type": [
+        "null",
+        "int8"
+        ],
+      "default": null,
+      "doc": "Quality flag for the calm wind test detailed (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    }
+  ]
+}
