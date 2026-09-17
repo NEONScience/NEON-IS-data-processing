@@ -25,30 +25,30 @@ transform:
       FileSchmStat=$FILE_SCHEMA_STATS \
       "WndwAgr=005|030" \
       "DirSubCopy=location" \
-      "TermStat1=VSWCsoilSpecificDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
-      "TermStat2=VSWCsoilSpecificDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
-      "TermStat3=VSWCsoilSpecificDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
-      "TermStat4=VSWCsoilSpecificDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
-      "TermStat5=VSWCsoilSpecificDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
-      "TermStat6=VSWCsoilSpecificDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
-      "TermStat7=VSWCsoilSpecificDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
-      "TermStat8=VSWCsoilSpecificDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.envsc)" \
-      "TermStat9=VSWCfactoryDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat10=VSWCfactoryDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat11=VSWCfactoryDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat12=VSWCfactoryDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat13=VSWCfactoryDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat14=VSWCfactoryDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat15=VSWCfactoryDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat16=VSWCfactoryDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat17=VSICDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat18=VSICDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat19=VSICDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat20=VSICDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat21=VSICDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat22=VSICDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat23=VSICDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)" \
-      "TermStat24=VSICDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult)"
+      "TermStat1=VSWCsoilSpecificDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc)" \
+      "TermStat2=VSWCsoilSpecificDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc)" \
+      "TermStat3=VSWCsoilSpecificDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc)" \
+      "TermStat4=VSWCsoilSpecificDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc)" \
+      "TermStat5=VSWCsoilSpecificDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc)" \
+      "TermStat6=VSWCsoilSpecificDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc)" \
+      "TermStat7=VSWCsoilSpecificDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc)" \
+      "TermStat8=VSWCsoilSpecificDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc)" \
+      "TermStat9=VSWCfactoryDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc.fctry)" \
+      "TermStat10=VSWCfactoryDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc.fctry)" \
+      "TermStat11=VSWCfactoryDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc.fctry)" \
+      "TermStat12=VSWCfactoryDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc.fctry)" \
+      "TermStat13=VSWCfactoryDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc.fctry)" \
+      "TermStat14=VSWCfactoryDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc.fctry)" \
+      "TermStat15=VSWCfactoryDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc.fctry)" \
+      "TermStat16=VSWCfactoryDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.envsc.fctry)" \
+      "TermStat17=VSICDepth01:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat18=VSICDepth02:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat19=VSICDepth03:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat20=VSICDepth04:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat21=VSICDepth05:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat22=VSICDepth06:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat23=VSICDepth07:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat24=VSICDepth08:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
     EOF
   env:
     # Environment variables for filter-joiner
@@ -118,4 +118,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class-no-spot
+    cloud.google.com/compute-class: pach-pipeline-class
