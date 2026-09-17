@@ -83,7 +83,7 @@ wrap.ucrt.dp01.cal.cnst.envsc.fctry <- function(data,
   se <- stats::sd(dataComp,na.rm=TRUE)/base::sqrt(numPts)
   
   # Calibration uncertainty is the fixed Sentek manufacturer default (matches def.cal.conv.enviro.multi.out.R)
-  ucrtCal <- 0.1068177
+  ucrtCal <- 0.1067726
   
   # Compute combined and expanded uncertainty
   ucrt=2*base::sqrt(se^2 + ucrtCal^2) 
