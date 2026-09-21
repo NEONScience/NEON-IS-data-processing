@@ -28,16 +28,13 @@ def get_results(connector: DbConnector, table: Table) -> list[Result]:
             os_result.start_date, 
             os_result.end_date,
             nam_locn.nam_locn_name 
-        from 
-            {schema}.os_result, 
-            {schema}.pub_table_def, 
-            {schema}.nam_locn
-        where 
+        from {schema}.os_result
+        join {schema}.pub_table_def
+          on pub_table_def.pub_table_def_id = os_result.pub_table_def_id
+        left join {schema}.nam_locn
+          on nam_locn.nam_locn_id = os_result.nam_locn_id
+        where
             os_result.pub_table_def_id = %(table_id)s
-        and 
-            pub_table_def.pub_table_def_id = os_result.pub_table_def_id
-        and 
-            nam_locn.nam_locn_id = os_result.nam_locn_id
     '''
     with closing(connection.cursor(cursor_factory=RealDictCursor)) as cursor:
         cursor.execute(sql, dict(table_id=table.id))
