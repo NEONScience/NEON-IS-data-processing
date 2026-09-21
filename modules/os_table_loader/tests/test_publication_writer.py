@@ -3,6 +3,7 @@ import csv
 import os
 import unittest
 from contextlib import closing
+from datetime import datetime
 from pathlib import Path
 
 from pyarrow import parquet as pq
@@ -10,7 +11,9 @@ from pyarrow import parquet as pq
 from data_access.tests.database_test import DatabaseBackedTest
 from os_table_loader.data.data_loader import DataLoader
 from os_table_loader.publication.publication_config import PublicationConfig, PathConfig
-from os_table_loader.publication.publication_file_writer import write_publication_files
+from os_table_loader.publication.publication_file_writer import (get_full_month,
+                                                                 get_water_year,
+                                                                 write_publication_files)
 from os_table_loader.publication_main import main
 from os_table_loader.tests.data.field_loader import get_fields
 from os_table_loader.tests.data.result_values_loader import get_result_values
@@ -20,6 +23,18 @@ from pub_files.input_files.manifest_file import ManifestFile
 
 
 class PublicationWriterTest(DatabaseBackedTest):
+
+    def test_get_full_month_uses_exclusive_next_month_boundary(self):
+        self.assertEqual(get_full_month(2024, 9),
+                         (datetime(2024, 9, 1), datetime(2024, 10, 1)))
+        self.assertEqual(get_full_month(2024, 12),
+                         (datetime(2024, 12, 1), datetime(2025, 1, 1)))
+
+    def test_get_water_year_uses_october_boundaries(self):
+        self.assertEqual(get_water_year(2024, 9),
+                         (datetime(2023, 10, 1), datetime(2024, 10, 1)))
+        self.assertEqual(get_water_year(2024, 10),
+                         (datetime(2024, 10, 1), datetime(2025, 10, 1)))
 
     def setUp(self):
         self.view_files = False  # Set to True to view generated files.
