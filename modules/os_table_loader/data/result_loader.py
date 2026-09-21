@@ -3,9 +3,12 @@ from datetime import datetime
 from typing import NamedTuple
 
 from psycopg2.extras import RealDictCursor
+from structlog import get_logger
 
 from data_access.db_connector import DbConnector
 from os_table_loader.data.table_loader import Table
+
+log = get_logger()
 
 
 class Result(NamedTuple):
@@ -91,11 +94,15 @@ def get_site_results(connector: DbConnector,
         and 
             os_result.end_date <= %(end_date)s
     '''
+    query_args = dict(table_id=table.id,
+                      site_pattern=f'%{site}%',
+                      start_date=start_date,
+                      end_date=end_date)
+    log.debug('Querying site results',
+              table=table.name,
+              query_args=query_args)
     with closing(connection.cursor(cursor_factory=RealDictCursor)) as cursor:
-        cursor.execute(sql, dict(table_id=table.id,
-                     site_pattern=f'%{site}%',
-                     start_date=start_date,
-                     end_date=end_date))
+        cursor.execute(sql, query_args)
         rows = cursor.fetchall()
         for row in rows:
             result_uuid = row['result_uuid']
