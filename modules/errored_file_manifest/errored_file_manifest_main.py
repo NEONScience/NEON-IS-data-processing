@@ -10,10 +10,10 @@ Output:
 - Writes an errored-file manifest to ERRORED_MANIFEST.
 
 Example:
-    export ERR_PATH='/data/errored_datums"
+    export ERR_PATH="/data/errored_datums"
     export ERRORED_MANIFEST="/data/errored_manifest.txt"
     export LOG_LEVEL="INFO"
-    python3 modules/errored_file_manifest/errored_file_manifest_main.py
+    PYTHONPATH=modules python3 -m errored_file_manifest.errored_file_manifest_main
 """
 
 import environs
