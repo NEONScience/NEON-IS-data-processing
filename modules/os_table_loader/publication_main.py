@@ -19,6 +19,7 @@ def main() -> None:
     out_path: Path = env.path('OUT_PATH')
     file_type: str = env.str('FILE_TYPE')
     partial_table_name: str = env.str('PARTIAL_TABLE_NAME')
+    query_water_year: bool = env.bool('QUERY_WATER_YEAR', False)
     input_path_parse_index: int = env.int('INPUT_PATH_PARSE_INDEX')
     data_product_path_index: int = env.int('DATA_PRODUCT_PATH_INDEX')
     year_path_index: int = env.int('YEAR_PATH_INDEX')
@@ -44,7 +45,8 @@ def main() -> None:
         config = PublicationConfig(path_config=path_config,
                                    data_loader=data_loader,
                                    file_type=file_type,
-                                   partial_table_name=partial_table_name)
+                                   partial_table_name=partial_table_name,
+                                   query_water_year=query_water_year)
         write_publication_files(config)
 
 

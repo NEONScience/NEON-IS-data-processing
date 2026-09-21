@@ -33,7 +33,10 @@ def write_publication_files(config: PublicationConfig) -> None:
             else:
                 link_file(config.path_config.out_path, path_parts.metadata_path, path)
                 domain = path.name.split('.')[1]
-                (start_date, end_date) = get_full_month(int(path_parts.year), int(path_parts.month))
+                if config.query_water_year:
+                    start_date, end_date = get_water_year(int(path_parts.year), int(path_parts.month))
+                else:
+                    start_date, end_date = get_full_month(int(path_parts.year), int(path_parts.month))
                 workbook_path = config.path_config.workbook_path
                 workbook_rows: list[dict] = workbook_parser.parse_workbook_file(workbook_path,
                                                                                 path_parts.data_product)
@@ -128,6 +131,14 @@ def get_full_month(year: int, month: int) -> Tuple[datetime, datetime]:
         end_date = datetime(year + 1, 1, 1)
     else:
         end_date = datetime(year, month + 1, 1)
+    return start_date, end_date
+
+
+def get_water_year(year: int, month: int) -> Tuple[datetime, datetime]:
+    """Return the October 1 start and exclusive October 1 end of a water year."""
+    water_year_start_year = year if month >= 10 else year - 1
+    start_date = datetime(water_year_start_year, 10, 1)
+    end_date = datetime(water_year_start_year + 1, 10, 1)
     return start_date, end_date
 
 
