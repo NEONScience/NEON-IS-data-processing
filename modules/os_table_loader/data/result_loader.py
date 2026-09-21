@@ -76,15 +76,18 @@ def get_site_results(connector: DbConnector,
             pub_table_def.pub_table_def_id = os_result.pub_table_def_id
         and 
             nam_locn.nam_locn_id = os_result.nam_locn_id
-        and 
-            nam_locn.nam_locn_name = %(site)s
+        and
+            nam_locn.nam_locn_name like %(site_pattern)s
         and 
             os_result.start_date >= %(start_date)s
         and 
             os_result.end_date <= %(end_date)s
     '''
     with closing(connection.cursor(cursor_factory=RealDictCursor)) as cursor:
-        cursor.execute(sql, dict(table_id=table.id, site=site, start_date=start_date, end_date=end_date))
+        cursor.execute(sql, dict(table_id=table.id,
+                     site_pattern=f'%{site}%',
+                     start_date=start_date,
+                     end_date=end_date))
         rows = cursor.fetchall()
         for row in rows:
             result_uuid = row['result_uuid']
