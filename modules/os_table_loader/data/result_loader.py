@@ -104,6 +104,11 @@ def get_site_results(connector: DbConnector,
     with closing(connection.cursor(cursor_factory=RealDictCursor)) as cursor:
         cursor.execute(sql, query_args)
         rows = cursor.fetchall()
+        log.debug('Site results query complete',
+              table=table.name,
+              result_count=len(rows),
+              result_dates=[(row['start_date'], row['end_date']) for row in rows],
+              location_names=[row['nam_locn_name'] for row in rows])
         for row in rows:
             result_uuid = row['result_uuid']
             start_date = row['start_date']
