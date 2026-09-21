@@ -10,6 +10,8 @@ from os_table_loader.data.table_loader import Table
 
 log = get_logger()
 
+DEBUG_RESULT_UUID = 'fe11382b-85ea-428f-ab7f-ad0f08555ca6'
+
 
 class Result(NamedTuple):
     result_uuid: str
@@ -106,6 +108,30 @@ def get_site_results(connector: DbConnector,
               result_count=len(rows),
               result_dates=[(row['start_date'], row['end_date']) for row in rows],
               location_names=[row['nam_locn_name'] for row in rows])
+        debug_sql = f'''select
+                        os_result.result_uuid,
+                        os_result.pub_table_def_id,
+                        os_result.nam_locn_id,
+                        os_result.start_date,
+                        os_result.end_date,
+                        nam_locn.nam_locn_name,
+                        (select os_result_data.string_value
+                         from {schema}.os_result_data
+                         join {schema}.pub_field_def
+                             on pub_field_def.pub_field_def_id = os_result_data.pub_field_def_id
+                         where os_result_data.result_uuid = os_result.result_uuid
+                             and pub_field_def.field_name = 'namedLocation'
+                         limit 1) as named_location
+                from {schema}.os_result
+                left join {schema}.nam_locn
+                    on nam_locn.nam_locn_id = os_result.nam_locn_id
+                where os_result.result_uuid = %(debug_result_uuid)s
+                '''
+        cursor.execute(debug_sql, {'debug_result_uuid': DEBUG_RESULT_UUID})
+        debug_rows = cursor.fetchall()
+        log.debug('Debug result lookup complete',
+                            debug_result_uuid=DEBUG_RESULT_UUID,
+                            debug_rows=[dict(row) for row in debug_rows])
         for row in rows:
             result_uuid = row['result_uuid']
             start_date = row['start_date']
