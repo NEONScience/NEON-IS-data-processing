@@ -83,7 +83,6 @@ transform:
     export OUT_PATH=$OUT_PATH_OS_TABLE3
     export WORKBOOK_PATH=$WORKBOOK_PATH
     export PARTIAL_TABLE_NAME="dataGapToFillMethodMapping"
-    export QUERY_WATER_YEAR="true"
     export FILE_TYPE="csv"
     export DB_CONFIG_SOURCE="mount"
     export LOG_LEVEL=$LOG_LEVEL
@@ -100,7 +99,6 @@ transform:
     export OUT_PATH="/pfs/out"
     export WORKBOOK_PATH=$WORKBOOK_PATH
     export PARTIAL_TABLE_NAME="constantBiasShift"
-    export QUERY_WATER_YEAR="true"
     export FILE_TYPE="csv"
     export DB_CONFIG_SOURCE="mount"
     export LOG_LEVEL=$LOG_LEVEL
