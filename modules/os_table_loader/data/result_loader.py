@@ -77,7 +77,15 @@ def get_site_results(connector: DbConnector,
         and 
             nam_locn.nam_locn_id = os_result.nam_locn_id
         and
-            nam_locn.nam_locn_name like %(site_pattern)s
+            (nam_locn.nam_locn_name like %(site_pattern)s
+             or exists (
+                 select 1
+                 from {schema}.os_result_data, {schema}.pub_field_def
+                 where os_result_data.result_uuid = os_result.result_uuid
+                 and os_result_data.pub_field_def_id = pub_field_def.pub_field_def_id
+                 and pub_field_def.field_name = 'namedLocation'
+                 and os_result_data.string_value like %(site_pattern)s
+             ))
         and 
             os_result.start_date >= %(start_date)s
         and 
