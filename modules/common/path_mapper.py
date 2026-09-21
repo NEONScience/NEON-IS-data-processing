@@ -42,10 +42,23 @@ def _parse_indices(name: str) -> list[int]:
     except ValueError:
         sys.exit(f"{name} must be a comma-separated list of integers.")
 
-    if any(index < 0 for index in indices):
-        sys.exit(f"All {name} values must be >= 0.")
-
     return indices
+
+
+def _validate_index_lists(input_indices: list[int], output_indices: list[int]) -> None:
+    """Validate index list invariants shared by env parsing and direct calls to `map_paths`."""
+    if not input_indices or not output_indices:
+        raise ValueError("INPUT_PATH_INDICES and OUTPUT_PATH_INDICES must not be empty.")
+    if any(index < 0 for index in input_indices):
+        raise ValueError("All INPUT_PATH_INDICES values must be >= 0.")
+    if any(index < 0 for index in output_indices):
+        raise ValueError("All OUTPUT_PATH_INDICES values must be >= 0.")
+    if len(input_indices) != len(output_indices):
+        raise ValueError("INPUT_PATH_INDICES and OUTPUT_PATH_INDICES must have the same length.")
+    if len(set(output_indices)) != len(output_indices):
+        raise ValueError("OUTPUT_PATH_INDICES values must be unique.")
+    if set(output_indices) != set(range(len(output_indices))):
+        raise ValueError("OUTPUT_PATH_INDICES must contain every index from 0 through list length minus one.")
 
 
 def _parse_deduplicate() -> bool:
@@ -69,12 +82,10 @@ def _read_configuration() -> tuple[Path, list[int], list[int], bool]:
     input_indices = _parse_indices("INPUT_PATH_INDICES")
     output_indices = _parse_indices("OUTPUT_PATH_INDICES")
 
-    if len(input_indices) != len(output_indices):
-        sys.exit("INPUT_PATH_INDICES and OUTPUT_PATH_INDICES must have the same length.")
-    if len(set(output_indices)) != len(output_indices):
-        sys.exit("OUTPUT_PATH_INDICES values must be unique.")
-    if set(output_indices) != set(range(len(output_indices))):
-        sys.exit("OUTPUT_PATH_INDICES must contain every index from 0 through list length minus one.")
+    try:
+        _validate_index_lists(input_indices, output_indices)
+    except ValueError as error:
+        sys.exit(str(error))
 
     return input_path, input_indices, output_indices, _parse_deduplicate()
 
@@ -85,13 +96,21 @@ def map_paths(
     output_indices: list[int],
     deduplicate: bool = True,
 ) -> list[str]:
-    """Map relative file path segments into the configured output layout."""
+    """Map relative file path segments into the configured output layout.
+
+    Raises:
+        ValueError: If `input_indices`/`output_indices` are empty, mismatched in
+            length, negative, or `output_indices` is not a permutation of
+            `range(len(output_indices))`.
+    """
+    _validate_index_lists(input_indices, output_indices)
+
     mapped_paths: list[str] = []
 
     for file_path in sorted(path for path in input_path.rglob("*") if path.is_file()):
         input_parts = file_path.relative_to(input_path).parts
         if max(input_indices) >= len(input_parts):
-            sys.exit(
+            raise ValueError(
                 f"File path has too few segments for INPUT_PATH_INDICES: "
                 f"{file_path.relative_to(input_path)}"
             )

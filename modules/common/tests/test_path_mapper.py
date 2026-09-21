@@ -28,6 +28,26 @@ class PathMapperTest(TestCase):
 
         self.assertEqual(paths, ["alpha/id-1", "alpha/id-1", "beta/id-2"])
 
+    def test_map_paths_rejects_empty_indices(self):
+        with self.assertRaisesRegex(ValueError, "must not be empty"):
+            map_paths(self.input_path, [], [])
+
+    def test_map_paths_rejects_negative_indices(self):
+        with self.assertRaisesRegex(ValueError, "must be >= 0"):
+            map_paths(self.input_path, [0, -1], [0, 1])
+
+    def test_map_paths_rejects_mismatched_index_list_lengths(self):
+        with self.assertRaisesRegex(ValueError, "same length"):
+            map_paths(self.input_path, [0, 4], [0])
+
+    def test_map_paths_rejects_duplicate_output_indices(self):
+        with self.assertRaisesRegex(ValueError, "must be unique"):
+            map_paths(self.input_path, [0, 4], [0, 0])
+
+    def test_map_paths_rejects_noncontiguous_output_indices(self):
+        with self.assertRaisesRegex(ValueError, "every index"):
+            map_paths(self.input_path, [0, 4], [0, 2])
+
     def test_path_mapper_outputs_json_and_defaults_to_deduplicate(self):
         environment = {
             "INPUT_PATH": str(self.input_path),
@@ -77,7 +97,7 @@ class PathMapperTest(TestCase):
     def test_rejects_file_with_missing_input_segment(self):
         self.fs.create_file(self.input_path / "too-shallow.dat")
 
-        with self.assertRaisesRegex(SystemExit, "too few segments"):
+        with self.assertRaisesRegex(ValueError, "too few segments"):
             map_paths(self.input_path, [0, 4], [0, 1])
 
     def test_rejects_invalid_deduplicate_value(self):
