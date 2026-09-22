@@ -88,7 +88,9 @@ def get_site_results(connector: DbConnector,
                                      and water_regression_field.field_name = 'regressionID'
                                     left join {schema}.nam_locn as water_location
                                         on water_location.nam_locn_id = water_result.nam_locn_id
-                                    where water_location.nam_locn_name like %(site_pattern)s
+                                                                        where water_result.start_date >= %(start_date)s
+                                                                            and water_result.end_date < %(end_date)s
+                                                                            and (water_location.nam_locn_name like %(site_pattern)s
                                          or exists (
                                                  select 1
                                                  from {schema}.os_result_data as water_location_data
@@ -98,7 +100,7 @@ def get_site_results(connector: DbConnector,
                                                     and water_location_field.field_name = 'namedLocation'
                                                  where water_location_data.result_uuid = water_result.result_uuid
                                                      and water_location_data.string_value like %(site_pattern)s
-                                         )
+                                         ))
                             )
                 )
         '''
