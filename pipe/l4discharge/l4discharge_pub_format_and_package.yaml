@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-fa92e0f
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.4.0
   cmd:
   - sh
   - "-c"
@@ -11,13 +11,12 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    shopt -s globstar # enable recursive globbing
     
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf "$OUT_PATH_TRANSFORMER" "$OUT_PATH_PACKAGER" "$OUT_PATH_PUBFILES" \
-      "$OUT_PATH_OS_TABLE1" "$OUT_PATH_OS_TABLE2" "$OUT_PATH_OS_TABLE3"
-    mkdir -p "$OUT_PATH_TRANSFORMER" "$OUT_PATH_PACKAGER" "$OUT_PATH_PUBFILES" \
-      "$OUT_PATH_OS_TABLE1" "$OUT_PATH_OS_TABLE2" "$OUT_PATH_OS_TABLE3"
+    rm -rf $OUT_PATH_TRANSFORMER
+    rm -rf $OUT_PATH_PACKAGER
+    mkdir $OUT_PATH_TRANSFORMER
+    mkdir $OUT_PATH_PACKAGER
 
     # Set some environment variables for the pub transformer module
     export DATA_PATH=$GROUPED_PATH
@@ -46,71 +45,6 @@ transform:
     export OUT_PATH=$OUT_PATH_PUBFILES
     export LOCATION_PATH=$GROUPED_PATH
     python3 -m pub_files.main 
-
-    #add in OS gaugeWaterColumnRegression table
-    export IN_PATH=$OUT_PATH_PUBFILES
-    export OUT_PATH=$OUT_PATH_OS_TABLE1
-    export WORKBOOK_PATH=$WORKBOOK_PATH
-    export PARTIAL_TABLE_NAME="gaugeWaterColumnRegression"
-    export FILE_TYPE="csv"
-    export DB_CONFIG_SOURCE="mount"
-    export LOG_LEVEL=$LOG_LEVEL
-    export INPUT_PATH_PARSE_INDEX="3"
-    export DATA_PRODUCT_PATH_INDEX="3"
-    export SITE_PATH_INDEX="4"
-    export YEAR_PATH_INDEX="5"
-    export MONTH_PATH_INDEX="6"
-    export PACKAGE_TYPE_PATH_INDEX="7"
-    python3 -m os_table_loader.publication_main    
-
-    #add in OS dataGapToFillMethodMapping table
-    export IN_PATH=$OUT_PATH_OS_TABLE1
-    export OUT_PATH=$OUT_PATH_OS_TABLE2
-    export WORKBOOK_PATH=$WORKBOOK_PATH
-    export PARTIAL_TABLE_NAME="dataGapToFillMethodMapping"
-    export FILE_TYPE="csv"
-    export DB_CONFIG_SOURCE="mount"
-    export LOG_LEVEL=$LOG_LEVEL
-    export INPUT_PATH_PARSE_INDEX="3"
-    export DATA_PRODUCT_PATH_INDEX="3"
-    export SITE_PATH_INDEX="4"
-    export YEAR_PATH_INDEX="5"
-    export MONTH_PATH_INDEX="6"
-    export PACKAGE_TYPE_PATH_INDEX="7"
-    python3 -m os_table_loader.publication_main
-
-    #add in OS constantBiasShift table
-    export IN_PATH=$OUT_PATH_OS_TABLE2
-    export OUT_PATH=$OUT_PATH_OS_TABLE3
-    export WORKBOOK_PATH=$WORKBOOK_PATH
-    export PARTIAL_TABLE_NAME="constantBiasShift"
-    export FILE_TYPE="csv"
-    export DB_CONFIG_SOURCE="mount"
-    export LOG_LEVEL=$LOG_LEVEL
-    export INPUT_PATH_PARSE_INDEX="3"
-    export DATA_PRODUCT_PATH_INDEX="3"
-    export SITE_PATH_INDEX="4"
-    export YEAR_PATH_INDEX="5"
-    export MONTH_PATH_INDEX="6"
-    export PACKAGE_TYPE_PATH_INDEX="7"
-    python3 -m os_table_loader.publication_main
-
-    #add in OS gaugePressureRelationship table
-    export IN_PATH=$OUT_PATH_OS_TABLE3
-    export OUT_PATH="/pfs/out"
-    export WORKBOOK_PATH=$WORKBOOK_PATH
-    export PARTIAL_TABLE_NAME="gaugePressureRelationship"
-    export FILTER_BY_REGRESSION_ID="true"
-    export FILE_TYPE="csv"
-    export DB_CONFIG_SOURCE="mount"
-    export LOG_LEVEL=$LOG_LEVEL
-    export INPUT_PATH_PARSE_INDEX="3"
-    export DATA_PRODUCT_PATH_INDEX="3"
-    export SITE_PATH_INDEX="4"
-    export YEAR_PATH_INDEX="5"
-    export MONTH_PATH_INDEX="6"
-    export PACKAGE_TYPE_PATH_INDEX="7"
-    python3 -m os_table_loader.publication_main
     
     EOF
   env:
@@ -139,7 +73,7 @@ transform:
     SORT_INDEX: '10' # File name index corresponding to date field (delimiter = .)
 
     # Environment variables for module: pub_files.
-    OUT_PATH_PUBFILES: "/tmp/pub_files"
+    OUT_PATH_PUBFILES: "/pfs/out"
     RELATIVE_PATH_INDEX: '3'
     DB_SECRETS_PATH: /var/db_secret
     GITHUB_PEM_PATH: /var/github_secret/key
@@ -157,11 +91,6 @@ transform:
     GITHUB_EML_UNITS_PATH: eml/neon_components/NEON_units.txt
     GITHUB_BRANCH: main
 
-    # Environment variables for module: ais_maintenance table loader
-    OUT_PATH_OS_TABLE1: "/tmp/os_tables1"
-    OUT_PATH_OS_TABLE2: "/tmp/os_tables2"
-    OUT_PATH_OS_TABLE3: "/tmp/os_tables3"
-
   secrets:
     - name: pdr-secret
       mount_path: /var/db_secret
@@ -174,7 +103,7 @@ input:
     repo: l4discharge_pub_group
     # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
     # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
-    glob: /*/*/*/*
+    glob: /*/*/*/CARI
 parallelism_spec:
   constant: 4
 autoscaling: true

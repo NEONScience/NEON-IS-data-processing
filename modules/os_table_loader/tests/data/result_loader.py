@@ -12,8 +12,7 @@ def get_results(_table: Table) -> list[Result]:
                    location_name='FLNT')]
 
 
-def get_site_results(_table: Table, _site: str, _start_date: datetime, _end_date: datetime,
-                     _filter_by_regression_id: bool = False):
+def get_site_results(_table: Table, _site: str, _start_date: datetime, _end_date: datetime):
     """Mock function to return results for a maintenance table at a given site and time range."""
     return [Result(result_uuid='934799d6-fe30-421f-87d7-89b4b8c95e73',
                    start_date=datetime(2022, 10, 11, 13, 19),

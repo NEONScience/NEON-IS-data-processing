@@ -21,4 +21,3 @@ class PublicationConfig(NamedTuple):
     data_loader: DataLoader
     file_type: str
     partial_table_name: str
-    filter_by_regression_id: bool = False

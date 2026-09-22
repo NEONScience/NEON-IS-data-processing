@@ -3,7 +3,6 @@ import csv
 import os
 import unittest
 from contextlib import closing
-from datetime import datetime
 from pathlib import Path
 
 from pyarrow import parquet as pq
@@ -11,8 +10,7 @@ from pyarrow import parquet as pq
 from data_access.tests.database_test import DatabaseBackedTest
 from os_table_loader.data.data_loader import DataLoader
 from os_table_loader.publication.publication_config import PublicationConfig, PathConfig
-from os_table_loader.publication.publication_file_writer import (get_full_month,
-                                                                 write_publication_files)
+from os_table_loader.publication.publication_file_writer import write_publication_files
 from os_table_loader.publication_main import main
 from os_table_loader.tests.data.field_loader import get_fields
 from os_table_loader.tests.data.result_values_loader import get_result_values
@@ -22,46 +20,6 @@ from pub_files.input_files.manifest_file import ManifestFile
 
 
 class PublicationWriterTest(DatabaseBackedTest):
-
-    def test_get_full_month_uses_exclusive_next_month_boundary(self):
-        self.assertEqual(get_full_month(2024, 9),
-                         (datetime(2024, 9, 1), datetime(2024, 10, 1)))
-        self.assertEqual(get_full_month(2024, 12),
-                         (datetime(2024, 12, 1), datetime(2025, 1, 1)))
-
-    def test_filter_by_regression_id_is_passed_to_site_results(self):
-        filter_flags = []
-
-        def get_site_results_with_flag(table, site, start_date, end_date,
-                                       filter_by_regression_id=False):
-            filter_flags.append(filter_by_regression_id)
-            return get_site_results(table, site, start_date, end_date,
-                                    filter_by_regression_id)
-
-        data_loader = DataLoader(get_tables=get_tables,
-                                 get_fields=get_fields,
-                                 get_results=get_results,
-                                 get_site_results=get_site_results_with_flag,
-                                 get_result_values=get_result_values)
-        path_config = PathConfig(input_path=self.in_path,
-                                 workbook_path=self.workbook_path,
-                                 out_path=self.out_path,
-                                 input_path_parse_index=2,
-                                 data_product_path_index=2,
-                                 year_path_index=4,
-                                 month_path_index=5,
-                                 site_path_index=3,
-                                 package_type_path_index=6)
-        config = PublicationConfig(path_config=path_config,
-                                   data_loader=data_loader,
-                                   file_type=self.file_type,
-                                   partial_table_name=self.partial_table_name,
-                                   filter_by_regression_id=True)
-
-        write_publication_files(config)
-
-        self.assertTrue(filter_flags)
-        self.assertTrue(all(filter_flags))
 
     def setUp(self):
         self.view_files = False  # Set to True to view generated files.

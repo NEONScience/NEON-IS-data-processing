@@ -19,7 +19,6 @@ def main() -> None:
     out_path: Path = env.path('OUT_PATH')
     file_type: str = env.str('FILE_TYPE')
     partial_table_name: str = env.str('PARTIAL_TABLE_NAME')
-    filter_by_regression_id: bool = env.bool('FILTER_BY_REGRESSION_ID', False)
     input_path_parse_index: int = env.int('INPUT_PATH_PARSE_INDEX')
     data_product_path_index: int = env.int('DATA_PRODUCT_PATH_INDEX')
     year_path_index: int = env.int('YEAR_PATH_INDEX')
@@ -45,8 +44,7 @@ def main() -> None:
         config = PublicationConfig(path_config=path_config,
                                    data_loader=data_loader,
                                    file_type=file_type,
-                                   partial_table_name=partial_table_name,
-                                   filter_by_regression_id=filter_by_regression_id)
+                                   partial_table_name=partial_table_name)
         write_publication_files(config)
 
 

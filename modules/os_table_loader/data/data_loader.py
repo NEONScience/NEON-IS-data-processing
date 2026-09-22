@@ -13,7 +13,7 @@ class DataLoader(NamedTuple):
     get_tables: Callable[[str], list[Table]]
     get_fields: Callable[[Table], list[Field]]
     get_results: Callable[[Table], list[Result]]
-    get_site_results: Callable[[Table, str, datetime, datetime, bool], list[Result]]
+    get_site_results: Callable[[Table, str, datetime, datetime], list[Result]]
     get_result_values: Callable[[Result], dict[int, ResultValue]]
 
 

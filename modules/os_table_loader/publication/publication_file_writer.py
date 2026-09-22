@@ -33,7 +33,7 @@ def write_publication_files(config: PublicationConfig) -> None:
             else:
                 link_file(config.path_config.out_path, path_parts.metadata_path, path)
                 domain = path.name.split('.')[1]
-                start_date, end_date = get_full_month(int(path_parts.year), int(path_parts.month))
+                (start_date, end_date) = get_full_month(int(path_parts.year), int(path_parts.month))
                 workbook_path = config.path_config.workbook_path
                 workbook_rows: list[dict] = workbook_parser.parse_workbook_file(workbook_path,
                                                                                 path_parts.data_product)
@@ -43,12 +43,7 @@ def write_publication_files(config: PublicationConfig) -> None:
                                                                                path_parts.package_type)
                     if not table_workbook_rows:
                         continue
-                    results = config.data_loader.get_site_results(
-                        table,
-                        path_parts.site,
-                        start_date,
-                        end_date,
-                        config.filter_by_regression_id)
+                    results = config.data_loader.get_site_results(table, path_parts.site, start_date, end_date)
                     if results:
                         values: dict[Result, list[ResultValue]] = {}
                         for result in results:
@@ -127,12 +122,10 @@ def link_file(out_path: Path, metadata_path: Path, path: Path) -> None:
 
 
 def get_full_month(year: int, month: int) -> Tuple[datetime, datetime]:
-    """Return the start date and exclusive end date for the month."""
+    """Return the start and end dates for the month."""
+    (week_day, day_count) = monthrange(year, month)
     start_date = datetime(year, month, 1)
-    if month == 12:
-        end_date = datetime(year + 1, 1, 1)
-    else:
-        end_date = datetime(year, month + 1, 1)
+    end_date = datetime(year, month, day_count)
     return start_date, end_date
 
 

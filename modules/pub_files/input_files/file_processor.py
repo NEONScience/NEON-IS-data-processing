@@ -119,16 +119,20 @@ def sort_files(in_path: Path) -> Tuple[Dict[str, List[Path]], Path]:
 def get_file_time_span(path: Path, workbook: PublicationWorkbook,table_name) -> Tuple[datetime.datetime, datetime.datetime]:
     """Return the start and end time for a data file's data."""
     data_frame = pandas.read_csv(path)
-    min_time = data_frame.loc[0][0]  # First row, first element is the earliest start time.
-    max_time = data_frame.iloc[-1].tolist()[1]  # Last row, second element is typically the latest end time.
+    start_column = next((column for column in ('startDateTime', 'startDate')
+                         if column in data_frame.columns), data_frame.columns[0])
+    end_column = next((column for column in ('endDateTime', 'endDate')
+                       if column in data_frame.columns), None)
+    min_time = data_frame.iloc[0][start_column]
+    max_time = data_frame.iloc[-1][end_column] if end_column else None
     file_min_time = date_formatter.to_datetime(min_time)
     
     # Typically pub files have an startDateTime and an endDateTime, but e.g. daily files may only have a date field
-    if isinstance(max_time,str):
+    if end_column and isinstance(max_time, str):
         file_max_time = date_formatter.to_datetime(max_time)
     else: 
         # Get  the last start time of the file
-        last_min_time = data_frame.iloc[-1,0]
+        last_min_time = data_frame.iloc[-1][start_column]
         file_last_min_time = date_formatter.to_datetime(last_min_time)
         
         # Get the timing index from the pub workbook. It's the last field in the full DP ID
