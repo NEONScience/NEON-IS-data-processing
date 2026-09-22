@@ -21,4 +21,4 @@ class PublicationConfig(NamedTuple):
     data_loader: DataLoader
     file_type: str
     partial_table_name: str
-    query_water_year: bool = False
+    filter_by_regression_id: bool = False

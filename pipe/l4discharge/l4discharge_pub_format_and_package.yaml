@@ -100,7 +100,7 @@ transform:
     export OUT_PATH="/pfs/out"
     export WORKBOOK_PATH=$WORKBOOK_PATH
     export PARTIAL_TABLE_NAME="gaugePressureRelationship"
-    export QUERY_WATER_YEAR="true"
+    export FILTER_BY_REGRESSION_ID="true"
     export FILE_TYPE="csv"
     export DB_CONFIG_SOURCE="mount"
     export LOG_LEVEL=$LOG_LEVEL
@@ -174,7 +174,7 @@ input:
     repo: l4discharge_pub_group
     # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
     # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
-    glob: /*/*/*/*
+    glob: /*/*/*/ARIK
 parallelism_spec:
   constant: 4
 autoscaling: true

@@ -56,10 +56,52 @@ def get_site_results(connector: DbConnector,
                      table: Table,
                      site: str,
                      start_date: datetime,
-                     end_date: datetime) -> list[Result]:
+                     end_date: datetime,
+                     filter_by_regression_id: bool = False) -> list[Result]:
     results = []
     connection = connector.get_connection()
     schema = connector.get_schema()
+    date_filter = '''
+                and os_result.start_date >= %(start_date)s
+                and os_result.end_date < %(end_date)s
+        '''
+    regression_filter = f'''
+                and exists (
+                        select 1
+                        from {schema}.os_result_data as pressure_regression_data
+                        join {schema}.pub_field_def as pressure_regression_field
+                            on pressure_regression_field.pub_field_def_id =
+                                 pressure_regression_data.pub_field_def_id
+                         and pressure_regression_field.field_name = 'regressionID'
+                        where pressure_regression_data.result_uuid = os_result.result_uuid
+                            and pressure_regression_data.string_value in (
+                                    select water_regression_data.string_value
+                                    from {schema}.os_result as water_result
+                                    join {schema}.pub_table_def as water_table
+                                        on water_table.pub_table_def_id = water_result.pub_table_def_id
+                                     and water_table.name = 'csd_gaugeWaterColumnRegression_pub'
+                                    join {schema}.os_result_data as water_regression_data
+                                        on water_regression_data.result_uuid = water_result.result_uuid
+                                    join {schema}.pub_field_def as water_regression_field
+                                        on water_regression_field.pub_field_def_id =
+                                             water_regression_data.pub_field_def_id
+                                     and water_regression_field.field_name = 'regressionID'
+                                    left join {schema}.nam_locn as water_location
+                                        on water_location.nam_locn_id = water_result.nam_locn_id
+                                    where water_location.nam_locn_name like %(site_pattern)s
+                                         or exists (
+                                                 select 1
+                                                 from {schema}.os_result_data as water_location_data
+                                                 join {schema}.pub_field_def as water_location_field
+                                                     on water_location_field.pub_field_def_id =
+                                                            water_location_data.pub_field_def_id
+                                                    and water_location_field.field_name = 'namedLocation'
+                                                 where water_location_data.result_uuid = water_result.result_uuid
+                                                     and water_location_data.string_value like %(site_pattern)s
+                                         )
+                            )
+                )
+        '''
     sql = f'''
         select
             os_result.result_uuid, 
@@ -86,10 +128,7 @@ def get_site_results(connector: DbConnector,
                  and pub_field_def.field_name = 'namedLocation'
                  and os_result_data.string_value like %(site_pattern)s
              ))
-        and 
-            os_result.start_date >= %(start_date)s
-        and 
-            os_result.end_date < %(end_date)s
+        {regression_filter if filter_by_regression_id else date_filter}
     '''
     query_args = dict(table_id=table.id,
                       site_pattern=f'%{site}%',
