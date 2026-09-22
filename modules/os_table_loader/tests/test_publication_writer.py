@@ -29,6 +29,40 @@ class PublicationWriterTest(DatabaseBackedTest):
         self.assertEqual(get_full_month(2024, 12),
                          (datetime(2024, 12, 1), datetime(2025, 1, 1)))
 
+    def test_filter_by_regression_id_is_passed_to_site_results(self):
+        filter_flags = []
+
+        def get_site_results_with_flag(table, site, start_date, end_date,
+                                       filter_by_regression_id=False):
+            filter_flags.append(filter_by_regression_id)
+            return get_site_results(table, site, start_date, end_date,
+                                    filter_by_regression_id)
+
+        data_loader = DataLoader(get_tables=get_tables,
+                                 get_fields=get_fields,
+                                 get_results=get_results,
+                                 get_site_results=get_site_results_with_flag,
+                                 get_result_values=get_result_values)
+        path_config = PathConfig(input_path=self.in_path,
+                                 workbook_path=self.workbook_path,
+                                 out_path=self.out_path,
+                                 input_path_parse_index=2,
+                                 data_product_path_index=2,
+                                 year_path_index=4,
+                                 month_path_index=5,
+                                 site_path_index=3,
+                                 package_type_path_index=6)
+        config = PublicationConfig(path_config=path_config,
+                                   data_loader=data_loader,
+                                   file_type=self.file_type,
+                                   partial_table_name=self.partial_table_name,
+                                   filter_by_regression_id=True)
+
+        write_publication_files(config)
+
+        self.assertTrue(filter_flags)
+        self.assertTrue(all(filter_flags))
+
     def setUp(self):
         self.view_files = False  # Set to True to view generated files.
         self.script_path = os.path.dirname(os.path.realpath(__file__))
