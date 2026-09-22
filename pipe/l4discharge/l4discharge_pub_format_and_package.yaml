@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.4.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-5e9d6ef
   cmd:
   - sh
   - "-c"
@@ -103,7 +103,7 @@ input:
     repo: l4discharge_pub_group
     # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
     # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
-    glob: /*/*/*/CARI
+    glob: /*/*/*/*
 parallelism_spec:
   constant: 4
 autoscaling: true
