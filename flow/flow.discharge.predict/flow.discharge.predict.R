@@ -55,6 +55,8 @@
 #     change BaM_beta source
 #   Nora Catolico(2026-09-07)
 #     updated to use parquet files
+#   Nora Catolico(2026-09-23)
+#     updated for NA watercolumn data handling
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)

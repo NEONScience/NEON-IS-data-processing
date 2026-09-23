@@ -57,6 +57,8 @@
 #     change BaM_beta source
 #   Nora Catolico(2026-09-07)
 #     updated to use parquet files
+#   Nora Catolico(2026-09-23)
+#     updated for NA watercolumn data handling
 ##############################################################################################
 wrap.discharge.predict <- function(DirIn,
                                    DirOutBase,
@@ -188,524 +190,6 @@ wrap.discharge.predict <- function(DirIn,
       )%>%
       dplyr::mutate(dplyr::across(dplyr::everything(), ~ replace(., is.nan(.), NA)))
     
-    # Determine if modeling with a current or previous regression ####
-    
-    # Read in the gaugeWaterColumnRegression data - stashed local from pachctl query
-    gaugeWaterColumnRegression  <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
-                       "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.parquet",
-                       sep = "/"),log = log),silent = FALSE)
-    if (base::any(base::class(gaugeWaterColumnRegression) == 'try-error')) {
-      # Generate error and stop execution
-      log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.parquet is unreadable"))
-      base::stop()
-    }
-    # Check if there is a regression available 
-    regAvailable <- any(grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
-                        &((gaugeWaterColumnRegression$regressionStartDate<=startDate
-                           &gaugeWaterColumnRegression$regressionEndDate>=endDate)
-                          |(gaugeWaterColumnRegression$regressionStartDate<=startDate
-                            &gaugeWaterColumnRegression$regressionEndDate>=startDate)
-                          |(gaugeWaterColumnRegression$regressionStartDate<=endDate
-                            &gaugeWaterColumnRegression$regressionEndDate>=endDate)
-                          )
-                        )
-    if(regAvailable){
-      # If yes, subset to that regression
-      gaugeWaterColumnRegression <- gaugeWaterColumnRegression[
-        grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
-        &((gaugeWaterColumnRegression$regressionStartDate<=startDate
-           &gaugeWaterColumnRegression$regressionEndDate>=endDate)
-          |(gaugeWaterColumnRegression$regressionStartDate<=startDate
-            &gaugeWaterColumnRegression$regressionEndDate>=startDate)
-          |(gaugeWaterColumnRegression$regressionStartDate<=endDate
-            &gaugeWaterColumnRegression$regressionEndDate>=endDate)
-        ),
-      ]
-    }else{
-      # If no, subset to most recent regression
-      prevReg <- max(gaugeWaterColumnRegression$regressionID[
-        grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
-      ])
-      gaugeWaterColumnRegression <- gaugeWaterColumnRegression[
-        gaugeWaterColumnRegression$regressionID==prevReg,
-      ]
-    }
-    gaugeWaterColumnRegression$regressionStartDate <- as.POSIXct(gaugeWaterColumnRegression$regressionStartDate,
-                                                                 tz="UTC")
-    gaugeWaterColumnRegression$regressionEndDate <- as.POSIXct(gaugeWaterColumnRegression$regressionEndDate,
-                                                               tz="UTC")
-    regID <- gaugeWaterColumnRegression$regressionID
-    
-    EOS_1_min_sum$regressionID <- NA
-    EOS_1_min_sum$calcStage <- NA
-    EOS_1_min_sum$stageUnc <- NA
-    for(r in 1:length(regID)){
-      currReg <- gaugeWaterColumnRegression[r,]
-      # Model stage and estimate systematic uncertainty ####
-    
-      # Read in the curveIdentification data - stashed locally from pachctl query
-      gaugePressureRelationship  <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
-                       "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.parquet",
-                       sep = "/"),log = log),silent = FALSE)
-      if (base::any(base::class(gaugePressureRelationship) == 'try-error')) {
-        # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.parquet is unreadable"))
-        base::stop()
-      }
-      gaugePress <- gaugePressureRelationship[
-        gaugePressureRelationship$regressionID==currReg$regressionID,
-      ]
-      gaugePress$endDate <- as.POSIXct(gaugePress$endDate,
-                                       tz="UTC",
-                                       format="%Y-%m-%dT%H:%M:%SZ")
-      
-      # Predict model fit between stage and water column height
-      gaugePress_model <- lm(gaugeHeight~calcWaterColumnHeight,
-                             data=gaugePress)
-      if(regAvailable){
-        xsub <- which(EOS_1_min_sum$roundDate>=currReg$regressionStartDate
-                      &EOS_1_min_sum$roundDate<=currReg$regressionEndDate)
-      }else{
-        xsub <- seq(1:nrow(EOS_1_min_sum))
-      }
-      EOS_1_min_sum$regressionID[xsub] <- currReg$regressionID
-      gaugePress_model_fit <- data.frame(
-        stats::predict(
-          gaugePress_model,
-          newdata = data.frame(calcWaterColumnHeight=EOS_1_min_sum$wchMean[xsub]),
-          interval = "confidence"))
-      gaugePress_model_fit$unc <- gaugePress_model_fit$upr-gaugePress_model_fit$fit
-      
-      # Add modeled stage to data
-      EOS_1_min_sum$calcStage[xsub] <- gaugePress_model_fit$fit
-      
-      # Sum systematic and nonsystematic uncertainty and add to data
-      EOS_1_min_sum$stageUnc[xsub] <- EOS_1_min_sum$wchNonSysUncert[xsub]+gaugePress_model_fit$unc
-    }
-    
-    # Add discharge fields to data ####
-    EOS_1_min_sum$curveID <- NA
-    EOS_1_min_sum$csd <- NA
-    EOS_1_min_sum$uprPara <- NA
-    EOS_1_min_sum$lwrPara <- NA
-    EOS_1_min_sum$uprRemn <- NA
-    EOS_1_min_sum$lwrRemn <- NA
-    
-    # Determine if modeling with a current or previous rating curve ####
-    
-    # Read in the curveIdentification data - stashed locally from pachctl query
-    curveIdentification <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
-                       "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet",
-                       sep = "/"),log = log),silent = FALSE)
-    if (base::any(base::class(curveIdentification) == 'try-error')) {
-      # Generate error and stop execution
-      log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet is unreadable"))
-      base::stop()
-    }
-
-    # Check if there is a curve available 
-    curveAvailable <- any(grepl(siteID_os,curveIdentification$curveID)
-                          &((curveIdentification$curveStartDate<=startDate
-                             &curveIdentification$curveEndDate>=endDate)
-                            |(curveIdentification$curveStartDate<=startDate
-                              &curveIdentification$curveEndDate>=startDate)
-                            |(curveIdentification$curveStartDate<=endDate
-                              &curveIdentification$curveEndDate>=endDate)
-                            )
-                          )
-    if(curveAvailable){
-      # If yes, subset to that curve
-      curveIdentification <- curveIdentification[
-        grepl(siteID_os,curveIdentification$curveID)
-        &((curveIdentification$curveStartDate<=startDate
-           &curveIdentification$curveEndDate>=endDate)
-          |(curveIdentification$curveStartDate<=startDate
-            &curveIdentification$curveEndDate>=startDate)
-          |(curveIdentification$curveStartDate<=endDate
-            &curveIdentification$curveEndDate>=endDate)
-        ),
-      ]
-    }else{
-      # If no, subset to most recent curve
-      prevCurve <- max(curveIdentification$curveID[
-        grepl(siteID_os,curveIdentification$curveID)
-      ])
-      curveIdentification <- curveIdentification[
-        curveIdentification$curveID==prevCurve,
-      ]
-    }
-    curveIdentification$curveStartDate <- as.POSIXct(curveIdentification$curveStartDate,
-                                                     tz="UTC")
-    curveIdentification$curveEndDate <- as.POSIXct(curveIdentification$curveEndDate,
-                                                   tz="UTC")
-    curveID <- curveIdentification$curveID
-    
-    for(c in 1:length(curveID)){
-      # c=1
-      currCurve <- curveIdentification[c,]
-      # Configure priors for BaM! predictive model ####
-      
-      # Read in the controlInfo data - stashed locally from pachctl query
-      surveyDate <- as.Date(currCurve$controlSurveyEndDateTime)
-      controlInfo <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
-                       "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet",
-                       sep = "/"),log = log),silent = FALSE)
-      if (base::any(base::class(controlInfo) == 'try-error')) {
-        # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet is unreadable"))
-        base::stop()
-      }
-      controlInfo <- controlInfo[
-        grepl(siteID_surveyLoc, controlInfo$namedLocation)
-        &as.Date(controlInfo$endDate)==surveyDate,
-      ]
-      # Read in the priorParameters data - stashed locally from pachctl query
-      priorParameters <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
-                       "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet",
-                       sep = "/"),log = log),silent = FALSE)
-      if (base::any(base::class(priorParameters) == 'try-error')) {
-        # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet is unreadable"))
-        base::stop()
-      }
-      priorParameters <- priorParameters[
-        grepl(siteID_surveyLoc, priorParameters$namedLocation)
-        &as.Date(priorParameters$endDate)==surveyDate,
-      ]
-      
-      # Configure model run
-      RunOptionsPath = paste0(dirConfig,RunOptionsName)
-      RunOptions <- readLines(RunOptionsPath)
-      RunOptions[1] <- gsub("\\.true\\.",".false.",RunOptions[1])
-      RunOptions[2] <- gsub("\\.true\\.",".false.",RunOptions[2])
-      RunOptions[3] <- gsub("\\.true\\.",".false.",RunOptions[3])
-      RunOptions[4] <- gsub("\\.false\\.",".true.",RunOptions[4])
-      writeLines(RunOptions, RunOptionsPath)
-      
-      # Write out control activation state
-      controlMatrixPath <- paste0(dirConfig, ControlMatrixName)
-      priorParamsPath <- paste0(dirConfig, ModelName)
-      numCtrls <- nrow(priorParameters)
-      Config_ControlMatrix <- matrix(data=NA, nrow = numCtrls, ncol = numCtrls)
-      for(rw in 1:numCtrls){
-        for(cl in 1:numCtrls){
-          Config_ControlMatrix[rw,cl] <- controlInfo$controlActivationState[
-            controlInfo$controlNumber == cl & controlInfo$segmentNumber == rw
-          ]
-        }
-      }
-      
-      write.table(Config_ControlMatrix, controlMatrixPath, 
-                  row.names = F, col.names = F)
-      
-      
-      # Write out hydraulic control configurations
-      Config_Model <- matrix(data = NA, nrow = (4 + 12*numCtrls))
-      Config_Model[1] <- '"BaRatin"'
-      Config_Model[2:3] <- 1
-      Config_Model[4] <- 3 * numCtrls
-      for(j in 1:numCtrls){
-        offset <- (j-1)*12
-        #Divide by two and round to three places after the decimal
-        kUnc <- format(
-          priorParameters$priorActivationStageUnc[
-            priorParameters$controlNumber == j
-          ]/1.96, 
-          digits = 3)
-        aUnc <- format(
-          priorParameters$priorCoefficientUnc[
-            priorParameters$controlNumber == j
-          ]/1.96,
-          digits = 3)
-        cUnc <- format(priorParameters$priorExponentUnc[
-          priorParameters$controlNumber == j
-        ]/1.96,
-        digits = 3)
-        Config_Model[offset+5] <- paste0('"k', j, '"')
-        Config_Model[offset+6] <- priorParameters$priorActivationStage[
-          priorParameters$controlNumber == j
-        ]
-        Config_Model[offset+7] <- "'Gaussian'"
-        Config_Model[offset+8] <- paste(
-          priorParameters$priorActivationStage[priorParameters$controlNumber == j],
-          as.character(kUnc),
-          sep = ",")
-        Config_Model[offset+9] <- paste0('"a', j, '"')
-        Config_Model[offset+10] <- priorParameters$priorCoefficient[
-          priorParameters$controlNumber == j
-        ]
-        Config_Model[offset+11] <- "'Gaussian'"
-        Config_Model[offset+12] <- paste(
-          priorParameters$priorCoefficient[priorParameters$controlNumber == j],
-          as.character(aUnc),
-          sep = ",")
-        Config_Model[offset+13] <- paste0('"c', j, '"')
-        Config_Model[offset+14] <- priorParameters$priorExponent[
-          priorParameters$controlNumber == j
-        ]
-        Config_Model[offset+15] <- "'Gaussian'"
-        Config_Model[offset+16] <- paste(
-          priorParameters$priorExponent[priorParameters$controlNumber == j],
-          as.character(cUnc),
-          sep = ",")
-      }
-      write.table(Config_Model, priorParamsPath, row.names = F, col.names = F, quote = F)
-      
-      # Configure gaugings for BaM! predictive model ####
-      
-      # Read in the priorParameters data - stashed locally from pachctl query      
-      gaugeDischargeMeas <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
-                       "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet",
-                       sep = "/"),log = log),silent = FALSE)
-      if (base::any(base::class(gaugeDischargeMeas) == 'try-error')) {
-        # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet is unreadable"))
-        base::stop()
-      }
-      gaugeDischargeMeas <- gaugeDischargeMeas[
-        gaugeDischargeMeas$curveID==currCurve$curveID,
-      ]
-      
-      # Reconfigure the gaugings data table
-      gaugeDischargeMeas <- gaugeDischargeMeas[
-        ,c("gaugeHeight","gaugeHeightUnc","streamDischarge","streamDischargeUnc")
-      ]
-      names(gaugeDischargeMeas) <- c("H","uH","Q","uQ")
-      gaugeDischargeMeas$bH <- 0.00
-      gaugeDischargeMeas$bHindx <- 0.00
-      gaugeDischargeMeas$bQ <- 0.00
-      gaugeDischargeMeas$bQindx <- 0.00
-      gaugeDischargeMeas$uQ <- gaugeDischargeMeas$uQ*1.96
-      gagNam <- c('H','uH','bH','bHindx','Q','uQ','bQ','bQindx')
-      gaugeDischargeMeas <- gaugeDischargeMeas[,gagNam]
-      
-      # Write out configured gaugings from transition output
-      write.table(gaugeDischargeMeas,
-                  paste0(dirConfig,"data/Gaugings.txt"),
-                  sep = "\t",
-                  row.names = F,
-                  quote = F)
-      
-      # Write configuration files
-      Config_Data <- readLines(paste0(dirConfig, DataName))
-      Config_Data[3] <- gsub("[0-9]{1,6}",nrow(gaugeDischargeMeas),Config_Data[3])
-      writeLines(Config_Data, paste0(dirConfig, DataName))
-      
-      # Configure spaghettis for BaM! predictive model ####
-      
-      # Read in the priorParameters data - stashed locally from pachctl query
-      sampledParameters <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
-                       "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.parquet",
-                       sep = "/"),log = log),silent = FALSE)
-      if (base::any(base::class(sampledParameters) == 'try-error')) {
-        # Generate error and stop execution
-        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.parquet is unreadable"))
-        base::stop()
-      }
-      sampledParameters <- sampledParameters[
-        sampledParameters$curveID==currCurve$curveID,
-      ]
-      
-      # Configure spaghettis
-      spagOutPath <- paste0(dirConfig,cookedMCMCName)
-      numCtrls <- unique(sampledParameters$controlNumber)
-      numCtrls <- seq(along = numCtrls)
-      ctrlNames <- rep(NA,(length(numCtrls)*3))
-      offsetNames <- rep(NA,length(numCtrls))
-      for(i in seq(along = numCtrls)){
-        ctrlNames[1+(i-1)*3] <- paste0("k",numCtrls[i])
-        ctrlNames[2+(i-1)*3] <- paste0("a",numCtrls[i])
-        ctrlNames[3+(i-1)*3] <- paste0("c",numCtrls[i])
-        offsetNames[i] <- paste0("b",numCtrls[i])
-      }
-      spag_Names <- c(
-        ctrlNames,
-        'gamma1',
-        'gamma2',
-        'LogPost',
-        offsetNames
-      )
-      outputDF <- data.frame(
-        matrix(
-          data=NA,
-          ncol=length(spag_Names), 
-          nrow=(length(sampledParameters$controlNumber)/length(numCtrls))
-          )
-        )
-      names(outputDF) <- spag_Names
-      matchOnSpag <- unique(sampledParameters$parameterNumber)
-      for(i in seq(along = matchOnSpag)){
-        currSpag <- matchOnSpag[i]
-        loopSpagData <- sampledParameters[
-          sampledParameters$parameterNumber == currSpag,
-        ]
-        #Ones that are shared for all controls
-        outputDF$gamma1[i] <- unique(loopSpagData$spagGamma1)
-        outputDF$gamma2[i] <- unique(loopSpagData$spagGamma2)
-        outputDF$LogPost[i] <- unique(loopSpagData$spagLogPost)
-        #Converting from long to wide
-        for(j in seq(along = numCtrls)){
-          currCtrl <- as.character(j)
-          outputDF[
-            i,which(names(outputDF) == paste0("k",currCtrl))
-          ] <- loopSpagData$spagActivationStage[
-            loopSpagData$controlNumber == currCtrl
-          ] #k
-          outputDF[
-            i,which(names(outputDF) == paste0("a",currCtrl))
-          ] <- loopSpagData$spagCoefficient[
-            loopSpagData$controlNumber == currCtrl
-          ] #a
-          outputDF[
-            i,which(names(outputDF) == paste0("c",currCtrl))
-          ] <- loopSpagData$spagExponent[
-            loopSpagData$controlNumber == currCtrl
-          ] #c
-          #Count from the end for this one
-          outputDF[
-            i,which(names(outputDF) == paste0("b",currCtrl))
-          ] <-loopSpagData$spagZeroFlowOffset[
-            loopSpagData$controlNumber == currCtrl
-          ] #b
-        }
-      }
-      #Format data
-      txt.fmt.MCMC.cooked <- function(inputNum){
-        finalCharLength <- 15
-        sciNotationLength <- 4 #Format as E+## or E-##
-        expLength <- 2 #Length of exponent characters
-        
-        inputNum <- as.numeric(inputNum)
-        inputFact <- 0
-        while(!(abs(inputNum)<1
-                &abs(inputNum) >0.09999999)
-              &abs(inputNum) != 1){
-          if(abs(inputNum) > 1){
-            inputNum <- inputNum/10
-            inputFact <- inputFact + 1
-          }else{
-            inputNum <- inputNum*10
-            inputFact <- inputFact - 1
-          }
-        }
-        #Test whether + or -
-        if(inputFact<0){
-          sign<-"-"
-          inputFact <- abs(inputFact)
-        }else{
-          sign<-"+"
-        }
-        #Add 0 in front of sci notation exponent if needed
-        if(nchar(inputFact)<expLength){inputFact <- paste0("0",inputFact)}
-
-        #Round off floating-point noise so nchar stays within the allotted width
-        inputNum <- format(
-          round(inputNum, digits = finalCharLength - sciNotationLength - 2),
-          scientific = FALSE,
-          trim = TRUE
-        )
-        
-        #Final formatting
-        numSpaces <- max(finalCharLength - sciNotationLength - nchar(inputNum), 0)
-        spaces <- paste(rep(" ", numSpaces), collapse = "")
-        outputNum <- paste0(spaces,inputNum,"E",sign,inputFact)
-        return(outputNum)
-      }
-      outputDF <- apply(outputDF,c(1,2),txt.fmt.MCMC.cooked)
-      #Format names
-      colnames(outputDF) <- format(colnames(outputDF), trim = F, width = 15)
-      write.table(outputDF, spagOutPath, row.names = F, quote = F, sep = "")
-  
-      # Write out the single spaghetti for the maxPost timeseries
-      # Need to remove any NAs introduced during regularization
-      if(curveAvailable){
-        actualDataIdx <- which(!is.na(EOS_1_min_sum$calcStage)
-                               &EOS_1_min_sum$roundDate>=currCurve$curveStartDate
-                               &EOS_1_min_sum$roundDate<=currCurve$curveEndDate)
-      }else{
-        actualDataIdx <- which(!is.na(EOS_1_min_sum$calcStage))
-      }
-      dataForBaM <- EOS_1_min_sum$calcStage[actualDataIdx]
-      write.table(dataForBaM,
-                  paste0(dirConfig,"data/Ht.txt"),
-                  sep = "\t",
-                  row.names = F,
-                  col.names = F)
-      
-      # Write out the set of spaghetti for the hu and Totalu
-      numSpag <- as.numeric(gsub(" {1,}!.*","",Config_Pred_TotalU[3]))
-      kMean <- dataForBaM
-      kStd <- EOS_1_min_sum$stageUnc[actualDataIdx]
-      #Need to loop through these to the whole list
-      stage_noisy <- matrix(NA, ncol = numSpag, nrow = length(dataForBaM))
-      for(j in 1:length(dataForBaM)){
-        stage_noisy[j,] <- rnorm(numSpag,mean = kMean[j],sd = kStd[j])
-      }
-      #Write out the "noisy" file
-      write.table(stage_noisy,
-                  paste0(dirConfig,"data/Ht_noisy.txt"),
-                  sep = "\t",
-                  row.names = F,
-                  col.names = F)
-      
-      # Update number of observations for each of the prediction files
-      Config_Pred_Maxpost[2] <- gsub(predRegex,length(dataForBaM),
-                                     Config_Pred_Maxpost[2])
-      writeLines(Config_Pred_Maxpost,paste0(dirConfig,
-                                            gsub(configRegex,"",
-                                                 ConfigPredictions[2])))
-      Config_Pred_hU[2] <- gsub(predRegex,length(dataForBaM),
-                                Config_Pred_hU[2])
-      writeLines(Config_Pred_hU,paste0(dirConfig,
-                                       gsub(configRegex,"",
-                                            ConfigPredictions[3])))
-      Config_Pred_TotalU[2] <- gsub(predRegex,length(dataForBaM),
-                                    Config_Pred_TotalU[2])
-      writeLines(Config_Pred_TotalU,paste0(dirConfig,
-                                           gsub(configRegex,"",
-                                                ConfigPredictions[4])))
-      
-      # Run BaM! - prediction mode ####
-      tryCatch({
-        oldWd <- getwd()
-        on.exit(setwd(oldWd), add = TRUE)
-        setwd(DirBaM)
-        bamExe <- fs::path(DirBaM, "BaM")
-        if (!file.exists(bamExe)) {
-          log$error(base::paste0("BaM executable not found at: ", bamExe))
-          base::stop()
-        }
-        Sys.chmod(paths = bamExe, mode = "0755")
-        exitCode <- system2("./BaM") # Linux executable
-        if (!identical(exitCode, 0L)) {
-          log$error(base::paste0("BaM exited with non-zero status: ", exitCode,
-                                 ". Executable path: ", bamExe))
-          base::stop()
-        }
-      }, error = function(e){
-        log$error(base::paste0("Error running BaM: ", e$message))
-        base::stop()
-      })
-
-      # Read in and format model outputs ####
-      Qt_Maxpost_spag <- read.table(paste0(dirConfig,QMaxpostSpagName),
-                                    header = F)
-      Qt_hU_env <- read.table(paste0(dirConfig,QGaugeUncEnvName),
-                              header = T)
-      Qt_TotalU_env <- read.table(paste0(dirConfig,QTotalUncEnvName),
-                                  header = T)
-      
-      # Add discharge values to data in liters per second ####
-      EOS_1_min_sum$csd[actualDataIdx] <- Qt_Maxpost_spag$V1*1000
-      EOS_1_min_sum$uprPara[actualDataIdx] <- Qt_hU_env$q97.5*1000
-      EOS_1_min_sum$lwrPara[actualDataIdx] <- Qt_hU_env$q2.5*1000
-      EOS_1_min_sum$uprRemn[actualDataIdx] <- Qt_TotalU_env$q97.5*1000
-      EOS_1_min_sum$uprRemn[EOS_1_min_sum$uprRemn<0] <- 0
-      EOS_1_min_sum$lwrRemn[actualDataIdx] <- Qt_TotalU_env$q2.5*1000
-      EOS_1_min_sum$lwrRemn[EOS_1_min_sum$lwrRemn<0] <- 0
-      EOS_1_min_sum$curveID[actualDataIdx] <- currCurve$curveID
-    }
-    
     # Format the publication table ####
     colHeaders <- c('startDateTime',
                     'endDateTime',
@@ -742,20 +226,547 @@ wrap.discharge.predict <- function(DirIn,
     CSD_15_min$startDateTime <- EOS_1_min_sum$roundDate
     CSD_15_min$endDateTime <- EOS_1_min_sum$roundDate+secIn15min
     CSD_15_min$stationHorizontalID <- qHOR
-    CSD_15_min$curveID <- EOS_1_min_sum$curveID
-    CSD_15_min$regressionID <- EOS_1_min_sum$regressionID
-    CSD_15_min$waterColumnHeightContinuous <- EOS_1_min_sum$wchMean
-    CSD_15_min$stageContinuous <- EOS_1_min_sum$calcStage
-    CSD_15_min$stageTotalUncert <- EOS_1_min_sum$stageUnc
-    CSD_15_min$dischargeContinuous <- EOS_1_min_sum$csd
-    CSD_15_min$dischargeUpperParamUncert <- EOS_1_min_sum$uprPara
-    CSD_15_min$dischargeLowerParamUncert <- EOS_1_min_sum$lwrPara
-    CSD_15_min$dischargeUpperRemnUncert <- EOS_1_min_sum$uprRemn
-    CSD_15_min$dischargeLowerRemnUncert <- EOS_1_min_sum$lwrRemn
-    CSD_15_min$waterColumnHeightNullFailQM <- (15-EOS_1_min_sum$wchNumPts)/15*100
-    CSD_15_min$dischargeFinalQF <- ifelse(is.na(CSD_15_min$dischargeContinuous),1,0)
-    CSD_15_min$regressionID[is.na(CSD_15_min$waterColumnHeightContinuous)] <- NA
     
+    # Non-NA EOS_1_min surfacewaterColumnHeight data?
+    if(length(which(!is.na(EOS_1_min$surfacewaterColumnHeight))) > 0){
+      # Determine if modeling with a current or previous regression ####    
+      # Read in the gaugeWaterColumnRegression data - stashed local from pachctl query
+      gaugeWaterColumnRegression  <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                        "NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.parquet",
+                        sep = "/"),log = log),silent = FALSE)
+      if (base::any(base::class(gaugeWaterColumnRegression) == 'try-error')) {
+        # Generate error and stop execution
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.parquet is unreadable"))
+        base::stop()
+      }
+      # Check if there is a regression available 
+      regAvailable <- any(grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
+                          &((gaugeWaterColumnRegression$regressionStartDate<=startDate
+                            &gaugeWaterColumnRegression$regressionEndDate>=endDate)
+                            |(gaugeWaterColumnRegression$regressionStartDate<=startDate
+                              &gaugeWaterColumnRegression$regressionEndDate>=startDate)
+                            |(gaugeWaterColumnRegression$regressionStartDate<=endDate
+                              &gaugeWaterColumnRegression$regressionEndDate>=endDate)
+                            )
+                          )
+      if(regAvailable){
+        # If yes, subset to that regression
+        gaugeWaterColumnRegression <- gaugeWaterColumnRegression[
+          grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
+          &((gaugeWaterColumnRegression$regressionStartDate<=startDate
+            &gaugeWaterColumnRegression$regressionEndDate>=endDate)
+            |(gaugeWaterColumnRegression$regressionStartDate<=startDate
+              &gaugeWaterColumnRegression$regressionEndDate>=startDate)
+            |(gaugeWaterColumnRegression$regressionStartDate<=endDate
+              &gaugeWaterColumnRegression$regressionEndDate>=endDate)
+          ),
+        ]
+      }else{
+        # If no, subset to most recent regression
+        prevReg <- max(gaugeWaterColumnRegression$regressionID[
+          grepl(siteID_os,gaugeWaterColumnRegression$regressionID)
+        ])
+        gaugeWaterColumnRegression <- gaugeWaterColumnRegression[
+          gaugeWaterColumnRegression$regressionID==prevReg,
+        ]
+      }
+      gaugeWaterColumnRegression$regressionStartDate <- as.POSIXct(gaugeWaterColumnRegression$regressionStartDate,
+                                                                  tz="UTC")
+      gaugeWaterColumnRegression$regressionEndDate <- as.POSIXct(gaugeWaterColumnRegression$regressionEndDate,
+                                                                tz="UTC")
+      regID <- gaugeWaterColumnRegression$regressionID
+      
+      EOS_1_min_sum$regressionID <- NA
+      EOS_1_min_sum$calcStage <- NA
+      EOS_1_min_sum$stageUnc <- NA
+      for(r in 1:length(regID)){
+        currReg <- gaugeWaterColumnRegression[r,]
+        # Model stage and estimate systematic uncertainty ####
+      
+        # Read in the curveIdentification data - stashed locally from pachctl query
+        gaugePressureRelationship  <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                        "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.parquet",
+                        sep = "/"),log = log),silent = FALSE)
+        if (base::any(base::class(gaugePressureRelationship) == 'try-error')) {
+          # Generate error and stop execution
+          log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.parquet is unreadable"))
+          base::stop()
+        }
+        gaugePress <- gaugePressureRelationship[
+          gaugePressureRelationship$regressionID==currReg$regressionID,
+        ]
+        gaugePress$endDate <- as.POSIXct(gaugePress$endDate,
+                                        tz="UTC",
+                                        format="%Y-%m-%dT%H:%M:%SZ")
+        
+        # Predict model fit between stage and water column height
+        gaugePress_model <- lm(gaugeHeight~calcWaterColumnHeight,
+                              data=gaugePress)
+        if(regAvailable){
+          xsub <- which(EOS_1_min_sum$roundDate>=currReg$regressionStartDate
+                        &EOS_1_min_sum$roundDate<=currReg$regressionEndDate)
+        }else{
+          xsub <- seq(1:nrow(EOS_1_min_sum))
+        }
+        EOS_1_min_sum$regressionID[xsub] <- currReg$regressionID
+        gaugePress_model_fit <- data.frame(
+          stats::predict(
+            gaugePress_model,
+            newdata = data.frame(calcWaterColumnHeight=EOS_1_min_sum$wchMean[xsub]),
+            interval = "confidence"))
+        gaugePress_model_fit$unc <- gaugePress_model_fit$upr-gaugePress_model_fit$fit
+        
+        # Add modeled stage to data
+        EOS_1_min_sum$calcStage[xsub] <- gaugePress_model_fit$fit
+        
+        # Sum systematic and nonsystematic uncertainty and add to data
+        EOS_1_min_sum$stageUnc[xsub] <- EOS_1_min_sum$wchNonSysUncert[xsub]+gaugePress_model_fit$unc
+      }
+      
+      # Add discharge fields to data ####
+      EOS_1_min_sum$curveID <- NA
+      EOS_1_min_sum$csd <- NA
+      EOS_1_min_sum$uprPara <- NA
+      EOS_1_min_sum$lwrPara <- NA
+      EOS_1_min_sum$uprRemn <- NA
+      EOS_1_min_sum$lwrRemn <- NA
+      
+      # Determine if modeling with a current or previous rating curve ####
+      
+      # Read in the curveIdentification data - stashed locally from pachctl query
+      curveIdentification <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                        "NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet",
+                        sep = "/"),log = log),silent = FALSE)
+      if (base::any(base::class(curveIdentification) == 'try-error')) {
+        # Generate error and stop execution
+        log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet is unreadable"))
+        base::stop()
+      }
+
+      # Check if there is a curve available 
+      curveAvailable <- any(grepl(siteID_os,curveIdentification$curveID)
+                            &((curveIdentification$curveStartDate<=startDate
+                              &curveIdentification$curveEndDate>=endDate)
+                              |(curveIdentification$curveStartDate<=startDate
+                                &curveIdentification$curveEndDate>=startDate)
+                              |(curveIdentification$curveStartDate<=endDate
+                                &curveIdentification$curveEndDate>=endDate)
+                              )
+                            )
+      if(curveAvailable){
+        # If yes, subset to that curve
+        curveIdentification <- curveIdentification[
+          grepl(siteID_os,curveIdentification$curveID)
+          &((curveIdentification$curveStartDate<=startDate
+            &curveIdentification$curveEndDate>=endDate)
+            |(curveIdentification$curveStartDate<=startDate
+              &curveIdentification$curveEndDate>=startDate)
+            |(curveIdentification$curveStartDate<=endDate
+              &curveIdentification$curveEndDate>=endDate)
+          ),
+        ]
+      }else{
+        # If no, subset to most recent curve
+        prevCurve <- max(curveIdentification$curveID[
+          grepl(siteID_os,curveIdentification$curveID)
+        ])
+        curveIdentification <- curveIdentification[
+          curveIdentification$curveID==prevCurve,
+        ]
+      }
+      curveIdentification$curveStartDate <- as.POSIXct(curveIdentification$curveStartDate,
+                                                      tz="UTC")
+      curveIdentification$curveEndDate <- as.POSIXct(curveIdentification$curveEndDate,
+                                                    tz="UTC")
+      curveID <- curveIdentification$curveID
+      
+      for(c in 1:length(curveID)){
+        # c=1
+        currCurve <- curveIdentification[c,]
+        # Configure priors for BaM! predictive model ####
+        
+        # Read in the controlInfo data - stashed locally from pachctl query
+        surveyDate <- as.Date(currCurve$controlSurveyEndDateTime)
+        controlInfo <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                        "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet",
+                        sep = "/"),log = log),silent = FALSE)
+        if (base::any(base::class(controlInfo) == 'try-error')) {
+          # Generate error and stop execution
+          log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet is unreadable"))
+          base::stop()
+        }
+        controlInfo <- controlInfo[
+          grepl(siteID_surveyLoc, controlInfo$namedLocation)
+          &as.Date(controlInfo$endDate)==surveyDate,
+        ]
+        # Read in the priorParameters data - stashed locally from pachctl query
+        priorParameters <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                        "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet",
+                        sep = "/"),log = log),silent = FALSE)
+        if (base::any(base::class(priorParameters) == 'try-error')) {
+          # Generate error and stop execution
+          log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet is unreadable"))
+          base::stop()
+        }
+        priorParameters <- priorParameters[
+          grepl(siteID_surveyLoc, priorParameters$namedLocation)
+          &as.Date(priorParameters$endDate)==surveyDate,
+        ]
+        
+        # Configure model run
+        RunOptionsPath = paste0(dirConfig,RunOptionsName)
+        RunOptions <- readLines(RunOptionsPath)
+        RunOptions[1] <- gsub("\\.true\\.",".false.",RunOptions[1])
+        RunOptions[2] <- gsub("\\.true\\.",".false.",RunOptions[2])
+        RunOptions[3] <- gsub("\\.true\\.",".false.",RunOptions[3])
+        RunOptions[4] <- gsub("\\.false\\.",".true.",RunOptions[4])
+        writeLines(RunOptions, RunOptionsPath)
+        
+        # Write out control activation state
+        controlMatrixPath <- paste0(dirConfig, ControlMatrixName)
+        priorParamsPath <- paste0(dirConfig, ModelName)
+        numCtrls <- nrow(priorParameters)
+        Config_ControlMatrix <- matrix(data=NA, nrow = numCtrls, ncol = numCtrls)
+        for(rw in 1:numCtrls){
+          for(cl in 1:numCtrls){
+            Config_ControlMatrix[rw,cl] <- controlInfo$controlActivationState[
+              controlInfo$controlNumber == cl & controlInfo$segmentNumber == rw
+            ]
+          }
+        }
+        
+        write.table(Config_ControlMatrix, controlMatrixPath, 
+                    row.names = F, col.names = F)
+        
+        
+        # Write out hydraulic control configurations
+        Config_Model <- matrix(data = NA, nrow = (4 + 12*numCtrls))
+        Config_Model[1] <- '"BaRatin"'
+        Config_Model[2:3] <- 1
+        Config_Model[4] <- 3 * numCtrls
+        for(j in 1:numCtrls){
+          offset <- (j-1)*12
+          #Divide by two and round to three places after the decimal
+          kUnc <- format(
+            priorParameters$priorActivationStageUnc[
+              priorParameters$controlNumber == j
+            ]/1.96, 
+            digits = 3)
+          aUnc <- format(
+            priorParameters$priorCoefficientUnc[
+              priorParameters$controlNumber == j
+            ]/1.96,
+            digits = 3)
+          cUnc <- format(priorParameters$priorExponentUnc[
+            priorParameters$controlNumber == j
+          ]/1.96,
+          digits = 3)
+          Config_Model[offset+5] <- paste0('"k', j, '"')
+          Config_Model[offset+6] <- priorParameters$priorActivationStage[
+            priorParameters$controlNumber == j
+          ]
+          Config_Model[offset+7] <- "'Gaussian'"
+          Config_Model[offset+8] <- paste(
+            priorParameters$priorActivationStage[priorParameters$controlNumber == j],
+            as.character(kUnc),
+            sep = ",")
+          Config_Model[offset+9] <- paste0('"a', j, '"')
+          Config_Model[offset+10] <- priorParameters$priorCoefficient[
+            priorParameters$controlNumber == j
+          ]
+          Config_Model[offset+11] <- "'Gaussian'"
+          Config_Model[offset+12] <- paste(
+            priorParameters$priorCoefficient[priorParameters$controlNumber == j],
+            as.character(aUnc),
+            sep = ",")
+          Config_Model[offset+13] <- paste0('"c', j, '"')
+          Config_Model[offset+14] <- priorParameters$priorExponent[
+            priorParameters$controlNumber == j
+          ]
+          Config_Model[offset+15] <- "'Gaussian'"
+          Config_Model[offset+16] <- paste(
+            priorParameters$priorExponent[priorParameters$controlNumber == j],
+            as.character(cUnc),
+            sep = ",")
+        }
+        write.table(Config_Model, priorParamsPath, row.names = F, col.names = F, quote = F)
+        
+        # Configure gaugings for BaM! predictive model ####
+        
+        # Read in the priorParameters data - stashed locally from pachctl query      
+        gaugeDischargeMeas <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                        "NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet",
+                        sep = "/"),log = log),silent = FALSE)
+        if (base::any(base::class(gaugeDischargeMeas) == 'try-error')) {
+          # Generate error and stop execution
+          log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet is unreadable"))
+          base::stop()
+        }
+        gaugeDischargeMeas <- gaugeDischargeMeas[
+          gaugeDischargeMeas$curveID==currCurve$curveID,
+        ]
+        
+        # Reconfigure the gaugings data table
+        gaugeDischargeMeas <- gaugeDischargeMeas[
+          ,c("gaugeHeight","gaugeHeightUnc","streamDischarge","streamDischargeUnc")
+        ]
+        names(gaugeDischargeMeas) <- c("H","uH","Q","uQ")
+        gaugeDischargeMeas$bH <- 0.00
+        gaugeDischargeMeas$bHindx <- 0.00
+        gaugeDischargeMeas$bQ <- 0.00
+        gaugeDischargeMeas$bQindx <- 0.00
+        gaugeDischargeMeas$uQ <- gaugeDischargeMeas$uQ*1.96
+        gagNam <- c('H','uH','bH','bHindx','Q','uQ','bQ','bQindx')
+        gaugeDischargeMeas <- gaugeDischargeMeas[,gagNam]
+        
+        # Write out configured gaugings from transition output
+        write.table(gaugeDischargeMeas,
+                    paste0(dirConfig,"data/Gaugings.txt"),
+                    sep = "\t",
+                    row.names = F,
+                    quote = F)
+        
+        # Write configuration files
+        Config_Data <- readLines(paste0(dirConfig, DataName))
+        Config_Data[3] <- gsub("[0-9]{1,6}",nrow(gaugeDischargeMeas),Config_Data[3])
+        writeLines(Config_Data, paste0(dirConfig, DataName))
+        
+        # Configure spaghettis for BaM! predictive model ####
+        
+        # Read in the priorParameters data - stashed locally from pachctl query
+        sampledParameters <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste(DirInOSData,
+                        "NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.parquet",
+                        sep = "/"),log = log),silent = FALSE)
+        if (base::any(base::class(sampledParameters) == 'try-error')) {
+          # Generate error and stop execution
+          log$error(base::paste0(DirInOSData,"/NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.parquet is unreadable"))
+          base::stop()
+        }
+        sampledParameters <- sampledParameters[
+          sampledParameters$curveID==currCurve$curveID,
+        ]
+        
+        # Configure spaghettis
+        spagOutPath <- paste0(dirConfig,cookedMCMCName)
+        numCtrls <- unique(sampledParameters$controlNumber)
+        numCtrls <- seq(along = numCtrls)
+        ctrlNames <- rep(NA,(length(numCtrls)*3))
+        offsetNames <- rep(NA,length(numCtrls))
+        for(i in seq(along = numCtrls)){
+          ctrlNames[1+(i-1)*3] <- paste0("k",numCtrls[i])
+          ctrlNames[2+(i-1)*3] <- paste0("a",numCtrls[i])
+          ctrlNames[3+(i-1)*3] <- paste0("c",numCtrls[i])
+          offsetNames[i] <- paste0("b",numCtrls[i])
+        }
+        spag_Names <- c(
+          ctrlNames,
+          'gamma1',
+          'gamma2',
+          'LogPost',
+          offsetNames
+        )
+        outputDF <- data.frame(
+          matrix(
+            data=NA,
+            ncol=length(spag_Names), 
+            nrow=(length(sampledParameters$controlNumber)/length(numCtrls))
+            )
+          )
+        names(outputDF) <- spag_Names
+        matchOnSpag <- unique(sampledParameters$parameterNumber)
+        for(i in seq(along = matchOnSpag)){
+          currSpag <- matchOnSpag[i]
+          loopSpagData <- sampledParameters[
+            sampledParameters$parameterNumber == currSpag,
+          ]
+          #Ones that are shared for all controls
+          outputDF$gamma1[i] <- unique(loopSpagData$spagGamma1)
+          outputDF$gamma2[i] <- unique(loopSpagData$spagGamma2)
+          outputDF$LogPost[i] <- unique(loopSpagData$spagLogPost)
+          #Converting from long to wide
+          for(j in seq(along = numCtrls)){
+            currCtrl <- as.character(j)
+            outputDF[
+              i,which(names(outputDF) == paste0("k",currCtrl))
+            ] <- loopSpagData$spagActivationStage[
+              loopSpagData$controlNumber == currCtrl
+            ] #k
+            outputDF[
+              i,which(names(outputDF) == paste0("a",currCtrl))
+            ] <- loopSpagData$spagCoefficient[
+              loopSpagData$controlNumber == currCtrl
+            ] #a
+            outputDF[
+              i,which(names(outputDF) == paste0("c",currCtrl))
+            ] <- loopSpagData$spagExponent[
+              loopSpagData$controlNumber == currCtrl
+            ] #c
+            #Count from the end for this one
+            outputDF[
+              i,which(names(outputDF) == paste0("b",currCtrl))
+            ] <-loopSpagData$spagZeroFlowOffset[
+              loopSpagData$controlNumber == currCtrl
+            ] #b
+          }
+        }
+        #Format data
+        txt.fmt.MCMC.cooked <- function(inputNum){
+          finalCharLength <- 15
+          sciNotationLength <- 4 #Format as E+## or E-##
+          expLength <- 2 #Length of exponent characters
+          
+          inputNum <- as.numeric(inputNum)
+          inputFact <- 0
+          while(!(abs(inputNum)<1
+                  &abs(inputNum) >0.09999999)
+                &abs(inputNum) != 1){
+            if(abs(inputNum) > 1){
+              inputNum <- inputNum/10
+              inputFact <- inputFact + 1
+            }else{
+              inputNum <- inputNum*10
+              inputFact <- inputFact - 1
+            }
+          }
+          #Test whether + or -
+          if(inputFact<0){
+            sign<-"-"
+            inputFact <- abs(inputFact)
+          }else{
+            sign<-"+"
+          }
+          #Add 0 in front of sci notation exponent if needed
+          if(nchar(inputFact)<expLength){inputFact <- paste0("0",inputFact)}
+
+          #Round off floating-point noise so nchar stays within the allotted width
+          inputNum <- format(
+            round(inputNum, digits = finalCharLength - sciNotationLength - 2),
+            scientific = FALSE,
+            trim = TRUE
+          )
+          
+          #Final formatting
+          numSpaces <- max(finalCharLength - sciNotationLength - nchar(inputNum), 0)
+          spaces <- paste(rep(" ", numSpaces), collapse = "")
+          outputNum <- paste0(spaces,inputNum,"E",sign,inputFact)
+          return(outputNum)
+        }
+        outputDF <- apply(outputDF,c(1,2),txt.fmt.MCMC.cooked)
+        #Format names
+        colnames(outputDF) <- format(colnames(outputDF), trim = F, width = 15)
+        write.table(outputDF, spagOutPath, row.names = F, quote = F, sep = "")
+    
+        # Write out the single spaghetti for the maxPost timeseries
+        # Need to remove any NAs introduced during regularization
+        if(curveAvailable){
+          actualDataIdx <- which(!is.na(EOS_1_min_sum$calcStage)
+                                &EOS_1_min_sum$roundDate>=currCurve$curveStartDate
+                                &EOS_1_min_sum$roundDate<=currCurve$curveEndDate)
+        }else{
+          actualDataIdx <- which(!is.na(EOS_1_min_sum$calcStage))
+        }
+        dataForBaM <- EOS_1_min_sum$calcStage[actualDataIdx]
+        write.table(dataForBaM,
+                    paste0(dirConfig,"data/Ht.txt"),
+                    sep = "\t",
+                    row.names = F,
+                    col.names = F)
+        
+        # Write out the set of spaghetti for the hu and Totalu
+        numSpag <- as.numeric(gsub(" {1,}!.*","",Config_Pred_TotalU[3]))
+        kMean <- dataForBaM
+        kStd <- EOS_1_min_sum$stageUnc[actualDataIdx]
+        #Need to loop through these to the whole list
+        stage_noisy <- matrix(NA, ncol = numSpag, nrow = length(dataForBaM))
+        if(length(dataForBaM) > 0){
+          for(j in 1:length(dataForBaM)){
+            stage_noisy[j,] <- rnorm(numSpag,mean = kMean[j],sd = kStd[j])
+          }
+        }      
+        #Write out the "noisy" file
+        write.table(stage_noisy,
+                    paste0(dirConfig,"data/Ht_noisy.txt"),
+                    sep = "\t",
+                    row.names = F,
+                    col.names = F)
+        
+        # Update number of observations for each of the prediction files
+        Config_Pred_Maxpost[2] <- gsub(predRegex,length(dataForBaM),
+                                      Config_Pred_Maxpost[2])
+        writeLines(Config_Pred_Maxpost,paste0(dirConfig,
+                                              gsub(configRegex,"",
+                                                  ConfigPredictions[2])))
+        Config_Pred_hU[2] <- gsub(predRegex,length(dataForBaM),
+                                  Config_Pred_hU[2])
+        writeLines(Config_Pred_hU,paste0(dirConfig,
+                                        gsub(configRegex,"",
+                                              ConfigPredictions[3])))
+        Config_Pred_TotalU[2] <- gsub(predRegex,length(dataForBaM),
+                                      Config_Pred_TotalU[2])
+        writeLines(Config_Pred_TotalU,paste0(dirConfig,
+                                            gsub(configRegex,"",
+                                                  ConfigPredictions[4])))
+        
+        if(length(dataForBaM) > 0){
+          # Run BaM! - prediction mode ####
+          tryCatch({
+            oldWd <- getwd()
+            on.exit(setwd(oldWd), add = TRUE)
+            setwd(DirBaM)
+            bamExe <- fs::path(DirBaM, "BaM")
+            if (!file.exists(bamExe)) {
+              log$error(base::paste0("BaM executable not found at: ", bamExe))
+              base::stop()
+            }
+            Sys.chmod(paths = bamExe, mode = "0755")
+            exitCode <- system2("./BaM") # Linux executable
+            if (!identical(exitCode, 0L)) {
+              log$error(base::paste0("BaM exited with non-zero status: ", exitCode,
+                                    ". Executable path: ", bamExe))
+              base::stop()
+            }
+          }, error = function(e){
+            log$error(base::paste0("Error running BaM: ", e$message))
+            base::stop()
+          })
+
+          # Read in and format model outputs ####
+          Qt_Maxpost_spag <- read.table(paste0(dirConfig,QMaxpostSpagName),
+                                        header = F)
+          Qt_hU_env <- read.table(paste0(dirConfig,QGaugeUncEnvName),
+                                  header = T)
+          Qt_TotalU_env <- read.table(paste0(dirConfig,QTotalUncEnvName),
+                                      header = T)
+          # Add discharge values to data in liters per second ####
+          EOS_1_min_sum$csd[actualDataIdx] <- Qt_Maxpost_spag$V1*1000
+          EOS_1_min_sum$uprPara[actualDataIdx] <- Qt_hU_env$q97.5*1000
+          EOS_1_min_sum$lwrPara[actualDataIdx] <- Qt_hU_env$q2.5*1000
+          EOS_1_min_sum$uprRemn[actualDataIdx] <- Qt_TotalU_env$q97.5*1000
+          EOS_1_min_sum$uprRemn[EOS_1_min_sum$uprRemn<0] <- 0
+          EOS_1_min_sum$lwrRemn[actualDataIdx] <- Qt_TotalU_env$q2.5*1000
+          EOS_1_min_sum$lwrRemn[EOS_1_min_sum$lwrRemn<0] <- 0
+        } 
+        EOS_1_min_sum$curveID[actualDataIdx] <- currCurve$curveID
+      }  
+          
+      CSD_15_min$curveID <- EOS_1_min_sum$curveID
+      CSD_15_min$regressionID <- EOS_1_min_sum$regressionID
+      CSD_15_min$waterColumnHeightContinuous <- EOS_1_min_sum$wchMean
+      CSD_15_min$stageContinuous <- EOS_1_min_sum$calcStage
+      CSD_15_min$stageTotalUncert <- EOS_1_min_sum$stageUnc
+      CSD_15_min$dischargeContinuous <- EOS_1_min_sum$csd
+      CSD_15_min$dischargeUpperParamUncert <- EOS_1_min_sum$uprPara
+      CSD_15_min$dischargeLowerParamUncert <- EOS_1_min_sum$lwrPara
+      CSD_15_min$dischargeUpperRemnUncert <- EOS_1_min_sum$uprRemn
+      CSD_15_min$dischargeLowerRemnUncert <- EOS_1_min_sum$lwrRemn
+      CSD_15_min$waterColumnHeightNullFailQM <- (15-EOS_1_min_sum$wchNumPts)/15*100
+      CSD_15_min$dischargeFinalQF <- ifelse(is.na(CSD_15_min$dischargeContinuous),1,0)
+      CSD_15_min$regressionID[is.na(CSD_15_min$waterColumnHeightContinuous)] <- NA
+    }else{
+      log$info(paste0("All EOS_1_min surfacewaterColumnHeight values are NA for ", DirIn))
+    }     
+    
+    # Generate output file name for CSD_15_min data
     outFileName <- gsub("surfacewater-physical","l4discharge",uncorrectedFile)
     outFileName <- gsub("EOS_1_min_001","CSD_15_min_015",outFileName)
 

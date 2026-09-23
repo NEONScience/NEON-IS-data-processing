@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_predict
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:sha-245fb5b
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:sha-85abb9f
   cmd:
   - sh
   - "-c"
@@ -31,8 +31,7 @@ transform:
     Rscript ./flow.discharge.predict.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums \
-      DirSubCopy=''
+      DirErr=/pfs/out/errored_datums
     
     EOF
   env:
