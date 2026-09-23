@@ -765,7 +765,17 @@ wrap.discharge.predict <- function(DirIn,
        |(length(EOS_1_min)==0 & length(CSD_15_min)>0)){
       log$info(base::paste0("CSD file is available and will passed through unmodified. FileName: ",correctedFile))
       outFileName <-correctedFile
-      
+      CSD_15_min$dischargeCorrectionApplied[
+        CSD_15_min$waterColumnHeightCorrectionApplied==1
+        |CSD_15_min$dischargeCorrectedShiftPost==1
+        |CSD_15_min$dischargeCorrectedShiftPre==1
+        |CSD_15_min$dischargeGapFilledUSGS==1
+        |CSD_15_min$dischargeGapFilledConstant==1
+        |CSD_15_min$dischargeGapFilledInterpolation==1
+      ] <- 1
+      CSD_15_min$dischargeCorrectionApplied[
+        CSD_15_min$dischargeCorrectionApplied!=1
+      ] <- 0      
     }else{
       log$error(base::paste0("No SWE or CSD data available for this date."))
       base::stop()
