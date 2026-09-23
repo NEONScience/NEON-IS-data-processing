@@ -197,8 +197,8 @@ wrap.pub.tabl.srf <- function(DirIn,
   AddTabl <- base::setdiff(AddTabl,c(NA,''))
   if(base::length(AddTabl) > 0){
     addPub <- pubWb[pubWb$table %in% AddTabl,]
-    # Issue an error if no matching pub tables
-    if(base::nrow(addPub) == 0){
+    missing_add_tables <- base::setdiff(AddTabl, base::unique(addPub$table))
+    if(base::length(missing_add_tables) > 0){
       log$error(base::paste0('The publication workbook(s) contain no matches to requested pub table(s). Datum:',
                             DirIn,
                             '. Pub Workbook file(s): ',
