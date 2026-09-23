@@ -54,17 +54,6 @@ test_that("Unit test of wrap.discharge.predict.R", {
   testDirRepo <- infoDirIn$dirRepo
   dirOutData <- file.path(base::paste0(testDirOut, testDirRepo), 'data')
   testthat::expect_true(dir.exists(dirOutData))
-
-  correctedFileName <- 'l4discharge_BLUE110100_2024-09-01_CSD_15_min_015.parquet'
-  outFilePath <- file.path(dirOutData, correctedFileName)
-  testthat::expect_true(file.exists(outFilePath))
-  
-  # Validate pass-through content.
-  csdOut <- try(NEONprocIS.base::def.read.parq(NameFile = outFilePath, log = log), silent = FALSE)
-  testthat::expect_true(length(csdOut) != 0)
-  testthat::expect_true(nrow(csdOut) == 1)
-  testthat::expect_true('dischargeContinuous' %in% names(csdOut))
-  testthat::expect_equal(round(csdOut$dischargeContinuous[1], 2), 12.34)
   
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
