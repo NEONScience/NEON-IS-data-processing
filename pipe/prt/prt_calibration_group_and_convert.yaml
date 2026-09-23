@@ -2,7 +2,7 @@
 pipeline:
   name: prt_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.5.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.6.0
   cmd:
   - sh
   - "-c"
@@ -136,4 +136,4 @@ datum_set_spec:
   number: 1
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class-no-spot
+    cloud.google.com/compute-class: pach-pipeline-class

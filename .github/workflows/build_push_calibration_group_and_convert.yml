@@ -9,6 +9,7 @@ on:
       - 'modules/filter_joiner/**'
       - 'modules/array_parser/**'
       - 'modules/common/**'
+      - 'modules/errored_file_manifest/**'
       - 'flow/flow.kfka.comb/**'
       - 'flow/flow.cal.conv/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
