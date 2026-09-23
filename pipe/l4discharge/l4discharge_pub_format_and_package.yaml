@@ -34,6 +34,7 @@ transform:
     for path in $product_month_paths; do
       echo "Processing product-month path $path"
       export DATA_PATH=$path
+      export DEDUP_TABLES="gaugeWaterColumnRegression,gaugePressureRelationship,dataGapToFillMethodMapping,constantBiasShift"
       python3 -m pub_packager.pub_packager_main
     done
     
