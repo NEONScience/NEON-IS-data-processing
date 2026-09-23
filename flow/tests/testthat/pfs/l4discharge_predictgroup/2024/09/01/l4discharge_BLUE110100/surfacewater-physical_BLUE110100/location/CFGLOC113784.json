@@ -1,0 +1,22 @@
+{
+    "features":[
+        {
+            "Data Rate":"0.0166666666667",
+            "geometry":null,
+            "HOR":"110",
+            "properties":{
+                "active_periods":[
+                    {
+                        "start_date":"2024-09-01T00:00:00Z",
+                        "end_date":"2024-09-02T00:00:00Z"
+                    }
+                ],
+                "description":"Blue River Water Level Staff Gauge",
+                "name":"CFGLOC113784",
+                "site":"BLUE"
+            },
+            "VER":"100"
+        }
+    ],
+    "type":"FeatureCollection"
+}

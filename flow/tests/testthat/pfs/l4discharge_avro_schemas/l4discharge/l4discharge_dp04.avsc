@@ -1,0 +1,284 @@
+{
+  "type": "record",
+  "name": "l4discharge_dp04",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "Continuous discharge data calculated from in situ pressure and stage-discharge rating curve averaged over 15 minutes",
+  "fields": [
+    {
+      "name": "startDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is initiated (inclusive)"
+    },
+    {
+      "name": "endDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is completed (exclusive)"
+    },
+    {
+      "name": "stationHorizontalID",
+      "type": [
+        "null",
+        "string"
+        ],
+      "default": null,
+      "doc": "Horizontal code for station",
+      "__neon_units": "null"
+    },
+    {
+      "name": "curveID",
+      "type": [
+        "null",
+        "string"
+        ],
+      "default": null,
+      "doc": "Unique identifier for the curve fit to gauge and discharge measurements",
+      "__neon_units": "null"
+    },
+    {
+      "name": "regressionID",
+      "type": [
+        "null",
+        "string"
+        ],
+      "default": null,
+      "doc": "Unique identifier for a gauge height vs. water column height regression equation",
+      "__neon_units": "null"
+    },
+    {
+      "name": "stageContinuous",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Water level relative to the staff gauge; averaged over 15 minute intervals",
+      "__neon_units": "meter"
+    },
+    {
+      "name": "stageTotalUncert",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Total uncertainty associated with the stage timeseries data; the sum of non-systematic (sensor calibration) and systematic (regression-model fit) uncertainty",
+      "__neon_units": "meter"
+    },
+    {
+      "name": "dischargeContinuous",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Volume of surface water per unit time; averaged over 15 minute intervals.",
+      "__neon_units": "litersPerSecond"
+    },
+    {
+      "name": "dischargeUpperParamUncert",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Upper bound of the 95% confidence interval (two standard deviations) for mean discharge including parametric error associated with the rating curve fit",
+      "__neon_units": "litersPerSecond"
+    },
+    {
+      "name": "dischargeLowerParamUncert",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Lower bound of the 95% confidence interval (two standard deviations) for mean discharge including parametric error associated with the rating curve fit",
+      "__neon_units": "litersPerSecond"
+    },
+    {
+      "name": "dischargeUpperRemnUncert",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Upper bound of the 95% confidence interval (two standard deviations) for mean discharge including parametric and remnant error associated with the rating curve fit",
+      "__neon_units": "litersPerSecond"
+    },
+	{
+      "name": "dischargeLowerRemnUncert",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Lower bound of the 95% confidence interval (two standard deviations) for mean discharge including parametric and remnant error associated with the rating curve fit",
+      "__neon_units": "litersPerSecond"
+    },
+    {
+      "name": "dischargeCorrectionApplied",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether discharge data were corrected (1=corrected; 0=no correction required; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	{
+      "name": "dischargeGapFilledInterpolation",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether discharge data were corrected via gap-filling with linear interpolation (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	{
+      "name": "dischargeGapFilledConstant",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether discharge data were corrected via gap-filling with a constant value (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	{
+      "name": "dischargeGapFilledUSGS",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether discharge data were corrected via gap-filling with a NEON-USGS discharge regression (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	{
+      "name": "dischargeCorrectedShiftPre",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether discharge data were corrected via a constant bias shift applied prior to other gap-filling methods (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	{
+      "name": "dischargeCorrectedShiftPost",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether discharge data were corrected via a constant bias shift applied after other gap-filling methods were applied (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	{
+      "name": "waterColumnHeightContinuous",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Surface water column height over the sensor, averaged over 15 minute intervals",
+      "__neon_units": "meter"
+    },
+	{
+      "name": "waterColumnHeightCorrectionApplied",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether water column height data were corrected (1=corrected; 0=no correction required; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	{
+      "name": "waterColumnHeightGapFilledInterpolation",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether water column height data were corrected via gap-filling with linear interpolation (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	    {
+      "name": "waterColumnHeightGapFilledConstant",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether water column height data were corrected via gap-filling with a constant value (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	    {
+      "name": "waterColumnHeightGapFilledTransducer",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether water column height data were corrected via gap-filling with a regression against data collected by a co-located pressure transducer sensor (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	    {
+      "name": "waterColumnHeightGapFilledConductivity",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether water column height data were corrected via gap-filling with a regression against data collected by a co-located specific conductance sensor (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	    {
+      "name": "waterColumnHeightCorrectedShiftPre",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether water column height data were corrected via a constant bias shift applied prior to applying gap-filling methods (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+	    {
+      "name": "waterColumnHeightCorrectedShiftPost",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Indicates whether water column height data were corrected via a constant bias shift applied after gap-filling methods were applied (1=method used; 0=method not used; Empty=record not reviewed)",
+      "__neon_units": "number"
+    },
+    {
+      "name": "waterColumnHeightNullFailQM",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Quality metric that summarizes the failed outcomes of the null test for water column height over the averaging period; as a percent",
+      "__neon_units": "percent"
+    },
+    {
+      "name": "dischargeFinalQF",
+      "type": [
+        "null",
+        "int8"
+        ],
+      "default": null,
+      "doc": "Discharge final quality flag indicating whether a data product has passed or failed an overall assessment of its quality; detailed in ATBD (1=fail; 0=pass)",
+      "__neon_units": "NA"
+    }
+  ]
+}

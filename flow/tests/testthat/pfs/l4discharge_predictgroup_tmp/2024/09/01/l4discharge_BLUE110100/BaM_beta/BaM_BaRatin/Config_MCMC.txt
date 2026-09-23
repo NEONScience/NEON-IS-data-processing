@@ -1,0 +1,13 @@
+"Results_MCMC.txt" ! File name
+100 ! NAdapt
+1000 ! Ncycles
+0.1 ! MinMoveRate
+0.5 ! MaxMoveRate
+0.9 ! DownMult
+1.1 ! UpMult
+0   ! Mode for setting the initial Std of the jump distribution
+****	  DEFINITION OF INITIAL JUMP STD	 **** ! Cosmetics
+0.1         ! MultFactor in default mode (ignored in manual mode)
+0.1,0.1,0.1 ! RC MultFactor in manual mode (ignored in auto mode)
+0.1,0.1     ! Remnant MultFactor in manual mode (ignored in auto mode)
+

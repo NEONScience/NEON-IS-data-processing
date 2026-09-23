@@ -1,0 +1,4 @@
+"uid","domainID","siteID","namedLocation","startDate","endDate","controlNumber","priorExponent","priorExponentUnc","priorCoefficient","priorCoefficientUnc","priorActivationStage","priorActivationStageUnc","dataQF"
+"f7747a77-5ad7-437f-be2b-d5f83ccbaa23",NA,NA,"BLUE.AOS.discharge","2023-08-24T12:00:00Z","2023-08-24T12:00:00Z",2,1.67,0.05,28.3526330275607,14.7466820663227,0.21,0.3,NA
+"6be3e36b-2cc7-45e1-9c58-e2287f29813a",NA,NA,"BLUE.AOS.discharge","2023-08-24T12:00:00Z","2023-08-24T12:00:00Z",1,1.5,0.05,24.2120862813026,6.30725651718623,0.01,0.1,NA
+"e5240247-1e80-4bfe-b2ee-e415a3bc7ac5",NA,NA,"BLUE.AOS.discharge","2023-08-24T12:00:00Z","2023-08-24T12:00:00Z",3,1.67,0.05,10.0824036045166,5.59055160184947,0.83,0.5,NA

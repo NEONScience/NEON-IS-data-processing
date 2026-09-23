@@ -1,0 +1,43 @@
+---
+pipeline:
+  name: l4discharge_group_and_parse
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-245fb5b
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - Rscript ./flow.discharge.parse.os.inputs.R
+      DirIn=$DIR_IN
+      DirInOS=$DIR_IN_OS
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+  env:
+    LOG_LEVEL: DEBUG
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: l4discharge_csd_swe_group
+      # /YYYY/MM/DD/group 
+      glob: /*/*/*/*
+  - pfs:
+      name: DIR_IN_OS
+      repo: l4discharge_os_table_loader
+      glob: /
+parallelism_spec:
+  constant: 4
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 2
+resource_limits:
+  memory: 4G
+  cpu: 4
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 100
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

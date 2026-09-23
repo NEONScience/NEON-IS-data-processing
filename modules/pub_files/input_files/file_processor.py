@@ -1,6 +1,6 @@
 import datetime
 from pathlib import Path
-from typing import Tuple, List, Dict, NamedTuple
+from typing import Tuple, List, Dict, NamedTuple, Optional
 from dateutil.relativedelta import relativedelta
 
 import pandas
@@ -40,6 +40,7 @@ def process_files(in_path: Path, out_path: Path, relative_path_index: int,
         min_package_time = None
         max_package_time = None
         is_first_file = True
+        path_parts = None
         for path in package_data_files[package_type]:
             path_parts: PathParts = parse_path(path, relative_path_index)
             filename_parts: FilenameParts = parse_filename(path.name)
@@ -54,8 +55,6 @@ def process_files(in_path: Path, out_path: Path, relative_path_index: int,
                                        data_product_name=filename_parts.data_product_name))
             file_min_time, file_max_time = get_file_time_span(path,workbook,filename_parts.table_name)
             if is_first_file:
-                min_package_time = file_min_time
-                max_package_time = file_max_time
                 file_metadata.package_output_path = Path(out_path,
                                                          path_parts.product,
                                                          path_parts.site,
@@ -70,12 +69,13 @@ def process_files(in_path: Path, out_path: Path, relative_path_index: int,
                                                            data_product_id=file_metadata.data_product_id)
                 file_metadata.data_product = database.get_data_product(file_metadata.data_product_id)
                 is_first_file = False
-            else:
-                if file_min_time < min_package_time:
-                    min_package_time = file_min_time
-                if file_max_time > max_package_time:
-                    max_package_time = file_max_time
+            if file_min_time is not None and (min_package_time is None or file_min_time < min_package_time):
+                min_package_time = file_min_time
+            if file_max_time is not None and (max_package_time is None or file_max_time > max_package_time):
+                max_package_time = file_max_time
             link_file(file_metadata.package_output_path, path)
+        if min_package_time is None or max_package_time is None:
+            min_package_time, max_package_time = get_month_time_span(path_parts.year, path_parts.month)
         file_metadata.data_files = DataFiles(files=data_files, min_time=min_package_time, max_time=max_package_time)
         file_metadata.manifest_file = ManifestFile(manifest_path, package_type, file_metadata.package_output_path)
         package_metadata[package_type] = file_metadata
@@ -116,19 +116,25 @@ def sort_files(in_path: Path) -> Tuple[Dict[str, List[Path]], Path]:
     return package_data_files, manifest_path
 
 
-def get_file_time_span(path: Path, workbook: PublicationWorkbook,table_name) -> Tuple[datetime.datetime, datetime.datetime]:
+def get_file_time_span(path: Path, workbook: PublicationWorkbook,table_name) -> Tuple[Optional[datetime.datetime], Optional[datetime.datetime]]:
     """Return the start and end time for a data file's data."""
     data_frame = pandas.read_csv(path)
-    min_time = data_frame.loc[0][0]  # First row, first element is the earliest start time.
-    max_time = data_frame.iloc[-1].tolist()[1]  # Last row, second element is typically the latest end time.
+    if data_frame.empty:
+        return None, None
+    start_column = next((column for column in ('startDateTime', 'startDate')
+                         if column in data_frame.columns), data_frame.columns[0])
+    end_column = next((column for column in ('endDateTime', 'endDate')
+                       if column in data_frame.columns), None)
+    min_time = data_frame.iloc[0][start_column]
+    max_time = data_frame.iloc[-1][end_column] if end_column else None
     file_min_time = date_formatter.to_datetime(min_time)
     
     # Typically pub files have an startDateTime and an endDateTime, but e.g. daily files may only have a date field
-    if isinstance(max_time,str):
+    if end_column and isinstance(max_time, str):
         file_max_time = date_formatter.to_datetime(max_time)
     else: 
         # Get  the last start time of the file
-        last_min_time = data_frame.iloc[-1,0]
+        last_min_time = data_frame.iloc[-1][start_column]
         file_last_min_time = date_formatter.to_datetime(last_min_time)
         
         # Get the timing index from the pub workbook. It's the last field in the full DP ID
@@ -166,3 +172,13 @@ def get_file_time_span(path: Path, workbook: PublicationWorkbook,table_name) -> 
 
     
     return file_min_time, file_max_time
+
+
+def get_month_time_span(year: str, month: str) -> Tuple[datetime.datetime, datetime.datetime]:
+    """Return the start and exclusive end of a calendar month."""
+    start_time = datetime.datetime(int(year), int(month), 1)
+    if int(month) == 12:
+        end_time = datetime.datetime(int(year) + 1, 1, 1)
+    else:
+        end_time = datetime.datetime(int(year), int(month) + 1, 1)
+    return start_time, end_time
