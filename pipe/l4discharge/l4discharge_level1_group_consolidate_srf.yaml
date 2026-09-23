@@ -70,15 +70,13 @@ transform:
     for location_path in "${OUT_PATH_LOC}"/*/*/*/*/surfacewater-*/location; do
       echo "Processing location path: ${location_path}"
       if [[ -d "${location_path}" ]]; then
-        date_path="${location_path%/*/*/*}"
-        l4discharge_paths=("${date_path}/${GROUP_PREFIX}_"*)
-        if [[ ${#l4discharge_paths[@]} -eq 1 && -d "${l4discharge_paths[0]}" ]]; then
-          l4discharge_path="${l4discharge_paths[0]}"
+        l4discharge_path="${location_path%/*/*}"
+        if [[ "${l4discharge_path##*/}" == "${GROUP_PREFIX}_"* ]]; then
           echo "Moving location metadata for ${location_path} to ${l4discharge_path}/location"
           mv "${location_path}" "${l4discharge_path}/location"
           rmdir "${location_path%/*}" 2>/dev/null || true
         else
-          echo "No ${GROUP_PREFIX}_* datum found for ${location_path}" >&2
+          echo "Parent datum for ${location_path} does not match ${GROUP_PREFIX}_*" >&2
         fi
       fi
     done
