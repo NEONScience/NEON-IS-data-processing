@@ -421,7 +421,7 @@ wrap.pub.tabl.srf <- function(DirIn,
         if(base::length(nameVarMtch) == 0 || base::all(nameVarMtch %in% c(NameVarTimeBgn,NameVarTimeEnd))){
           log$warn(base::paste0(
             'The field names for pub table ',
-            tablPubIdx,
+            tableIdx,
             ' are not found in any data files (other than start/end times). This table will not be produced.'
           ))
           next
