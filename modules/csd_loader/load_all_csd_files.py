@@ -89,7 +89,7 @@ def load() -> None:
                     except Exception:
                         exc_type, exc_obj, exc_tb = sys.exc_info()
                         print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
-
+                        raise
                     
                     
                 except IndexError as e:
