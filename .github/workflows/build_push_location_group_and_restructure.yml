@@ -8,6 +8,7 @@ on:
       - 'modules_combined/location_group_and_restructure/**'
       - 'modules/filter_joiner/**'
       - 'modules/common/**'
+      - 'modules/errored_file_manifest/**'
       - 'flow/flow.kfka.comb/**'
       - 'flow/flow.loc.repo.strc/**'
       - 'flow/flow.loc.data.trnc.comb/**'

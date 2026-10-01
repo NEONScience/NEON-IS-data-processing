@@ -9,6 +9,7 @@
 FROM ubuntu:24.04
 ARG MODULE_DIR="./modules"
 ARG APP_DIR="gcs_data"
+ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ARG DEBIAN_FRONTEND=noninteractive
 ARG PYTHON_VERSION=3.13
@@ -25,10 +26,12 @@ RUN apt-get update && \
         ca-certificates \
         curl \
         findutils \
+        git \
         gnupg \
         gzip \
         jq \
         libzstd1 \
+        openssh-client \
         passwd \
         software-properties-common \
         tar \
@@ -75,7 +78,7 @@ COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/requirements
 RUN ${PYTHON_BIN} -m pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/requirements.txt
 
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}
-COPY ${MODULE_DIR}/common ${CONTAINER_APP_DIR}/common
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 
 USER appuser
