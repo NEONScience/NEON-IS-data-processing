@@ -13,6 +13,7 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 # Build in the filter-joiner python module
 ARG MODULE_DIR="modules"
 ARG APP_DIR="filter_joiner"
+ARG APP_DIR_2="errored_file_manifest"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
@@ -20,6 +21,7 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
 
  
 RUN apt update && \
@@ -54,6 +56,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
     apt-get autoremove -y && \
     apt-get autoclean -y && \
     groupadd -g 9999 appuser && \
@@ -63,6 +66,7 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}
 
 # Build in the restructure_repo_by_location and merge_data_by_location modules
 ARG MODULE_DIR="flow"
