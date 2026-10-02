@@ -20,6 +20,7 @@ ENV PYTHON_BIN=python3
 
 USER root
 RUN apk add --no-cache \
+        bash \
         curl \
         findutils \
         gzip \
