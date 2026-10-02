@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import csv
 from pathlib import Path
 from typing import List
 
@@ -23,6 +24,7 @@ class VariablesFileTest(TestCase):
         year = '2020'
         month = '01'
         self.workbook: PublicationWorkbook = get_workbook('fake_value')
+        self.workbook.rows[0] = self.workbook.rows[0]._replace(lov_code='exampleCodes')
         self.setUpPyfakefs()
         self.in_path = Path('/in')
         self.fs.create_dir(self.in_path)
@@ -46,9 +48,12 @@ class VariablesFileTest(TestCase):
                           database=database)
         assert path.name == expected_filename
         path = Path(self.out_path, expected_filename)
-        with open(path) as file:
-            row_count = sum(1 for row in file)
+        with open(path, newline='') as file:
+            rows = list(csv.DictReader(file))
+        row_count = len(rows) + 1
         assert row_count == 71
+        assert rows[0]['categoricalCodeName'] == 'exampleCodes'
+        assert rows[0]['primaryKey'] == 'Y'
         print(f'\nresult:\n{path.read_text()}\n')
 
     def get_science_review_file(self) -> ScienceReviewFile:
