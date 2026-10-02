@@ -75,7 +75,7 @@ def write_sensor_positions_variables(writer, file_variables: List[FileVariables]
         publication_format = file_variable.publication_format
         data_type = file_variable.data_type
         units = file_variable.units
-        row = [table_name, term_name, description, data_type, units, download_package, publication_format]
+        row = [table_name, term_name, description, data_type, units, download_package, publication_format, '', '']
         writer.writerow(row)
 
 
@@ -89,5 +89,5 @@ def write_science_review_variables(writer, variables: List[FileVariables]) -> No
         units = variable.units
         term_download_package = variable.download_package
         publication_format = variable.publication_format
-        row = [table_name, term_name, description, data_type, units, term_download_package, publication_format]
+        row = [table_name, term_name, description, data_type, units, term_download_package, publication_format, '', '']
         writer.writerow(row)
