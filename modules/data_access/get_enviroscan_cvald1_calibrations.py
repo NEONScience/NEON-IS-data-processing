@@ -56,7 +56,8 @@ def get_enviroscan_cvald1_calibrations(
             cal.valid_start_time,
             cal.valid_end_time,
             cal.cert_filename,
-            mta.value
+            mta.value,
+            cal.cert_number
         from {schema}.calibration          cal
         join {schema}.calibration_metadata mta  on cal.calibration_id = mta.calibration_id
         join {schema}.is_asset_assignment  asgn on asgn.asset_uid = cal.asset_uid
@@ -86,5 +87,6 @@ def get_enviroscan_cvald1_calibrations(
                 valid_end_time=row[5],
                 cert_filename=row[6],
                 cvald1_cm=float(row[7]),
+                cert_number=int(row[8]) if row[8] is not None else None,
             ))
     return calibrations

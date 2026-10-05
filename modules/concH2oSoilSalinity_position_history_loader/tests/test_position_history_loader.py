@@ -14,6 +14,7 @@ Cover the pieces the loader logic hinges on:
   - end-to-end write_files against mocked PDR callables
 """
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -520,11 +521,11 @@ class BuildRowsTest(TestCase):
 
 class SelectCalForInstallTest(TestCase):
     """Direct tests for `_select_cal_for_install`: the install-window-scoped
-    picker that replaced Option B. The rule is: pick the cal whose valid
-    period overlaps [install_start, install_end], preferring the one in
-    force at install_start (latest valid_start ≤ install_start), then
-    falling back to earliest-overlapping. Tiebreak by highest calibration_id.
-    Return None if no overlap — the caller then skips that install/stream.
+    picker that replaced Option B. The rule is: among cals whose valid period
+    overlaps [install_start, install_end], pick the highest certificate number
+    (calibration.cert_number). Certs without one rank lowest; ties fall to the highest
+    calibration_id. Return None if no overlap — the caller then skips that
+    install/stream.
     """
 
     @staticmethod
@@ -557,17 +558,18 @@ class SelectCalForInstallTest(TestCase):
         self.assertEqual(result.calibration_id, 1080335)
         self.assertEqual(result.cvald1_cm, 86.0)
 
-    def test_in_force_at_install_start_beats_later_overlapping(self):
-        # 46446 SP5 case: install (2020-03-11 -> open), three cals overlap
-        # (one starts before install, two after). The one in force at install
-        # start wins regardless of calibration_id.
+    def test_highest_cert_number_wins_even_when_it_starts_after_install(self):
+        # Install (2020-03-11 -> open), three cals overlap. The later-starting
+        # cert has the higher certificate number, so it wins over the one that
+        # was in force at install start.
         cals = [
-            self._cal(1096994, dt(2020, 2, 19), dt(2021, 4, 14), cvald1=86.0),  # in force
-            self._cal(1140848, dt(2021, 10, 13), dt(2031, 12, 31), cvald1=86.0),
-            self._cal(1201723, dt(2021, 10, 13), dt(2031, 12, 31), cvald1=86.0),
+            self._named_cal(1096994, '30000000022000_WO40000_200000.xml',
+                            dt(2020, 2, 19), dt(2021, 4, 14), cvald1=86.0),
+            self._named_cal(1140848, '30000000022000_WO50000_280000.xml',
+                            dt(2021, 10, 13), dt(2031, 12, 31), cvald1=86.0),
         ]
         result = loader._select_cal_for_install(cals, dt(2020, 3, 11), None)
-        self.assertEqual(result.calibration_id, 1096994)
+        self.assertEqual(result.calibration_id, 1140848)
 
     def test_tiebreak_by_highest_calibration_id_when_multiple_in_force(self):
         # 42820 SP5 case: two cals with the same valid_start both in force at
@@ -580,15 +582,66 @@ class SelectCalForInstallTest(TestCase):
         result = loader._select_cal_for_install(cals, dt(2019, 4, 22), dt(2020, 3, 11))
         self.assertEqual(result.calibration_id, 1034725)
 
-    def test_no_in_force_falls_back_to_earliest_overlapping(self):
-        # Install starts before any cal, but a cal starts inside the install
-        # window. Nothing is "in force at install start" -> earliest-overlapping.
+    @staticmethod
+    def _named_cal(cid, cert_filename, valid_start, valid_end, cvald1):
+        # In PDR, calibration.cert_number equals the cert filename's numeric suffix.
+        match = re.search(r'_(\d+)\.xml$', cert_filename or '')
+        return Cvald1Calibration(
+            asset_uid=1, calibration_id=cid, sensor_stream_num=0,
+            schema_field_name='rawVSWC0',
+            valid_start_time=valid_start, valid_end_time=valid_end,
+            cert_filename=cert_filename, cvald1_cm=cvald1,
+            cert_number=int(match.group(1)) if match else None,
+        )
+
+    def test_corrected_cert_beats_original_with_later_valid_start(self):
+        # CPER CFGLOC101844 asset 39743: the corrected cert has an EARLIER
+        # valid_start than the original but a higher certificate number.
         cals = [
-            self._cal(20, dt(2022, 6, 1), dt(2023, 6, 1), cvald1=86.0),  # earliest overlap
-            self._cal(30, dt(2022, 9, 1), dt(2024, 1, 1), cvald1=86.0),
+            self._named_cal(1000000, '30000000020808_WO21935_115462.xml',
+                            dt(2017, 10, 20), dt(2019, 3, 8), cvald1=36.0),
+            self._named_cal(1000001, '30000000020808_WO21935_436532.xml',
+                            dt(2017, 10, 17), dt(2019, 3, 8), cvald1=46.0),
         ]
-        result = loader._select_cal_for_install(cals, dt(2022, 1, 1), dt(2024, 1, 1))
-        self.assertEqual(result.calibration_id, 20)
+        result = loader._select_cal_for_install(cals, dt(2017, 11, 1), dt(2019, 3, 7))
+        self.assertEqual(result.cert_filename, '30000000020808_WO21935_436532.xml')
+        self.assertEqual(result.cvald1_cm, 46.0)
+
+    def test_cert_number_not_calibration_id_decides(self):
+        # CFGLOC111854 asset 31963, install 2019-05-15 -> 2020-06-30. Certs from
+        # its earlier CFGLOC108858 deployment still overlap and one has a HIGHER
+        # calibration_id (1083778), but a LOWER certificate number. The current
+        # deployment's cert (177119, 46 cm) must win.
+        cals = [
+            self._named_cal(1074082, '30000000017065_WO22861_119856.xml',
+                            dt(2017, 12, 6), dt(2019, 8, 7), cvald1=56.0),
+            self._named_cal(1083778, '30000000017065_WO24448_128449.xml',
+                            dt(2018, 2, 8), dt(2019, 10, 10), cvald1=86.0),
+            self._named_cal(1034163, '30000000017065_WO34234_177119.xml',
+                            dt(2019, 4, 24), dt(2020, 6, 17), cvald1=46.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2019, 5, 15), dt(2020, 6, 30))
+        self.assertEqual(result.calibration_id, 1034163)
+        self.assertEqual(result.cvald1_cm, 46.0)
+
+    def test_higher_cert_number_outside_install_window_is_ignored(self):
+        cals = [
+            self._named_cal(1, '30000000020808_WO21935_115462.xml',
+                            dt(2017, 10, 20), dt(2019, 3, 8), cvald1=36.0),
+            self._named_cal(2, '30000000020808_WO21935_436532.xml',
+                            dt(2020, 1, 1), dt(2021, 1, 1), cvald1=46.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2017, 11, 1), dt(2019, 3, 7))
+        self.assertEqual(result.calibration_id, 1)
+
+    def test_cert_without_number_ranks_below_numbered_cert(self):
+        cals = [
+            self._named_cal(9, 'legacy_cert.xml', dt(2017, 10, 20), dt(2019, 3, 8), cvald1=36.0),
+            self._named_cal(1, '30000000020808_WO21935_115462.xml',
+                            dt(2017, 10, 17), dt(2019, 3, 8), cvald1=46.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2017, 11, 1), dt(2019, 3, 7))
+        self.assertEqual(result.calibration_id, 1)
 
 
 class WriteFilesCalSelectionTest(TestCase):
