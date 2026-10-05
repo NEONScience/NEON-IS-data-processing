@@ -590,6 +590,78 @@ class SelectCalForInstallTest(TestCase):
         result = loader._select_cal_for_install(cals, dt(2022, 1, 1), dt(2024, 1, 1))
         self.assertEqual(result.calibration_id, 20)
 
+    @staticmethod
+    def _named_cal(cid, cert_filename, valid_start, valid_end, cvald1):
+        return Cvald1Calibration(
+            asset_uid=1, calibration_id=cid, sensor_stream_num=0,
+            schema_field_name='rawVSWC0',
+            valid_start_time=valid_start, valid_end_time=valid_end,
+            cert_filename=cert_filename, cvald1_cm=cvald1,
+        )
+
+    def test_same_work_order_reissue_replaces_original(self):
+        # CPER CFGLOC101844 asset 39743: corrected cert re-issued under the same
+        # work order with an EARLIER valid_start than the original, so the
+        # in-force rule alone keeps the bad original. The re-issue must win.
+        cals = [
+            self._named_cal(1000000, '30000000020808_WO21935_115462.xml',
+                            dt(2017, 10, 20), dt(2019, 3, 8), cvald1=36.0),
+            self._named_cal(1000001, '30000000020808_WO21935_436532.xml',
+                            dt(2017, 10, 17), dt(2019, 3, 8), cvald1=46.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2017, 11, 1), dt(2019, 3, 7))
+        self.assertEqual(result.cert_filename, '30000000020808_WO21935_436532.xml')
+        self.assertEqual(result.cvald1_cm, 46.0)
+
+    def test_other_work_orders_from_previous_deployment_do_not_replace(self):
+        # CFGLOC111854 asset 31963, install 2019-05-15 -> 2020-06-30. Certs from
+        # its earlier CFGLOC108858 deployment still overlap, and one has a HIGHER
+        # calibration_id, but they are different work orders. The cert in force
+        # at install start (WO34234, 46 cm) must stay.
+        cals = [
+            self._named_cal(1074082, '30000000017065_WO22861_119856.xml',
+                            dt(2017, 12, 6), dt(2019, 8, 7), cvald1=56.0),
+            self._named_cal(1083778, '30000000017065_WO24448_128449.xml',
+                            dt(2018, 2, 8), dt(2019, 10, 10), cvald1=86.0),
+            self._named_cal(1034163, '30000000017065_WO34234_177119.xml',
+                            dt(2019, 4, 24), dt(2020, 6, 17), cvald1=46.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2019, 5, 15), dt(2020, 6, 30))
+        self.assertEqual(result.calibration_id, 1034163)
+        self.assertEqual(result.cvald1_cm, 46.0)
+
+    def test_reissue_outside_install_window_is_ignored(self):
+        # A same-work-order re-issue whose validity doesn't overlap this install
+        # belongs to some other period; the original pick stands.
+        cals = [
+            self._named_cal(1, '30000000020808_WO21935_115462.xml',
+                            dt(2017, 10, 20), dt(2019, 3, 8), cvald1=36.0),
+            self._named_cal(2, '30000000020808_WO21935_436532.xml',
+                            dt(2020, 1, 1), dt(2021, 1, 1), cvald1=46.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2017, 11, 1), dt(2019, 3, 7))
+        self.assertEqual(result.calibration_id, 1)
+
+    def test_newest_of_several_reissues_wins(self):
+        cals = [
+            self._named_cal(1, '30000000022189_WO43121_226038.xml',
+                            dt(2020, 6, 15), dt(2021, 8, 9), cvald1=40.0),
+            self._named_cal(3, '30000000022189_WO43121_351714.xml',
+                            dt(2020, 6, 1), dt(2021, 8, 9), cvald1=46.0),
+            self._named_cal(2, '30000000022189_WO43121_283495.xml',
+                            dt(2020, 6, 1), dt(2021, 8, 9), cvald1=44.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2020, 6, 30), dt(2020, 12, 17))
+        self.assertEqual(result.cert_filename, '30000000022189_WO43121_351714.xml')
+
+    def test_unparseable_cert_filename_keeps_original_rule(self):
+        cals = [
+            self._named_cal(1, 'legacy_cert.xml', dt(2017, 10, 20), dt(2019, 3, 8), cvald1=36.0),
+            self._named_cal(2, None, dt(2017, 10, 17), dt(2019, 3, 8), cvald1=46.0),
+        ]
+        result = loader._select_cal_for_install(cals, dt(2017, 11, 1), dt(2019, 3, 7))
+        self.assertEqual(result.calibration_id, 1)
+
 
 class WriteFilesCalSelectionTest(TestCase):
     """End-to-end verification that `write_files` threads install-window-scoped

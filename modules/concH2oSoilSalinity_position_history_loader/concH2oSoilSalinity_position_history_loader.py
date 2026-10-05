@@ -17,6 +17,7 @@ so every downloaded month contains the complete position history — including
 moves that happened outside that month's sensor operation window.
 """
 import json
+import re
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -34,6 +35,10 @@ from data_access.types.cvald1_calibration import Cvald1Calibration
 log = structlog.get_logger()
 
 DateRange = Tuple[Optional[datetime], Optional[datetime]]
+
+# Cert filenames look like <serial>_WO<work order>_<certificate number>.xml,
+# e.g. 30000000020808_WO21935_436532.xml.
+_CERT_FILENAME_RE = re.compile(r'_(WO\d+)_(\d+)\.xml$')
 
 
 def write_files(*,
@@ -243,6 +248,14 @@ def _select_cal_for_install(cals: List[Cvald1Calibration],
     install_start); if none, prefer the earliest-starting overlapping cal.
     Tiebreak by highest calibration_id.
 
+    Then, if that cert was re-issued — same asset, same stream, same work order,
+    higher certificate number — and the re-issue also overlaps the install, use
+    the newest re-issue. This is how corrected certs arrive (e.g. CPER asset
+    39743: WO21935_115462 at 36 cm re-issued as WO21935_436532 at 46 cm). The
+    re-issue's valid_start can be earlier than the original's, so the in-force
+    rule alone keeps the bad original. Restricting to the same work order keeps
+    certs from the asset's other deployments out.
+
     Returns None if no cal overlaps the install — the caller skips that install/
     stream rather than apply a cross-deployment cal (e.g. asset 40784's cert
     measured at CFGLOC113339 must NOT be used for its earlier CFGLOC105360 stint).
@@ -260,14 +273,41 @@ def _select_cal_for_install(cals: List[Cvald1Calibration],
     if not candidates:
         return None
 
+    picked = None
     if install_start_n is not None:
         in_force = [c for c in candidates
                     if _naive(c.valid_start_time) <= install_start_n]
         if in_force:
-            return max(in_force, key=lambda c: (_naive(c.valid_start_time),
-                                                c.calibration_id))
-    return min(candidates,
-               key=lambda c: (_naive(c.valid_start_time), -c.calibration_id))
+            picked = max(in_force, key=lambda c: (_naive(c.valid_start_time),
+                                                  c.calibration_id))
+    if picked is None:
+        picked = min(candidates,
+                     key=lambda c: (_naive(c.valid_start_time), -c.calibration_id))
+
+    picked_cert = _parse_cert_filename(picked.cert_filename)
+    if picked_cert is None:
+        return picked
+    work_order, cert_no = picked_cert
+    reissues = []
+    for cal in candidates:
+        parsed = _parse_cert_filename(cal.cert_filename)
+        if (cal.schema_field_name == picked.schema_field_name and parsed is not None
+                and parsed[0] == work_order and parsed[1] > cert_no):
+            reissues.append((parsed[1], cal))
+    if not reissues:
+        return picked
+    return max(reissues, key=lambda r: r[0])[1]
+
+
+def _parse_cert_filename(cert_filename: Optional[str]) -> Optional[Tuple[str, int]]:
+    """(work order, certificate number) from a cert filename, or None if it
+    doesn't follow the <serial>_WO<n>_<cert number>.xml pattern."""
+    if not cert_filename:
+        return None
+    match = _CERT_FILENAME_RE.search(cert_filename)
+    if match is None:
+        return None
+    return match.group(1), int(match.group(2))
 
 
 def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
