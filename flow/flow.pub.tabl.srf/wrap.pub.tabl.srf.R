@@ -41,6 +41,8 @@
 #' @param TablPub (optional) Character vector. The table(s) in the pub workbook(s) to produce. By default all of them with a discernible 
 #' timing index are produced. Ensure that the column names in the data files match those in the pub workbook. 
 #' 
+#' @param AddTabl (optional) Character vector. Additional table names to include as data inputs for publication table creation.
+#' 
 #' @param NameVarTimeBgn Character string. The name of the time variable common across all timeseries files indicating 
 #' the start time of the aggregation interval. Default is 'startDateTime'.
 #' 
@@ -78,12 +80,15 @@
 #     Initial creation
 #   Cove Sturtevant (2024-11-20)
 #     Expand tmi detection in file names to include characters (e.g. 01D)
+#   Nora Catolico (2026-09-07)
+#     added AddTabl parameter
 ##############################################################################################
 wrap.pub.tabl.srf <- function(DirIn,
                           DirOutBase,
                           DirData=c('stats','quality_metrics'),
                           FilePubWb,
                           TablPub=NULL,
+                          AddTabl=NULL,
                           NameVarTimeBgn='startDateTime',
                           NameVarTimeEnd='endDateTime',
                           DirSubCopy=NULL,
@@ -188,9 +193,30 @@ wrap.pub.tabl.srf <- function(DirIn,
   # Load the pub WBs 
   pubWb <- NEONprocIS.pub::def.read.pub.wb(NameFile=FilePubWb)
   
+  #use later
+  AddTabl <- base::setdiff(AddTabl,c(NA,''))
+  if(base::length(AddTabl) > 0){
+    addPub <- pubWb[pubWb$table %in% AddTabl,]
+    missing_add_tables <- base::setdiff(AddTabl, base::unique(addPub$table))
+    if(base::length(missing_add_tables) > 0){
+      log$error(base::paste0('The publication workbook(s) contain no matches to requested pub table(s). Datum:',
+                            DirIn,
+                            '. Pub Workbook file(s): ',
+                            base::paste0(FilePubWb,collapse=','),
+                            '. Requested pub table(s): ',
+                            base::paste0(AddTabl,collapse=',')
+      ))
+      stop()
+    }
+  }else{
+    addPub <- NULL
+  }
+
+  
+
   # Constrain to the desired pub tables
   if(base::is.null(TablPub)){
-    TablPub <- base::unique(pubWb$table)
+    TablPub <- base::unique(pubWb$table[!is.na(pubWb$DPNumber) & pubWb$DPNumber != ''])
   }
   pubWb <- pubWb[pubWb$table %in% TablPub,]
   
@@ -253,6 +279,16 @@ wrap.pub.tabl.srf <- function(DirIn,
                   )
   idxTmi <-  base::regexpr(pattern='_[0-9A-Z]{3}\\.',text=nameFileData)
   tmiFile <-  base::substr(nameFileData,start=idxTmi+1,stop=idxTmi+3)
+
+  if(base::length(AddTabl) > 0){
+    idxFileAdd <- base::Reduce(
+      f=`|`,
+      x=base::lapply(AddTabl, base::grepl, x=nameFileData, fixed=TRUE)
+    )
+    addFile <- fileData[idxFileAdd]
+  } else {
+    addFile <- base::character(0)
+  }
  
   # Create each desired pub wb table and apply SRFs
   for(tmiIdx in base::unique(base::setdiff(tmiTablPub,NA))){
@@ -356,6 +392,99 @@ wrap.pub.tabl.srf <- function(DirIn,
     
   } # End loop around tmi
 
+
+  #now loop through any additional files
+  if(!base::is.null(addFile)){
+    for(addTablIdx in base::seq_along(AddTabl)){
+      tableIdx <- AddTabl[addTablIdx]
+
+      # Constrain pub workbook to table of interest
+      pubWbIdx <- addPub[addPub$table==tableIdx,]
+      
+      # Remove duplicated field names in the pub table (this can happen when multiple pub workbooks are combined prior to input).
+      pubWbIdx <- pubWbIdx[!base::duplicated(pubWbIdx$fieldName),]
+
+      filePath <- file.path(addFile[grep(tableIdx,addFile)])
+
+      if(length(filePath) > 0){
+        # Load data into an arrow dataset. Essentially collects metadata about the data files at this tmi without loading
+        data <- base::lapply(filePath,arrow::open_dataset)
+        
+        # Create the pub table
+        rptPub <- NEONprocIS.pub::def.pub.tabl.crea(data=data,
+                                                    pubWb=pubWbIdx,
+                                                    log=log)
+        dataTabl <- rptPub$dataTabl
+        nameVarMtch <- rptPub$nameVarMtch
+        
+        # Check if we only have start and end times. If only those variables, issue a warning and skip.
+        if(base::length(nameVarMtch) == 0 || base::all(nameVarMtch %in% c(NameVarTimeBgn,NameVarTimeEnd))){
+          log$warn(base::paste0(
+            'The field names for pub table ',
+            tableIdx,
+            ' are not found in any data files (other than start/end times). This table will not be produced.'
+          ))
+          next
+        }
+
+        # Apply the science review flags if they exist
+        if(!base::is.null(srf) && base::nrow(srf) > 0){
+          dataTabl <- NEONprocIS.pub::def.srf.aply(srf=srf,
+                                                  dataTabl=dataTabl,
+                                                  pubWbTabl=pubWbIdx,
+                                                  NameVarTimeBgn=NameVarTimeBgn,
+                                                  NameVarTimeEnd=NameVarTimeEnd,
+                                                  log = log)
+        }
+        # Create the output schema 
+        schmTablPub <- NEONprocIS.pub::def.schm.parq.from.pub.wb(pubWb=pubWbIdx)
+      
+        # Write out the data for this pub table. File naming convention is GROUPID_YYYY-MM-DD_TABLE_TMI.parquet
+        fileOut <- base::paste0(utils::tail(InfoDirIn$dirSplt,1),
+                                '_',
+                                base::format(InfoDirIn$time,'%Y-%m-%d'),
+                                '_',
+                                tableIdx,
+                                '.parquet')                         
+        pathFileOut <- fs::path(dirOutData,fileOut)
+        
+        rptWrte <-
+          base::try(NEONprocIS.base::def.wrte.parq(
+              data = dataTabl,
+              NameFile = pathFileOut,
+              NameFileSchm = NULL,
+              Schm = schmTablPub[[tableIdx]],
+              log=log
+          ),
+          silent = TRUE)
+        if ('try-error' %in% base::class(rptWrte)) {
+          log$error(base::paste0(
+            'Cannot write pub table ',
+            tableIdx ,
+            'to file ',
+            pathFileOut,
+            '. ',
+            attr(rptWrte, "condition")
+          ))
+          stop()
+        } else {
+          log$info(base::paste0(
+            'Pub table ',
+            tableIdx ,
+            ' written to file ',
+            pathFileOut
+            ))
+        }
+        
+      }else{
+        log$info(base::paste0(
+          'No data files found for additional table ',
+          tableIdx, ' in ', base::paste0(DirIn, '/', DirData)
+        ))
+      }
+      
+    }
+  }
   
   return()
 } # End loop around datum paths
