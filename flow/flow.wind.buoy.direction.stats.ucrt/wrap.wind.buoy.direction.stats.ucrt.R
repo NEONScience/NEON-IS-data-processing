@@ -1,0 +1,268 @@
+##############################################################################################
+#' @title Wrapper for buoy wind-specific direction statistics and uncertainty calculations
+
+#' @author
+#' Nora Catolico \email{ncatolico@battelleecology.org}
+#' 
+#' @description Wrapper function. Uses thresholds to apply wind direction statistics and uncertainty calculations to buoy wind data.
+#'
+#' @param DirIn Character value. The base file path to the input data, uncertainty data, and thresholds.
+#'  
+#' @param DirOutBase Character value. The base file path for the output data. 
+#' 
+#' @param WndwAgr Character value. The window aggregation period for the buoy wind data (e.g., "002" for 2-minute averages, "030" for 30-minute averages).
+#' 
+#' @param SchmStatsOut (optional), A json-formatted character string containing the schema for the data file.
+#' This should be the same for the input as the output.  Only the number of rows of measurements should change. 
+#' 
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
+#' for more details.
+#' 
+#' @return Buoy wind direction statistics in daily parquet files.
+#' 
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+#' 
+#' @keywords Currently none
+#' 
+#'                                                                                                                                                                                          
+#' @changelog
+#' Nora Catolico (2026-07-13)
+#' Initial creation 
+##############################################################################################
+wrap.wind.buoy.direction.stats.ucrt <- function(DirIn,
+                                  DirOutBase,
+                                  WndwAgr,
+                                  SchmStatsOut=NULL,
+                                  log=NULL
+){
+  
+  # Start logging if not already.
+  if(base::is.null(log)){
+    log <- NEONprocIS.base::def.log.init()
+  } 
+  
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+
+  DirInData <- paste0(DirIn,"/data")
+  DirInThresholds <- paste0(DirIn,"/threshold")
+  DirInUcrtCoef <- base::paste0(DirIn,'/uncertainty_coef')
+  
+  # Create output directories
+  DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
+  DirOutStats <- base::paste0(DirOut,"/stats")
+  base::dir.create(DirOutStats,recursive=TRUE)
+  
+  # Read in parquet file of buoy wind data.
+  dataFileName <- base::list.files(DirInData,full.names=FALSE) 
+  dataFileName <- dataFileName[!base::grepl("zone.identifier", tolower(dataFileName))]
+  if(length(dataFileName)==0){
+    log$error(base::paste0('Data file not found in ', DirInData)) 
+    stop()
+  } else if(length(dataFileName)>1){
+    log$error(base::paste0('More than one data file found in ', DirInData))
+    stop()
+  } else {
+    data_wind <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', dataFileName),
+                                                       log = log),silent = FALSE)
+    if(class(data_wind)[1] == 'try-error'){
+      log$error(base::paste0('Error reading in data file: ', DirInData, '/', dataFileName)) 
+      stop()
+    }else{
+      log$debug(base::paste0('Successfully read in file: ',dataFileName))
+      data_wind$readout_time <- as.POSIXct(data_wind$readout_time, origin="1970-01-01", tz="GMT")
+    } 
+  }
+  
+  #read in buoy wind uncertainty coefficients
+  ucrtCoefFileName <- base::list.files(DirInUcrtCoef,full.names=FALSE)
+  ucrtCoefFileName <- ucrtCoefFileName[!base::grepl("zone.identifier", tolower(ucrtCoefFileName))]
+  if(base::length(ucrtCoefFileName) != 1){
+    log$warn(base::paste0("There are either zero or more than one uncertainty coefficient files in path: ",DirInUcrtCoef,"... Uncertainty coefs will not be read in. This is fine if the uncertainty function doesn't need it, but you should check..."))
+    ucrtCoef <- base::list()
+  } else {
+    # Open the uncertainty file
+    ucrtCoef  <- base::try(rjson::fromJSON(file=base::paste0(DirInUcrtCoef, '/', ucrtCoefFileName),simplify=TRUE),silent=FALSE)
+    if(base::class(ucrtCoef) == 'try-error'){
+      # Generate error and stop execution
+      log$error(base::paste0('File: ', ucrtCoefFileName, ' is unreadable.')) 
+      stop()
+    }
+    # Turn times to POSIX
+    ucrtCoef <- base::lapply(ucrtCoef,FUN=function(idxUcrt){
+      idxUcrt$start_date <- base::strptime(idxUcrt$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+      idxUcrt$end_date <- base::strptime(idxUcrt$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+      return(idxUcrt)
+    })
+    log$debug(base::paste0('Successfully read uncertainty coefficients from file: ',ucrtCoefFileName))
+  }
+
+  if(base::length(ucrtCoef) == 0){
+    log$debug(base::paste0('Uncertainty coefficients are empty. Uncertainty values will be NA.'))
+    data_wind$U_CVALA1 <- NA_real_
+    data_wind$U_CVALA3 <- NA_real_
+  } else {
+    idxU1 <- which(sapply(ucrtCoef, function(x) x$Name == "U_CVALA1" & x$term == "direction"))[1]
+    idxU3 <- which(sapply(ucrtCoef, function(x) x$Name == "U_CVALA3" & x$term == "direction"))[1]
+    data_wind$U_CVALA1 <- if(!base::is.na(idxU1)) base::as.numeric(ucrtCoef[[idxU1]]$Value) else NA_real_
+    data_wind$U_CVALA3 <- if(!base::is.na(idxU3)) base::as.numeric(ucrtCoef[[idxU3]]$Value) else NA_real_
+    log$debug(base::paste0('Successfully read uncertainty coefficients from file: ',ucrtCoefFileName))
+  }
+  
+  #read in compass thresholds
+  thresholdFileName<-base::list.files(DirInThresholds,full.names=FALSE)
+  thresholdFileName <- thresholdFileName[!base::grepl("zone.identifier", tolower(thresholdFileName))]
+  windThresholds<-base::try(NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = base::paste0(DirInThresholds, '/', thresholdFileName)),silent = FALSE)
+  if(class(windThresholds)[1] == 'try-error'){
+    log$warn(base::paste0('Failed to read threshold file: ',thresholdFileName))
+    data_wind$magDecUcrtValue<-NA_real_
+    data_wind$compassUcrtValue<-NA_real_
+  }else{
+    magDecUcrt <- windThresholds[(windThresholds$threshold_name=="2D Wind Direction Buoy Magnetic declination uncertainty"),]
+    data_wind$magDecUcrtValue<-magDecUcrt$number_value[1]
+    compassUcrt <- windThresholds[(windThresholds$threshold_name=="2D Wind Direction Buoy compass uncertainty"),]
+    data_wind$compassUcrtValue<-compassUcrt$number_value[1]
+  }
+
+
+  ################
+  # Calculate the mean and variance with analytical two-pass method
+  # In the first pass, the components of the average distance vector over an observation period with sample size n are calculated 
+  # The first window begins at the nearest whole minute <= first timestamp in the series.
+  anchor_time <- lubridate::floor_date(base::min(data_wind$readout_time, na.rm = TRUE), unit = 'minute')
+
+  safe_mean <- function(x) {
+    if (base::all(base::is.na(x))) {
+      return(NA_real_)
+    }
+    base::mean(x, na.rm = TRUE)
+  }
+
+  # Build anchored window starts.
+  dt_secs <- as.numeric(base::difftime(data_wind$readout_time, anchor_time, units = 'secs'))
+  
+  # Loop through each window aggregation period and calculate the mean and variance of wind direction
+  for(j in 1:length(WndwAgr)){
+    Wndw <- as.numeric(WndwAgr[j])
+    data_wind_avg <- data_wind
+    data_wind_avg$windowStart <- anchor_time + base::floor(dt_secs / (Wndw*60)) * (Wndw*60)    
+
+
+    # The uncertainty associated with the compass measurements, u_c1, and the declination correction, u_d1, are in the thresholds file
+    # The combined measurement uncertainty of individual wind direction measurements, u_c (θ_i ), 
+    # is computed by summing the individual uncertainties from CVAL, the compass, the declination correction, 
+    # and the orientation of the monitor atop the mast in quadrature (Eq. 20)
+    data_wind_avg$combUcrtMeas <- NA_real_
+    data_wind_avg$combUcrtMeas <- base::sqrt(data_wind_avg$U_CVALA1^2 + data_wind_avg$compassUcrtValue^2 + data_wind_avg$magDecUcrtValue^2)
+
+    # expanded measurement uncertainty 
+    data_wind_avg$expUncertMeas <- NA_real_
+    data_wind_avg$expUncertMeas <- 2 * data_wind_avg$combUcrtMeas
+    
+    # Compute first-pass vector components for each averaging period.
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::group_by(windowStart) %>%
+      dplyr::mutate(
+        yBar = safe_mean(base::sin(direction_rad)),
+        xBar = safe_mean(base::cos(direction_rad)),
+        n = base::sum(!base::is.na(direction_rad))
+      ) %>%
+      dplyr::ungroup()
+
+    # Second pass — Eq (10): mean unit-vector wind direction (radians)
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::mutate(
+        direction_unit_vector_mean = dplyr::case_when(
+          xBar > 0 & yBar == 0 ~ 2 * pi,
+          TRUE ~ (2 * pi + base::atan2(yBar, xBar)) %% (2 * pi)
+        )
+      )
+
+    # Eq (12): minimum angular distance between each observation and the window mean
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::mutate(
+        min_angular_distance = 2 * base::atan(base::tan(0.5 * (direction_rad - direction_unit_vector_mean)))
+      )
+
+    # Eq (13): mean of minimum angular distances over the window
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::group_by(windowStart) %>%
+      dplyr::mutate(
+        A_Tbar = safe_mean(min_angular_distance)
+      ) %>%
+      dplyr::ungroup()
+
+    # Eq (14): arithmetic mean wind direction (radians)
+    # theta_T = [2*pi + theta_bar + A_Tbar] %% (2*pi)
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::mutate(
+        windDirMean = (2 * pi + direction_unit_vector_mean + A_Tbar) %% (2 * pi)
+      )
+
+    # Eq (15): sample variance of wind direction
+    # s^2 = n^{-1} * sum(A_i^2) - A_Tbar^2
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::group_by(windowStart) %>%
+      dplyr::mutate(
+        windDirVar = base::pmax(0, safe_mean(min_angular_distance^2) - A_Tbar^2)
+      ) %>%
+      dplyr::ungroup()
+
+    # Eq (16): convert mean wind direction from radians to degrees
+    # theta_T_deg = theta_T_rad * (180 / pi)
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::mutate(
+        windDirMean = windDirMean * (180 / pi)
+      )
+
+    # Eq (17): convert sample variance from rad^2 to deg^2
+    # s^2_deg = s^2_rad * (180/pi)^2
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::mutate(
+        windDirVar = windDirVar * (180 / pi)^2
+      )
+
+    # calculate standard error of the mean wind direction for each observation window
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::mutate(
+        windDirSE = base::sqrt(windDirVar / n)
+      )    
+
+    # reduce file to one row per observation window
+    data_wind_avg <- data_wind_avg %>%
+      dplyr::group_by(windowStart) %>%
+      dplyr::slice(1) %>%
+      dplyr::ungroup()
+
+    #The uncertainty L1 mean wind direction (eq 25)
+    data_wind_avg$combUncertMean <- NA_real_
+    data_wind_avg$expUncertMean <- NA_real_
+    data_wind_avg$combUncertMean <- base::sqrt(data_wind_avg$U_CVALA3^2 + data_wind_avg$windDirSE^2 + data_wind_avg$compassUcrtValue^2 + data_wind_avg$magDecUcrtValue^2)
+    data_wind_avg$expUncertMean <- 2 * data_wind_avg$combUncertMean
+
+    # Add start and end date-time columns for each observation window 
+    data_wind_avg$startDateTime <- data_wind_avg$windowStart
+    data_wind_avg$endDateTime <- data_wind_avg$windowStart + lubridate::minutes(as.numeric(WndwAgr[j]))
+
+    # only keep the necessary columns for further analysis
+    statsOut <- data_wind_avg[, c("startDateTime", "endDateTime", "source_id", "site_id", "windDirMean", "windDirVar", "n","windDirSE","expUncertMean")]
+
+
+    # Write out stats file
+    statsFileName<-paste0(DirOutStats,"/",tools::file_path_sans_ext(dataFileName), "_sciStats_", WndwAgr[j], ".parquet")
+    rptStatsData <- try(NEONprocIS.base::def.wrte.parq(data = statsOut,
+                                                      NameFile = statsFileName,
+                                                      Schm = SchmStatsOut),silent=TRUE)
+    if(class(rptStatsData)[1] == 'try-error'){
+      log$error(base::paste0('Cannot write Data to ',statsFileName,'. ',attr(rptStatsData, "condition")))
+      stop()
+    } else {
+      log$info(base::paste0('Data written successfully in ', statsFileName))
+    }
+
+  }  
+}
+
+
+

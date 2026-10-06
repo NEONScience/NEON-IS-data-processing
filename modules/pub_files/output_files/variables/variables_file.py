@@ -35,7 +35,7 @@ def write_file(out_path: Path,
     path = Path(out_path, filename)
     with open(path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat'])
+        writer.writerow(['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat', 'categoricalCodeName', 'primaryKey'])
         write_rows(writer, workbook.rows)
         write_sensor_positions_variables(writer, database.get_sensor_position_variables())
         if science_review_file is not None:
@@ -52,8 +52,11 @@ def write_rows(writer, rows: List[WorkbookRow]) -> None:
         units = row.unit_name
         download_package = row.download_package
         publication_format = row.publication_format
+        categorical_code_name = row.lov_code
+        primary_key = row.primary_key
         if download_package != 'none':
-            values = [table_name, field_name, description, data_type, units, download_package, publication_format]
+            values = [table_name, field_name, description, data_type, units, download_package,
+                      publication_format, categorical_code_name, primary_key]
             writer.writerow(values)
 
 
@@ -72,7 +75,7 @@ def write_sensor_positions_variables(writer, file_variables: List[FileVariables]
         publication_format = file_variable.publication_format
         data_type = file_variable.data_type
         units = file_variable.units
-        row = [table_name, term_name, description, data_type, units, download_package, publication_format]
+        row = [table_name, term_name, description, data_type, units, download_package, publication_format, '', '']
         writer.writerow(row)
 
 
@@ -86,5 +89,5 @@ def write_science_review_variables(writer, variables: List[FileVariables]) -> No
         units = variable.units
         term_download_package = variable.download_package
         publication_format = variable.publication_format
-        row = [table_name, term_name, description, data_type, units, term_download_package, publication_format]
+        row = [table_name, term_name, description, data_type, units, term_download_package, publication_format, '', '']
         writer.writerow(row)

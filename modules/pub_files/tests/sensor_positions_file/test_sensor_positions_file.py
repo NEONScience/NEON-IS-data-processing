@@ -2,8 +2,9 @@
 import csv
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from pyfakefs.fake_filesystem import FakeFilesystem
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -16,6 +17,9 @@ from pub_files.geometry import build_geometry
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.main import get_timestamp
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsDatabase
+from pub_files.output_files.sensor_positions.sensor_positions_file import _add_reference_position_data
+from pub_files.output_files.sensor_positions.sensor_positions_file import _create_base_row_data
+from pub_files.output_files.sensor_positions.sensor_positions_file import _reference_coordinates
 from pub_files.output_files.sensor_positions.sensor_positions_file import get_column_names
 from pub_files.output_files.sensor_positions.sensor_positions_file import write_file
 from pub_files.output_files.sensor_positions.sensor_specific_processors import create_tchain_rows
@@ -215,12 +219,21 @@ class _FakeGeolocation:
         self.offset_name = offset_name
 
 
+class ReferenceCoordinatesTest(TestCase):
+
+    def test_invalid_geometry_includes_geometry_in_error(self):
+        reference_geolocation = _FakeGeolocation()
+        reference_geolocation.geometry = 'LINESTRING (1 2, 3 4)'
+
+        with self.assertRaisesRegex(ValueError, "LINESTRING \\(1 2, 3 4\\)"):
+            _reference_coordinates(reference_geolocation, {})
+
+
 class TchainRowShapeTest(TestCase):
-    """create_tchain_rows produces one row per thermistor depth. When
-    include_effective_dates is False (the default all pipelines hit today), the row
-    shape matches the pre-change 22-column schema exactly. When True (the shape the
-    follow-up DB-codepath effective-dates work will flip to), two blank cells appear
-    between description and positionStart, aligning with get_column_names(True).
+    """create_tchain_rows produces one row per thermistor depth. The cfgloc-geo x
+    ref_geolocation intersection (computed upstream and carried on the row data
+    dict) fills the effectiveStart/End cells between description and positionStart,
+    aligning with get_column_names().
     """
 
     @staticmethod
@@ -244,6 +257,8 @@ class TchainRowShapeTest(TestCase):
     def _ref_position_stub(_database, base_data, _geolocation, _offset_name):
         row = dict(base_data)
         row.update({
+            'row_effective_start_date': '2020-01-01T00:00:00Z',
+            'row_effective_end_date':   '',
             'row_x_azimuth': 0.0, 'row_y_azimuth': 0.0,
             'row_east_offset': 0.0, 'row_north_offset': 0.0,
             'row_reference_location_start_date': '2010-01-01T00:00:00Z',
@@ -258,7 +273,7 @@ class TchainRowShapeTest(TestCase):
             Property(name='ThermistorDepth502', value='0.16'),
         ])
 
-    def _run(self, include_effective_dates: bool):
+    def _run(self):
         return create_tchain_rows(
             database=None, location=self._tchain_location(),
             geolocation=_FakeGeolocation(),
@@ -266,35 +281,239 @@ class TchainRowShapeTest(TestCase):
             row_description='Test Soil Temp',
             create_base_row_data_func=self._base_row_stub,
             add_reference_position_data_func=self._ref_position_stub,
-            include_effective_dates=include_effective_dates,
         )
 
-    def test_default_flag_omits_effective_cells(self):
-        rows = self._run(include_effective_dates=False)
-        self.assertEqual(len(rows), 2)  # one per thermistor depth
-        header = get_column_names(include_effective_dates=False)
-        self.assertEqual(len(header), 22)
-        # Thermistor ids substitute into the VER slot of HOR.VER
-        self.assertEqual({row[0] for row in rows}, {'000.501', '000.502'})
-        for row in rows:
-            self.assertEqual(len(row), 22)
-            # Position dates land right after description; no blank cells between.
-            self.assertEqual(row[3], '2020-01-01T00:00:00Z')
-            self.assertEqual(row[4], '')
-
-    def test_flag_true_inserts_two_blank_cells_matching_header(self):
-        rows = self._run(include_effective_dates=True)
+    def test_inserts_effective_dates_matching_header(self):
+        rows = self._run()
         self.assertEqual(len(rows), 2)
-        header = get_column_names(include_effective_dates=True)
+        header = get_column_names()
         self.assertEqual(len(header), 24)
         self.assertEqual(header[3], 'effectiveStartDateTime')
         self.assertEqual(header[4], 'effectiveEndDateTime')
         self.assertEqual({row[0] for row in rows}, {'000.501', '000.502'})
         for row in rows:
             self.assertEqual(len(row), 24)
-            # Two blank cells for effective land between description and positionStart.
-            # DB codepath doesn't compute the intersection yet; follow-up PR fills these.
-            self.assertEqual(row[3], '')
-            self.assertEqual(row[4], '')
+            # Effective cells land between description and positionStart.
+            self.assertEqual(row[3], '2020-01-01T00:00:00Z')  # effectiveStart
+            self.assertEqual(row[4], '')                      # effectiveEnd
             self.assertEqual(row[5], '2020-01-01T00:00:00Z')  # positionStart
             self.assertEqual(row[6], '')                      # positionEnd
+
+
+class ReferencePositionOverlapTest(TestCase):
+    """_add_reference_position_data must skip a reference geolocation whose validity
+    window doesn't overlap the sensor geolocation's window, and vice versa, so no
+    row is emitted for a period where the two positions were never both in effect.
+    """
+
+    @staticmethod
+    def _geolocation(start_date: Optional[datetime], end_date: Optional[datetime],
+                     offset_name: str = 'REFLOC001') -> GeoLocation:
+        return GeoLocation(location_id=1, geometry='POINT Z (0 0 0)',
+                           start_date=start_date, end_date=end_date,
+                           alpha=0.0, beta=0.0, gamma=0.0,
+                           x_offset=1.0, y_offset=1.0, z_offset=1.0,
+                           offset_id=1, offset_name=offset_name, offset_description='ref',
+                           properties=[])
+
+    @staticmethod
+    def _base_data() -> dict:
+        return {
+            'row_hor_ver': '000.010', 'row_location_id': 'CFGLOC000001',
+            'row_description': 'Test',
+            'row_position_start_date': '', 'row_position_end_date': '',
+            'row_x_offset': 1.0, 'row_y_offset': 1.0, 'row_z_offset': 1.0,
+            'row_pitch': 0.0, 'row_roll': 0.0, 'row_azimuth': 0.0,
+            'row_reference_location_id': 'REFLOC001',
+            'row_reference_location_description': 'ref',
+            'row_reference_location_latitude': 0.0,
+            'row_reference_location_longitude': 0.0,
+            'row_reference_location_elevation': 0.0,
+        }
+
+    def _rows_for(self, geolocation: GeoLocation, reference_geolocations: List[GeoLocation]) -> List[dict]:
+        database = SensorPositionsDatabase(get_geolocations=lambda _name: reference_geolocations,
+                                           get_geometry=lambda _name: None,
+                                           get_named_location=lambda _name: None)
+        return _add_reference_position_data(database, self._base_data(), geolocation, 'REFLOC001')
+
+    def test_no_row_when_sensor_position_ends_before_reference_starts(self):
+        sensor = self._geolocation(datetime(2020, 1, 1), datetime(2020, 6, 1))
+        reference = self._geolocation(datetime(2021, 1, 1), None)
+        self.assertEqual(self._rows_for(sensor, [reference]), [])
+
+    def test_no_row_when_reference_ends_before_sensor_position_starts(self):
+        sensor = self._geolocation(datetime(2021, 1, 1), None)
+        reference = self._geolocation(datetime(2019, 1, 1), datetime(2020, 1, 1))
+        self.assertEqual(self._rows_for(sensor, [reference]), [])
+
+    def test_row_produced_when_windows_overlap(self):
+        sensor = self._geolocation(datetime(2020, 1, 1), datetime(2020, 6, 1))
+        reference = self._geolocation(datetime(2019, 1, 1), None)
+        rows = self._rows_for(sensor, [reference])
+        self.assertEqual(len(rows), 1)
+
+    def test_row_produced_for_open_start_and_mixed_timezone_windows(self):
+        sensor = self._geolocation(None, datetime(2020, 6, 1))
+        reference = self._geolocation(datetime(2020, 1, 1, tzinfo=timezone.utc), None)
+        rows = self._rows_for(sensor, [reference])
+        self.assertEqual(len(rows), 1)
+
+
+class MultipleGeolocationChangesEffectiveWindowTest(TestCase):
+    """When both the sensor's own geolocation history and the reference location's
+    history each change independently (asynchronously) over time, every overlapping
+    (sensor, reference) pair must produce its own row, with effective start/end equal
+    to the intersection of that pair's two windows.
+    """
+
+    @staticmethod
+    def _geolocation(start_date: Optional[datetime], end_date: Optional[datetime]) -> GeoLocation:
+        return GeoLocation(location_id=1, geometry='POINT Z (0 0 0)',
+                           start_date=start_date, end_date=end_date,
+                           alpha=0.0, beta=0.0, gamma=0.0,
+                           x_offset=1.0, y_offset=1.0, z_offset=1.0,
+                           offset_id=1, offset_name='REFLOC001', offset_description='ref',
+                           properties=[])
+
+    @staticmethod
+    def _base_data() -> dict:
+        return {
+            'row_hor_ver': '000.010', 'row_location_id': 'CFGLOC000001',
+            'row_description': 'Test',
+            'row_position_start_date': '', 'row_position_end_date': '',
+            'row_x_offset': 1.0, 'row_y_offset': 1.0, 'row_z_offset': 1.0,
+            'row_pitch': 0.0, 'row_roll': 0.0, 'row_azimuth': 0.0,
+            'row_reference_location_id': 'REFLOC001',
+            'row_reference_location_description': 'ref',
+            'row_reference_location_latitude': 0.0,
+            'row_reference_location_longitude': 0.0,
+            'row_reference_location_elevation': 0.0,
+        }
+
+    def test_asynchronous_changes_on_both_sides_yield_intersected_windows(self):
+        # Reference location moved once: an earlier fixed period, then open-ended.
+        reference_geolocations = [
+            self._geolocation(datetime(2019, 1, 1), datetime(2020, 1, 1)),
+            self._geolocation(datetime(2020, 1, 1), None),
+        ]
+        # Sensor also moved once, at a different (asynchronous) time than the reference:
+        # first period spans across the reference's own change; second starts after
+        # the reference's fixed period has already ended.
+        sensor_geolocations = [
+            self._geolocation(datetime(2019, 6, 1), datetime(2020, 6, 1)),
+            self._geolocation(datetime(2021, 1, 1), None),
+        ]
+
+        database = SensorPositionsDatabase(get_geolocations=lambda _name: reference_geolocations,
+                                           get_geometry=lambda _name: None,
+                                           get_named_location=lambda _name: None)
+
+        rows = []
+        for sensor_geolocation in sensor_geolocations:
+            rows.extend(_add_reference_position_data(database, self._base_data(),
+                                                      sensor_geolocation, 'REFLOC001'))
+
+        # First sensor period overlaps both reference periods; second overlaps only the open one.
+        self.assertEqual(len(rows), 3)
+
+
+class ReferenceGeolocationCoordinatesTest(TestCase):
+    """Each row must carry the coordinates of the reference geolocation in effect for
+    that row, not the coordinates of the reference location's first geolocation.
+    """
+
+    @staticmethod
+    def _geolocation(start_date: Optional[datetime], end_date: Optional[datetime],
+                     geometry: str) -> GeoLocation:
+        return GeoLocation(location_id=1, geometry=geometry,
+                           start_date=start_date, end_date=end_date,
+                           alpha=0.0, beta=0.0, gamma=0.0,
+                           x_offset=1.0, y_offset=1.0, z_offset=1.0,
+                           offset_id=1, offset_name='REFLOC001', offset_description='ref',
+                           properties=[])
+
+    @staticmethod
+    def _base_data() -> dict:
+        # Populated from the named location's (first) geometry by _create_base_row_data.
+        return {
+            'row_hor_ver': '000.010', 'row_location_id': 'CFGLOC000001',
+            'row_description': 'Test',
+            'row_position_start_date': '', 'row_position_end_date': '',
+            'row_x_offset': 1.0, 'row_y_offset': 1.0, 'row_z_offset': 1.0,
+            'row_pitch': 0.0, 'row_roll': 0.0, 'row_azimuth': 0.0,
+            'row_reference_location_id': 'REFLOC001',
+            'row_reference_location_description': 'ref',
+            'row_reference_location_latitude': 40.815536,
+            'row_reference_location_longitude': -104.745591,
+            'row_reference_location_elevation': 1653.92,
+        }
+
+    def test_each_row_uses_its_own_reference_geolocation_coordinates(self):
+        reference_geolocations = [
+            self._geolocation(datetime(2019, 1, 1), datetime(2020, 1, 1),
+                              'POINT Z (-104.745591 40.815536 1653.9151)'),
+            self._geolocation(datetime(2020, 1, 1), None,
+                              'POINT Z (-104.746013 40.815892 1654.0094)'),
+        ]
+        sensor_geolocation = self._geolocation(datetime(2019, 6, 1), None, 'POINT Z (0 0 0)')
+
+        database = SensorPositionsDatabase(get_geolocations=lambda _name: reference_geolocations,
+                                           get_geometry=lambda _name: None,
+                                           get_named_location=lambda _name: None)
+        rows = _add_reference_position_data(database, self._base_data(),
+                                            sensor_geolocation, 'REFLOC001')
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual((rows[0]['row_reference_location_latitude'],
+                          rows[0]['row_reference_location_longitude'],
+                          rows[0]['row_reference_location_elevation']),
+                         (40.815536, -104.745591, 1653.92))
+        self.assertEqual((rows[1]['row_reference_location_latitude'],
+                          rows[1]['row_reference_location_longitude'],
+                          rows[1]['row_reference_location_elevation']),
+                         (40.815892, -104.746013, 1654.01))
+        self.assertNotEqual(rows[0]['row_reference_location_latitude'],
+                            rows[1]['row_reference_location_latitude'])
+        effective_windows = {(row['row_effective_start_date'], row['row_effective_end_date'])
+                             for row in rows}
+        self.assertEqual(effective_windows, {
+            ('2019-06-01T00:00:00Z', '2020-01-01T00:00:00Z'),
+            ('2020-01-01T00:00:00Z', ''),
+        })
+
+    def test_tchain_rows_use_their_own_reference_geolocation_coordinates(self):
+        reference_geolocations = [
+            self._geolocation(datetime(2019, 1, 1), datetime(2020, 1, 1),
+                              'POINT Z (-104.745591 40.815536 1653.9151)'),
+            self._geolocation(datetime(2020, 1, 1), None,
+                              'POINT Z (-104.746013 40.815892 1654.0094)'),
+        ]
+        sensor_geolocation = self._geolocation(datetime(2019, 6, 1), None, 'POINT Z (0 0 0)')
+        location = _FakeLocation(properties=[
+            Property(name='ThermistorDepth501', value='0.06'),
+            Property(name='ThermistorDepth502', value='0.16'),
+        ])
+
+        database = SensorPositionsDatabase(
+            get_geolocations=lambda _name: reference_geolocations,
+            get_geometry=lambda _name: build_geometry(
+                geometry='POINT Z (-104.745591 40.815536 1653.9151)', srid=4979),
+            get_named_location=lambda name: NamedLocation(location_id=1, name=name,
+                                                          description='ref', properties=[]))
+
+        rows = create_tchain_rows(database, location, sensor_geolocation,
+                                  '000.010', 'CFGLOC000001', 'Test Soil Temp',
+                                  _create_base_row_data, _add_reference_position_data)
+
+        # Two reference geolocations x two thermistor depths.
+        self.assertEqual(len(rows), 4)
+        header = get_column_names()
+        latitude_index = header.index('locationReferenceLatitude')
+        elevation_index = header.index('locationReferenceElevation')
+        by_effective_start = {}
+        for row in rows:
+            by_effective_start.setdefault(row[3], set()).add(
+                (row[latitude_index], row[elevation_index]))
+        self.assertEqual(by_effective_start['2019-06-01T00:00:00Z'], {(40.815536, 1653.92)})
+        self.assertEqual(by_effective_start['2020-01-01T00:00:00Z'], {(40.815892, 1654.01)})

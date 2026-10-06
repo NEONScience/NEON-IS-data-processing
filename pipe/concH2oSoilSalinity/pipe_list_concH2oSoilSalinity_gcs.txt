@@ -1,6 +1,6 @@
 concH2oSoilSalinity_group_loader.yaml
 concH2oSoilSalinity_group_assignment.yaml
-concH2oSoilSalinity_group_path.yaml
+concH2oSoilSalinity_group_path_gcs.yaml
 concH2oSoilSalinity_threshold.yaml
 concH2oSoilSalinity_thresh_select_ts_pad.yaml
 concH2oSoilSalinity_analyze_pad_qaqc_join_custom.yaml

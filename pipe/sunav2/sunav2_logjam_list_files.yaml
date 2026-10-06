@@ -8,7 +8,7 @@ transform:
     LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
     PREFIXES: logjam_prod/sunav2 # Filter for these path prefixes in the bucket. Separate multiple with commas (no spaces)
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
   stdin:
   - "#!/bin/bash"
   - python3 --version

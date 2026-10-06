@@ -59,12 +59,16 @@
 #' output from the flags directory will be the same as the input files found in that
 #' directory.
 #' 
-#' 6. "WndwFill=value", where value is the window in minutes in which data are expected. It is formatted as a 3 character sequence,
-#'  representing the number of minutes over which any number of measurements are expected. 
+#' 6. "WndwFill=value", where value is the window in minutes in which data are expected. It is formatted as 
+#' a 3 character sequence, representing the number of minutes over which any number of measurements are expected. 
 #' For example, "WndwFill=015" refers to a 15-minute interval, while "WndwAgr=030" refers to a 
 #' 30-minute  interval. 
+#' 
+#' 7. "WndwDedup=value" (optional), where value is the window in minutes used for deduplication of readout times. 
+#' It represents the number of minutes over which only one measurement is expected. 
+#' For example, "WndwDedup=0.06666666666" refers to a 4-second interval.
 #'
-#' 7. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 8. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the folders in the input path that are to be copied with a
 #' symbolic link to the output path.
 #'
@@ -96,6 +100,8 @@
 #     original creation 
 #   Nora Catolico (2026-05-29)
 #     remove duplicate timestamps
+#   Nora Catolico (2026-09-14)
+#     added WndwDedup parameter for deduplication of readout times where only one value is desired
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -134,7 +140,8 @@ Para <-
     ),
     NameParaOptn = c(
       "DirSubCopy",
-      "FileSchm"
+      "FileSchm",
+      "WndwDedup"
     ),
     log = log
   )
@@ -181,6 +188,7 @@ WndwFill <- base::as.numeric(Para$WndwFill)
 log$debug(base::paste0('Interval for gap filling, in minutes: ',base::paste0(WndwFill,collapse=',')))
 
 
+
 # Retrieve output schema(s)
 log$debug(base::paste0(
   'Output schema(s) for gap filled data: ',
@@ -201,6 +209,9 @@ log$debug(base::paste0(
   base::paste0(nameDirSub, collapse = ',')
 ))
 
+WndwDedup <- if (base::is.null(Para$WndwDedup)) NULL else base::as.numeric(Para$WndwDedup)
+log$debug(base::paste0('Interval for deduplication, in minutes: ',base::paste0(WndwDedup,collapse=',')))
+
 # Find all the input paths (datums). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
@@ -219,6 +230,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.gap.fill.nonrglr(DirIn=idxDirIn,
                 DirOutBase=Para$DirOut,
                 WndwFill=WndwFill,
+                WndwDedup=WndwDedup,
                 DirFill=Para$DirFill,
                 SchmFill=SchmFill,
                 DirSubCopy=DirSubCopy,

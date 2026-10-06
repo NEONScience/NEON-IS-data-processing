@@ -7,7 +7,7 @@
 pipeline:
   name: concH2oSoilSalinity_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.3.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.5.0
   cmd:
   - sh
   - "-c"
@@ -161,4 +161,4 @@ datum_set_spec:
   number: 5
 scheduling_spec:
   node_selector:
-    cloud.google.com/compute-class: pach-pipeline-class-no-spot
+    cloud.google.com/compute-class: pach-pipeline-class
