@@ -1,13 +1,19 @@
 
 """Load L0 parquet files from GCS using manifest-driven record selectors.
 
-Manifest input can be provided by either:
-1. MANIFEST: JSON-formatted string.
-2. MANIFEST_FILE: Path to a file containing JSON.
+Environment variables:
+- L0_BUCKET_NAME (required): Name of the GCS bucket containing L0 parquet files.
+- L0_BUCKET_VERSION_PATH (required): Bucket path prefix before the source type.
+- OUT_PATH (required): Local root directory where files are downloaded.
+- SOURCE_TYPE_OUT (optional): Output source-type directory override. Defaults to
+    the manifest source_type, then the source type parsed from the blob path.
+- MANIFEST (optional): Inline JSON manifest. Takes precedence over MANIFEST_FILE
+    when non-empty.
+- MANIFEST_FILE (optional): Path to a JSON manifest file; used when MANIFEST is
+    unset or empty. One of MANIFEST or MANIFEST_FILE must be provided.
+- LOG_LEVEL (optional): Logging level; defaults to INFO.
 
-If both are set, MANIFEST is used.
-
-Accepted JSON format: a JSON array of objects. Each object must contain the
+Accepted JSON format for the manifest: a JSON array of objects. Each object must contain the
 keys "source_type" and "data_date". The optional "source_id" key narrows the
 query to a specific source; when omitted it is wildcarded. Any additional keys
 in a record are ignored.
@@ -27,6 +33,7 @@ Example manifest:
 
 When source_id is present, the bucket prefix includes:
 {L0_BUCKET_VERSION_PATH}/{source_type}/ms={download_year}-{download_month}/source_id={source_id}
+
 """
 
 from google.cloud import storage
