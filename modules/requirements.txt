@@ -70,7 +70,7 @@ psycopg2-binary==2.9.11
 ptyprocess==0.7.0
 pure_eval==0.2.3
 pyarrow==21.0.0
-pyasn1==0.6.1
+pyasn1==0.6.4
 pyasn1_modules==0.4.2
 pycparser==2.23
 pyfakefs==5.10.2
