@@ -1,37 +1,41 @@
-test_that("Input directory is returned when all partial child names match",
+test_that("Directories with matching partial names are returned",
           {
             dirBgn <- "def.dir.in/test_input/pfs/27134"
-            subDirPartial <- c("dat", "calib")
+            subDirPartial <- "dat"
             dirIn <- NEONprocIS.base::def.dir.in.partial(
               DirBgn = dirBgn,
               nameDirSubPartial = subDirPartial
             )
-            dirOut <- "def.dir.in/test_input/pfs/27134/2019/01/01"
+            dirOut <- "def.dir.in/test_input/pfs/27134/2019/01/01/data"
 
             testthat::expect_equal(dirOut, dirIn)
           })
 
-test_that("Partial child names must match under the same input directory",
+test_that("Matching directories are returned at their own nesting level",
           {
             dirBgn <- "def.dir.in/test_input/pfs/27135"
-            subDirPartial <- c("data", "calib")
+            subDirPartial <- "calib"
             dirIn <- NEONprocIS.base::def.dir.in.partial(
               DirBgn = dirBgn,
               nameDirSubPartial = subDirPartial
             )
+            dirOut <- "def.dir.in/test_input/pfs/27135/outer/inner/calibration"
 
-            testthat::expect_equal(character(0), dirIn)
+            testthat::expect_equal(dirOut, dirIn)
           })
 
-test_that("When no partial names are provided, terminal directories are datums",
+test_that("When no partial names are provided, all recursive directories are returned",
           {
             dirBgn <- "def.dir.in/test_input/pfs/27135"
             dirIn <- NEONprocIS.base::def.dir.in.partial(
               DirBgn = dirBgn,
               nameDirSubPartial = NULL
             )
-            dirOut1 <- "def.dir.in/test_input/pfs/27135/outer/data"
-            dirOut2 <- "def.dir.in/test_input/pfs/27135/outer/inner/calibration"
+            dirOut <- base::list.dirs(
+              path = dirBgn,
+              full.names = TRUE,
+              recursive = TRUE
+            )
 
-            testthat::expect_equal(c(dirOut1, dirOut2), dirIn)
+            testthat::expect_equal(dirOut, dirIn)
           })

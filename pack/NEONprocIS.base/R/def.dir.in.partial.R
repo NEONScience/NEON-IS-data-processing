@@ -53,21 +53,16 @@ def.dir.in.partial<-function (DirBgn, nameDirSubPartial, log = NULL)
     DirIn <- base::unique(dirAll[setMtch])
   }
   else {
-    dirParent <- base::unique(dirAllBgn)
-    setMtch <- base::vapply(dirParent, FUN = function(idxDirParent) {
-      base::all(base::vapply(nameDirSubPartial, FUN = function(idxNamePartial) {
-        base::any(dirAllBgn == idxDirParent & grepl(idxNamePartial, dirAllEnd))
-      }, FUN.VALUE = base::logical(1)))
-    }, FUN.VALUE = base::logical(1))
-    DirIn <- dirParent[setMtch]
+    setMtch <- grepl(nameDirSubPartial,dirAllEnd)
+    dirAll <- dirAll[setMtch]
   }
-  if (base::length(DirIn) == 0) {
+  if (base::length(dirAll) == 0) {
     log$warn(base::paste0("No datums found for processing in parent directory ", 
                           DirBgn))
   }
   else {
-    log$info(base::paste0(base::length(DirIn), " datums found for processing. 
-                          ",DirIn))
+    log$info(base::paste0(base::length(dirAll), " datums found for processing. 
+                          ",dirAll))
   }
-  return(DirIn)
+  return(dirAll)
 }
