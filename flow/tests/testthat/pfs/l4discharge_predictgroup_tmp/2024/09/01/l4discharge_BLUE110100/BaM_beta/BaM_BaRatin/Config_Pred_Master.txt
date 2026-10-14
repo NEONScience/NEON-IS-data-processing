@@ -1,4 +1,0 @@
-3                              !!! Number of prediction experiments
-'Config_Pred_Maxpost.txt'      !!! Config file for experiments - an many lines as the number above
-'Config_Pred_hU.txt'      !!! Config file for experiments - an many lines as the number above
-'Config_Pred_TotalU.txt'       !!! Config file for experiments - an many lines as the number above

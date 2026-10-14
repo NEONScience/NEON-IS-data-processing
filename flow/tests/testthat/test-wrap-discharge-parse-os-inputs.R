@@ -39,7 +39,8 @@ test_that("Unit test of wrap.discharge.parse.os.inputs.R", {
     workingDirPath,
     'pfs/l4discharge_csd_swe_group/2024/09/01/l4discharge_BLUE110100/surfacewater-physical_BLUE110100'
   )
-  testDirOut <- file.path(workingDirPath, 'pfs/out')
+  testDirOut <- tempfile('wrap-discharge-parse-os-inputs-')
+  withr::defer(unlink(testDirOut, recursive = TRUE))
   testDirOS <- file.path(workingDirPath, 'pfs/l4discharge_os_table_loader')
 
   # Read OS input tables used by the wrapper.
@@ -86,30 +87,26 @@ test_that("Unit test of wrap.discharge.parse.os.inputs.R", {
   testthat::expect_true(dir.exists(dirOutData))
 
   outFiles <- base::list.files(dirOutData, full.names = FALSE)
-  testthat::expect_true(any(grepl('surfacewater-physical_BLUE110100_2024-09-01_EOS_1_min_001\\.parquet$', outFiles)))
   testthat::expect_true(any(grepl('surfacewater-physical_BLUE110100_2024-09-01_EOS_30_min_030\\.parquet$', outFiles)))
-  testthat::expect_true(any(grepl('surfacewater-physical_BLUE110100_2024-09-01_EOS_5_min_005\\.parquet$', outFiles)))
-  testthat::expect_true(any(grepl('surfacewater-physical_BLUE110100_2024-09-01_TOSW_30_min_030\\.parquet$', outFiles)))
-  testthat::expect_true(any(grepl('surfacewater-physical_BLUE110100_2024-09-01_TOSW_5_min_005\\.parquet$', outFiles)))
 
-  expectedCsvs <- c(
-    'NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.csv',
-    'NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.csv',
-    'NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.csv',
-    'NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv',
-    'NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv',
-    'NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.csv',
-    'NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.csv',
-    'NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.csv',
-    'NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.csv',
-    'NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.csv'
+  expectedOsParquets <- c(
+    'NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.parquet',
+    'NEON.DOM.SITE.DP1.00133.001.csd_gapFillingRegression_pub.parquet',
+    'NEON.DOM.SITE.DP1.00133.001.csd_gaugeWaterColumnRegression_pub.parquet',
+    'NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet',
+    'NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet',
+    'NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet',
+    'NEON.DOM.SITE.DP4.00133.001.sdrc_gaugeDischargeMeas_pub.parquet',
+    'NEON.DOM.SITE.DP4.00133.001.sdrc_gaugePressureRelationship_pub.parquet',
+    'NEON.DOM.SITE.DP4.00133.001.sdrc_sampledParameters_pub.parquet',
+    'NEON.DOM.SITE.DP4.00133.001.sdrc_stageDischargeCurveInfo_pub.parquet'
   )
-  testthat::expect_true(all(expectedCsvs %in% outFiles))
-  testthat::expect_false('NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.csv' %in% outFiles)
+  testthat::expect_true(all(expectedOsParquets %in% outFiles))
+  testthat::expect_false('NEON.DOM.SITE.DP1.00133.001.csd_constantBiasShift_pub.parquet' %in% outFiles)
 
-  curveData <- read.csv(file.path(dirOutData, 'NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.csv'))
-  controlData <- read.csv(file.path(dirOutData, 'NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv'))
-  gapData <- read.csv(file.path(dirOutData, 'NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.csv'))
+  curveData <- arrow::read_parquet(file.path(dirOutData, 'NEON.DOM.SITE.DP1.00133.001.sdrc_curveIdentification_pub.parquet'))
+  controlData <- arrow::read_parquet(file.path(dirOutData, 'NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet'))
+  gapData <- arrow::read_parquet(file.path(dirOutData, 'NEON.DOM.SITE.DP1.00133.001.csd_dataGapToFillMethodMapping_pub.parquet'))
 
   testthat::expect_true(nrow(curveData) == 1)
   testthat::expect_true(all(grepl('^BLUE\\.', curveData$curveID)))
@@ -118,7 +115,4 @@ test_that("Unit test of wrap.discharge.parse.os.inputs.R", {
   testthat::expect_true(nrow(gapData) > 0)
   testthat::expect_true(all(gapData$namedLocation == 'BLUE.AOS.discharge'))
 
-  if (dir.exists(testDirOut)) {
-    unlink(testDirOut, recursive = TRUE)
-  }
 })

@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_group_and_parse
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-245fb5b
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-a34dd1e
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -18,8 +18,8 @@ input:
   - pfs:
       name: DIR_IN
       repo: l4discharge_csd_swe_group
-      # /YYYY/MM/DD/group 
-      glob: /*/*/*/*
+      # /YYYY/MM/DD 
+      glob: /*/*/*
   - pfs:
       name: DIR_IN_OS
       repo: l4discharge_os_table_loader

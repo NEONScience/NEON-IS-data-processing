@@ -38,7 +38,7 @@ transform:
       input_paths:
         - path:
             name: DISCHARGE_GROUP
-            glob_pattern: /pfs/DISCHARGE_GROUP/**
+            glob_pattern: /pfs/DISCHARGE_GROUP/*/**
             join_indices: [3]
             outer_join: True
         
@@ -52,7 +52,7 @@ input:
   - pfs:
       name: DISCHARGE_GROUP
       repo: l4discharge_group_and_parse
-      glob: /(*/*/*/*)
+      glob: /(2024/09/01)
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: BAM_EXE

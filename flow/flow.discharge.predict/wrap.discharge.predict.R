@@ -79,11 +79,14 @@ wrap.discharge.predict <- function(DirIn,
   DirInOSData <- paste0(DirIn,"/data")
   correctedFile <- list.files(DirInOSData,pattern = "CSD_15_min")
   
-  DirInSWE <- NEONprocIS.base::def.dir.in.partial(DirBgn = DirIn,
-                                 nameDirSubPartial = 'surfacewater-physical',
-                                 log = log)
-  DirInSWEdata <- paste0(DirInSWE,"/data")
-  uncorrectedFile <- list.files(DirInSWEdata,pattern = "EOS_1_min")
+  DirInSWE <- base::list.dirs(DirIn, full.names=TRUE, recursive=FALSE)
+  DirInSWE <- DirInSWE[base::grepl('surfacewater-physical', base::basename(DirInSWE), fixed=TRUE)]
+  DirInSWEdata <- if(base::length(DirInSWE) > 0){
+    fs::path(DirInSWE[1], 'data')
+  } else {
+    character(0)
+  }
+  uncorrectedFile <- base::list.files(DirInSWEdata, pattern='EOS_1_min')
   
   # Read in CSD file if available
   if(length(correctedFile)>0){
@@ -101,7 +104,7 @@ wrap.discharge.predict <- function(DirIn,
   # Read in the WCH data if available - stashed locally from pachctl query ####
   if(length(uncorrectedFile)>0){
     EOS_1_min <- 
-      base::try(NEONprocIS.base::def.read.parq(paste(DirInSWEdata,uncorrectedFile,sep = "/")))
+      base::try(NEONprocIS.base::def.read.parq(fs::path(DirInSWEdata, uncorrectedFile)))
     if (base::any(base::class(EOS_1_min) == 'try-error')) {
       # Generate error and stop execution
       log$error(base::paste0(DirInSWEdata,"/",uncorrectedFile," is unreadable"))

@@ -14,27 +14,22 @@ transform:
   - "#!/bin/bash"
   - python3 -m bam_loader.bam_loader
 input:
-  join:
-  - pfs:
-      repo: l4discharge_cron_monthly_and_pub_control_tick
-      glob: /(*-*)-*
-      empty_files: true
-      joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
-      outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
+  pfs:
+    repo: l4discharge_cron_monthly_and_pub_control_tick
+    glob: /(*-*)-*
+    empty_files: true
 parallelism_spec:
-  constant: 5
-autoscaling: true
+  constant: 1
+autoscaling: false
 resource_requests:
-  memory: 1.5G
-  cpu: 2
-resource_limits:
-  memory: 3G
-  cpu: 3.5
-sidecar_resource_requests:
-  memory: 3G
+  memory: 256M
   cpu: 0.5
-datum_set_spec:
-  number: 1
+resource_limits:
+  memory: 1G
+  cpu: 1
+sidecar_resource_requests:
+  memory: 256M
+  cpu: 0.2
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class

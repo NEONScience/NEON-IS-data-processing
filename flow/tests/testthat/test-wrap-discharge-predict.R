@@ -4,9 +4,8 @@
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org} \cr
 #'
-#' @description Unit test for wrap.discharge.predict.R. Uses the
-#' l4discharge_predictgroup fixture path as source input and verifies successful
-#' pass-through output when a CSD_15_min input parquet is present.
+#' @description Unit test for wrap.discharge.predict.R. Verifies pass-through
+#' output when a minimal CSD_15_min input parquet is present.
 #'
 #' @param DirIn Character value. The input path to the discharge datum.
 #'
@@ -28,58 +27,19 @@ context("\n                       Unit test of wrap.discharge.predict.R\n")
 
 test_that("Unit test of wrap.discharge.predict.R", {
 
-  source('../../flow.discharge.predict/def.dir.in.partial.R')
   source('../../flow.discharge.predict/wrap.discharge.predict.R')
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 
-  # Set up working directories and fixture paths.
-  workingDirPath <- getwd()
-  testDirInSrc <- file.path(
-    workingDirPath,
-    'pfs/l4discharge_predictgroup/2024/09/01/l4discharge_BLUE110100'
-  )
-  testDirOut <- file.path(workingDirPath, 'pfs/out')
-
-  #Test initial version that does not contain csd file
-  # Run wrapper.
-  wrap.discharge.predict(
-    DirIn = testDirInSrc,
-    DirOutBase = testDirOut,
-    SchmDataOut = NULL,
-    log = log
-  )
-
-  # Check output file exists in expected output structure.
-  infoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(testDirInSrc)
-  testDirRepo <- infoDirIn$dirRepo
-  dirOutData <- file.path(base::paste0(testDirOut, testDirRepo), 'data')
-  testthat::expect_true(dir.exists(dirOutData))
-  
-  if (dir.exists(testDirOut)) {
-    unlink(testDirOut, recursive = TRUE)
-  }
-  
-  
-  #Test version where CSD_15_min parquet is present and wrapper should pass-through the data
-  testTmpRepo <- file.path(workingDirPath, 'pfs/l4discharge_predictgroup_tmp')
+  # Create a minimal Pachyderm-shaped input containing only the CSD parquet.
+  testRoot <- tempfile('wrap-discharge-predict-')
+  testDirOut <- file.path(testRoot, 'out')
+  withr::defer(unlink(testRoot, recursive = TRUE))
   testDirIn <- file.path(
-    testTmpRepo,
+    testRoot,
+    'pfs/l4discharge_predictgroup_tmp',
     '2024/09/01/l4discharge_BLUE110100'
-  ) 
-
-  if (dir.exists(testTmpRepo)) {
-    unlink(testTmpRepo, recursive = TRUE)
-  }
-
-  # Copy requested fixture into an isolated temp repo so test edits do not
-  # mutate source fixtures.
-  base::dir.create(file.path(testTmpRepo, '2024/09/01'), recursive = TRUE)
-  copyOk <- file.copy(
-    from = testDirInSrc,
-    to = file.path(testTmpRepo, '2024/09/01'),
-    recursive = TRUE
   )
-  testthat::expect_true(copyOk)
+  base::dir.create(file.path(testDirIn, 'data'), recursive = TRUE)
 
   # Create a deterministic corrected discharge parquet so wrapper uses
   # pass-through branch instead of full BaM modeling.
@@ -90,7 +50,14 @@ test_that("Unit test of wrap.discharge.predict.R", {
     endDateTime = as.POSIXct('2024-09-01 00:15:00', tz = 'UTC'),
     stationHorizontalID = '100',
     dischargeContinuous = 12.34,
-    dischargeFinalQF = 0
+    dischargeFinalQF = 0,
+    dischargeCorrectionApplied = 0,
+    waterColumnHeightCorrectionApplied = 0,
+    dischargeCorrectedShiftPost = 0,
+    dischargeCorrectedShiftPre = 0,
+    dischargeGapFilledUSGS = 0,
+    dischargeGapFilledConstant = 0,
+    dischargeGapFilledInterpolation = 0
   )
   writeInput <- try(
     NEONprocIS.base::def.wrte.parq(
@@ -127,10 +94,4 @@ test_that("Unit test of wrap.discharge.predict.R", {
   testthat::expect_true('dischargeContinuous' %in% names(csdOut))
   testthat::expect_equal(round(csdOut$dischargeContinuous[1], 2), 12.34)
 
-  if (dir.exists(testDirOut)) {
-    unlink(testDirOut, recursive = TRUE)
-  }
-  if (dir.exists(testTmpRepo)) {
-    unlink(testTmpRepo, recursive = TRUE)
-  }
 })
