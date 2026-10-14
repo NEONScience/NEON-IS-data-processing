@@ -1,6 +1,6 @@
 # Dockerfile for NEON IS Data Processing - discharge predict module combined with filter-joiner 
 # Start with the base R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:sha-f09c22b
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:sha-85d102c
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
