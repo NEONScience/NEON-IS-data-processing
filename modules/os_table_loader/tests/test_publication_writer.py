@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import csv
+import hashlib
 import os
 import unittest
 from contextlib import closing
@@ -106,6 +107,22 @@ class PublicationWriterTest(DatabaseBackedTest):
                     print(f'\npath: {path}')
                     view_csv_file(path)
         assert i == 5
+
+        generated_files = [
+            path for path in self.out_path.rglob('*.csv')
+            if path.name != ManifestFile.get_filename() and not path.is_symlink()
+        ]
+        self.assertTrue(generated_files)
+        for generated_file in generated_files:
+            manifest_path = generated_file.parent / ManifestFile.get_filename()
+            with manifest_path.open(newline='') as manifest_csv:
+                manifest_rows = csv.DictReader(manifest_csv)
+                row_by_filename = {row['file']: row for row in manifest_rows}
+
+            manifest_row = row_by_filename[generated_file.name]
+            file_contents = generated_file.read_bytes()
+            self.assertEqual(manifest_row['size'], str(len(file_contents)))
+            self.assertEqual(manifest_row['checksum'], hashlib.md5(file_contents).hexdigest())
 
     def view_file(self, file_path):
         if self.file_type == 'csv':
