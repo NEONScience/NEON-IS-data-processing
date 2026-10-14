@@ -97,11 +97,16 @@ log$debug(base::paste0('OS Table Input directory: ', Para$DirInOS))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-#what are the expected subdirectories of each input path
-DirIn <-
-  NEONprocIS.base::def.dir.in.partial(DirBgn = Para$DirIn,
-                     nameDirSubPartial = 'l4discharge',
-                     log = log)
+# Select each discharge group directory under the date-level input path.
+if(base::grepl('^l4discharge_', base::basename(Para$DirIn))){
+  DirIn <- Para$DirIn
+} else {
+  DirIn <- base::list.dirs(path = Para$DirIn,
+                           full.names = TRUE,
+                           recursive = FALSE)
+  DirIn <- DirIn[base::grepl('^l4discharge_', base::basename(DirIn))]
+}
+log$info(base::paste0(base::length(DirIn), ' discharge group(s) found in ', Para$DirIn))
 
 # Take stock of our OS tables. 
 OStables <- base::list.files(Para$DirInOS,full.names=FALSE)

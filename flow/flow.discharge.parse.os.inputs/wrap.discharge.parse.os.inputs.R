@@ -119,8 +119,12 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   base::dir.create(DirOutData,recursive=TRUE)
   
   # Copy with a symbolic link the desired subfolders 
+  DirDest <- fs::path(DirOutBase, date)
+  if(base::basename(DirIn) == base::basename(date)){
+    DirDest <- base::dirname(DirDest)
+  }
   NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn),
-                                     DirDest=base::paste0(DirOutBase,"/",date),
+                                     DirDest=DirDest,
                                      LnkSubObj=TRUE,
                                      log=log) 
   
