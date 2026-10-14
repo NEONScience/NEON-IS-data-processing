@@ -64,7 +64,6 @@ library(stringr)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.discharge.parse.os.inputs.R")
-source("./def.dir.in.partial.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -100,7 +99,7 @@ log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 #what are the expected subdirectories of each input path
 DirIn <-
-  def.dir.in.partial(DirBgn = Para$DirIn,
+  NEONprocIS.base::def.dir.in.partial(DirBgn = Para$DirIn,
                      nameDirSubPartial = 'l4discharge',
                      log = log)
 
@@ -224,19 +223,17 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       ),
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
-        log$error(err$message)
-        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn, 
-                                                             log = log)
-        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
-        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
-                                      log = log)
-        csvname <- DirSub %>%
-          strsplit( "/" ) %>%
-          sapply( tail, 1 )
-        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
-        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
-        con <- base::file(nameFileErr, "w")
-        base::close(con)
+        
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
       }
     ),
     # This simply to avoid returning the error

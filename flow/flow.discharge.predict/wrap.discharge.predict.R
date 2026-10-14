@@ -79,7 +79,7 @@ wrap.discharge.predict <- function(DirIn,
   DirInOSData <- paste0(DirIn,"/data")
   correctedFile <- list.files(DirInOSData,pattern = "CSD_15_min")
   
-  DirInSWE <- def.dir.in.partial(DirBgn = DirIn,
+  DirInSWE <- NEONprocIS.base::def.dir.in.partial(DirBgn = DirIn,
                                  nameDirSubPartial = 'surfacewater-physical',
                                  log = log)
   DirInSWEdata <- paste0(DirInSWE,"/data")

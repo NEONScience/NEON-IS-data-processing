@@ -66,7 +66,6 @@ library(dplyr)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.discharge.predict.R")
-source("./def.dir.in.partial.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -106,7 +105,7 @@ if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
-  def.dir.in.partial(DirBgn = Para$DirIn,
+  NEONprocIS.base::def.dir.in.partial(DirBgn = Para$DirIn,
                      nameDirSubPartial = 'l4discharge',
                      log = log)
 log$debug(base::paste0('Directories identified:', DirIn))
