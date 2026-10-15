@@ -23,6 +23,7 @@ def get_workbook(_data_product_id) -> PublicationWorkbook:
             download_package = row['downloadPkg']
             unit_name = row['units']
             lov_code = row['lovName']
+            primary_key = row['primaryKey']
             table_description = row['tableDescription']
             file_descriptions[f'{table_name}.{download_package}'] = table_description
             workbook_row = WorkbookRow(dp_number=dp_number,
@@ -35,6 +36,7 @@ def get_workbook(_data_product_id) -> PublicationWorkbook:
                                        download_package=download_package,
                                        unit_name=unit_name,
                                        lov_code=lov_code,
+                                       primary_key=primary_key,
                                        table_description=table_description)
             workbook_rows.append(workbook_row)
     return PublicationWorkbook(rows=workbook_rows, file_descriptions=file_descriptions)

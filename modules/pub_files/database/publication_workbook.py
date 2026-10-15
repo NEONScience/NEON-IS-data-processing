@@ -17,6 +17,7 @@ class WorkbookRow(NamedTuple):
     download_package: str
     unit_name: str
     lov_code: str
+    primary_key: str
     table_description: str
 
 
@@ -52,6 +53,7 @@ def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWor
             pfd.download_package,
             pfd.unit_name,
             pfd.lov_code,
+            pfd.primary_key,
             ptd.name as table_name,
             ptd.description as table_description
         from 
@@ -76,6 +78,7 @@ def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWor
             download_package = row['download_package']
             unit_name = row['unit_name']
             lov_code = row['lov_code']
+            primary_key = row['primary_key']
             table_name = row['table_name']
             table_description = row['table_description']
             file_descriptions[get_file_key(table_name, download_package)] = table_description
@@ -89,6 +92,7 @@ def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWor
                                        download_package=download_package,
                                        unit_name=unit_name,
                                        lov_code=lov_code,
+                                       primary_key=primary_key,
                                        table_description=table_description)
             workbook_rows.append(workbook_row)
     return PublicationWorkbook(workbook_rows, file_descriptions)
