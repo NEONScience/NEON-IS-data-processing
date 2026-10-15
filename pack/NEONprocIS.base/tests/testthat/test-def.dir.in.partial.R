@@ -6,7 +6,7 @@ test_that("Directories with matching partial names are returned",
               DirBgn = dirBgn,
               nameDirSubPartial = subDirPartial
             )
-            dirOut <- "def.dir.in/test_input/pfs/27134/2019/01/01/data"
+            dirOut <- "def.dir.in/test_input/pfs/27134/2019/01/01"
 
             testthat::expect_equal(dirOut, dirIn)
           })
@@ -19,22 +19,21 @@ test_that("Matching directories are returned at their own nesting level",
               DirBgn = dirBgn,
               nameDirSubPartial = subDirPartial
             )
-            dirOut <- "def.dir.in/test_input/pfs/27135/outer/inner/calibration"
+            dirOut <- "def.dir.in/test_input/pfs/27135/outer/inner"
 
             testthat::expect_equal(dirOut, dirIn)
           })
 
-test_that("When no partial names are provided, all recursive directories are returned",
+test_that("When no partial names are provided, terminal directories are returned",
           {
             dirBgn <- "def.dir.in/test_input/pfs/27135"
             dirIn <- NEONprocIS.base::def.dir.in.partial(
               DirBgn = dirBgn,
               nameDirSubPartial = NULL
             )
-            dirOut <- base::list.dirs(
-              path = dirBgn,
-              full.names = TRUE,
-              recursive = TRUE
+            dirOut <- c(
+              "def.dir.in/test_input/pfs/27135/outer/data",
+              "def.dir.in/test_input/pfs/27135/outer/inner/calibration"
             )
 
             testthat::expect_equal(dirOut, dirIn)
