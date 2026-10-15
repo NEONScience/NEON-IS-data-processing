@@ -70,7 +70,7 @@ transform:
 input:
   pfs:
     name: IN_PATH 
-    repo: l4discharge_os_table_loader_control_tick
+    repo: troll_cron_daily_and_date_control_tick
     glob: /*
 autoscaling: true
 resource_requests:

@@ -57,7 +57,7 @@ input:
   cross:
   - pfs:
       name: DISCHARGE_GROUP
-      repo: l4discharge_group_and_parse
+      repo: l4discharge_csd_swe_os_group_and_parse
       glob: /(*/*/*)
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:

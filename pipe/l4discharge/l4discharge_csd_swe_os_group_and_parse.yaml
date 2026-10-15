@@ -1,7 +1,7 @@
 pipeline:
   name: l4discharge_csd_swe_os_group_and_parse
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-1ad2fdf
   cmd:
   - sh
   - "-c"
@@ -22,11 +22,14 @@ transform:
     python3 -m filter_joiner.filter_joiner_main
 
     # Run second module - parse OS inputs for discharge data
-    Rscript ./flow.discharge.parse.os.inputs.R \
-      DirIn=/tmp/filterjoined \
-      DirInOS=$DIR_IN_OS \
-      DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums
+    for date_dir in /tmp/filterjoined/*/*/*; do
+      [[ -d "$date_dir" ]] || continue
+      Rscript ./flow.discharge.parse.os.inputs.R \
+        DirIn="$date_dir" \
+        DirInOS=/pfs/DIR_IN_OS \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums
+    done
     
     EOF
   env:
@@ -40,15 +43,15 @@ transform:
         - path:
             name: CSD_DATA
             glob_pattern: /pfs/CSD_DATA/*/*/*/**
-            # Join on Y/M/D/group ID 
+            # The PFS join already limits dates; join groups within each date.
             join_indices: [6]
-            outer_join: True
+            outer_join: true
         - path:
             name: SWE_DATA
             glob_pattern: /pfs/SWE_DATA/*/*/*/**
-            # Join on Y/M/D/group ID 
+            # Keep data with or without an SWE/SRF counterpart.
             join_indices: [6]
-            outer_join: True
+            outer_join: true
         
     OUT_PATH_1: /tmp/filterjoined # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
@@ -56,21 +59,39 @@ transform:
     LOG_LEVEL: DEBUG # Shared among all modules
     
 input:
-  join:
-  - pfs:
-      name: CSD_DATA
-      repo: l4discharge_csd_load_files
-      glob: /(2021/09/04)
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: SWE_DATA
-      repo: l4discharge_group_path
-      glob: /(2021/09/04)
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  cross:
+  - group:
+    - union:
+      - join:
+        - pfs:
+            name: CSD_DATA
+            repo: l4discharge_csd_load_files
+            glob: /(*/*/*)
+            joinOn: $1
+            group_by: $1
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        - pfs:
+            name: DATE_CONTROL
+            repo: troll_cron_daily_and_date_control
+            glob: /*/(*/*/*)
+            joinOn: $1
+            group_by: $1
+            empty_files: true
+      - join:
+        - pfs:
+            name: SWE_DATA
+            repo: l4discharge_group_path
+            glob: /(*/*/*)
+            joinOn: $1
+            group_by: $1
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        - pfs:
+            name: DATE_CONTROL
+            repo: troll_cron_daily_and_date_control
+            glob: /*/(*/*/*)
+            joinOn: $1
+            group_by: $1
+            empty_files: true
   - pfs:
       name: DIR_IN_OS
       repo: l4discharge_os_table_loader

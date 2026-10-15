@@ -15,7 +15,7 @@ transform:
   - python3 -m csd_loader.csd_loader
 input:
   pfs:
-    repo: surfacewaterPhysical_cron_monthly_and_pub_control_tick
+    repo: troll_cron_daily_and_date_control_tick
     glob: /(*-*)-*
     empty_files: true
 parallelism_spec:

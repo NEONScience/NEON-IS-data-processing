@@ -271,7 +271,7 @@ input:
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: GROUP_PATH
-      repo: l4discharge_group_and_parse
+      repo: l4discharge_csd_swe_os_group_and_parse
       glob: /(*/*/*)
       joinOn: $1
       outer_join: true 
