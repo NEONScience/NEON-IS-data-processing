@@ -26,7 +26,7 @@ input:
       glob: /l4discharge/*
   - pfs:
       name: FILE_YEAR
-      repo: l4discharge_cron_daily_and_date_control
+      repo: troll_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
   constant: 5

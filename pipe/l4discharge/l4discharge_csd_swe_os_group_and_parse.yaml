@@ -1,7 +1,7 @@
 pipeline:
   name: l4discharge_csd_swe_os_group_and_parse
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-4ee9fce
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-
   cmd:
   - sh
   - "-c"

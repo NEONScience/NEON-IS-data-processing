@@ -155,7 +155,7 @@ input:
         group_by: $1
     - pfs: 
         name: DATE_PATH
-        repo: l4discharge_cron_monthly_and_pub_control
+        repo: surfacewaterPhysical_cron_monthly_and_pub_control
         glob: /(*/*)
         joinOn: $1
         outer_join: True # We want to run even if no data so pub_sync runs

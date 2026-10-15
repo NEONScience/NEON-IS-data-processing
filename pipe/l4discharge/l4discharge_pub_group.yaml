@@ -30,7 +30,7 @@ input:
       glob: /(*/*)
       joinOn: $1
   - pfs: 
-      repo: l4discharge_cron_monthly_and_pub_control
+      repo: surfacewaterPhysical_cron_monthly_and_pub_control
       glob: /(*/*)
       joinOn: $1
       empty_files: true
