@@ -1,0 +1,94 @@
+pipeline:
+  name: l4discharge_csd_swe_os_group_and_parse
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-4ee9fce
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/filterjoined
+    mkdir /tmp/filterjoined
+    
+    # Set some environment variables for the first module
+    export OUT_PATH=$OUT_PATH_1
+
+    # Run first module - filter-joiner (using environment variables below as input parameters). Join CSD and SWE tables.
+    python3 -m filter_joiner.filter_joiner_main
+
+    # Run second module - parse OS inputs for discharge data
+    Rscript ./flow.discharge.parse.os.inputs.R \
+      DirIn=/tmp/filterjoined \
+      DirInOS=$DIR_IN_OS \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums
+    
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: CSD_DATA
+            glob_pattern: /pfs/CSD_DATA/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [6]
+            outer_join: True
+        - path:
+            name: SWE_DATA
+            glob_pattern: /pfs/SWE_DATA/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [6]
+            outer_join: True
+        
+    OUT_PATH_1: /tmp/filterjoined # Transfered to OUT_PATH for the first module
+    RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
+    LOG_LEVEL: DEBUG # Shared among all modules
+    
+input:
+  join:
+  - pfs:
+      name: CSD_DATA
+      repo: l4discharge_csd_load_files
+      glob: /(2021/09/04)
+      joinOn: $1
+      outer_join: true # Need outer join to pull in with or without SRFs
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: SWE_DATA
+      repo: l4discharge_group_path
+      glob: /(2021/09/04)
+      joinOn: $1
+      outer_join: true # Need outer join to pull in with or without SRFs
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: DIR_IN_OS
+      repo: l4discharge_os_table_loader
+      glob: /
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 2.2
+resource_limits:
+  memory: 3G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 500
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
