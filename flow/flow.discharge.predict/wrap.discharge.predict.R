@@ -713,9 +713,9 @@ wrap.discharge.predict <- function(DirIn,
         if(length(dataForBaM) > 0){
           # Run BaM! - prediction mode ####
           tryCatch({
-            oldWd <- getwd()
-            on.exit(setwd(oldWd), add = TRUE)
-            setwd(DirBaM)
+            # oldWd <- getwd()
+            # on.exit(setwd(oldWd), add = TRUE)
+            # setwd(DirBaM)
             bamExe <- fs::path(DirBaM, "BaM")
             if (!file.exists(bamExe)) {
               log$error(base::paste0("BaM executable not found at: ", bamExe))
