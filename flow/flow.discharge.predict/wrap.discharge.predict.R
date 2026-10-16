@@ -713,16 +713,17 @@ wrap.discharge.predict <- function(DirIn,
         if(length(dataForBaM) > 0){
           # Run BaM! - prediction mode ####
           tryCatch({
-            # oldWd <- getwd()
-            # on.exit(setwd(oldWd), add = TRUE)
-            # setwd(DirBaM)
             bamExe <- fs::path(DirBaM, "BaM")
             if (!file.exists(bamExe)) {
               log$error(base::paste0("BaM executable not found at: ", bamExe))
               base::stop()
             }
             Sys.chmod(paths = bamExe, mode = "0755")
+            oldWd <- getwd()
+            on.exit(setwd(oldWd), add = TRUE)
+            setwd(DirBaM)
             exitCode <- system2("./BaM") # Linux executable
+            setwd(oldWd)
             if (!identical(exitCode, 0L)) {
               log$error(base::paste0("BaM exited with non-zero status: ", exitCode,
                                     ". Executable path: ", bamExe))
