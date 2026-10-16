@@ -2,7 +2,7 @@ name: PROD-prt-tempProducts-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'prod'
     paths:
       - 'pipe/prt/*.yaml'
       - 'pipe/prt/pipe_list_prt.txt'
