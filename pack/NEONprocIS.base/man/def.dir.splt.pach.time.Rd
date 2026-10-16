@@ -11,8 +11,8 @@ def.dir.splt.pach.time(dir, log = NULL)
 follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number (including zero) of 
 parent and child directories of any name, so long as they are not 'pfs' or recognizable as the '/yyyy/mm/dd' structure which 
 indicates the 4-digit year, 2-digit month, and 2-digit day. If 'pfs' is absent, the function will
-fall back to environment variable \code{RELATIVE_PATH_INDEX} (Python pathlib-style, zero-based index of the *repo child*).
-\code{RELATIVE_PATH_INDEX} should point to the first directory within the repo (e.g., product type); the repo is inferred as its parent.
+fall back to environment variable \code{RELATIVE_PATH_INDEX} (Python pathlib \code{Path$parts} indexing, zero-based).
+\code{RELATIVE_PATH_INDEX} should point to the first directory *within* the repo (e.g., product type); the repo is inferred as its parent.
 Example: / is index 0, pfs is 1, BASE_REPO is 2, prt is 3; set \code{RELATIVE_PATH_INDEX=3} to infer repo BASE_REPO.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
