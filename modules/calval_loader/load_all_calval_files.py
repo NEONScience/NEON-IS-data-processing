@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 from contextlib import closing
 from pathlib import Path
 import environs
@@ -19,8 +18,12 @@ def load() -> None:
     in_path: Path = env.path('IN_PATH')
     # print("IN_PATH value is:", in_path)
     output_directory: Path = env.path('OUT_PATH')
-    sensor_type = env.str('SOURCE_TYPE')
-    schema_name = env.str('SCHEMA_NAME',sensor_type)
+    source_types = env.list('SOURCE_TYPES', default=[])
+    if source_types:
+        sensor_schemas = [(source_type, source_type) for source_type in source_types]
+    else:
+        sensor_type = env.str('SOURCE_TYPE')
+        sensor_schemas = [(sensor_type, env.str('SCHEMA_NAME', sensor_type))]
     db_config = read_from_mount(Path('/var/db_secret'))
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
@@ -33,20 +36,24 @@ def load() -> None:
             for path in data_path_start.rglob('*'):
                 if path.is_file():
                     print("Path value is: ", path)
-                    pathname, extension = os.path.splitext(path)
-
-                    filename = pathname.split('/')
-
-                    filename = filename[-1] + ".xml"
+                    filename = path.stem + ".xml"
                     print("FileName is: ", filename)
                     blob = ingest_bucket.get_blob(filename)
+                    xml_content = blob.download_as_bytes()
+                    root = ET.fromstring(xml_content)
+                    asset_id = root.find('SensorID').find('MxAssetID').text
+                    avro_schema_name = get_avro_schema_name(connector.get_connection(), asset_id)
+                    if not avro_schema_name:
+                        continue
 
-                    with blob.open("r") as f:
-                        root = ET.fromstring(blob.download_as_string())
-                        asset_id = root.find('SensorID').find('MxAssetID').text
-                        avro_schema_name = get_avro_schema_name(connector.get_connection(), asset_id)
-                        if ((avro_schema_name != None) and (schema_name in avro_schema_name)):
-                            stream_id = root.find('StreamCalVal').find('StreamID').text
+                    matching_schemas = [
+                        (sensor_type, schema_name)
+                        for sensor_type, schema_name in sensor_schemas
+                        if schema_name in avro_schema_name
+                    ]
+                    if matching_schemas:
+                        stream_id = root.find('StreamCalVal').find('StreamID').text
+                        for sensor_type, schema_name in matching_schemas:
                             stream_name = get_calibration_stream_name(connector.get_connection(), schema_name,
                                                                       stream_id)
                             print('schema name , asset_id, stream_id, stream_name, filename are :', schema_name, "  ", asset_id,
@@ -54,9 +61,8 @@ def load() -> None:
                             try:
                                 output_path = Path(output_directory, sensor_type, asset_id, stream_name, filename)
                                 output_path.parent.mkdir(parents=True, exist_ok=True)
-                                # print('Output Path is:', output_path)
                                 with open(output_path, "wb") as output_file:
-                                    output_file.write(blob.download_as_string())
+                                    output_file.write(xml_content)
                             except Exception:
                                 exc_type, exc_obj, exc_tb = sys.exc_info()
                                 print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
