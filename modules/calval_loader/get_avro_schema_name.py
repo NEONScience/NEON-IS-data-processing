@@ -28,4 +28,19 @@ def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
         avro_schema_name = row
         #avro_schema_name = row[0]
         print(f'asset_uid: {asset_uid}, avro_schema_name: {avro_schema_name}')
+        #if avro_schema name is exoconductivity, replace with exo2conductivity
+        if avro_schema_name == 'exo':
+            avro_schema_name = 'exo2'
+        if avro_schema_name == 'exoconductivity':
+            avro_schema_name = 'exo2conductivity'
+        if avro_schema_name == 'exoturbidity':
+            avro_schema_name = 'exo2turbidity'
+        if avro_schema_name == 'exofdom':
+            avro_schema_name = 'exo2fdom'
+        if avro_schema_name == 'exophorp':
+            avro_schema_name = 'exo2phorp'
+        if avro_schema_name == 'exodissolvedoxygen':
+            avro_schema_name = 'exo2dissolvedoxygen'
+        if avro_schema_name == 'exoalgae':
+            avro_schema_name = 'exo2algae'
     return avro_schema_name
