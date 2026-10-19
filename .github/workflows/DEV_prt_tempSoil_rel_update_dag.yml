@@ -2,7 +2,7 @@ name: DEV-prt-tempSoil-rel-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'master'
     paths:
       - 'pipe/tempSoil/*_rel.yaml'
       - 'pipe/tempSoil/pipe_list_tempSoil_rel.txt'
