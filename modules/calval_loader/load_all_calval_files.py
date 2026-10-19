@@ -4,7 +4,7 @@ from pathlib import Path
 import environs
 import xml.etree.ElementTree as ET
 import sys
-from calval_loader.get_avro_schema_name import get_avro_schema_name
+from calval_loader.get_avro_schema_name import get_avro_schema_name, normalize_avro_schema_name
 from calval_loader.get_calibration_stream_name import get_calibration_stream_name
 from google.cloud import storage
 from data_access.db_config_reader import read_from_mount
@@ -24,10 +24,10 @@ def load() -> None:
     else:
         sensor_type = env.str('SOURCE_TYPE')
         sensor_schemas = [(sensor_type, env.str('SCHEMA_NAME', sensor_type))]
-    #for schema names that are missing the '2' in exo2, add it
-    for i, (sensor_type, schema_name) in enumerate(sensor_schemas):
-        if schema_name.startswith('exo') and not schema_name.startswith('exo2'):
-            sensor_schemas[i] = (sensor_type, 'exo2' + schema_name[3:]) 
+    sensor_schemas = list(dict.fromkeys(
+        (normalize_avro_schema_name(sensor_type), normalize_avro_schema_name(schema_name))
+        for sensor_type, schema_name in sensor_schemas
+    ))
     
     db_config = read_from_mount(Path('/var/db_secret'))
     storage_client = storage.Client()
