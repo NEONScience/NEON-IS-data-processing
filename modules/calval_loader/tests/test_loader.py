@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 # import xml.etree.ElementTree as ElementTree
 
 from calval_loader import load_all_calval_files
+from calval_loader.get_avro_schema_name import get_avro_schema_name
 from calval_loader.get_calibration_stream_name import get_calibration_stream_name
 
 
@@ -103,7 +104,7 @@ class LoadAllCalvalFilesTests(unittest.TestCase):
                     load_all_calval_files,
                     'get_avro_schema_name',
                     side_effect=lambda connection, asset_id: next(
-                        (schema_name,) for current_id, schema_name in assets if current_id == asset_id
+                        schema_name for current_id, schema_name in assets if current_id == asset_id
                     ),
                 ))
                 get_stream = stack.enter_context(patch.object(
@@ -143,3 +144,15 @@ class LoadAllCalvalFilesTests(unittest.TestCase):
 
         output_path = output_directory / 'exo2' / '101' / 'stream-custom-exo2-schema' / 'cal-101.xml'
         self.assertTrue(output_path.is_file())
+
+
+class GetAvroSchemaNameTests(unittest.TestCase):
+    def test_normalizes_legacy_exo_schema_name(self):
+        cursor = MagicMock()
+        cursor.fetchone.return_value = ('exoconductivity',)
+        connection = MagicMock()
+        connection.cursor.return_value = cursor
+
+        schema_name = get_avro_schema_name(connection, 25262)
+
+        self.assertEqual(schema_name, 'exo2conductivity')

@@ -4,7 +4,7 @@ from typing import Optional
 import logging
 
 
-def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
+def get_avro_schema_name(connection, asset_uid: int) -> Optional[str]:
 
     sql = '''
          select 
@@ -25,22 +25,16 @@ def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
         if row is None:
             logging.error(f'Avro schema name not found for asset id ID {asset_uid} .')
             return None
-        avro_schema_name = row
-        #avro_schema_name = row[0]        
-        #if avro_schema name is exoconductivity, replace with exo2conductivity
-        if avro_schema_name == 'exo':
-            avro_schema_name = 'exo2'
-        if avro_schema_name == 'exoconductivity':
-            avro_schema_name = 'exo2conductivity'
-        if avro_schema_name == 'exoturbidity':
-            avro_schema_name = 'exo2turbidity'
-        if avro_schema_name == 'exofdom':
-            avro_schema_name = 'exo2fdom'
-        if avro_schema_name == 'exophorp':
-            avro_schema_name = 'exo2phorp'
-        if avro_schema_name == 'exodissolvedoxygen':
-            avro_schema_name = 'exo2dissolvedoxygen'
-        if avro_schema_name == 'exoalgae':
-            avro_schema_name = 'exo2algae'
+        avro_schema_name = row[0]
+        schema_aliases = {
+            'exo': 'exo2',
+            'exoconductivity': 'exo2conductivity',
+            'exoturbidity': 'exo2turbidity',
+            'exofdom': 'exo2fdom',
+            'exophorp': 'exo2phorp',
+            'exodissolvedoxygen': 'exo2dissolvedoxygen',
+            'exoalgae': 'exo2algae',
+        }
+        avro_schema_name = schema_aliases.get(avro_schema_name, avro_schema_name)
         print(f'asset_uid: {asset_uid}, avro_schema_name: {avro_schema_name}')
     return avro_schema_name

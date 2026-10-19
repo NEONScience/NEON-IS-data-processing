@@ -54,7 +54,7 @@ def load() -> None:
                     matching_schemas = [
                         (sensor_type, schema_name)
                         for sensor_type, schema_name in sensor_schemas
-                        if schema_name in avro_schema_name
+                        if schema_name == avro_schema_name
                     ]
                     if matching_schemas:
                         stream_id = root.find('StreamCalVal').find('StreamID').text
