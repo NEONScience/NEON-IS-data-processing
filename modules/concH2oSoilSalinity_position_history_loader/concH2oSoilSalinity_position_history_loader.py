@@ -239,9 +239,12 @@ def _select_cal_for_install(cals: List[Cvald1Calibration],
                             install_end: Optional[datetime]) -> Optional[Cvald1Calibration]:
     """
     Pick the cvald1 record whose validity window overlaps this install period at
-    this CFGLOC. Prefer the cal in force at install start (latest valid_start ≤
-    install_start); if none, prefer the earliest-starting overlapping cal.
-    Tiebreak by highest calibration_id.
+    this CFGLOC, choosing the highest certificate number (calibration.cert_number)
+    among them — the same preference calibration conversion uses
+    (NEONprocIS.cal::def.cal.slct, keyed on the XML CertificateNumber). A corrected
+    cert re-issued for a deployment gets a new, higher certificate number, so it
+    supersedes the original. Certs with no certificate number rank below those
+    that have one; ties fall to the highest calibration_id.
 
     Returns None if no cal overlaps the install — the caller skips that install/
     stream rather than apply a cross-deployment cal (e.g. asset 40784's cert
@@ -260,14 +263,10 @@ def _select_cal_for_install(cals: List[Cvald1Calibration],
     if not candidates:
         return None
 
-    if install_start_n is not None:
-        in_force = [c for c in candidates
-                    if _naive(c.valid_start_time) <= install_start_n]
-        if in_force:
-            return max(in_force, key=lambda c: (_naive(c.valid_start_time),
-                                                c.calibration_id))
-    return min(candidates,
-               key=lambda c: (_naive(c.valid_start_time), -c.calibration_id))
+    def rank(cal: Cvald1Calibration) -> Tuple[bool, int, int]:
+        return cal.cert_number is not None, cal.cert_number or 0, cal.calibration_id
+
+    return max(candidates, key=rank)
 
 
 def _merge_time_ranges(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
