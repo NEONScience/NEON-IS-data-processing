@@ -24,6 +24,11 @@ def load() -> None:
     else:
         sensor_type = env.str('SOURCE_TYPE')
         sensor_schemas = [(sensor_type, env.str('SCHEMA_NAME', sensor_type))]
+    #for schema names that are missing the '2' in exo2, add it
+    for i, (sensor_type, schema_name) in enumerate(sensor_schemas):
+        if schema_name.startswith('exo') and not schema_name.startswith('exo2'):
+            sensor_schemas[i] = (sensor_type, 'exo2' + schema_name[3:]) 
+    
     db_config = read_from_mount(Path('/var/db_secret'))
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)

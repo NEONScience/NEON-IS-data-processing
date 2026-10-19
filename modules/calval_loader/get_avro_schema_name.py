@@ -26,8 +26,7 @@ def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
             logging.error(f'Avro schema name not found for asset id ID {asset_uid} .')
             return None
         avro_schema_name = row
-        #avro_schema_name = row[0]
-        print(f'asset_uid: {asset_uid}, avro_schema_name: {avro_schema_name}')
+        #avro_schema_name = row[0]        
         #if avro_schema name is exoconductivity, replace with exo2conductivity
         if avro_schema_name == 'exo':
             avro_schema_name = 'exo2'
@@ -43,4 +42,5 @@ def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
             avro_schema_name = 'exo2dissolvedoxygen'
         if avro_schema_name == 'exoalgae':
             avro_schema_name = 'exo2algae'
+        print(f'asset_uid: {asset_uid}, avro_schema_name: {avro_schema_name}')
     return avro_schema_name
