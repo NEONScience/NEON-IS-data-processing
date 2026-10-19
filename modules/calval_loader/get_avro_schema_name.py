@@ -27,5 +27,5 @@ def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
             return None
         avro_schema_name = row
         #avro_schema_name = row[0]
-        #print(f'avro_schema_name: {avro_schema_name}')
+        print(f'asset_uid: {asset_uid}, avro_schema_name: {avro_schema_name}')
     return avro_schema_name
