@@ -2,7 +2,7 @@ name: CERT-prt-tempSoil-rel-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'cert'
     paths:
       - 'pipe/tempSoil/*_rel.yaml'
       - 'pipe/tempSoil/pipe_list_tempSoil_rel.txt'
