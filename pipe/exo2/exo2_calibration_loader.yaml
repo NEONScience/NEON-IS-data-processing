@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: exo2_calibration_loader
+  name: exo2_calibration_loader 
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v3.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:sha-3b6ff73
   cmd:
   - sh
   - "-c"
@@ -12,39 +12,14 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
-    export SOURCE_TYPE=$SOURCE_TYPE_1
-    python3 -m calval_loader.load_all_calval_files
-    
-    export SOURCE_TYPE=$SOURCE_TYPE_2
-    python3 -m calval_loader.load_all_calval_files
-    
-    export SOURCE_TYPE=$SOURCE_TYPE_3
-    python3 -m calval_loader.load_all_calval_files
-    
-    export SOURCE_TYPE=$SOURCE_TYPE_4
-    python3 -m calval_loader.load_all_calval_files
-    
-    export SOURCE_TYPE=$SOURCE_TYPE_5
-    python3 -m calval_loader.load_all_calval_files
-    
-    export SOURCE_TYPE=$SOURCE_TYPE_6
-    python3 -m calval_loader.load_all_calval_files
-    
-    export SOURCE_TYPE=$SOURCE_TYPE_7
     python3 -m calval_loader.load_all_calval_files
     
     EOF
   env:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
-    SOURCE_TYPE_1: exo2
-    SOURCE_TYPE_2: exo2conductivity
-    SOURCE_TYPE_3: exo2turbidity
-    SOURCE_TYPE_4: exo2fdom
-    SOURCE_TYPE_5: exo2phorp
-    SOURCE_TYPE_6: exo2dissolvedoxygen
-    SOURCE_TYPE_7: exo2algae
+    LOG_LEVEL: DEBUG
+    SOURCE_TYPES: exo2,exo2conductivity,exo2turbidity,exo2fdom,exo2phorp,exo2dissolvedoxygen,exo2algae,exo,exoconductivity,exoturbidity,exofdom,exophorp,exodissolvedoxygen,exoalgae
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
@@ -59,14 +34,14 @@ parallelism_spec:
   constant: 10
 autoscaling: true
 resource_requests:
-  memory: 1.5G
-  cpu: 1
+  memory: 5G
+  cpu: 2.5
 resource_limits:
-  memory: 2G
-  cpu: 2
+  memory: 6G
+  cpu: 4
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.2
+  memory: 3G
+  cpu: 0.3
 datum_set_spec:
   number: 1
 scheduling_spec:
