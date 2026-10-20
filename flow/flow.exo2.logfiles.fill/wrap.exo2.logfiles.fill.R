@@ -60,7 +60,7 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutData <- base::paste0(DirOut,'/data')
   base::dir.create(DirOutData,recursive=TRUE)
-  DirOutFlags <- base::paste0(DirOut,'/log_flags')
+  DirOutFlags <- base::paste0(DirOut,'/flags')
   base::dir.create(DirOutFlags,recursive=TRUE)
   
   # All file names
