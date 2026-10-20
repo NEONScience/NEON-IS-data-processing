@@ -12,7 +12,6 @@ exo2_calibration_list_files.yaml
 exo2_calibration_loader.yaml
 exo2_calibration_assignment.yaml
 exo2_calibration_group_and_convert.yaml
-
 exo2_location_asset.yaml
 exo2_location_loader.yaml
 exo2_location_asset_assignment.yaml
