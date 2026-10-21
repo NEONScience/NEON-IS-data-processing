@@ -72,8 +72,7 @@ transform:
         DirErr=/pfs/out/errored_datums \
         DirSubCopy=flags \
         "UcrtFuncTerm1=def.ucrt.meas.cnst:fdom" \
-        "TermQf=fdom" \
-        "DirSubCopy=calibration"
+        "TermQf=fdom"
     elif [ $source_type = "exo2phorp" ]; then 
       Rscript ./flow.cal.conv.R \
         DirIn=$OUT_PATH_JOIN_CAL \

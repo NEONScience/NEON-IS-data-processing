@@ -3,8 +3,7 @@ pipeline:
   name: exo2_replace_sn_with_assetuid
 transform:
   # image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  # Rebuild with filter_joiner included and update this image tag before deploying.
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sn-to-asset-uid:sha-7bfebce
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sn-to-asset-uid:sha-ff65970
   cmd:
   - sh
   - "-c"
@@ -15,15 +14,12 @@ transform:
     IFS=$'\n\t' 
 
     # Refresh interim directories with each datum.
-    rm -rf "$OUT_PATH_LIMIT_LOGFILES" "$OUT_PATH_REPLACE_SN"
-    mkdir -p "$OUT_PATH_LIMIT_LOGFILES" "$OUT_PATH_REPLACE_SN"
+    rm -rf "$OUT_PATH_REPLACE_SN"
+    mkdir -p "$OUT_PATH_REPLACE_SN"
 
-    echo "Running filter-joiner to limit log files"
-    export CONFIG=$CONFIG_LIMIT_LOGFILES
-    export OUT_PATH=$OUT_PATH_LIMIT_LOGFILES
-    python3 -m filter_joiner.filter_joiner_main
-
-    export DATA_PATH=$OUT_PATH_LIMIT_LOGFILES
+    # The mapping root is shared; restrict lookup to this datum's sensor.
+    sensor_date=${PACH_DATUM_DATA_PATH_JOIN_ON:?Missing sensor/date join key}
+    export MAP_PATH="$MAP_PATH/${sensor_date%%/*}"
     export OUT_PATH=$OUT_PATH_REPLACE_SN
     python3 -m replace_sn_with_assetuid.replace_sn_with_assetuid_main
 
@@ -32,50 +28,34 @@ transform:
 
     EOF
   env:
-    # Inner join on sensor/year/month/day, preserving serial-number subdirectories.
-    CONFIG_LIMIT_LOGFILES: |
-      ---
-      input_paths:
-        - path:
-            name: DATA_PATH
-            glob_pattern: /pfs/DATA_PATH/*/*/*/**
-            join_indices: [3,4,5]
-            outer_join: false
-        - path:
-            name: DATE_CONTROL
-            glob_pattern: /pfs/DATE_CONTROL/*/*/*/**
-            join_indices: [3,4,5]
-            outer_join: false
-    OUT_PATH_LIMIT_LOGFILES: /tmp/log_limited
     OUT_PATH_REPLACE_SN: /tmp/sn_replaced
     RELATIVE_PATH_INDEX: "3"
-    LOG_LEVEL: DEBUG
-    LINK_TYPE: COPY
+    LOG_LEVEL: INFO
 input:
-  join:
+  cross:
+  # One mapping-root datum supplies mappings without multiplying sensor/date matches.
   - pfs:
       name: MAP_PATH
       repo: exo2_sn_assetuid_mapping_loader
-      glob: /(*) #sensor
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-      outer_join: true
-  - pfs:
-      name: DATA_PATH
-      repo: exo2_logjam_load_clean_assign
-      glob: /(*)/(*)/(*)/(*) #sensor/year/month/day
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-      outer_join: true
-  - pfs:
-      name: DATE_CONTROL
-      repo: exo2_all_probes_cron_daily_and_date_control
-      glob: /(*)/(*)/(*)/(*) #sensor//Y/M/D; filter-joiner limits each log datum to these dates
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-      outer_join: true
+      glob: /
+      empty_files: false
+  - join:
+    - pfs:
+        name: DATA_PATH
+        repo: exo2_logjam_load_clean_assign
+        glob: /(*)/(*)/(*)/(*) #sensor/year/month/day
+        joinOn: $1/$2/$3/$4
+        empty_files: false
+        outer_join: false
+    - pfs:
+        name: DATE_CONTROL
+        repo: exo2_all_probes_cron_daily_and_date_control
+        glob: /(*)/(*)/(*)/(*) #sensor/year/month/day
+        joinOn: $1/$2/$3/$4
+        empty_files: true # Only paths are needed for the date intersection.
+        outer_join: false
 parallelism_spec:
-  constant: 1
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 1G
