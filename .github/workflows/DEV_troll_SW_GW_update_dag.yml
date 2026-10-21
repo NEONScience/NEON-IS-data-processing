@@ -10,6 +10,8 @@ on:
       - 'pipe/groundwaterPhysical/pipe_list_groundwaterPhysical.txt'
       - 'pipe/surfacewaterPhysical/*.yaml'
       - 'pipe/surfacewaterPhysical/pipe_list_surfacewaterPhysical.txt'
+      - 'pipe/l4discharge/*.yaml'
+      - 'pipe/l4discharge/pipe_list_l4discharge.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
