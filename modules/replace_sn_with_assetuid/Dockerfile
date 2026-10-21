@@ -1,6 +1,6 @@
 ####
 #
-# This dockerfile will build the replace_sn_with_assetuid module.
+# This dockerfile will build the replace_sn_with_assetuid module with filter_joiner.
 # Example command (must be run from project root directory to include common path in Docker context):
 # docker build --no-cache -t replace_sn_with_assetuid:latest -f replace_sn_with_assetuid/Dockerfile .
 #
@@ -36,6 +36,7 @@ RUN update-ca-trust && \
     useradd -r -u 9999 -g appuser appuser
 
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/filter_joiner ${CONTAINER_APP_DIR}/filter_joiner
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser

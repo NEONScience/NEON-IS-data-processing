@@ -3,24 +3,54 @@ pipeline:
   name: exo2_replace_sn_with_assetuid
 transform:
   # image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sn-to-asset-uid:sha-edb94fb
+  # Rebuild with filter_joiner included and update this image tag before deploying.
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sn-to-asset-uid:sha-7bfebce
   cmd:
   - sh
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t' 
-    export DATA_PATH=$DATA_PATH
+
+    # Refresh interim directories with each datum.
+    rm -rf "$OUT_PATH_LIMIT_LOGFILES" "$OUT_PATH_REPLACE_SN"
+    mkdir -p "$OUT_PATH_LIMIT_LOGFILES" "$OUT_PATH_REPLACE_SN"
+
+    echo "Running filter-joiner to limit log files"
+    export CONFIG=$CONFIG_LIMIT_LOGFILES
+    export OUT_PATH=$OUT_PATH_LIMIT_LOGFILES
+    python3 -m filter_joiner.filter_joiner_main
+
+    export DATA_PATH=$OUT_PATH_LIMIT_LOGFILES
+    export OUT_PATH=$OUT_PATH_REPLACE_SN
     python3 -m replace_sn_with_assetuid.replace_sn_with_assetuid_main
+
+    # Materialize output so it does not link to interim files cleared by the next datum.
+    cp -rL "$OUT_PATH_REPLACE_SN/." /pfs/out
 
     EOF
   env:
-    OUT_PATH: /pfs/out
+    # Inner join on sensor/year/month/day, preserving serial-number subdirectories.
+    CONFIG_LIMIT_LOGFILES: |
+      ---
+      input_paths:
+        - path:
+            name: DATA_PATH
+            glob_pattern: /pfs/DATA_PATH/*/*/*/**
+            join_indices: [3,4,5]
+            outer_join: false
+        - path:
+            name: DATE_CONTROL
+            glob_pattern: /pfs/DATE_CONTROL/*/*/*/**
+            join_indices: [3,4,5]
+            outer_join: false
+    OUT_PATH_LIMIT_LOGFILES: /tmp/log_limited
+    OUT_PATH_REPLACE_SN: /tmp/sn_replaced
     RELATIVE_PATH_INDEX: "3"
     LOG_LEVEL: DEBUG
-    # LINK_TYPE: SYMLINK # options are COPY or SYMLINK
+    LINK_TYPE: COPY
 input:
   join:
   - pfs:
@@ -28,11 +58,22 @@ input:
       repo: exo2_sn_assetuid_mapping_loader
       glob: /(*) #sensor
       joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      outer_join: true
   - pfs:
       name: DATA_PATH
-      repo: exo2_logjam_assign_clean_files
-      glob: /(*)/(2025)/(09)/(*)/(*) #sensor/year/month/day/sn
+      repo: exo2_logjam_load_clean_assign
+      glob: /(*)/(*)/(*)/(*) #sensor/year/month/day
       joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      outer_join: true
+  - pfs:
+      name: DATE_CONTROL
+      repo: exo2_all_probes_cron_daily_and_date_control
+      glob: /(*)/(*)/(*)/(*) #sensor//Y/M/D; filter-joiner limits each log datum to these dates
+      joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      outer_join: true
 parallelism_spec:
   constant: 1
 autoscaling: true

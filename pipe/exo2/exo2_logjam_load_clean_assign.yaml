@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_logjam_load_clean_assign
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-cd267c2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-load-clean-assign:sha-7bfebce
   cmd:
   - sh
   - "-c"
@@ -22,8 +22,15 @@ transform:
     #run cleaning script
     Rscript ./flow.exo2.logfiles.R \
       DirIn=/tmp/pfs/interim \
-      DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums
+      DirOutBase=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "SchmExo2=$SCHEMA_EXO2" \
+      "SchmCond=$SCHEMA_COND" \
+      "SchmDO=$SCHEMA_DO" \
+      "SchmPh=$SCHEMA_PH" \
+      "SchmTurb=$SCHEMA_TURB" \
+      "SchmFdom=$SCHEMA_FDOM" \
+      "SchmChl=$SCHEMA_CHL"
     
     EOF
   env:
@@ -42,6 +49,34 @@ input:
       repo: exo2_logjam_list_files
       glob: /*/*/*/logjam_dev/exo2/
       empty_files: true
+  - pfs:
+      name: SCHEMA_EXO2
+      repo: exo2_avro_schemas
+      glob: /exo2/exo2_log_data.avsc
+  - pfs:
+      name: SCHEMA_COND
+      repo: exo2_avro_schemas
+      glob: /exo2conductivity/exo2conductivity_log_data.avsc
+  - pfs:
+      name: SCHEMA_DO
+      repo: exo2_avro_schemas
+      glob: /exo2dissolvedoxygen/exo2dissolvedoxygen_log_data.avsc
+  - pfs:
+      name: SCHEMA_PH
+      repo: exo2_avro_schemas
+      glob: /exo2phorp/exo2phorp_log_data.avsc
+  - pfs:
+      name: SCHEMA_TURB
+      repo: exo2_avro_schemas
+      glob: /exo2turbidity/exo2turbidity_log_data.avsc
+  - pfs:
+      name: SCHEMA_FDOM
+      repo: exo2_avro_schemas
+      glob: /exo2fdom/exo2fdom_log_data.avsc
+  - pfs:
+      name: SCHEMA_CHL
+      repo: exo2_avro_schemas
+      glob: /exo2algae/exo2algae_log_data.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

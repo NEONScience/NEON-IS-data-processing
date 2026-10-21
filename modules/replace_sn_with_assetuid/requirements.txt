@@ -1,3 +1,4 @@
 environs==6.0.0
 structlog==21.5.0
 requests==2.32.2
+PyYAML==6.0.2
