@@ -3,7 +3,7 @@
 # docker build -t neon-is-wind-buoy-compass-correct-and-pad -f ./modules_combined/windBuoy_compass_correct_and_pad/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.14
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.15
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
