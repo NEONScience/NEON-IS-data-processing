@@ -33,7 +33,7 @@ namePack <- c("NEONprocIS.base",
               "NEONprocIS.qaqc",
               "NEONprocIS.stat",
               "NEONprocIS.wq",
-              "NEONprocIS.pub")[2]
+              "NEONprocIS.pub")[1]
 
 
 # Do you want to run the unit tests for the package? Additionally, want to compute and show test coverage?

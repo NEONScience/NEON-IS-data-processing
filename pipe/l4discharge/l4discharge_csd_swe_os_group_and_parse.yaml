@@ -1,0 +1,115 @@
+pipeline:
+  name: l4discharge_csd_swe_os_group_and_parse
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-parse-os-inputs:sha-1ad2fdf
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/filterjoined
+    mkdir /tmp/filterjoined
+    
+    # Set some environment variables for the first module
+    export OUT_PATH=$OUT_PATH_1
+
+    # Run first module - filter-joiner (using environment variables below as input parameters). Join CSD and SWE tables.
+    python3 -m filter_joiner.filter_joiner_main
+
+    # Run second module - parse OS inputs for discharge data
+    for date_dir in /tmp/filterjoined/*/*/*; do
+      [[ -d "$date_dir" ]] || continue
+      Rscript ./flow.discharge.parse.os.inputs.R \
+        DirIn="$date_dir" \
+        DirInOS=/pfs/DIR_IN_OS \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums
+    done
+    
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: CSD_DATA
+            glob_pattern: /pfs/CSD_DATA/*/*/*/**
+            # The PFS join already limits dates; join groups within each date.
+            join_indices: [6]
+            outer_join: true
+        - path:
+            name: SWE_DATA
+            glob_pattern: /pfs/SWE_DATA/*/*/*/**
+            # Keep data with or without an SWE/SRF counterpart.
+            join_indices: [6]
+            outer_join: true
+        
+    OUT_PATH_1: /tmp/filterjoined # Transfered to OUT_PATH for the first module
+    RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
+    LOG_LEVEL: DEBUG # Shared among all modules
+    
+input:
+  cross:
+  - group:
+    - union:
+      - join:
+        - pfs:
+            name: CSD_DATA
+            repo: l4discharge_csd_load_files
+            glob: /(*/*/*)
+            joinOn: $1
+            group_by: $1
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        - pfs:
+            name: DATE_CONTROL
+            repo: troll_cron_daily_and_date_control
+            glob: /*/(*/*/*)
+            joinOn: $1
+            group_by: $1
+            empty_files: true
+      - join:
+        - pfs:
+            name: SWE_DATA
+            repo: l4discharge_group_path
+            glob: /(*/*/*)
+            joinOn: $1
+            group_by: $1
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        - pfs:
+            name: DATE_CONTROL
+            repo: troll_cron_daily_and_date_control
+            glob: /*/(*/*/*)
+            joinOn: $1
+            group_by: $1
+            empty_files: true
+  - pfs:
+      name: DIR_IN_OS
+      repo: l4discharge_os_table_loader
+      glob: /
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 2.2
+resource_limits:
+  memory: 3G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 500
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

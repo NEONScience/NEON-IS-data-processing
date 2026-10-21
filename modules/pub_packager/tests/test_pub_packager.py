@@ -10,6 +10,7 @@ from testfixtures import TempDirectory
 from sortedcontainers import SortedList
 import fnmatch
 import logging
+import pandas as pd
 
 
 class PubPackagerTest(TestCase):
@@ -39,6 +40,7 @@ class PubPackagerTest(TestCase):
         with open(self.data_file_2, 'w') as f:
             f.write('2022-07-02T01:14:00Z,2022-07-02T01:15:00Z,30.582,30.553,30.61,0.0004623,6,0.1508,0.008778,0\n')
             f.write('2022-07-02T01:13:00Z,2022-07-02T01:14:00Z,30.648,30.62,30.677,0.0004553,6,0.1509,0.008711,0\n')
+            f.write('2022-07-02T01:15:00Z,2022-07-02T01:16:00Z,30.514,30.487,30.542,0.0004194,6,0.1506,0.00836,0\n')
             f.write('2022-07-02T01:15:00Z,2022-07-02T01:16:00Z,30.514,30.487,30.542,0.0004194,6,0.1506,0.00836,0')
             f.close()
         with open(self.manifest_file_1, 'w') as f:
@@ -78,6 +80,19 @@ class PubPackagerTest(TestCase):
         os.environ['LOG_LEVEL'] = "DEBUG"
         pub_packager_main.main()
         self.check_output()
+
+    def test_package_deduplicates_matching_table(self):
+        pub_package(data_path=self.data_path,
+                out_path=self.out_path,
+                err_path=self.err_path,
+                product_index=self.product_index,
+                publoc_index=self.publoc_index,
+                date_index=self.date_index,
+                date_index_length=self.date_index_length,
+                sort_index=self.sort_index,
+                dedup_tables=['ST_1_minute'])
+        output_file = next(self.output_path.glob('*.basic.*.csv'))
+        self.assertEqual(len(pd.read_csv(output_file)), 5)
 
     def check_output(self):
         os.chdir(self.output_path)

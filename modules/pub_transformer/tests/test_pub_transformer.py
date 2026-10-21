@@ -111,6 +111,28 @@ class PubTransformerTest(TestCase):
                       data_path_parse_index=self.data_path_parse_index)
         self.check_output()
 
+    def test_transform_skips_table_without_full_dp_number(self):
+        workbook = pd.read_csv(self.workbook_file_path, sep='\t')
+        missing_dp_number_table = workbook.copy()
+        missing_dp_number_table['table'] = 'table_without_dp_number'
+        missing_dp_number_table['DPNumber'] = ''
+        pd.concat([workbook, missing_dp_number_table]).to_csv(
+            self.workbook_file_path, sep='\t', index=False)
+        self.data.to_parquet(Path(self.data_file.parent, 'table_without_dp_number.parquet'))
+
+        pub_transform(data_path=self.data_path,
+                      out_path=self.out_path,
+                      workbook_path=self.workbook_path,
+                      product_index=self.product_index,
+                      year_index=self.year_index,
+                      month_index=self.month_index,
+                      day_index=self.day_index,
+                      data_type_index=self.data_type_index,
+                      group_metadata_dir=self.group_metadata_dir,
+                      data_path_parse_index=self.data_path_parse_index)
+
+        self.check_output()
+
     def test_main(self):
         os.environ["LOG_LEVEL"] = "DEBUG"
         os.environ["WORKBOOK_PATH"] = str(self.workbook_path)
