@@ -12,3 +12,4 @@ class Cvald1Calibration(NamedTuple):
     valid_end_time: Optional[datetime]
     cert_filename: Optional[str]
     cvald1_cm: float
+    cert_number: Optional[int] = None
