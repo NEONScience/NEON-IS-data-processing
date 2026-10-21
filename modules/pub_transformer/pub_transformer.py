@@ -137,6 +137,11 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
     
                 # Get the full 45-digit DP IDs to grab fields from
                 dp_number = [element for element in workbook_table['DPNumber'] if len(element)==45]
+                dp_number = [element for element in workbook_table['DPNumber'].dropna()
+                             if isinstance(element, str) and len(element) == 45]
+                if not dp_number:
+                    log.warn(f'No full DPNumber indicated for {table}. Skipping.')
+                    continue
                 dp_number = dp_number[0]
                 
                 # construct filenames
