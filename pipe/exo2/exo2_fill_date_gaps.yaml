@@ -12,11 +12,18 @@ transform:
     set -euo pipefail
     IFS=$'\n\t'
     
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -r -f /tmp/pfs/interim
-    rm -rf $OUT_PATH
-    mkdir -p /tmp/pfs/interim
-    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    # Write to the mounted pipeline output so Pachyderm publishes the files.
+    mkdir -p "$OUT_PATH"
+
+    # Select templates for this datum's source type from the shared repository.
+    if [ -n "${LOCATION_PATH:-}" ]; then
+      source_type=$(printf '%s\n' "$LOCATION_PATH" | cut -d / -f 4)
+      export EMPTY_FILE_PATH="${EMPTY_FILE_PATH%/}/$source_type"
+      if [ ! -d "$EMPTY_FILE_PATH" ]; then
+        echo "Missing empty-file templates for $source_type: $EMPTY_FILE_PATH" >&2
+        exit 1
+      fi
+    fi
     
     # Run first module - date-gap-filler (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
@@ -24,8 +31,8 @@ transform:
     EOF
   env:
     # Environment variables for date gap filler
-    LOG_LEVEL: INFO
-    OUT_PATH: /tmp/pfs/interim
+    LOG_LEVEL: DEBUG
+    OUT_PATH: /pfs/out
     OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
@@ -47,7 +54,8 @@ input:
   - pfs:
       name: EMPTY_FILE_PATH
       repo: exo2_empty_files
-      glob: /*
+      # Mount all templates once; crossing individual directories duplicates each day.
+      glob: /
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - group:
     - pfs:

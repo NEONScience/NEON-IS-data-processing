@@ -1,3 +1,4 @@
+exo2_ingest_days
 exo2_all_probes_cron_daily_and_date_control.yaml
 exo2_data_source_trino.yaml
 exo2_logjam_list_files.yaml
