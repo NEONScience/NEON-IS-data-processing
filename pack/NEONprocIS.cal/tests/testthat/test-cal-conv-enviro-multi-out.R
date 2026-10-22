@@ -11,17 +11,24 @@
 #'     calibrated outputs, correct depth variable, and expected uncertainty values.
 #'   - Happy path: permafrost site (BARR) skips soil-specific calibration (Alt output is all NA).
 #'   - Sad path: NULL calSlct returns NA calibrated output with a warning.
+#'   - Sad path: stale cal for a depth with no data returns NA without error.
+#'   - Sad path: cal without CVALD1 returns NA without error.
+#'   - Sad path: no matching soil-specific cal row returns NA Alt output without error.
 #'
 #' Fixture data:
 #'   testdata/enviroscan/calibrations/rawVSWC0/enviroscan_vswc0_test.xml
 #'     CVALD1=5, CVALA1=1, CVALA2=1, CVALA3=0
 #'     Valid 2024-01-01 to 2025-01-01
+#'   testdata/enviroscan/calibrations/rawVSWC4/enviroscan_vswc4_nodepth_test.xml
+#'     Same as rawVSWC0 but without CVALD1
 #'   testdata/enviroscan/soilSpecCal_test.csv
 #'     Three BART depth layers (0-9, 9-22, 22-40 cm)
 #'
 # changelog and author contributions / copyrights
 #   Teresa Burlingame (2026-03-05)
 #     original creation
+#   Teresa Burlingame (2026-10-22)
+#     added stale-cal / missing CVALD1 / no soil cal row tests
 ##############################################################################################
 library(testthat)
 
@@ -207,5 +214,111 @@ test_that("EnviroSCAN calibration - NULL calSlct returns NA output", {
   )
 
   testthat::expect_true(all(base::is.na(rpt$data$rawVSWC0)))
+
+})
+
+# Shared setup for the stale-cal tests: rawVSWC0 has a normal cal, rawVSWC4 has a cal without CVALD1
+#   (mimics a 4-depth probe that still has old cals assigned to depths 4-7)
+calSlctStale <- function(testDir = "testdata/enviroscan/") {
+  DirCal <- paste0(testDir, "calibrations")
+  varCal <- base::dir(DirCal)
+  NEONprocIS.cal::wrap.cal.slct(
+    DirCal        = DirCal,
+    NameVarExpc   = character(0),
+    TimeBgn       = base::as.POSIXct('2024-05-01 00:00:00', tz = 'GMT'),
+    TimeEnd       = base::as.POSIXct('2024-05-02 00:00:00', tz = 'GMT'),
+    NumDayExpiMax = data.frame(var = varCal, NumDayExpiMax = 999, stringsAsFactors = FALSE),
+    log           = NULL
+  )
+}
+
+test_that("EnviroSCAN calibration - depth with stale cal and no data returns NA without error", {
+
+  data <- data.frame(
+    readout_time = base::as.POSIXct(c('2024-05-01 01:00:00', '2024-05-01 02:00:00'), tz = 'GMT'),
+    rawVSWC0 = c(0.3, 0.3),
+    rawVSWC4 = c(NA_real_, NA_real_),
+    stringsAsFactors = FALSE
+  )
+
+  Meta <- list(
+    pathCalSoilSpec = "testdata/enviroscan/soilSpecCal_test.csv",
+    Locations = list(list(site = "BART", geolocations = list(list(z_offset = 0))))
+  )
+
+  rpt <- NEONprocIS.cal::def.cal.conv.enviro.multi.out(
+    data    = data,
+    varConv = c('rawVSWC0', 'rawVSWC4'),
+    calSlct = calSlctStale(),
+    Meta    = Meta,
+    log     = NULL
+  )
+
+  # Depth 0 is still calibrated
+  testthat::expect_equal(rpt$data$rawVSWC0[1], 0.02248273, tolerance = 1e-5)
+  testthat::expect_true(all(rpt$data$L00Depth == -0.05))
+
+  # Depth 4 is NA across the board
+  testthat::expect_true(all(base::is.na(rpt$data$rawVSWC4)))
+  testthat::expect_true(all(base::is.na(rpt$data$rawVSWC4Alt)))
+  testthat::expect_true(all(base::is.na(rpt$data$L04Depth)))
+
+})
+
+test_that("EnviroSCAN calibration - cal without CVALD1 returns NA without error", {
+
+  data <- data.frame(
+    readout_time = base::as.POSIXct(c('2024-05-01 01:00:00', '2024-05-01 02:00:00'), tz = 'GMT'),
+    rawVSWC4 = c(0.3, 0.3),
+    stringsAsFactors = FALSE
+  )
+
+  Meta <- list(
+    pathCalSoilSpec = "testdata/enviroscan/soilSpecCal_test.csv",
+    Locations = list(list(site = "BART", geolocations = list(list(z_offset = 0))))
+  )
+
+  rpt <- NEONprocIS.cal::def.cal.conv.enviro.multi.out(
+    data    = data,
+    varConv = 'rawVSWC4',
+    calSlct = calSlctStale(),
+    Meta    = Meta,
+    log     = NULL
+  )
+
+  testthat::expect_true(all(base::is.na(rpt$data$rawVSWC4)))
+  testthat::expect_true(all(base::is.na(rpt$data$L04Depth)))
+
+})
+
+test_that("EnviroSCAN calibration - no matching soil-specific cal row returns NA Alt output", {
+
+  data <- data.frame(
+    readout_time = base::as.POSIXct(c('2024-05-01 01:00:00', '2024-05-01 02:00:00'), tz = 'GMT'),
+    rawVSWC0 = c(0.3, 0.3),
+    stringsAsFactors = FALSE
+  )
+
+  # Non-permafrost site with no rows in the soil-specific cal file
+  Meta <- list(
+    pathCalSoilSpec = "testdata/enviroscan/soilSpecCal_test.csv",
+    Locations = list(list(site = "ZZZZ", geolocations = list(list(z_offset = 0))))
+  )
+
+  rpt <- NEONprocIS.cal::def.cal.conv.enviro.multi.out(
+    data    = data,
+    varConv = 'rawVSWC0',
+    calSlct = calSlctStale(),
+    Meta    = Meta,
+    log     = NULL
+  )
+
+  # Manufacturer cal and depth still produced
+  testthat::expect_equal(rpt$data$rawVSWC0[1], 0.02248273, tolerance = 1e-5)
+  testthat::expect_true(all(rpt$data$L00Depth == -0.05))
+
+  # Soil-specific output and uncertainty are NA
+  testthat::expect_true(all(base::is.na(rpt$data$rawVSWC0Alt)))
+  testthat::expect_true(all(base::is.na(rpt$ucrtData$rawVSWC0Alt$ucrtMeas)))
 
 })

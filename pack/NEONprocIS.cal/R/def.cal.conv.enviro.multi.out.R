@@ -67,7 +67,11 @@
 #     Cleaned up the script and added additional header information
 #  Teresa Burlingame (2026-01-20)
 #     adjusting code so that depth variable is more robust to missing calibration files
-#     moving csv read so that it is not read over and over again. 
+#     moving csv read so that it is not read over and over again.
+#  Teresa Burlingame (2026-10-22)
+#     skip cal periods with no data for the term (e.g. old cals assigned to depths a 4-depth probe doesn't have)
+#     or no single CVALD1 depth, return NA for soil-specific output when not exactly one soil cal row matches,
+#     and apply calibrations only to the records within each cal period
 ##############################################################################################
 def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0)),
                                           varConv = setdiff(base::names(data),c('source_id','site_id','readout_time')),
@@ -144,9 +148,20 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         infoCal <- NULL # Maybe revisit as this will be skipped if a cal is missing
         next
       }
-      
+
+      # Skip if the sensor reported no data for this term during the cal period (e.g. a 4-depth probe
+      # that still has old cals assigned to depths 4-7). Outputs remain NA.
+      if(base::all(base::is.na(data[setCal, varIdx]))){
+        log$info(base::paste0('No data for ', varIdx, ' during the period of calibration file ', calSlctIdx$file[idxRow], '. Returning NA for calibrated output.'))
+        next
+      }
+
       # Identify the sensor depth if the installation reference is exactly at the soil surface ("CVALD1") and divide by -100 to convert to meters and indicate it's below the soil surface.
       depth <- as.numeric(infoCal$cal$Value[grep("CVALD1", infoCal$cal$Name)]) / -100 + Meta[["Locations"]][[1]][["geolocations"]][[1]][["z_offset"]]
+      if(base::length(depth) != 1){
+        log$warn(base::paste0('Could not determine a single sensor depth (CVALD1) for ', varIdx, ' from calibration file ', calSlctIdx$file[idxRow], '. Returning NA for calibrated output.'))
+        next
+      }
       dataDepthIdx[setCal] <- depth
       
       # --------- Apply calibration function ----------
@@ -165,20 +180,25 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
           soilSpecCalRow <- intersect(intersect(which((neonBounded60Cal$Top.depth.where.calibration.applicable / -100) > depth), 
                                                 which((neonBounded60Cal$Bottom.depth.where.calibration.applicable / -100) <= depth)), 
                                       grep(Meta[["Locations"]][[1]][["site"]], neonBounded60Cal$Site))
-          
-          
-          # Calculate soil water content in cm3 cm-3 by applying the soil-specific calibration
-          dataConvIdxAlt[setCal] <- ((dataSf - neonBounded60Cal$CVALA3[soilSpecCalRow]) / neonBounded60Cal$CVALA1[soilSpecCalRow])^(1/neonBounded60Cal$CVALA2[soilSpecCalRow]) / 100
-          
-          
-          # --------- Assign uncertainty (soil-specific) ----------
-          # Produce uncertainty estimate for alternate calibrated output variable
-          dataUcrtIdxAlt$ucrtMeas[setCal] <- neonBounded60Cal$U_CVALA3[soilSpecCalRow] # Assign the uncertainty of the soil-specific cal
+
+          if(base::length(soilSpecCalRow) != 1){
+            log$warn(base::paste0('Found ', base::length(soilSpecCalRow), ' soil-specific calibration rows for site ', Meta[["Locations"]][[1]][["site"]],
+                                  ' at depth ', depth, ' m (', varIdx, '). Expected 1. Returning NA for soil-specific calibrated output.'))
+          } else {
+
+            # Calculate soil water content in cm3 cm-3 by applying the soil-specific calibration
+            dataConvIdxAlt[setCal] <- ((dataSf[setCal] - neonBounded60Cal$CVALA3[soilSpecCalRow]) / neonBounded60Cal$CVALA1[soilSpecCalRow])^(1/neonBounded60Cal$CVALA2[soilSpecCalRow]) / 100
+
+
+            # --------- Assign uncertainty (soil-specific) ----------
+            # Produce uncertainty estimate for alternate calibrated output variable
+            dataUcrtIdxAlt$ucrtMeas[setCal] <- neonBounded60Cal$U_CVALA3[soilSpecCalRow] # Assign the uncertainty of the soil-specific cal
+          }
         }
         
         
         # Calculate soil water content in cm3 cm-3 by applying the manufacturer's default calibration
-        dataConvIdx[setCal] <- ((dataSf - 0.02852) / 0.1957)^(1/0.404) / 100
+        dataConvIdx[setCal] <- ((dataSf[setCal] - 0.02852) / 0.1957)^(1/0.404) / 100
         
         
         # --------- Assign uncertainty (manufacturer) ----------
@@ -191,7 +211,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
         
         # Soil ion content
         # No further processing of the ion content measurement is performed
-        dataConvIdx[setCal] <- data[, varIdx]
+        dataConvIdx[setCal] <- data[setCal, varIdx]
         
         # --------- Assign uncertainty ----------
         
@@ -210,7 +230,7 @@ def.cal.conv.enviro.multi.out <- function(data = data.frame(data=base::numeric(0
       if (grepl(pattern="VSWC",varIdx)){
         
         # Only make alternate cal info at sites that have soil-specific calibrations (i.e., not the permafrost sites)
-        if(!Meta[["Locations"]][[1]][["site"]] %in% c("BARR", "TOOL", "BONA", "HEAL")){
+        if(!Meta[["Locations"]][[1]][["site"]] %in% c("BARR", "TOOL", "BONA", "HEAL") && base::length(soilSpecCalRow) == 1){
           
           # Uncertainty coefs for alternate output variable output
           ucrtCoefIdxAlt[[idxRow]] <- ucrtCoefIdx[[idxRow]][1:3,] # Use the regular var as template
