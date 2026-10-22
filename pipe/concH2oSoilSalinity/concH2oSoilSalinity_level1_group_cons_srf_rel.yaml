@@ -21,7 +21,7 @@
 pipeline:
   name: concH2oSoilSalinity_level1_group_cons_srf_rel
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.5
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.4.0
   cmd:
   - sh
   - "-c"
