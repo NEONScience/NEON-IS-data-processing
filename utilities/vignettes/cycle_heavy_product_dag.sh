@@ -2,19 +2,27 @@
 # Cycle the "heavy" (bulk data / reprocessing) pipelines of a source-type + product DAG
 # while leaving the "base" (cheap, tick-driven metadata) pipelines running all the time.
 #
-# Base pipelines (kept loaded always): ingest_days, cron_daily_and_date_control, loaders,
-# assignment modules, and other small tick-driven metadata pipelines (matched by BASE_PATTERN
+# Base pipelines (kept loaded always): ingest_days, cron_daily_and_date_control,
+# cron_monthly_and_pub_control, loaders, assignment modules, and other small tick-driven metadata pipelines (matched by BASE_PATTERN
 # below - review with the "list" command before trusting on a new product).
 #
 # Heavy pipelines (torn down/stood back up on demand): data source loads, calibration/location
-# group-and-convert/restructure, gap filling, stats/qm compute, srf consolidation, monthly cron
-# and pub control, and pub pipelines.
+# group-and-convert/restructure, gap filling, stats/qm compute, srf consolidation,
+# and pub pipelines.
 #
 # Usage:
-#   ./cycle_heavy_product_dag.sh list     <source_type> <product> [product_suffix]
-#   ./cycle_heavy_product_dag.sh base     <source_type> <product> [product_suffix]
-#   ./cycle_heavy_product_dag.sh standup  <source_type> <product> [product_suffix]
-#   ./cycle_heavy_product_dag.sh teardown <source_type> <product> [product_suffix]
+#   ./cycle_heavy_product_dag.sh list     <source_type> <product> [product_suffix] [source_suffix]
+#   ./cycle_heavy_product_dag.sh base     <source_type> <product> [product_suffix] [source_suffix]
+#   ./cycle_heavy_product_dag.sh standup  <source_type> <product> [product_suffix] [source_suffix]
+#   ./cycle_heavy_product_dag.sh teardown <source_type> <product> [product_suffix] [source_suffix]
+#
+# source_suffix (default empty) selects pipe_list_<source_type><source_suffix>.txt, e.g. the
+# enviroscan _bf backfill DAG that runs alongside provisional under separate pipeline names.
+#
+# Example (enviroscan -> concH2oSoilSalinity _bf backfill; see concH2oSoilSalinity_backfill_cycle.md):
+#   ./cycle_heavy_product_dag.sh list enviroscan concH2oSoilSalinity _bf _bf
+#   ./cycle_heavy_product_dag.sh teardown enviroscan concH2oSoilSalinity _bf _bf
+#   ./cycle_heavy_product_dag.sh standup enviroscan concH2oSoilSalinity _bf _bf
 #
 # Example (prt -> tempSoil):
 #   ./cycle_heavy_product_dag.sh list prt tempSoil _prel1
@@ -22,7 +30,7 @@
 #   ./cycle_heavy_product_dag.sh teardown prt tempSoil _prel1  # tear down heavy pipelines
 #   ./cycle_heavy_product_dag.sh standup prt tempSoil _prel1   # stand heavy pipelines back up
 #
-# IMPORTANT: pipe_list_<source_type>.txt and pipe_list_<product><product_suffix>.txt must have a
+# IMPORTANT: pipe_list_<source_type><source_suffix>.txt and pipe_list_<product><product_suffix>.txt must have a
 # trailing newline and reflect true creation order (dependency order), same requirement as the
 # stand_up_product_dag_example.sh / delete_product_dag_example.sh vignettes this is based on.
 #
@@ -57,13 +65,15 @@ cmd=${1:?"Usage: $0 {list|base|standup|teardown} ..."}
 source_type=${2:?"source_type required"}
 product=${3:?"product required"}
 pipe_list_suffix=${4:-_prel1}
+source_list_suffix=${5:-}
 spec_path_source_type="$git_path_pipelines/$source_type"
 spec_path_product="$git_path_pipelines/$product"
-source_type_list_file="$spec_path_source_type/${pipe_list_prefix}${source_type}.txt"
+source_type_list_file="$spec_path_source_type/${pipe_list_prefix}${source_type}${source_list_suffix}.txt"
 product_list_file="$spec_path_product/${pipe_list_prefix}${product}${pipe_list_suffix}.txt"
 
 # Pipelines matching this pattern are treated as always-on base pipelines.
-BASE_PATTERN='(ingest_days|cron_daily_and_date_control|_loader|_assignment|list_files|_asset\.yaml|_threshold\.yaml)'
+# (_bf)? lets the _bf backfill copies (e.g. enviroscan_location_asset_bf.yaml) match too.
+BASE_PATTERN='(ingest_days|cron_daily_and_date_control|cron_monthly_and_pub_control|_loader|_assignment|list_files|_asset(_bf)?\.yaml|_threshold(_bf)?\.yaml)'
 
 get_pipelines() {
   # $1 = path to pipe_list file. Strips comments/blank lines, preserves order.
@@ -155,7 +165,7 @@ case "$cmd" in
     ;;
 
   *)
-    echo "Usage: $0 {list|base|standup|teardown} <source_type> <product> [product_suffix]"
+    echo "Usage: $0 {list|base|standup|teardown} <source_type> <product> [product_suffix] [source_suffix]"
     exit 1
     ;;
 esac
