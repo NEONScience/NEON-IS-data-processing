@@ -13,8 +13,8 @@ transform:
   - python3 -m bam_loader.load_bam
   
   env:
-    INGEST_BUCKET: neon-int-l4-discharge-proc
-    GCS_ROOT_PREFIX: v2-dev
+    INGEST_BUCKET: neon-l4-discharge-proc
+    GCS_ROOT_PREFIX: v2
     BAM_FOLDER: BaM_beta
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
