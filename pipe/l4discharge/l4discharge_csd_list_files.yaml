@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_csd_list_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:sha-3addfd9
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-csd-loader:v1.0.0
   cmd: ["/bin/bash"]
   env:
     INGEST_BUCKET: neon-int-l4-discharge-proc
@@ -15,8 +15,8 @@ transform:
   - python3 -m csd_loader.csd_loader
 input:
   pfs:
-    repo: troll_cron_daily_and_date_control_tick
-    glob: /(*-*)-*
+    repo: troll_ingest_days
+    glob: /tick/
     empty_files: true
 parallelism_spec:
   constant: 1

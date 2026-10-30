@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_predict
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:sha-7c92f76
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:v1.0.0
   cmd:
   - sh
   - "-c"

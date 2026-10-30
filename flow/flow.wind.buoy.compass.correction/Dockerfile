@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - buoy wind-specific quality flags and compass correction
 
 # Start with the neon-is-pack-qaqc-r image.
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.14
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.15
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.wind.buoy.compass.correction"
