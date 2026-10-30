@@ -9,9 +9,11 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
+  # Grouped input variables point to one match; scan the mount for all sensor types.
+  - export LOCATION_FOCUS_PATH=/pfs/LOCATION_FOCUS_PATH
   - python3 -m group_path.group_path_main
   env:
-    GROUP: par-quantum-line_
+    GROUP: water-quality_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
@@ -34,26 +36,31 @@ transform:
 input:
 # The input to the group_path module must be a join between the group_assignment module and the union of any/all 
 #   data repos that are currently in a location focus structure or a (different/L1+ dependency) group focus structure
-  join:
-  - pfs:
-      # name must be GROUP_ASSIGNMENT_PATH
-      name: GROUP_ASSIGNMENT_PATH
-      repo: waterQuality_group_assignment
-      glob: /water-quality/(*/*/*)
-      joinOn: $1
-  - union: 
+  # Keep all source types for a date in one datum so shared group files have one writer.
+  group:
+  - join:
     - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: exo2_fill_date_gaps
-        glob: /(*/*/*/*)
+        # name must be GROUP_ASSIGNMENT_PATH
+        name: GROUP_ASSIGNMENT_PATH
+        repo: waterQuality_group_assignment
+        glob: /water-quality/(*/*/*)
         joinOn: $1
-#    - pfs:
-#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-#        name: GROUP_FOCUS_PATH
-#        repo: 
-#        glob: /(*/*/*)
-#        joinOn: $1
+        group_by: $1
+    - union:
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH
+          repo: exo2_fill_date_gaps
+          glob: /*/(*/*/*)
+          joinOn: $1
+          group_by: $1
+#      - pfs:
+#          # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
+#          name: GROUP_FOCUS_PATH
+#          repo:
+#          glob: /(*/*/*)
+#          joinOn: $1
+#          group_by: $1
 parallelism_spec:
   constant: 5
 autoscaling: true
