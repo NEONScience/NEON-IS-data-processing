@@ -4,7 +4,7 @@ from pathlib import Path
 import environs
 import xml.etree.ElementTree as ET
 import sys
-from calval_loader.get_avro_schema_name import get_avro_schema_name, normalize_avro_schema_name
+from calval_loader.get_avro_schema_name import get_avro_schema_name
 from calval_loader.get_calibration_stream_name import get_calibration_stream_name
 from google.cloud import storage
 from data_access.db_config_reader import read_from_mount
@@ -24,11 +24,6 @@ def load() -> None:
     else:
         sensor_type = env.str('SOURCE_TYPE')
         sensor_schemas = [(sensor_type, env.str('SCHEMA_NAME', sensor_type))]
-    sensor_schemas = list(dict.fromkeys(
-        (normalize_avro_schema_name(sensor_type), normalize_avro_schema_name(schema_name))
-        for sensor_type, schema_name in sensor_schemas
-    ))
-    
     db_config = read_from_mount(Path('/var/db_secret'))
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
@@ -54,7 +49,7 @@ def load() -> None:
                     matching_schemas = [
                         (sensor_type, schema_name)
                         for sensor_type, schema_name in sensor_schemas
-                        if schema_name == avro_schema_name
+                        if schema_name in avro_schema_name
                     ]
                     if matching_schemas:
                         stream_id = root.find('StreamCalVal').find('StreamID').text

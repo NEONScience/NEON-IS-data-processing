@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_calibration_loader 
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:sha-3b6ff73
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v3.0.0
   cmd:
   - sh
   - "-c"
@@ -19,7 +19,7 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
-    SOURCE_TYPES: exo2,exo2conductivity,exo2turbidity,exo2fdom,exo2phorp,exo2dissolvedoxygen,exo2algae,exo,exoconductivity,exoturbidity,exofdom,exophorp,exodissolvedoxygen,exoalgae
+    SOURCE_TYPES: exo2,exo2conductivity,exo2turbidity,exo2fdom,exo2phorp,exo2dissolvedoxygen,exo2algae
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
