@@ -28,10 +28,10 @@ transform:
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       FileSchmQm=$FILE_SCHEMA_QM \
-      "GrpQfAlph1=speed:speedNullQF|speedGapQF|speedRangeQF|speedPersistenceQF" \
-      "GrpQfBeta1=speed:speedNullQF|speedGapQF|speedRangeQF|speedPersistenceQF"  \
-      "GrpQfAlph2=direction:directionNullQF|directionGapQF|directionRangeQF|directionPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF" \
-      "GrpQfBeta2=direction:directionNullQF|directionGapQF|directionRangeQF|directionPersistenceQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF|buoyCompPersistenceQF"
+      "GrpQfAlph1=speed:speedNullQF|speedGapQF|speedRangeQF" \
+      "GrpQfBeta1=speed:speedNullQF|speedGapQF|speedRangeQF"  \
+      "GrpQfAlph2=direction:directionNullQF|directionGapQF|directionRangeQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF" \
+      "GrpQfBeta2=direction:directionNullQF|directionGapQF|directionRangeQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF"
     EOF
   env:
     # Environment variables for filter-joiner
