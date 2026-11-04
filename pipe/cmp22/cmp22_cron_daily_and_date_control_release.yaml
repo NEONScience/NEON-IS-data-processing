@@ -1,0 +1,64 @@
+---
+# Archived-L1 release chain; does not ingest raw cmp22 or recompute stats/QM.
+# Edit START_DATE and END_DATE here only. Both are inclusive, and the window
+# must cover complete calendar months: publication replaces monthly packages.
+# Create cmp22_site_list as for production, then create the pipelines in
+# pipe_list_cmp22_release.txt followed by
+# ../radShortPrimary/pipe_list_radShortPrimary_release.txt.
+# The @never cron is manual:
+# pachctl run cron cmp22_cron_daily_and_date_control_release
+# Each run refreshes /tick so the release metadata loaders query PDR again.
+# Only cmp22_site_list and the usual secrets are shared with the regular DAG.
+# Publication and L1 egress DO share the regular destinations: do not run the
+# regular and release publishers for overlapping months concurrently.
+# Existing SRFs must be unchanged. This chain cannot restore pre-SRF final
+# quality flags or redacted values. Changed/removed SRFs need raw reprocessing.
+pipeline:
+  name: cmp22_cron_daily_and_date_control_release
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
+  cmd: ["/bin/bash"]
+  env:
+    OUT_PATH: /pfs/out
+    START_DATE: "2026-04-01"
+    END_DATE: "2026-06-30"
+    SOURCE_TYPE: cmp22
+  stdin:
+  - "#!/bin/bash"
+  - set -euo pipefail
+  - |
+    if [[ "$(date -u -d "$START_DATE" +%F)" != "$START_DATE" ||
+          "$(date -u -d "$END_DATE" +%F)" != "$END_DATE" ||
+          "$START_DATE" > "$END_DATE" ||
+          "${START_DATE##*-}" != "01" ||
+          "$(date -u -d "$END_DATE +1 day" +%d)" != "01" ]]; then
+      echo "Release dates must be an ordered, inclusive range" \
+        "of complete calendar months" >&2
+      exit 1
+    fi
+  - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+  - mkdir -p /pfs/out/tick
+  - date -u +%Y-%m-%dT%H:%M:%S.%NZ > /pfs/out/tick/tick
+input:
+  cross:
+  - cron:
+      name: tick
+      spec: "@never"
+      overwrite: true
+  - pfs:
+      name: SITE_FILE
+      repo: cmp22_site_list
+      glob: /site-list.json
+resource_requests:
+  memory: 500M
+  cpu: 1
+resource_limits:
+  memory: 800M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 500M
+  cpu: 0.5
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

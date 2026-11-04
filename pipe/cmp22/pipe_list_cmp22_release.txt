@@ -1,0 +1,3 @@
+cmp22_cron_daily_and_date_control_release.yaml
+cmp22_location_loader_release.yaml
+cmp22_location_active_dates_assignment_release.yaml
