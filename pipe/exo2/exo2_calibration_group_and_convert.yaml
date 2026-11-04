@@ -206,7 +206,7 @@ input:
     - pfs:
         name: DATA_PATH
         repo: exo2_fill_log_files
-        glob: /(*)/(2025)/(09)/(04)
+        glob: /(*)/(*)/(*)/(*)
         joinOn: $1/$2/$3/$4
         outer_join: false
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
