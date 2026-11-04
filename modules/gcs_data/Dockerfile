@@ -6,7 +6,7 @@
 # docker build -t neon-is-gcs-data -f ./modules/gcs_data/Dockerfile .
 #
 ###
-FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-argo-workflows-data-git-sparse-clone:sha-425bd4b
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-argo-workflows-data-git-sparse-clone:v1.2.0
 
 ARG MODULE_DIR="./modules"
 ARG APP_DIR="gcs_data"
