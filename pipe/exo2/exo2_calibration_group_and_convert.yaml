@@ -46,6 +46,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_EXO2 \
         "UcrtFuncTerm1=def.ucrt.meas.mult:depth" \
         TermQf=depth
     elif [ $source_type = "exo2turbidity" ]; then 
@@ -54,6 +55,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_EXO2TURBIDITY \
         "UcrtFuncTerm1=def.ucrt.meas.mult:turbidity" \
         "TermQf=turbidity"
     elif [ $source_type = "exo2conductivity" ]; then 
@@ -62,6 +64,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_EXO2CONDUCTIVITY \
         "UcrtFuncTerm1=def.ucrt.wq.temp.conc:temperature" \
         "UcrtFuncTerm2=def.ucrt.meas.mult:specific_conductance" \
         "TermQf=specific_conductance"
@@ -71,6 +74,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_EXO2FDOM \
         "UcrtFuncTerm1=def.ucrt.meas.cnst:fdom" \
         "TermQf=fdom"
     elif [ $source_type = "exo2phorp" ]; then 
@@ -79,6 +83,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_EXO2PHORP \
         "UcrtFuncTerm1=def.ucrt.meas.mult:ph" \
         "TermQf=ph"
     elif [ $source_type = "exo2dissolvedoxygen" ]; then 
@@ -87,6 +92,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_EXO2DISSOLVEDOXYGEN \
         "TermQf=dissolved_oxygen_saturation" \
         "UcrtFuncTerm1=def.ucrt.wq.do.conc:dissolved_oxygen" \
         "UcrtFuncTerm2=def.ucrt.meas.mult:dissolved_oxygen_saturation"
@@ -96,6 +102,7 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         DirSubCopy=flags \
+        FileSchmData=$FILE_SCHEMA_DATA_EXO2ALGAE \
         "UcrtFuncTerm1=def.ucrt.meas.mult:chlorophyll" \
         "UcrtFuncTerm2=def.ucrt.meas.mult:chlorophyll_rfu" \
         "TermQf=chlorophyll|chlorophyll_rfu"
@@ -158,42 +165,72 @@ transform:
     # Environment variables for bash code
     SOURCE_TYPE_INDEX: '4'
 input:
-  join:
+  cross:
   - pfs:
-      name: CALIBRATION_PATH
-      repo: exo2_calibration_assignment
-      glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3/$4
-      outer_join: false
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      name: FILE_SCHEMA_DATA_EXO2
+      repo: exo2_avro_schemas
+      glob: /exo2/exo2_calibrated.avsc
   - pfs:
-      name: DATA_PATH
-      repo: exo2_fill_log_files
-      glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3/$4
-      outer_join: false
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      name: FILE_SCHEMA_DATA_EXO2TURBIDITY
+      repo: exo2_avro_schemas
+      glob: /exo2turbidity/exo2turbidity_calibrated.avsc
   - pfs:
-      name: DATE_CONTROL
-      repo: exo2_all_probes_cron_daily_and_date_control
-      glob: /(*)/(*)/(*)/(*)
-      joinOn: $1/$2/$3/$4
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-      outer_join: false
+      name: FILE_SCHEMA_DATA_EXO2CONDUCTIVITY
+      repo: exo2_avro_schemas
+      glob: /exo2conductivity/exo2conductivity_calibrated.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA_EXO2FDOM
+      repo: exo2_avro_schemas
+      glob: /exo2fdom/exo2fdom_calibrated.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA_EXO2ALGAE
+      repo: exo2_avro_schemas
+      glob: /exo2algae/exo2algae_calibrated.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA_EXO2PHORP
+      repo: exo2_avro_schemas
+      glob: /exo2phorp/exo2phorp_calibrated.avsc
+  - pfs:
+      name: FILE_SCHEMA_DATA_EXO2DISSOLVEDOXYGEN
+      repo: exo2_avro_schemas
+      glob: /exo2dissolvedoxygen/exo2dissolvedoxygen_calibrated.avsc
+  # Outer join all days
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: exo2_calibration_assignment
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: false
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH
+        repo: exo2_fill_log_files
+        glob: /(*)/(2025)/(09)/(04)
+        joinOn: $1/$2/$3/$4
+        outer_join: false
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATE_CONTROL
+        repo: exo2_all_probes_cron_daily_and_date_control
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: false
 parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 1.2G
-  cpu: 1.3
+  memory: 1.5G
+  cpu: 3.3
 resource_limits:
-  memory: 2G
-  cpu: 2
+  memory: 3G
+  cpu: 4.5
 sidecar_resource_requests:
-  memory: 1G
-  cpu: 0.5
+  memory: 3G
+  cpu: 0.6
 datum_set_spec:
-  number: 5
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class

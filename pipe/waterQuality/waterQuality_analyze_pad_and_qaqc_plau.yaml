@@ -21,6 +21,8 @@ transform:
 
     # Run first module - padded_timeseries_analyzer
     export DATA_PATH=/pfs/DATA_PATH # The env var set by pachyderm is the last datum in the group. Need the base parent.
+    echo "DEBUG: Contents of DATA_PATH:"
+    ls -la $DATA_PATH | head -20
     python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
 
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
@@ -28,25 +30,106 @@ transform:
     rm -r -f /tmp/pfs/padded_analyzer 
 
     # Run second module - qaqc plausibility
-    Rscript ./flow.qaqc.plau.R \
-      DirIn=/tmp/pfs/padded_analyzerCopy \
-      DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums \
-      "TermTest1=chlorophyll:null|gap|range|persistence|step|spike" \
-      "TermTest2=chlaRelativeFluorescence:null|gap|range|persistence|step|spike" \
-      "TermTest3=specificConductance:null|gap|range|persistence|step|spike" \
-      "TermTest4=sensorDepth:null|gap|range|persistence|step|spike" \
-      "TermTest5=dissolvedOxygen:null|gap|range|persistence|step|spike" \
-      "TermTest6=dissolvedOxygenSaturation:null|gap|range|persistence|step|spike" \
-      "TermTest7=fDOM:null|gap|range|persistence|step|spike" \
-      "TermTest8=pH:null|gap|range|persistence|step|spike" \
-      "TermTest9=turbidity:null|gap|range|persistence|step|spike" \
-      "DirSubCopy=location|flags"
+    # With glob /*/*/*/, the full matched paths are preserved under /pfs/DATA_PATH/
+    # Find all water-quality directories within the matched day structure
+    for water_quality_dir in /pfs/DATA_PATH/*/*/*/water-quality_*; do
+      if [ -d "$water_quality_dir" ]; then
+        SITE_DIR=$(basename "$water_quality_dir")
+        SITE=${SITE_DIR#water-quality_}  # Remove 'water-quality_' prefix
+        SITE=${SITE%%[0-9]*}             # Remove trailing digits
+
+        # Check if site is in BUOY_SITE_LIST
+        if grep -q $SITE /pfs/BUOY_SITE_LIST/site-list-buoy.json; then
+          SITE_TYPE='buoy'
+        else
+          SITE_TYPE='non-buoy'
+        fi
+
+        for sensor_dir in "$water_quality_dir"/*; do
+          if [ -d "$sensor_dir" ]; then
+            SENSOR_TYPE=$(basename "$sensor_dir")
+            echo "Processing SITE: $SITE, SITE_TYPE: $SITE_TYPE, SENSOR_TYPE: $SENSOR_TYPE"
+
+            # Run sensor types separately and handle buoy vs non-buoy sites for exo2
+            if [ $SENSOR_TYPE = 'exo2' ] && [ $SITE_TYPE = 'buoy' ]
+            then
+              Rscript ./flow.qaqc.plau.R \
+                DirIn=/tmp/pfs/padded_analyzerCopy \
+                DirOut=/pfs/out \
+                DirErr=/pfs/out/errored_datums \
+                "TermTest1=sensorDepth:null|gap|range(rmv)|persistence" \
+                "DirSubCopy=location|flags"
+            elif [ $SENSOR_TYPE = 'exo2' ] && [ $SITE_TYPE = 'non-buoy' ]
+            then
+              Rscript ./flow.qaqc.plau.R \
+                DirIn=/tmp/pfs/padded_analyzerCopy \
+                DirOut=/pfs/out \
+                DirErr=/pfs/out/errored_datums \
+                "TermTest1=sensorDepth:null|gap|range(rmv)|persistence|step|spike" \
+                "DirSubCopy=location|flags"
+            elif [ $SENSOR_TYPE = 'exo2conductivity' ]
+            then
+              Rscript ./flow.qaqc.plau.R \
+                DirIn=/tmp/pfs/padded_analyzerCopy \
+                DirOut=/pfs/out \
+                DirErr=/pfs/out/errored_datums \
+                "TermTest1=specificConductance:null|gap|range(rmv)|persistence|step|spike" \
+                "DirSubCopy=location|flags"
+            elif [ $SENSOR_TYPE = 'exo2turbidity' ]
+            then
+              Rscript ./flow.qaqc.plau.R \
+                DirIn=/tmp/pfs/padded_analyzerCopy \
+                DirOut=/pfs/out \
+                DirErr=/pfs/out/errored_datums \
+                "TermTest1=turbidity:null|gap|range(rmv)|persistence|step|spike" \
+                "DirSubCopy=location|flags"
+            elif [ $SENSOR_TYPE = 'exo2fdom' ]
+            then
+              Rscript ./flow.qaqc.plau.R \
+                DirIn=/tmp/pfs/padded_analyzerCopy \
+                DirOut=/pfs/out \
+                DirErr=/pfs/out/errored_datums \
+                "TermTest1=fDOM:null|gap|range(rmv)|persistence|step|spike" \
+                "DirSubCopy=location|flags"
+            elif [ $SENSOR_TYPE = 'exo2phorp' ]
+            then
+              Rscript ./flow.qaqc.plau.R \
+                DirIn=/tmp/pfs/padded_analyzerCopy \
+                DirOut=/pfs/out \
+                DirErr=/pfs/out/errored_datums \
+                "TermTest1=pH:null|gap|range(rmv)|persistence|step|spike" \
+                "DirSubCopy=location|flags"
+            elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
+            then
+              Rscript ./flow.qaqc.plau.R \
+                DirIn=/tmp/pfs/padded_analyzerCopy \
+                DirOut=/pfs/out \
+                DirErr=/pfs/out/errored_datums \
+                "TermTest1=dissolvedOxygen:null|gap|range(rmv)|persistence|step|spike" \
+                "TermTest2=dissolvedOxygenSaturation:null|gap|range(rmv)|persistence|step|spike" \
+                "DirSubCopy=location|flags"
+            elif [ $SENSOR_TYPE = 'exo2algae' ]
+            then
+              Rscript ./flow.qaqc.plau.R \
+                DirIn=/tmp/pfs/padded_analyzerCopy \
+                DirOut=/pfs/out \
+                DirErr=/pfs/out/errored_datums \
+                "TermTest1=chlorophyll:null|gap|range(rmv)|persistence|step|spike" \
+                "TermTest2=chlaRelativeFluorescence:null|gap|range(rmv)|persistence|step|spike" \
+                "DirSubCopy=location|flags"
+            else
+              echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
+            fi
+          fi
+        done
+      fi
+    done
+
     EOF
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /tmp/pfs/padded_analyzer
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: '3'
     ERR_PATH: /pfs/out/errored_datums
     # Environment variables for qaqc plausibility
@@ -56,7 +139,11 @@ input:
   - pfs:
       name: DATA_PATH
       repo: waterQuality_thresh_select_ts_pad
-      glob: /*/*/*
+      glob: /*/*/*/
+  - pfs:
+      name: BUOY_SITE_LIST
+      repo: exo2_site_list
+      glob: /site-list-buoy.json
 parallelism_spec:
   constant: 5
 autoscaling: true
