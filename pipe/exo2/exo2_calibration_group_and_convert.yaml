@@ -8,24 +8,18 @@ transform:
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
     
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf $OUT_PATH_LIMIT_LOG
-    rm -rf $OUT_PATH_JOIN_CAL
-    mkdir -p $OUT_PATH_LIMIT_LOG
-    mkdir -p $OUT_PATH_JOIN_CAL # R modules must have pfs in the repo structure
+    rm -rf $OUT_PATH_LIMIT_LOG $OUT_PATH_JOIN_CAL
+    mkdir -p $OUT_PATH_LIMIT_LOG $OUT_PATH_JOIN_CAL
 
-    # Run filter-joiner for limiting log files (using environment variables below as input parameters)
     export CONFIG=$CONFIG_LIMIT_LOG
     export OUT_PATH=$OUT_PATH_LIMIT_LOG
     python3 -m filter_joiner.filter_joiner_main 
 
-    # What source type are we processing?
+    # Determine source type
     if [[ -d "${OUT_PATH_LIMIT_LOG}/exo2" || -d "${OUT_PATH_LIMIT_LOG}/exo2conductivity" || -d "${OUT_PATH_LIMIT_LOG}/exo2turbidity" || -d "${OUT_PATH_LIMIT_LOG}/exo2fdom" || -d "${OUT_PATH_LIMIT_LOG}/exo2phorp" || -d "${OUT_PATH_LIMIT_LOG}/exo2dissolvedoxygen" || -d "${OUT_PATH_LIMIT_LOG}/exo2algae" ]]; then
-      # Get source type /SOURCE_TYPE/YYYY/MM/DD 
       source_type=$(echo $DATE_CONTROL | cut -f $SOURCE_TYPE_INDEX -d "/")
       echo "Source type: $source_type"
     else
@@ -33,137 +27,84 @@ transform:
         exit 0
     fi
 
-    # Run filter-joiner for joining cal and data (using environment variables below as input parameters)
     export CONFIG=$CONFIG_JOIN_CAL
     export OUT_PATH=$OUT_PATH_JOIN_CAL
     python3 -m filter_joiner.filter_joiner_main
-    rm -rf $OUT_PATH_LIMIT_LOG # Clean up
+    rm -rf $OUT_PATH_LIMIT_LOG
 
-    # Run calibration conversion module
-    if [ $source_type = "exo2" ]; then 
-      Rscript ./flow.cal.conv.R \
-        DirIn=$OUT_PATH_JOIN_CAL \
-        DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums \
-        DirSubCopy=flags \
-        FileSchmData=$FILE_SCHEMA_DATA_EXO2 \
-        "UcrtFuncTerm1=def.ucrt.meas.mult:depth" \
-        TermQf=depth
-    elif [ $source_type = "exo2turbidity" ]; then 
-      Rscript ./flow.cal.conv.R \
-        DirIn=$OUT_PATH_JOIN_CAL \
-        DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums \
-        DirSubCopy=flags \
-        FileSchmData=$FILE_SCHEMA_DATA_EXO2TURBIDITY \
-        "UcrtFuncTerm1=def.ucrt.meas.mult:turbidity" \
-        "TermQf=turbidity"
-    elif [ $source_type = "exo2conductivity" ]; then 
-      Rscript ./flow.cal.conv.R \
-        DirIn=$OUT_PATH_JOIN_CAL \
-        DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums \
-        DirSubCopy=flags \
-        FileSchmData=$FILE_SCHEMA_DATA_EXO2CONDUCTIVITY \
-        "UcrtFuncTerm1=def.ucrt.wq.temp.conc:temperature" \
-        "UcrtFuncTerm2=def.ucrt.meas.mult:specific_conductance" \
-        "TermQf=specific_conductance"
-    elif [ $source_type = "exo2fdom" ]; then 
-      Rscript ./flow.cal.conv.R \
-        DirIn=$OUT_PATH_JOIN_CAL \
-        DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums \
-        DirSubCopy=flags \
-        FileSchmData=$FILE_SCHEMA_DATA_EXO2FDOM \
-        "UcrtFuncTerm1=def.ucrt.meas.cnst:fdom" \
-        "TermQf=fdom"
-    elif [ $source_type = "exo2phorp" ]; then 
-      Rscript ./flow.cal.conv.R \
-        DirIn=$OUT_PATH_JOIN_CAL \
-        DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums \
-        DirSubCopy=flags \
-        FileSchmData=$FILE_SCHEMA_DATA_EXO2PHORP \
-        "UcrtFuncTerm1=def.ucrt.meas.mult:ph" \
-        "TermQf=ph"
-    elif [ $source_type = "exo2dissolvedoxygen" ]; then 
-      Rscript ./flow.cal.conv.R \
-        DirIn=$OUT_PATH_JOIN_CAL \
-        DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums \
-        DirSubCopy=flags \
-        FileSchmData=$FILE_SCHEMA_DATA_EXO2DISSOLVEDOXYGEN \
-        "TermQf=dissolved_oxygen_saturation" \
-        "UcrtFuncTerm1=def.ucrt.wq.do.conc:dissolved_oxygen" \
-        "UcrtFuncTerm2=def.ucrt.meas.mult:dissolved_oxygen_saturation"
-    elif [ $source_type = "exo2algae" ]; then 
-      Rscript ./flow.cal.conv.R \
-        DirIn=$OUT_PATH_JOIN_CAL \
-        DirOut=/pfs/out \
-        DirErr=/pfs/out/errored_datums \
-        DirSubCopy=flags \
-        FileSchmData=$FILE_SCHEMA_DATA_EXO2ALGAE \
-        "UcrtFuncTerm1=def.ucrt.meas.mult:chlorophyll" \
-        "UcrtFuncTerm2=def.ucrt.meas.mult:chlorophyll_rfu" \
-        "TermQf=chlorophyll|chlorophyll_rfu"
+    # Map source type to schema file and parameters
+    declare -A schema_map=(
+      [exo2]="$FILE_SCHEMA_DATA_EXO2|def.ucrt.meas.mult:depth|depth"
+      [exo2turbidity]="$FILE_SCHEMA_DATA_EXO2TURBIDITY|def.ucrt.meas.mult:turbidity|turbidity"
+      [exo2conductivity]="$FILE_SCHEMA_DATA_EXO2CONDUCTIVITY|def.ucrt.wq.temp.conc:temperature,def.ucrt.meas.mult:specific_conductance|specific_conductance"
+      [exo2fdom]="$FILE_SCHEMA_DATA_EXO2FDOM|def.ucrt.meas.cnst:fdom|fdom"
+      [exo2phorp]="$FILE_SCHEMA_DATA_EXO2PHORP|def.ucrt.meas.mult:ph|ph"
+      [exo2dissolvedoxygen]="$FILE_SCHEMA_DATA_EXO2DISSOLVEDOXYGEN|def.ucrt.wq.do.conc:dissolved_oxygen,def.ucrt.meas.mult:dissolved_oxygen_saturation|dissolved_oxygen_saturation"
+      [exo2algae]="$FILE_SCHEMA_DATA_EXO2ALGAE|def.ucrt.meas.mult:chlorophyll,def.ucrt.meas.mult:chlorophyll_rfu|chlorophyll|chlorophyll_rfu"
+    )
+
+    IFS='|' read -r file_schema ucrt_terms term_qf <<< "${schema_map[$source_type]}"
+    
+    # Build Rscript command dynamically
+    rscript_args=(
+      "DirIn=$OUT_PATH_JOIN_CAL"
+      "DirOut=/pfs/out"
+      "DirErr=/pfs/out/errored_datums"
+      "DirSubCopy=flags"
+      "FileSchmData=$file_schema"
+    )
+    
+    # Add uncertainty function terms
+    if [[ ! -z "$ucrt_terms" ]]; then
+      IFS=',' read -ra terms <<< "$ucrt_terms"
+      idx=1
+      for term in "${terms[@]}"; do
+        rscript_args+=("UcrtFuncTerm$idx=$term")
+        ((idx++))
+      done
     fi
+    
+    rscript_args+=("TermQf=$term_qf")
+    
+    Rscript ./flow.cal.conv.R "${rscript_args[@]}"
     
     EOF
   env:
-    # Environment variables for filter-joiner.
     CONFIG_LIMIT_LOG: |
       ---
-      # Configuration for filter-joiner module that will limit log files to the dates in
-      # the date control pipeline
-      # Make sure the DATE_CONTROL path is second. We actually don't want these files and 
-      # they won't be copied if log files for the site are present
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
             name: DATA_PATH
-            # Filter for data directory
             glob_pattern: /pfs/DATA_PATH/*/*/*/*/**
-            # Join on sensorType/y/m/d/sourceID
             join_indices: [3,4,5,6]
             outer_join: False
         - path:
             name: DATE_CONTROL
-            # Filter for data directory
             glob_pattern: /pfs/DATE_CONTROL/*/*/*/*/**
-            # Join on sensorType/y/m/d/sourceID 
             join_indices: [3,4,5,6]
             outer_join: False
     
     CONFIG_JOIN_CAL: |
       ---
-      # Configuration for filter-joiner module that will bring together the data and calibrations
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
             name: DATA_PATH
-            # Filter for data directory
             glob_pattern: /tmp/log_limited/*/*/*/*/*/**
-            # Join on named location (already joined below by source type and day)
             join_indices: [7]
             outer_join: true
         - path:
             name: CALIBRATION_PATH
-            # Filter for data directory
             glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
-            # Join on named location (already joined below by day)
             join_indices: [7]
 
-    OUT_PATH_LIMIT_LOG: /tmp/log_limited # Note that R modules use "pfs" in the path structure to determine datums
-    OUT_PATH_JOIN_CAL: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    OUT_PATH_LIMIT_LOG: /tmp/log_limited
+    OUT_PATH_JOIN_CAL: /tmp/pfs/filter_joined
     LOG_LEVEL: DEBUG
-    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
-    LINK_TYPE: COPY # options are COPY or SYMLINK. 
-    # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
-    # Environment variables for bash code
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY
+    PARALLELIZATION_INTERNAL: '3'
     SOURCE_TYPE_INDEX: '4'
+
 input:
   cross:
   - pfs:
@@ -194,7 +135,6 @@ input:
       name: FILE_SCHEMA_DATA_EXO2DISSOLVEDOXYGEN
       repo: exo2_avro_schemas
       glob: /exo2dissolvedoxygen/exo2dissolvedoxygen_calibrated.avsc
-  # Outer join all days
   - join:
     - pfs:
         name: CALIBRATION_PATH
@@ -202,21 +142,22 @@ input:
         glob: /(*)/(*)/(*)/(*)
         joinOn: $1/$2/$3/$4
         outer_join: false
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+        empty_files: false
     - pfs:
         name: DATA_PATH
         repo: exo2_fill_log_files
         glob: /(*)/(*)/(*)/(*)
         joinOn: $1/$2/$3/$4
         outer_join: false
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+        empty_files: false
     - pfs:
         name: DATE_CONTROL
         repo: exo2_all_probes_cron_daily_and_date_control
         glob: /(*)/(*)/(*)/(*)
         joinOn: $1/$2/$3/$4
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        empty_files: false
         outer_join: false
+
 parallelism_spec:
   constant: 5
 autoscaling: true
