@@ -29,7 +29,7 @@ transform:
         TermQf=nitrate \
         FileSchmData=$FILE_SCHEMA_DATA \
         FileSchmQf=$FILE_SCHEMA_FLAGS \
-        DirSubCopy=flags
+        "DirSubCopy=flags|calibration"
     EOF
   env:
     # Environment variables for filter-joiner.
