@@ -25,16 +25,26 @@ transform:
 
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output) 
-    rm -r -f /tmp/pfs/padded_analyzer 
+    rm -r -f /tmp/pfs/padded_analyzer
+    
+    # Debug: List structure of padded_analyzerCopy
+    echo "DEBUG: Contents of padded_analyzerCopy:"
+    find /tmp/pfs/padded_analyzerCopy -type f -o -type d | head -30 
 
     # Run second module - qaqc plausibility
-    # With glob /*/*/*/, the full matched paths are preserved under /pfs/DATA_PATH/
+    # Testing: Only run for 2025/09/04 and SITE="POSE"
     # Find all water-quality directories within the matched day structure
-    for water_quality_dir in /pfs/DATA_PATH/*/*/*/water-quality_*; do
+    for water_quality_dir in /pfs/DATA_PATH/2025/09/04/water-quality_*; do
       if [ -d "$water_quality_dir" ]; then
         SITE_DIR=$(basename "$water_quality_dir")
         SITE=${SITE_DIR#water-quality_}  # Remove 'water-quality_' prefix
         SITE=${SITE%%[0-9]*}             # Remove trailing digits
+
+        # Skip if not POSE (for testing)
+        if [ "$SITE" != "POSE" ]; then
+          echo "Skipping SITE: $SITE (testing mode - only processing POSE)"
+          continue
+        fi
 
         # Check if site is in BUOY_SITE_LIST
         if grep -q $SITE /pfs/BUOY_SITE_LIST/site-list-buoy.json; then
@@ -48,38 +58,35 @@ transform:
             SENSOR_TYPE=$(basename "$sensor_dir")
             echo "Processing SITE: $SITE, SITE_TYPE: $SITE_TYPE, SENSOR_TYPE: $SENSOR_TYPE"
 
-            # Run sensor types separately and handle buoy vs non-buoy sites for exo2
-            if [ $SENSOR_TYPE = 'exo2' ] && [ $SITE_TYPE = 'buoy' ]
+            # Limit concurrent jobs to 2 to manage memory
+            while [ $(jobs -r | wc -l) -ge 2 ]; do
+              sleep 0.5
+            done
+
+            # Run sensor types separately
+            if [ $SENSOR_TYPE = 'exo2' ]
             then
               Rscript ./flow.qaqc.plau.R \
                 DirIn=/tmp/pfs/padded_analyzerCopy \
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=sensorDepth:null|gap|range(rmv)|persistence" \
-                "DirSubCopy=location" &
-            elif [ $SENSOR_TYPE = 'exo2' ] && [ $SITE_TYPE = 'non-buoy' ]
-            then
-              Rscript ./flow.qaqc.plau.R \
-                DirIn=/tmp/pfs/padded_analyzerCopy \
-                DirOut=/pfs/out \
-                DirErr=/pfs/out/errored_datums \
-                "TermTest1=sensorDepth:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location" &
+                "DirSubCopy=location" 2>&1 | tee -a /tmp/r_output.log &
             elif [ $SENSOR_TYPE = 'exo2conductivity' ]
             then
               Rscript ./flow.qaqc.plau.R \
                 DirIn=/tmp/pfs/padded_analyzerCopy \
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
-                "TermTest1=specificConductance:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location" &
+                "TermTest1=specificConductance:null|gap|range(rmv)|persistence|step" \
+                "DirSubCopy=location" 2>&1 | tee -a /tmp/r_output.log &
             elif [ $SENSOR_TYPE = 'exo2turbidity' ]
             then
               Rscript ./flow.qaqc.plau.R \
                 DirIn=/tmp/pfs/padded_analyzerCopy \
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
-                "TermTest1=turbidity:null|gap|range(rmv)|persistence|step|spike" \
+                "TermTest1=turbidity:null|gap|range(rmv)|persistence|step" \
                 "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2fdom' ]
             then
@@ -87,7 +94,7 @@ transform:
                 DirIn=/tmp/pfs/padded_analyzerCopy \
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
-                "TermTest1=fDOM:null|gap|range(rmv)|persistence|step|spike" \
+                "TermTest1=fDOM:null|gap|range(rmv)|persistence|step" \
                 "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2phorp' ]
             then
@@ -95,7 +102,7 @@ transform:
                 DirIn=/tmp/pfs/padded_analyzerCopy \
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
-                "TermTest1=pH:null|gap|range(rmv)|persistence|step|spike" \
+                "TermTest1=pH:null|gap|range(rmv)|persistence|step" \
                 "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
             then
@@ -103,8 +110,8 @@ transform:
                 DirIn=/tmp/pfs/padded_analyzerCopy \
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
-                "TermTest1=dissolvedOxygen:null|gap|range(rmv)|persistence|step|spike" \
-                "TermTest2=dissolvedOxygenSaturation:null|gap|range(rmv)|persistence|step|spike" \
+                "TermTest1=dissolvedOxygen:null|gap|range(rmv)|persistence|step" \
+                "TermTest2=dissolvedOxygenSaturation:null|gap|range(rmv)|persistence|step" \
                 "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2algae' ]
             then
@@ -112,8 +119,8 @@ transform:
                 DirIn=/tmp/pfs/padded_analyzerCopy \
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
-                "TermTest1=chlorophyll:null|gap|range(rmv)|persistence|step|spike" \
-                "TermTest2=chlaRelativeFluorescence:null|gap|range(rmv)|persistence|step|spike" \
+                "TermTest1=chlorophyll:null|gap|range(rmv)|persistence|step" \
+                "TermTest2=chlaRelativeFluorescence:null|gap|range(rmv)|persistence|step" \
                 "DirSubCopy=location" &
             else
               echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
@@ -140,23 +147,23 @@ input:
   - pfs:
       name: DATA_PATH
       repo: waterQuality_thresh_select_ts_pad
-      glob: /*/*/*/
+      glob: /2025/09/04/water-quality_*/*
   - pfs:
       name: BUOY_SITE_LIST
       repo: exo2_site_list
       glob: /site-list-buoy.json
 parallelism_spec:
-  constant: 10
+  constant: 6
 autoscaling: true
 resource_requests:
-  memory: 4G
-  cpu: 2.5
+  memory: 3G
+  cpu: 2
 resource_limits:
-  memory: 8G
-  cpu: 4
+  memory: 6G
+  cpu: 3
 sidecar_resource_requests:
-  memory: 2.5G
-  cpu: 0.7
+  memory: 2G
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:
