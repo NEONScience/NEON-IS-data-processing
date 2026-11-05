@@ -21,8 +21,6 @@ transform:
 
     # Run first module - padded_timeseries_analyzer
     export DATA_PATH=/pfs/DATA_PATH # The env var set by pachyderm is the last datum in the group. Need the base parent.
-    echo "DEBUG: Contents of DATA_PATH:"
-    ls -la $DATA_PATH | head -20
     python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
 
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
@@ -58,7 +56,7 @@ transform:
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=sensorDepth:null|gap|range(rmv)|persistence" \
-                "DirSubCopy=location|flags"
+                "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2' ] && [ $SITE_TYPE = 'non-buoy' ]
             then
               Rscript ./flow.qaqc.plau.R \
@@ -66,7 +64,7 @@ transform:
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=sensorDepth:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location|flags"
+                "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2conductivity' ]
             then
               Rscript ./flow.qaqc.plau.R \
@@ -74,7 +72,7 @@ transform:
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=specificConductance:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location|flags"
+                "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2turbidity' ]
             then
               Rscript ./flow.qaqc.plau.R \
@@ -82,7 +80,7 @@ transform:
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=turbidity:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location|flags"
+                "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2fdom' ]
             then
               Rscript ./flow.qaqc.plau.R \
@@ -90,7 +88,7 @@ transform:
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=fDOM:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location|flags"
+                "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2phorp' ]
             then
               Rscript ./flow.qaqc.plau.R \
@@ -98,7 +96,7 @@ transform:
                 DirOut=/pfs/out \
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=pH:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location|flags"
+                "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
             then
               Rscript ./flow.qaqc.plau.R \
@@ -107,7 +105,7 @@ transform:
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=dissolvedOxygen:null|gap|range(rmv)|persistence|step|spike" \
                 "TermTest2=dissolvedOxygenSaturation:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location|flags"
+                "DirSubCopy=location" &
             elif [ $SENSOR_TYPE = 'exo2algae' ]
             then
               Rscript ./flow.qaqc.plau.R \
@@ -116,7 +114,7 @@ transform:
                 DirErr=/pfs/out/errored_datums \
                 "TermTest1=chlorophyll:null|gap|range(rmv)|persistence|step|spike" \
                 "TermTest2=chlaRelativeFluorescence:null|gap|range(rmv)|persistence|step|spike" \
-                "DirSubCopy=location|flags"
+                "DirSubCopy=location" &
             else
               echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
             fi
@@ -124,16 +122,19 @@ transform:
         done
       fi
     done
+    
+    # Wait for all background R processes to complete
+    wait
 
     EOF
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /tmp/pfs/padded_analyzer
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
     ERR_PATH: /pfs/out/errored_datums
     # Environment variables for qaqc plausibility
-    PARALLELIZATION_INTERNAL: '1'
+    PARALLELIZATION_INTERNAL: '4'
 input:
   cross:
   - pfs:
@@ -145,14 +146,14 @@ input:
       repo: exo2_site_list
       glob: /site-list-buoy.json
 parallelism_spec:
-  constant: 5
+  constant: 10
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 1.1
-resource_limits:
   memory: 4G
-  cpu: 2
+  cpu: 2.5
+resource_limits:
+  memory: 8G
+  cpu: 4
 sidecar_resource_requests:
   memory: 2.5G
   cpu: 0.7

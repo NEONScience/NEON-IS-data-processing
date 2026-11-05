@@ -32,18 +32,29 @@ transform:
     python3 -m filter_joiner.filter_joiner_main
     rm -rf $OUT_PATH_LIMIT_LOG
 
+    # Load schemas from dedicated repo once (not cross product)
+    # Schemas are mounted at /pfs/SCHEMAS_PATH/exo2/*.avsc
+    schema_dir="/pfs/SCHEMAS_PATH"
+    
     # Map source type to schema file and parameters
-    declare -A schema_map=(
-      [exo2]="$FILE_SCHEMA_DATA_EXO2|def.ucrt.meas.mult:depth|depth"
-      [exo2turbidity]="$FILE_SCHEMA_DATA_EXO2TURBIDITY|def.ucrt.meas.mult:turbidity|turbidity"
-      [exo2conductivity]="$FILE_SCHEMA_DATA_EXO2CONDUCTIVITY|def.ucrt.wq.temp.conc:temperature,def.ucrt.meas.mult:specific_conductance|specific_conductance"
-      [exo2fdom]="$FILE_SCHEMA_DATA_EXO2FDOM|def.ucrt.meas.cnst:fdom|fdom"
-      [exo2phorp]="$FILE_SCHEMA_DATA_EXO2PHORP|def.ucrt.meas.mult:ph|ph"
-      [exo2dissolvedoxygen]="$FILE_SCHEMA_DATA_EXO2DISSOLVEDOXYGEN|def.ucrt.wq.do.conc:dissolved_oxygen,def.ucrt.meas.mult:dissolved_oxygen_saturation|dissolved_oxygen_saturation"
-      [exo2algae]="$FILE_SCHEMA_DATA_EXO2ALGAE|def.ucrt.meas.mult:chlorophyll,def.ucrt.meas.mult:chlorophyll_rfu|chlorophyll|chlorophyll_rfu"
+    declare -A schema_config=(
+      [exo2]="exo2/exo2_calibrated.avsc|def.ucrt.meas.mult:depth|depth"
+      [exo2turbidity]="exo2turbidity/exo2turbidity_calibrated.avsc|def.ucrt.meas.mult:turbidity|turbidity"
+      [exo2conductivity]="exo2conductivity/exo2conductivity_calibrated.avsc|def.ucrt.wq.temp.conc:temperature,def.ucrt.meas.mult:specific_conductance|specific_conductance"
+      [exo2fdom]="exo2fdom/exo2fdom_calibrated.avsc|def.ucrt.meas.cnst:fdom|fdom"
+      [exo2phorp]="exo2phorp/exo2phorp_calibrated.avsc|def.ucrt.meas.mult:ph|ph"
+      [exo2dissolvedoxygen]="exo2dissolvedoxygen/exo2dissolvedoxygen_calibrated.avsc|def.ucrt.wq.do.conc:dissolved_oxygen,def.ucrt.meas.mult:dissolved_oxygen_saturation|dissolved_oxygen_saturation"
+      [exo2algae]="exo2algae/exo2algae_calibrated.avsc|def.ucrt.meas.mult:chlorophyll,def.ucrt.meas.mult:chlorophyll_rfu|chlorophyll|chlorophyll_rfu"
     )
 
-    IFS='|' read -r file_schema ucrt_terms term_qf <<< "${schema_map[$source_type]}"
+    IFS='|' read -r schema_path ucrt_terms term_qf <<< "${schema_config[$source_type]}"
+    file_schema="$schema_dir/$schema_path"
+    
+    # Verify schema exists
+    if [[ ! -f "$file_schema" ]]; then
+      echo "ERROR: Schema not found at $file_schema"
+      exit 1
+    fi
     
     # Build Rscript command dynamically
     rscript_args=(
@@ -66,6 +77,7 @@ transform:
     
     rscript_args+=("TermQf=$term_qf")
     
+    echo "Running: Rscript ./flow.cal.conv.R ${rscript_args[*]}"
     Rscript ./flow.cal.conv.R "${rscript_args[@]}"
     
     EOF
@@ -107,34 +119,12 @@ transform:
 
 input:
   cross:
+  # Schema repo (single mount, not repeated per datum like before)
   - pfs:
-      name: FILE_SCHEMA_DATA_EXO2
+      name: SCHEMAS_PATH
       repo: exo2_avro_schemas
-      glob: /exo2/exo2_calibrated.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA_EXO2TURBIDITY
-      repo: exo2_avro_schemas
-      glob: /exo2turbidity/exo2turbidity_calibrated.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA_EXO2CONDUCTIVITY
-      repo: exo2_avro_schemas
-      glob: /exo2conductivity/exo2conductivity_calibrated.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA_EXO2FDOM
-      repo: exo2_avro_schemas
-      glob: /exo2fdom/exo2fdom_calibrated.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA_EXO2ALGAE
-      repo: exo2_avro_schemas
-      glob: /exo2algae/exo2algae_calibrated.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA_EXO2PHORP
-      repo: exo2_avro_schemas
-      glob: /exo2phorp/exo2phorp_calibrated.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA_EXO2DISSOLVEDOXYGEN
-      repo: exo2_avro_schemas
-      glob: /exo2dissolvedoxygen/exo2dissolvedoxygen_calibrated.avsc
+      glob: /
+  # Main data join
   - join:
     - pfs:
         name: CALIBRATION_PATH
