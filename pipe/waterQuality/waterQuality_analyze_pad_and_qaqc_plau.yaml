@@ -32,101 +32,79 @@ transform:
     find /tmp/pfs/padded_analyzerCopy -type f -o -type d | head -30 
 
     # Run second module - qaqc plausibility
-    # Testing: Only run for 2025/09/04 and SITE="POSE"
     # Find all water-quality directories within the matched day structure
-    for water_quality_dir in /pfs/DATA_PATH/2025/09/04/water-quality_*; do
-      if [ -d "$water_quality_dir" ]; then
-        SITE_DIR=$(basename "$water_quality_dir")
-        SITE=${SITE_DIR#water-quality_}  # Remove 'water-quality_' prefix
-        SITE=${SITE%%[0-9]*}             # Remove trailing digits
+    for sensor_dir in /pfs/DATA_PATH/*/*/*/water-quality_*/*; do
+      if [ -d "$sensor_dir" ]; then
+        SENSOR_TYPE=$(basename "$sensor_dir")
+        echo "Processing SENSOR_TYPE: $SENSOR_TYPE for $sensor_dir"
 
-        # Skip if not POSE (for testing)
-        if [ "$SITE" != "POSE" ]; then
-          echo "Skipping SITE: $SITE (testing mode - only processing POSE)"
-          continue
-        fi
-
-        # Check if site is in BUOY_SITE_LIST
-        if grep -q $SITE /pfs/BUOY_SITE_LIST/site-list-buoy.json; then
-          SITE_TYPE='buoy'
-        else
-          SITE_TYPE='non-buoy'
-        fi
-
-        for sensor_dir in "$water_quality_dir"/*; do
-          if [ -d "$sensor_dir" ]; then
-            SENSOR_TYPE=$(basename "$sensor_dir")
-            echo "Processing SITE: $SITE, SITE_TYPE: $SITE_TYPE, SENSOR_TYPE: $SENSOR_TYPE"
-
-            # Limit concurrent jobs to 2 to manage memory
-            while [ $(jobs -r | wc -l) -ge 2 ]; do
-              sleep 0.5
-            done
-
-            # Run sensor types separately
-            if [ $SENSOR_TYPE = 'exo2' ]
-            then
-              Rscript ./flow.qaqc.plau.R \
-                DirIn=/tmp/pfs/padded_analyzerCopy \
-                DirOut=/pfs/out \
-                DirErr=/pfs/out/errored_datums \
-                "TermTest1=sensorDepth:null|gap|range(rmv)|persistence" \
-                "DirSubCopy=location" 2>&1 | tee -a /tmp/r_output.log &
-            elif [ $SENSOR_TYPE = 'exo2conductivity' ]
-            then
-              Rscript ./flow.qaqc.plau.R \
-                DirIn=/tmp/pfs/padded_analyzerCopy \
-                DirOut=/pfs/out \
-                DirErr=/pfs/out/errored_datums \
-                "TermTest1=specificConductance:null|gap|range(rmv)|persistence|step" \
-                "DirSubCopy=location" 2>&1 | tee -a /tmp/r_output.log &
-            elif [ $SENSOR_TYPE = 'exo2turbidity' ]
-            then
-              Rscript ./flow.qaqc.plau.R \
-                DirIn=/tmp/pfs/padded_analyzerCopy \
-                DirOut=/pfs/out \
-                DirErr=/pfs/out/errored_datums \
-                "TermTest1=turbidity:null|gap|range(rmv)|persistence|step" \
-                "DirSubCopy=location" &
-            elif [ $SENSOR_TYPE = 'exo2fdom' ]
-            then
-              Rscript ./flow.qaqc.plau.R \
-                DirIn=/tmp/pfs/padded_analyzerCopy \
-                DirOut=/pfs/out \
-                DirErr=/pfs/out/errored_datums \
-                "TermTest1=fDOM:null|gap|range(rmv)|persistence|step" \
-                "DirSubCopy=location" &
-            elif [ $SENSOR_TYPE = 'exo2phorp' ]
-            then
-              Rscript ./flow.qaqc.plau.R \
-                DirIn=/tmp/pfs/padded_analyzerCopy \
-                DirOut=/pfs/out \
-                DirErr=/pfs/out/errored_datums \
-                "TermTest1=pH:null|gap|range(rmv)|persistence|step" \
-                "DirSubCopy=location" &
-            elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
-            then
-              Rscript ./flow.qaqc.plau.R \
-                DirIn=/tmp/pfs/padded_analyzerCopy \
-                DirOut=/pfs/out \
-                DirErr=/pfs/out/errored_datums \
-                "TermTest1=dissolvedOxygen:null|gap|range(rmv)|persistence|step" \
-                "TermTest2=dissolvedOxygenSaturation:null|gap|range(rmv)|persistence|step" \
-                "DirSubCopy=location" &
-            elif [ $SENSOR_TYPE = 'exo2algae' ]
-            then
-              Rscript ./flow.qaqc.plau.R \
-                DirIn=/tmp/pfs/padded_analyzerCopy \
-                DirOut=/pfs/out \
-                DirErr=/pfs/out/errored_datums \
-                "TermTest1=chlorophyll:null|gap|range(rmv)|persistence|step" \
-                "TermTest2=chlaRelativeFluorescence:null|gap|range(rmv)|persistence|step" \
-                "DirSubCopy=location" &
-            else
-              echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
-            fi
-          fi
+        # Limit concurrent jobs to 2 to manage memory
+        while [ $(jobs -r | wc -l) -ge 2 ]; do
+           sleep 0.5
         done
+
+        # Run sensor types separately
+        if [ $SENSOR_TYPE = 'exo2' ]
+        then
+          Rscript ./flow.qaqc.plau.R \
+            DirIn=/tmp/pfs/padded_analyzerCopy \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "TermTest1=sensorDepth:null|gap|range(rmv)|persistence" \
+            "DirSubCopy=location" 2>&1 | tee -a /tmp/r_output.log &
+        elif [ $SENSOR_TYPE = 'exo2conductivity' ]
+        then
+          Rscript ./flow.qaqc.plau.R \
+            DirIn=/tmp/pfs/padded_analyzerCopy \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "TermTest1=specificConductance:null|gap|range(rmv)|persistence|step|spike" \
+            "DirSubCopy=location" 2>&1 | tee -a /tmp/r_output.log &
+        elif [ $SENSOR_TYPE = 'exo2turbidity' ]
+        then
+          Rscript ./flow.qaqc.plau.R \
+            DirIn=/tmp/pfs/padded_analyzerCopy \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "TermTest1=turbidity:null|gap|range(rmv)|persistence|step|spike" \
+            "DirSubCopy=location" &
+        elif [ $SENSOR_TYPE = 'exo2fdom' ]
+        then
+          Rscript ./flow.qaqc.plau.R \
+            DirIn=/tmp/pfs/padded_analyzerCopy \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "TermTest1=fDOM:null|gap|range(rmv)|persistence|step|spike" \
+            "DirSubCopy=location" &
+        elif [ $SENSOR_TYPE = 'exo2phorp' ]
+        then
+          Rscript ./flow.qaqc.plau.R \
+            DirIn=/tmp/pfs/padded_analyzerCopy \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "TermTest1=pH:null|gap|range(rmv)|persistence|step|spike" \
+            "DirSubCopy=location" &
+        elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
+        then
+          Rscript ./flow.qaqc.plau.R \
+            DirIn=/tmp/pfs/padded_analyzerCopy \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "TermTest1=dissolvedOxygen:null|gap|range(rmv)|persistence|step|spike" \
+            "TermTest2=dissolvedOxygenSaturation:null|gap|range(rmv)|persistence|step|spike" \
+            "DirSubCopy=location" &
+        elif [ $SENSOR_TYPE = 'exo2algae' ]
+        then
+          Rscript ./flow.qaqc.plau.R \
+            DirIn=/tmp/pfs/padded_analyzerCopy \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "TermTest1=chlorophyll:null|gap|range(rmv)|persistence|step|spike" \
+            "TermTest2=chlaRelativeFluorescence:null|gap|range(rmv)|persistence|step|spike" \
+            "DirSubCopy=location" &
+        else
+          echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
+        fi
       fi
     done
     
@@ -143,15 +121,10 @@ transform:
     # Environment variables for qaqc plausibility
     PARALLELIZATION_INTERNAL: '4'
 input:
-  cross:
-  - pfs:
-      name: DATA_PATH
-      repo: waterQuality_thresh_select_ts_pad
-      glob: /2025/09/04/water-quality_*/*
-  - pfs:
-      name: BUOY_SITE_LIST
-      repo: exo2_site_list
-      glob: /site-list-buoy.json
+  pfs:
+    name: DATA_PATH
+    repo: waterQuality_thresh_select_ts_pad
+    glob: /*/*/*/*/*
 parallelism_spec:
   constant: 6
 autoscaling: true
