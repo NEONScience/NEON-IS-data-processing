@@ -301,7 +301,13 @@ wrap.qaqc.plau <- function(DirIn,
       SpkWndwStep <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window step - points.']
       SpkNumPtsGrp <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum consecutive points (n)']
       SpkNaFracMax <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum (%) missing points per window']
-      
+      log$info(base::paste0('Spike test thresholds for term: ',idxTerm))
+      log$info(base::paste0('Despiking Method: ', SpkMeth))
+      log$info(base::paste0('Despiking MAD: ', SpkMad))
+      log$info(base::paste0('Despiking window size - points: ', SpkWndw))
+      log$info(base::paste0('Despiking window step - points.: ', SpkWndwStep))
+      log$info(base::paste0('Despiking maximum consecutive points (n): ', SpkNumPtsGrp))
+      log$info(base::paste0('Despiking maximum (%) missing points per window: ', SpkNaFracMax))
       # Check that thresholds exist for this test
       if(base::length(SpkMeth) == 0){
         log$error(base::paste0('"Despiking Method" not found in thresholds for term: ',idxTerm,'. Cannot proceed.')) 
