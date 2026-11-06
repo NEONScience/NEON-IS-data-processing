@@ -54,13 +54,13 @@ input:
           glob: /*/(*/*/*)
           joinOn: $1
           group_by: $1
-      # - pfs:
-      #    # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-      #    name: GROUP_FOCUS_PATH
-      #    repo: sunav2_location_group_and_restructure
-      #    glob: /(*/*/*)
-      #    joinOn: $1
-      #    group_by: $1
+      - pfs:
+         # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
+         name: GROUP_FOCUS_PATH
+         repo: nitrate_group_path
+         glob: /(*/*/*)
+         joinOn: $1
+         group_by: $1
 parallelism_spec:
   constant: 5
 autoscaling: true
