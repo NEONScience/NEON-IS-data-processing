@@ -40,7 +40,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "DirSubCombData=data|flags|uncertainty_data" \
       DirSubCombUcrt=uncertainty_coef \
-      DirSubCopy=location 
+      "DirSubCopy=location|calibration" 
 
     EOF
   env:

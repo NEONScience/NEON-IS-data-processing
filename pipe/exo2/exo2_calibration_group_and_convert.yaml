@@ -61,7 +61,7 @@ transform:
       "DirIn=$OUT_PATH_JOIN_CAL"
       "DirOut=/pfs/out"
       "DirErr=/pfs/out/errored_datums"
-      "DirSubCopy=flags"
+      "DirSubCopy=flags|calibration"
       "FileSchmData=$file_schema"
     )
     
