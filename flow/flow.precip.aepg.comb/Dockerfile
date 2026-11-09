@@ -16,6 +16,12 @@ MAINTAINER "Teresa Burlingame" tburlingame@battelleecology.org
 ARG TARGETPLATFORM
 ARG RCLONE_VERSION=v1.62.2
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        wget && \
+    rm -rf /var/lib/apt/lists/*
+
 # Multi-platform package install for rclone
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm-v7; \
