@@ -32,13 +32,13 @@ def get_lov_values(connector: DbConnector, lov_name: str) -> list[dict[str, str]
         response = requests.get(url, headers={'Accept': 'application/json'}, timeout=15)
     except Exception as exc:
         log.warning('Failed to load LOV values', lov_name=lov_name, url=url, error=str(exc))
-        return []
+        raise
 
     if response.status_code == 200:
         payload = response.json()
     else:
         log.warning('LOV call failed', lov_name=lov_name, url=url, status_code=response.status_code)
-        return []
+        raise RuntimeError(f'LOV lookup failed for {lov_name}: HTTP {response.status_code}')
 
     if isinstance(payload, dict):
         items = payload.get('listOfValuesItems') or payload.get('items', [])
