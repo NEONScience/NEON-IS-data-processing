@@ -13,7 +13,7 @@ transform:
   - python3 -m csd_loader.load_all_csd_files
   
   env:
-    INGEST_BUCKET: neon-int-l4-discharge-proc
+    INGEST_BUCKET: neon-l4-discharge-proc
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     STARTING_PATH_INDEX: "7"
