@@ -69,12 +69,15 @@ def write_publication_files(config: PublicationConfig) -> None:
                         if config.file_type == 'csv':
                             write_csv(file_path, table_workbook_rows, values)
                             new_files[path_parts.package_type].add(file_path)
-    for metadata_path, lov_value_rows in lov_rows_by_metadata_path.items():
+    for metadata_path, (domain, path_parts) in metadata_context_by_path.items():
+        lov_value_rows = lov_rows_by_metadata_path[metadata_path]
         if lov_value_rows:
-            domain, path_parts = metadata_context_by_path[metadata_path]
             remove_previous_categorical_codes(config.path_config.out_path, metadata_path, domain, path_parts)
             filename = get_categorical_codes_filename(domain, now, path_parts)
             write_lov_values_csv(Path(config.path_config.out_path, metadata_path, filename), lov_value_rows)
+        directory = Path(config.path_config.out_path, metadata_path)
+        pattern = f'NEON.{domain}.{path_parts.site}.{path_parts.data_product}.categoricalCodes.*.csv'
+        new_files[path_parts.package_type].update(directory.glob(pattern))
     write_manifests(manifest_files, new_files)
 
 
