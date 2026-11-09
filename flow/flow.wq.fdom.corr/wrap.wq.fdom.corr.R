@@ -1,0 +1,404 @@
+
+##############################################################################################
+#' @title Wrapper for correcting fdom for temperature and absorbance
+
+#' @author
+#' Kaelin Cawley \email{kcawley@battelleecology.org}
+
+#' @description Workflow. Apply temperature and absorbance corrections to fdom data for the
+#' water quality transition.
+#' 
+#' @param DirIn Character value. The base file path to the exo2 and sunav2 data.
+#' 
+#' @param DirOutBase Character value. The base file path for the output data. 
+#' 
+#' @param SchmData (optional), A json-formatted character string containing the schema for the output data parquet.
+#' 
+#' @param SchmQf (optional), A json-formatted character string containing the schema for the output flags parquet.
+#' 
+#' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
+#' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
+#' output path (i.e. not combined but carried through as-is).
+#' 
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
+#' for more details.
+#' 
+#' @return Corrected fdom data and associated flags for temperature and absorbance corrections.
+#' 
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+#' 
+#' @keywords Currently none
+#' 
+#' @examples
+#' Stepping through the code in Rstudio 
+#' Sys.setenv(DIR_IN='/scratch/pfs/waterQuality_exo2fdom_correct_group/2025/09/04/water-quality_POSE102100')
+#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#' arg <- c("DirIn=$DIR_IN", "DirOut=/pfs/out/waterQuality_exo2fdom_correct", "FileSchmData=/pfs/avro_schemas/dp0p/exo2fdom_corrected.avsc", "FileSchmQf=/pfs/avro_schemas/dp0p/flags_correction_exo2fdom.avsc")
+#' rm(list=setdiff(ls(),c('arg','log')))
+#' 
+#' #' @seealso None currently
+#' 
+# changelog and author contributions / copyrights
+#   Kaelin Cawley (2020-01-23)
+#     original creation
+#   Cove Sturtevant (2020-04-28)
+#     added support for parquet format
+#   Nora Catolico (2026-11-09)
+#     updated with wrapper function
+##############################################################################################
+
+wrap.wq.fdom.corr <- function(DirIn,
+                              DirOutBase,
+                              SchmData=NULL,
+                              SchmQf=NULL,
+                              DirSubCopy=NULL,
+                              log=NULL
+){
+  
+  #' Start logging if not already.
+  if(base::is.null(log)){
+    log <- NEONprocIS.base::def.log.init()
+  } 
+
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  cfgLoc <- base::dir(base::paste0(DirIn,"/exo2fdom"))
+  DirInFlags <- base::paste0(DirIn,"/exo2fdom/",cfgLoc,"/flags")
+
+  timeBgn <- InfoDirIn$time # start date for the data
+  timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
+  
+  idxDirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)
+  idxDirOutData <- base::paste0(idxDirOut, '/exo2fdom/', cfgLoc,'/data')
+  idxDirOutFlags <- base::paste0(idxDirOut, '/exo2fdom/', cfgLoc,'/flags')
+  base::dir.create(idxDirOutData,recursive=TRUE)
+  base::dir.create(idxDirOutFlags,recursive=TRUE)
+  
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirSubCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,'/',DirSubCopy),
+                                       DirDest=idxDirOut,
+                                       LnkSubObj=TRUE,
+                                       log=log)
+  }
+
+  # String constants for CVAL files
+  rhoNamefdom <- "CVALA1" #Calibration factor for temperature correction function for fDOM
+  pathNamefdom <- "CVALB1" #Calibration factor for absorbance correction function for fDOM
+  calTableNameSUNA <- "CVALTABLEA1" #Calibration table component containing wavelength (independet variable) and reference spectrum (dependent variable)
+  fdomNameUncrt <- "U_CVALA1" # Combined, standard uncertainty of fluorescent dissolved organic matter; provided by CVAL
+  tempCorrNameUncrt <- "U_CVALA4" # Combined, standard uncertainty of temperature correction function for fDOM; provided by CVAL
+  absCorrNameUncrt <- "U_CVALA5" # Combined, standard uncertainty of absorbance correction function for fDOM; provided by CVAL
+
+  # Other string constants
+  timestampFormat <- "%Y-%m-%d %H:%M"
+
+  # Default values for rho and pathlength, useful for older data where cal files don't have the info yet
+  rho_fdom <- -0.01024
+  uncrt_rho_fdom <- 0.002458
+  pathlength <- 0.330
+  uncrt_pathlength <- 0.178
+
+  #Default Values for applying corrections
+  applyTempCorr <- TRUE
+  applyAbsCorr <- TRUE
+
+  # The flags folder is already populated from the calibration module. Copy over any existing files.
+  fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
+  # Symbolically link each file
+  for(idxFileCopy in fileCopy){
+    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(idxDirOutFlags,'/',idxFileCopy))
+    rptCopy <- base::system(cmdCopy)
+  }
+
+  ##### Read in fDOM data #####
+  fdomDataGlob <- base::file.path(DirIn,"exo2fdom","*","data","*")
+  fdomDataPath <- base::Sys.glob(fdomDataGlob)
+  if(base::length(fdomDataPath)==1){
+    fdomData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(fdomDataPath),log = log), silent = FALSE)
+    log$debug(base::paste0("One datum found, reading in: ",fdomDataPath))
+  }else{
+    log$debug(base::paste0("Zero or more than one datum found for: ",fdomDataGlob))
+    next()
+  }
+  
+  if (base::class(fdomData) == 'try-error') {
+    # Generate error and stop execution
+    #log$error(base::paste0('File ', idxDirData, '/', fdomData, ' is unreadable.'))
+    log$error(base::paste0('File: ', fdomDataGlob, ' is unreadable.'))
+    stop()
+  }
+
+  # Validate the data
+  valiData <-
+    NEONprocIS.base::def.validate.dataframe(
+      dfIn = fdomData,
+      TestNameCol = base::unique(c('readout_time', 'fDOM')),
+      log = log
+    )
+  if (!valiData) {
+    # Fail if there isn't valid data so that we can troubleshoot the missing data.
+    log$fatal(base::paste0('File: ', fdomDataGlob, ' is invalid.'))
+    stop()
+  }
+  
+  #Default all flags to -1 then change them as the test can be performed
+  fdomData$fDOMTempQF <- -1
+  
+  #Default expanded uncertainty to NA and spectrumCount to 0 until they can be calculated
+  fdomData$fDOMExpUncert <- NA
+  #fdomData$spectrumCount <- 0 #This gets calculated by def.wq.abs.corr.R, if possible
+  
+  #Default temp and absorbance correction factors
+  #fdomData$surfaceWaterTemperature <- NA #This gets merged in from exo2conductivity data
+  fdomData$tempFactor <- NA
+  fdomData$pathlength <- NA
+  fdomData$ucrt_pathlength <- NA
+  fdomData$Abs_ex <- NA
+  fdomData$Abs_em <- NA
+  fdomData$absFactor <- NA
+  fdomData$uncrt_A1_fdom <- NA
+  fdomData$rho_fdom <- NA
+  fdomData$uncrt_rho_fdom <- NA
+  fdomData$ucrt_A_ex <- NA
+  fdomData$ucrt_A_em <- NA
+  
+  #Populate rawCalibratedfDOM
+  fdomData$rawCalibratedfDOM <- fdomData$fDOM
+  
+  ##### Read in fDOM cal and uncertainty information #####
+  fdomCalGlob <- base::file.path(DirIn,"exo2fdom","*","calibration","*")
+  fdomCalPath <- base::Sys.glob(fdomCalGlob)
+
+  if(base::length(fdomCalPath)>=1){
+    log$debug("One or more fDOM cal file(s) found")
+    
+    #Pull fDOM A1 uncertainty, rho_fdom, and pathlength from the appropriate cal file
+    metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = fdomCalPath,log = log)
+    # Determine the calibrations that apply for this day
+    calSlct <- NEONprocIS.cal::def.cal.slct(metaCal = metaCal,
+                                            TimeBgn = timeBgn,
+                                            TimeEnd = timeEnd,
+                                            log = log)
+    fileCalSlct <- base::setdiff(base::unique(calSlct$file), 'NA')
+    numFileCalSlct <- base::length(fileCalSlct)
+
+    # Move on without applying corrections if there isn't a valid fDOM cal file
+    if(numFileCalSlct >= 1){
+      # Loop through the cal files to pull out the values we need
+      for(calIdx in calSlct$file[!is.na(calSlct$file)]){
+        calFilefdom <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::Sys.glob(base::file.path(DirIn,"exo2fdom","*","calibration",calIdx)),Vrbs = FALSE)
+        #CVAL has only one rho_fdom value for all sensors and sites
+        fdomRangeToApplyCal <- which(fdomData$readout_time >= calSlct$timeBgn[calSlct$file==calIdx] & fdomData$readout_time < calSlct$timeEnd[calSlct$file==calIdx])
+        fdomData$uncrt_A1_fdom[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$ucrt$Value[gsub(" ","",calFilefdom$ucrt$Name) == fdomNameUncrt]))
+        fdomData$rho_fdom[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == rhoNamefdom]))
+        fdomData$uncrt_rho_fdom[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$ucrt$Value[gsub(" ","",calFilefdom$ucrt$Name) == tempCorrNameUncrt]))
+        fdomData$pathlength[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == pathNamefdom]))
+        fdomData$ucrt_pathlength[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$ucrt$Value[gsub(" ","",calFilefdom$ucrt$Name) == absCorrNameUncrt]))
+      }
+    }else{
+      log$error("Error: No fDOM cal file(s) found that match selected dates.")
+      applyAbsCorr <- FALSE
+      applyTempCorr <- FALSE
+      fdomData$spectrumCount <- 0
+      fdomData$fDOMAbsQF <- -1
+    }
+  }else{
+    log$error(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
+    applyAbsCorr <- FALSE
+    applyTempCorr <- FALSE
+    fdomData$spectrumCount <- 0
+    fdomData$fDOMAbsQF <- -1
+  }
+
+  ##### Temperature Corrections #####
+  # Look for and read in exo2conductivity data
+  exo2conductivityDataGlob <- base::file.path(DirIn,"exo2conductivity","*","data","*")
+  exo2conductivityDataPath <- base::Sys.glob(exo2conductivityDataGlob)
+  
+  if(base::length(exo2conductivityDataPath)==1){
+    log$debug(base::paste0("One file found, reading in: ",exo2conductivityDataPath))
+    exo2conductivityData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(exo2conductivityDataPath),log = log), silent = FALSE)
+  }else{
+    log$debug(base::paste0("Zero or more than one file found for: ",exo2conductivityDataGlob))
+    applyTempCorr <- FALSE
+    fdomData$fDOMTempQF <- 1
+  }
+  
+  if(applyTempCorr && base::class(exo2conductivityData) == 'try-error') {
+    # Generate error and stop execution
+    #log$error(base::paste0('File ', idxDirData, '/', fdomData, ' is unreadable.'))
+    log$warn(base::paste0('File: ', exo2conductivityData, ' is unreadable, temp corrections will not be applied.'))
+    applyTempCorr <- FALSE
+    fdomData$fDOMTempQF <- 1
+  }else if(applyTempCorr){
+    # Validate the data
+    valiData <-
+      NEONprocIS.base::def.validate.dataframe(
+        dfIn = exo2conductivityData,
+        TestNameCol = base::unique(c('readout_time', 'surfaceWaterTemperature')),
+        log = log
+      )
+    if (!valiData) {
+      applyTempCorr <- FALSE
+      fdomData$fDOMTempQF <- 1
+    }
+  }
+
+  # Only need to read in calibration information for temp corrections if we're able to do them
+  if(applyTempCorr){    
+    #Combine fdom and temp
+    #fdomData$readout_time_min <- base::format(fdomData$readout_time, format = timestampFormat)
+    #exo2conductivityData$readout_time_min <- base::format(exo2conductivityData$readout_time, format = timestampFormat)
+    fdomData <- base::merge(fdomData, exo2conductivityData, by = c("readout_time"), all.x = TRUE, suffixes = c(".fdom",".temp"))
+    
+    #Populate the fdom temperature QF values
+    fdomData$fDOMTempQF[!base::is.na(fdomData$surfaceWaterTemperature)] <- 0
+    fdomData$fDOMTempQF[base::is.na(fdomData$surfaceWaterTemperature)] <- 1
+    
+    #Determine fdom temperature correction factor
+    fdomData$tempFactor <- 1/(1+fdomData$rho_fdom*(fdomData$surfaceWaterTemperature-20))
+    
+    #Pull uncertainty information for temperature data
+    exo2conductivityUcrtGlob <- base::file.path(DirIn,"exo2conductivity","*","uncertainty_data","*")
+    exo2conductivityUcrtPath <- base::Sys.glob(exo2conductivityUcrtGlob)
+    
+    exo2conductivityUcrtData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(exo2conductivityUcrtPath),log = log), silent = FALSE)
+    fdomData <- base::merge(fdomData, exo2conductivityUcrtData, by = c("readout_time"), all.x = TRUE, suffixes = c(".fdom",".tempUcrt"))
+  }
+
+  ##### Absorbance Correction #####
+  # Look for and read in sunav2 data
+  sunav2DataGlob <- base::file.path(DirIn,"sunav2","*","data","*")
+  sunav2DataPath <- base::Sys.glob(sunav2DataGlob)
+  
+  if(base::length(sunav2DataPath) >= 1){
+    log$debug(base::paste0(length(sunav2DataPath)," SUNA file(s) found, reading in: ", sunav2DataPath))
+  }else{
+    log$debug(base::paste0("Zero SUNA files found for: ",sunav2DataGlob))
+    applyAbsCorr <- FALSE
+    fdomData$fDOMAbsQF <- 1
+    fdomData$spectrumCount <- 0
+  }
+
+  #Only need to read in calibration information for abs corrections if we're able to do them
+  if(applyAbsCorr){
+    #Look for and read in sunav2 calibration data
+    sunav2CalDataGlob <- base::file.path(DirIn,"sunav2","*","calibration","*")
+    sunav2CalDataPath <- base::Sys.glob(sunav2CalDataGlob)
+    
+    if(base::length(sunav2CalDataPath) >= 1){
+      log$debug(base::paste0(length(sunav2CalDataPath)," SUNA calibration file(s) found, reading in: ", sunav2CalDataPath))
+    }else{
+      log$debug(base::paste0("Zero SUNA calibration files found for: ",sunav2CalDataGlob))
+      applyAbsCorr <- FALSE
+      fdomData$fDOMAbsQF <- 1
+    }
+    
+    #Determine fdom absorbance correction factor
+    absData <- try(def.wq.abs.corr(sunav2Filenames = sunav2DataPath, 
+                                                  sunav2CalFilenames = sunav2CalDataPath, 
+                                                  log = log),silent = FALSE)
+    
+    # Handle the error when absData is a try-error
+    if (base::class(absData) == 'try-error') {
+      log$debug(base::paste0('Could not perform absorbance correction.'))
+      fdomData$fDOMAbsQF <- 1
+      fdomData$spectrumCount <- 0
+    }else{
+      # Merge in abs data to the fdomData dataframe and calculate correction factors and flags
+      for(idxAbsData in absData$readout_time){
+        if(idxAbsData <= base::max(fdomData$readout_time)){
+          nextReadout <- base::min(absData$readout_time[absData$readout_time > idxAbsData])
+          fdomData$Abs_ex[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$Abs_ex[absData$readout_time == idxAbsData]
+          fdomData$Abs_em[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$Abs_em[absData$readout_time == idxAbsData]
+          fdomData$ucrt_A_ex[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$ucrt_A_ex[absData$readout_time == idxAbsData]
+          fdomData$ucrt_A_em[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$ucrt_A_em[absData$readout_time == idxAbsData]
+          fdomData$spectrumCount[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$spectrumCount[absData$readout_time == idxAbsData]
+          fdomData$fDOMAbsQF[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$fDOMAbsQF[absData$readout_time == idxAbsData]
+        }else{
+          break
+        }        
+      }      
+      #Determine fdom absorbance correction factor
+      fdomData$absFactor <- 10^((fdomData$Abs_ex + fdomData$Abs_em) * fdomData$pathlength)
+    }    
+  }
+
+  ##### Uncertainty Calculations #####
+  #Uncertainty when no corrections can be applied
+  noCorrIdx <- base::which(fdomData$fDOMTempQF != 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3|fdomData$fDOMAbsQF == -1))
+  fdomData$fDOMExpUncert[noCorrIdx] <- 2 * fdomData$uncrt_A1_fdom[noCorrIdx] * fdomData$fDOM[noCorrIdx]
+  
+  #Uncertainty when temperature corrections, only, are applied
+  tempOnlyIdx <- base::which(fdomData$fDOMTempQF == 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3|fdomData$fDOMAbsQF == -1))
+  #Calculate the fdom output with the factors that exist
+  fdomData$fDOM[tempOnlyIdx] <- fdomData$fDOM[tempOnlyIdx] * fdomData$tempFactor[tempOnlyIdx]
+  fdomData$fDOMExpUncert[tempOnlyIdx] <- 2 * sqrt((fdomData$uncrt_A1_fdom[tempOnlyIdx] * 1/(1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20)) * fdomData$rawCalibratedfDOM[tempOnlyIdx])^2 + 
+                                                (fdomData$surfaceWaterTemperature_ucrtComb[tempOnlyIdx] * fdomData$rawCalibratedfDOM[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20)/((1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20))^2))^2 + 
+                                                (fdomData$uncrt_rho_fdom[tempOnlyIdx] * fdomData$rawCalibratedfDOM[tempOnlyIdx]*fdomData$rho_fdom[tempOnlyIdx]/((1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20))^2))^2)
+  
+  #Uncertainty when absorbance corrections, only, are applied
+  absOnlyIdx <- base::which(fdomData$fDOMTempQF != 0 & (fdomData$fDOMAbsQF == 0|fdomData$fDOMAbsQF == 2))
+  #Calculate the fdom output with the factors that exist
+  fdomData$fDOM[absOnlyIdx] <- fdomData$fDOM[absOnlyIdx] * fdomData$absFactor[absOnlyIdx]
+  fdomData$fDOMExpUncert[absOnlyIdx] <- 2 * sqrt((fdomData$uncrt_A1_fdom[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx]+fdomData$Abs_em[absOnlyIdx])) * fdomData$rawCalibratedfDOM[absOnlyIdx])^2 +
+                                               (fdomData$ucrt_A_ex[absOnlyIdx] * fdomData$pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2 + 
+                                               (fdomData$ucrt_A_em[absOnlyIdx] * fdomData$pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2 +
+                                               (fdomData$ucrt_pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * (fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx]) * 10 ^ (fdomData$pathlength[absOnlyIdx] * (fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2)
+  
+  #Uncertainty when both temperature and absorbance corrections are applied
+  tempAndAbsIdx <- base::which(fdomData$fDOMTempQF == 0 & (fdomData$fDOMAbsQF == 0|fdomData$fDOMAbsQF == 2))
+  fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$pathlength[tempAndAbsIdx] * base::log2(10) * (fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx])*10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)-1)
+  #Calculate the fdom output with the factors that exist
+  fdomData$fDOM[tempAndAbsIdx] <- fdomData$fDOM[tempAndAbsIdx] * fdomData$tempFactor[tempAndAbsIdx] * fdomData$absFactor[tempAndAbsIdx]
+  fdomData$fDOMExpUncert[tempAndAbsIdx] <- 2 * sqrt((fdomData$uncrt_A1_fdom[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * 10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx]+fdomData$Abs_em[tempAndAbsIdx]))/(1-fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)))^2 + 
+                                                  (fdomData$surfaceWaterTemperature_ucrtComb[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$rho_fdom[tempAndAbsIdx] * 10^(fdomData$pathlength[tempAndAbsIdx] * (fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/((fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*fdomData$rho_fdom[tempAndAbsIdx] -1)^2)^2 + 
+                                                  (fdomData$uncrt_rho_fdom[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(1-(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*fdomData$rho_fdom[tempAndAbsIdx])^2)^2 + 
+                                                  (fdomData$ucrt_A_ex[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$pathlength[tempAndAbsIdx] * base::log2(10)  * (fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)-1))^2 + 
+                                                  (fdomData$ucrt_A_em[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$pathlength[tempAndAbsIdx] * base::log2(10)  * (fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)-1))^2 + 
+                                                  (fdomData$ucrt_pathlength[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2)
+
+  ##### Writing out data and flag files #####
+    
+  #Write data and uncertainty (which get stats)
+  #readout_time, fDOM, fDOMExpUncert, spectrumCount
+  dataOutputs <- c("readout_time", "readout_time", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
+  dataOut <- fdomData[,dataOutputs]
+  #Don't really need to change the names, but just to avoid confusion it doesn't seem like a bad idea
+  names(dataOut) <- c("startDateTime", "endDateTime", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
+  
+  #Turn necessary outputs to integer
+  colInt <- "spectrumCount"
+  dataOut[colInt] <- base::lapply(dataOut[colInt],base::as.integer) # Turn spectrumCount to integer
+  
+  rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
+                                      NameFile = base::paste0(idxDirOutData,"/exo2fdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_basicStats_005.parquet"),
+                                      Schm = SchmData),silent=FALSE)
+  if(class(rptDataOut)[1] == 'try-error'){
+    log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
+    stop()
+  } else {
+    log$info("Basic stats written out.")
+  }
+  
+  #Write the flags (which get metrics)
+  #readout_time, fDOMTempQF, fDOMAbsQF
+  flagOutputs <- c("readout_time", "fDOMTempQF", "fDOMAbsQF")
+  flagsOut <- fdomData[,flagOutputs]
+  
+  #Turn necessary outputs to integer
+  colInt <- c("fDOMTempQF", "fDOMAbsQF") 
+  flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
+  
+  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut, 
+                                      NameFile = base::paste0(idxDirOutFlags,"/exo2fdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCorrection.parquet"), 
+                                      Schm = SchmQf),silent=FALSE)
+  if(class(rptQfOut)[1] == 'try-error'){
+    log$error(base::paste0('Writing the output flags failed: ',attr(rptQfOut,"condition")))
+    stop()
+  } else {
+    log$info("Flags written out.")
+  }
+}

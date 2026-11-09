@@ -51,7 +51,7 @@ transform:
             DirOut=/pfs/out \
             DirErr=/pfs/out/errored_datums \
             "TermTest1=sensorDepth:null|gap|range(rmv)|persistence" \
-            "DirSubCopy=location" 2>&1 | tee -a /tmp/r_output.log &
+            "DirSubCopy=location|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         elif [ $SENSOR_TYPE = 'exo2conductivity' ]
         then
           Rscript ./flow.qaqc.plau.R \
@@ -59,7 +59,7 @@ transform:
             DirOut=/pfs/out \
             DirErr=/pfs/out/errored_datums \
             "TermTest1=specificConductance:null|gap|range(rmv)|persistence|step|spike" \
-            "DirSubCopy=location|calibration" 2>&1 | tee -a /tmp/r_output.log &
+            "DirSubCopy=location|calibration|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         elif [ $SENSOR_TYPE = 'exo2turbidity' ]
         then
           Rscript ./flow.qaqc.plau.R \
@@ -67,7 +67,7 @@ transform:
             DirOut=/pfs/out \
             DirErr=/pfs/out/errored_datums \
             "TermTest1=turbidity:null|gap|range(rmv)|persistence|step|spike" \
-            "DirSubCopy=location" &
+            "DirSubCopy=location|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         elif [ $SENSOR_TYPE = 'exo2fdom' ]
         then
           Rscript ./flow.qaqc.plau.R \
@@ -75,7 +75,7 @@ transform:
             DirOut=/pfs/out \
             DirErr=/pfs/out/errored_datums \
             "TermTest1=fDOM:null|gap|range(rmv)|persistence|step|spike" \
-            "DirSubCopy=location|calibration" &
+            "DirSubCopy=location|calibration|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         elif [ $SENSOR_TYPE = 'exo2phorp' ]
         then
           Rscript ./flow.qaqc.plau.R \
@@ -83,7 +83,7 @@ transform:
             DirOut=/pfs/out \
             DirErr=/pfs/out/errored_datums \
             "TermTest1=pH:null|gap|range(rmv)|persistence|step|spike" \
-            "DirSubCopy=location" &
+            "DirSubCopy=location|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
         then
           Rscript ./flow.qaqc.plau.R \
@@ -92,7 +92,7 @@ transform:
             DirErr=/pfs/out/errored_datums \
             "TermTest1=dissolvedOxygen:null|gap|range(rmv)|persistence|step|spike" \
             "TermTest2=dissolvedOxygenSaturation:null|gap|range(rmv)|persistence|step|spike" \
-            "DirSubCopy=location" &
+            "DirSubCopy=location|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         elif [ $SENSOR_TYPE = 'exo2algae' ]
         then
           Rscript ./flow.qaqc.plau.R \
@@ -101,7 +101,7 @@ transform:
             DirErr=/pfs/out/errored_datums \
             "TermTest1=chlorophyll:null|gap|range(rmv)|persistence|step|spike" \
             "TermTest2=chlaRelativeFluorescence:null|gap|range(rmv)|persistence|step|spike" \
-            "DirSubCopy=location" &
+            "DirSubCopy=location|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         else
           echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
         fi

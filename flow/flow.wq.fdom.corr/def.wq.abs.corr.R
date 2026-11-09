@@ -116,7 +116,7 @@ def.wq.abs.corr <-
       NameCal <-
         sunav2CalFilenames[base::grepl(idxCal, sunav2CalFilenames)]
       calTable <-
-        try(NEONprocIS.wq::def.pars.cal.tab.suna(calFilename = NameCal, log = log))
+        try(def.pars.cal.tab.suna(calFilename = NameCal, log = log))
       
       # Fail the transition now when these can't be read, but might just want to keep going if they all seem to be older files
       if (base::class(calTable) == 'try-error') {
@@ -162,11 +162,9 @@ def.wq.abs.corr <-
           
           #According to the nitrate testing the lamp's data is best for the 10-20th frames, throw the others on the ground
           if (base::nrow(burstData) < 10) {
-            log$error(
+            log$debug(
               base::paste0(
                 "SUNA nitrate data present, but fewer than 10 light frames found for: ",
-                base::unique(burstData$site_id),
-                ", ",
                 burstStartTime
               )
             )
@@ -180,8 +178,6 @@ def.wq.abs.corr <-
               log$debug(
                 base::paste0(
                   "SUNA nitrate data present, greater than 20 light frames found for: ",
-                  base::unique(burstData$site_id),
-                  ", ",
                   burstStartTime
                 )
               )
@@ -192,7 +188,7 @@ def.wq.abs.corr <-
             burstData <- burstData[10:burstEnd,]
             outputDF$spectrumCount[i] <- burstEnd - (10 - 1)
             avgBurst <-
-              NEONprocIS.wq::def.pars.data.suna(sunaBurst = burstData$spectrum_channels,
+              def.pars.data.suna(sunaBurst = burstData$spectrum_channels,
                                                 log = log)
             #Eyeball Check
             #plot(calTable$wavelength,avgBurst)
