@@ -2,7 +2,7 @@ name: PROD-windobserverii_extreme-update-dag
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/windobserverii_extreme/*.yaml'
       - 'pipe/windobserverii_extreme/pipe_list_windobserverii_extreme.txt'

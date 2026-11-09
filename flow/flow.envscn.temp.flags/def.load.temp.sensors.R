@@ -50,7 +50,7 @@ def.load.temp.sensors <- function(DirTemp,
     # Find all temperature sensor files
     filesTemp <- base::list.files(DirTemp, full.names = TRUE, recursive = TRUE)
     # Filter for 1-minute data files and location JSON files
-    filesTempData <- filesTemp[base::grepl("/temp-soil_[^/]+/data/[^/]+001\\.parquet$", filesTemp)]
+    filesTempData <- filesTemp[base::grepl("/temp-soil_[^/]+/data/[^/]+005\\.parquet$", filesTemp)]
     filesTempLocation <- filesTemp[base::grepl("/temp-soil_[^/]+/location/[^/]*_locations\\.json$", filesTemp)]
   }
  

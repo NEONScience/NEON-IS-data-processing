@@ -107,22 +107,24 @@ class ManifestFile:
 
     def _remove_files(self) -> None:
         """Remove data files whose names do not contain the package type."""
-        for row in self.manifest:
-            filename = row[self.column_names[0]]
-            if self.package_type not in filename \
-                    and 'EML' not in filename \
-                    and 'variables' not in filename\
-                    and 'readme' not in filename\
-                    and 'science_review_flags' not in filename\
-                    and 'sensor_positions' not in filename:
-                self.manifest.remove(row)
+        self.manifest = [
+            row for row in self.manifest
+            if self.package_type in row[self.column_names[0]]
+            or 'EML' in row[self.column_names[0]]
+            or 'variables' in row[self.column_names[0]]
+            or 'readme' in row[self.column_names[0]]
+            or 'science_review_flags' in row[self.column_names[0]]
+            or 'sensor_positions' in row[self.column_names[0]]
+        ]
 
     @staticmethod
     def _get_md5_hash(path: Path) -> str:
         """Create the md5 hash of a file."""
-        with open(path) as f:
-            data = f.read()
-        return hashlib.md5(data.encode('utf-8')).hexdigest()
+        md5_hash = hashlib.md5()
+        with open(path, 'rb') as file:
+            for byte_block in iter(lambda: file.read(4096), b''):
+                md5_hash.update(byte_block)
+        return md5_hash.hexdigest()
 
     @staticmethod
     def get_filename() -> str:

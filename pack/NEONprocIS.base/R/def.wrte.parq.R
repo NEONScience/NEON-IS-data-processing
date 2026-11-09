@@ -60,6 +60,8 @@
 #   Cove Sturtevant (2023-08-15)
 #     if no schema is input, create a parquet schema before writing (which allows e.g. defaulting to float vs. double)
 #     change default compression to zstd (similar compression ratio as gzip but much faster)
+#   Cove Sturtevant (2026-06-22)
+#     explicitly cast arrow table to arrow data types to avoid schema errors
 ##############################################################################################
 def.wrte.parq <- function(data,
                           NameFile,
@@ -126,8 +128,11 @@ def.wrte.parq <- function(data,
       # In order to reliably apply the schema, we need to do some type conversion of the data first.
       data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
       
-      # Covert to arrow table
-      data <- arrow::arrow_table(data, schema=schmData)
+      # Convert to arrow table (without schema first to avoid type mismatch errors)
+      data <- arrow::arrow_table(data)
+      
+      # Now cast columns to match the schema
+      data <- NEONprocIS.base::def.wrte.parq.cast.cols(data, schmData, log=log)
       
     } else if ("arrow_dplyr_query" %in% base::class(data)){
       data <- arrow::as_arrow_table(data, schema=schmData)
@@ -166,8 +171,11 @@ def.wrte.parq <- function(data,
     # In order to reliably apply the schema, we need to do some type conversion of the data first.
     data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
     
-    # Apply the arrow schema
-    data <- arrow::arrow_table(data, schema=Schm)
+    # Convert to arrow table (without schema first to avoid type mismatch errors)
+    data <- arrow::arrow_table(data)
+    
+    # Now cast columns to match the schema
+    data <- NEONprocIS.base::def.wrte.parq.cast.cols(data, Schm, log=log)
     
   }
   
@@ -205,6 +213,7 @@ def.wrte.parq <- function(data,
   }
   log$debug(base::paste0('Dictionary settings per variable: ',base::paste0(Dict,collapse=' '), ' for output file ',NameFile))
   
+
   # Write the data
   rpt <- base::try(
     arrow::write_parquet(x=data,

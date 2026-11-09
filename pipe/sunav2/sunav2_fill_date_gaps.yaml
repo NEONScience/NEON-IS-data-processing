@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_date_gaps
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:v1.0.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gap-fill-nonrglr:v1.2.1
   cmd:
   - sh
   - "-c"
@@ -99,7 +99,7 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 2G
-  cpu: 32
+  cpu: 2
 resource_limits:
   memory: 3G
   cpu: 4.5

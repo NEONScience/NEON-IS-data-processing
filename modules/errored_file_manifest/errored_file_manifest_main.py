@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+"""Generate a manifest of errored files.
+
+Inputs (environment variables):
+- ERR_PATH: Path to the directory containing errored files.
+- ERRORED_MANIFEST: Path where the manifest file will be written.
+- LOG_LEVEL (optional): Logging level (default: INFO).
+
+Output:
+- Writes an errored-file manifest to ERRORED_MANIFEST.
+
+Example:
+    export ERR_PATH="/data/errored_datums"
+    export ERRORED_MANIFEST="/data/errored_manifest.txt"
+    export LOG_LEVEL="INFO"
+    PYTHONPATH=modules python3 -m errored_file_manifest.errored_file_manifest_main
+"""
+
+import environs
+import structlog
+from pathlib import Path
+
+import common.log_config as log_config
+
+from errored_file_manifest.errored_file_manifest import write_errored_manifest
+
+
+def main() -> None:
+    env = environs.Env()
+    errored_directory: Path = env.path('ERR_PATH')
+    errored_manifest: Path = env.path('ERRORED_MANIFEST')
+    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
+    log_config.configure(log_level)
+    log = structlog.get_logger()
+    log.debug(f'errored_directory: {errored_directory} errored_manifest: {errored_manifest}')
+    write_errored_manifest(errored_directory, errored_manifest)
+
+
+if __name__ == '__main__':
+    main()

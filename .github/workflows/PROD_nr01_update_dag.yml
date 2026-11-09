@@ -2,7 +2,7 @@ name: PROD-nr01-update-dag
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/nr01/*.yaml'
       - 'pipe/nr01/pipe_list_nr01.txt'

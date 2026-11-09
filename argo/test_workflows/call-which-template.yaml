@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: call-which-template
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: which # All modules
+        value: '["a","b"]'
+      - name: log-level
+        value: DEBUG
+  templates:
+    - name: main
+      parallelism: 2
+      steps:
+        - - name: run-which
+            template: run-which
+            arguments:
+              parameters:
+              - name: which
+                value: "{{item}}"
+            withParam: "{{workflow.parameters.which}}"
+
+    - name: run-which
+      inputs:
+        parameters:
+          - name: which
+      steps:
+        - - name: use-a
+            when: "{{inputs.parameters.which}} == 'a'"
+            templateRef:
+              name: test-input-artifact-a
+              template: run
+            arguments:
+              parameters:
+              - name: log-level
+                value: "{{workflow.parameters.log-level}}"
+          - name: use-b
+            when: "{{inputs.parameters.which}} == 'b'"
+            templateRef:
+              name: test-input-artifact-b
+              template: run
+            arguments:
+              parameters:
+              - name: log-level
+                value: "{{workflow.parameters.log-level}}"

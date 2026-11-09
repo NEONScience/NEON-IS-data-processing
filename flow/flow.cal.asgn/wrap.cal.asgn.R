@@ -28,11 +28,15 @@
 #' Input path = /scratch/pfs/proc_group/prt/27134/resistenace \cr
 #'     
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
+#' 
 #' @param DirErrBase (optional) Character value. The output path for errored datums that will replace the 
 #' #/pfs/BASE_REPO portion of DirIn. Default is a directory named "errored_datums" appended to the end of DirOutBase.
 #' Paths to calibration files that failed for any reason will be placed in this directory.
+#' 
 #' @param TimeBgn POSIX. The minimum date for which to assign calibration files.
+#' 
 #' @param TimeEnd POSIX. The maximum date for which to assign calibration files (non-inclusive).
+#' 
 #' @param PadDay (optional). 2-element difftime object with units of days indicating the days to include applicable 
 #' calibration files before/after a given data day. A negative value will copy in the calibration file(s) 
 #' that are applicable to the given data day AND # number of days before the data day. A positive value 
@@ -41,6 +45,7 @@
 #' that are applicable between 2019-01-13 00:00 and 2019-01-15 24:00. "PadDay=2" will copy in calibration file(s) 
 #' that are applicable between 2019-01-15 00:00 and 2019-01-17 24:00. To provide both negative and positive pads 
 #' (a window around a given day), separate the values with pipes (e.g. "PadDay=-2|2"). 
+#' 
 #' @param Arry (optional). Logical value indicating whether the calibration files should be assigned separately for 
 #' each stream ID. (Normally there would be a single stream ID corresponding to a given TERM, so no checking for 
 #' multiple stream IDs is needed). A value of TRUE would be needed if the TERM is an array, meaning that calibrations 
@@ -48,6 +53,7 @@
 #' (one for each stream ID). This is relatively rare, but is the case for e.g. the tchain source type. The default is 
 #' FALSE, but there is also really no harm in setting it to TRUE unless the stream ID for a SOURCE_ID changes over 
 #' its lifetime.
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #' 

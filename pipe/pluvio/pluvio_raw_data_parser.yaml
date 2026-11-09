@@ -1,0 +1,128 @@
+---
+pipeline:
+  name: pluvio_raw_data_parser
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v6.1.1
+  env:
+    # environment variables for kafka loader
+    OUT_PATH: /pfs/out #also used for parser
+    SOURCE_TYPE: "pluvio_raw"
+    LOG_LEVEL: INFO
+    PARSE_FIELD: serial_output
+    RELATIVE_PATH_INDEX: "4" 
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/pluvio/pluvio.avsc 
+    UPDATE_TRIGGER_TABLE: "True"
+    RM_OFFSETS: "False"
+    ERR_PATH: /pfs/out/errored_datums
+
+  secrets:
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_USER
+    key: KAFKA_USER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_PASSWORD
+    key: KAFKA_PASSWORD
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_BROKER
+    key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_COMPACT_TOPIC
+    key: KAFKA_COMPACT_TOPIC
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
+  - name: pdr-secret
+    env_var: PDR_HOST
+    key: hostname
+  - name: pdr-secret
+    env_var: PDR_DBNAME
+    key: database
+  - name: pdr-secret
+    env_var: PDR_USER
+    key: username
+  - name: pdr-secret
+    env_var: PDR_PASSWORD
+    key: password
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # run data parser
+    python3 -m raw_data_parsers.raw_data_parser.data_parser_main
+
+    # Export data to bucket
+    # when SOURCE_TYPE is pluvio_raw, OUT_SOURCE_TYPE is pluvio
+    OUT_SOURCE_TYPE=${SOURCE_TYPE%%_raw}
+    if [[ -d "$OUT_PATH/$OUT_SOURCE_TYPE" ]]; then
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/${OUT_SOURCE_TYPE}/**/*.parquet"
+      # Example: /pfs/out/pluvio/2023/01/01/12345/data/file.parquet
+      echo "Linking output files to ${linkdir}"
+      #set -x # Echo commands to output for debugging
+      fname=""
+      for f in $out_parquet_glob; do
+        if [[ -f "$f" ]]; then
+          # Parse the path
+          [[ "$f" =~ ^$OUT_PATH/$OUT_SOURCE_TYPE/([0-9]+)/([0-9]+)/([0-9]+)/([A-Za-z0-9]+)/data/(.*)$ ]]
+          fsourcetype="${OUT_SOURCE_TYPE}"
+          fyear="${BASH_REMATCH[1]}"
+          fmonth="${BASH_REMATCH[2]}"
+          fday="${BASH_REMATCH[3]}"
+          fsourceid="${BASH_REMATCH[4]}"
+          fname="${BASH_REMATCH[5]}"
+          outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+          mkdir -p "${outdir}"
+          ln -s "${f}" "${outdir}/${fname}"
+        fi
+      done
+      #set +x
+      if [[ "${fname}" ]]; then
+        echo "Syncing files to bucket"
+        rclone \
+          --no-check-dest \
+          --copy-links \
+          --gcs-bucket-policy-only \
+          --gcs-no-check-bucket \
+          copy \
+          "${linkdir}" \
+          ":gcs://${BUCKET_NAME}"
+        echo "Removing temporary files"
+        rm -rf $linkdir
+      fi
+
+    fi
+
+    EOF
+input:
+  pfs:
+    name: DATA_PATH
+    repo: pluvio_data_source_gcs
+    # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
+    glob: "/pluvio_raw/*/*/*"
+parallelism_spec:
+  constant: 3
+autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 1.6
+resource_limits:
+  memory: 1.5G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

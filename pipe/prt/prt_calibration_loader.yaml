@@ -31,6 +31,7 @@ autoscaling: true
 resource_requests:
   memory: 500M
   cpu: 0.5
+  disk: 2G
 resource_limits:
   memory: 1G
   cpu: 1.5

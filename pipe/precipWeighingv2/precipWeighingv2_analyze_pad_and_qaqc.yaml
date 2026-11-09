@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:v0.0.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:v0.0.6
   cmd:
   - sh
   - "-c"
@@ -34,7 +34,7 @@ transform:
       DirIn=/tmp/pfs/padded_analyzerCopy \
       DirOut=/tmp/pfs/plau \
       DirErr=/pfs/out/errored_datums \
-      "TermTest1=accu_nrt:null|range(rmv)"
+      "TermTest1=accu_nrt:null|range"
         
     # Run third module - custom flags
     Rscript ./flow.precip.pluvio.flags.R \

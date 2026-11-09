@@ -1,6 +1,6 @@
+li7200_ingest_days.yaml
 li7200_cron_daily_and_date_control.yaml
-li7200_data_source_trino.yaml
-li7200_data_source_kafka.yaml
+li7200_data_source_gcs.yaml
 li7200_parse_kafka_raw_data.yaml
 li7200_assetuid_macaddress_map.yaml
 li7200_replace_macaddress_with_assetuid.yaml

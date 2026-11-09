@@ -20,16 +20,20 @@ def get_thermistor_depths(location) -> Dict[str, Optional[float]]:
     return thermistor_depths
 
 
-def create_tchain_rows(database: SensorPositionsDatabase, location, geolocation, 
+def create_tchain_rows(database: SensorPositionsDatabase, location, geolocation,
                       row_hor_ver: str, row_location_id: str, row_description: str,
                       create_base_row_data_func, add_reference_position_data_func) -> List[List]:
-    """Create multiple rows for tchain sensor, one for each thermistor depth."""
+    """Create multiple rows for tchain sensor, one for each thermistor depth.
+
+    The cfgloc-geo x ref_geolocation intersection (computed by
+    `add_reference_position_data_func`) fills the effectiveStart/End cells.
+    """
     base_data = create_base_row_data_func(database, geolocation, row_hor_ver, row_location_id, row_description)
     complete_rows = add_reference_position_data_func(database, base_data, geolocation, geolocation.offset_name)
-    
+
     thermistor_depths = get_thermistor_depths(location)
     tchain_rows = []
-    
+
     for complete_row_data in complete_rows:
         for thermistor_id, depth in thermistor_depths.items():
             if depth is not None:
@@ -37,14 +41,18 @@ def create_tchain_rows(database: SensorPositionsDatabase, location, geolocation,
                 hor_ver_split = complete_row_data['row_hor_ver'].split('.')
                 hor_ver_split[1] = thermistor_id
                 modified_hor_ver = ".".join(hor_ver_split)
-                
+
                 # Adjust z_offset for thermistor depth
                 modified_z_offset = round(complete_row_data['row_z_offset'] - depth, 2)
-                
-                tchain_row = [
+
+                leading = [
                     modified_hor_ver,
                     complete_row_data['row_location_id'],
                     complete_row_data['row_description'],
+                    complete_row_data.get('row_effective_start_date', ''),
+                    complete_row_data.get('row_effective_end_date', ''),
+                ]
+                tchain_row = leading + [
                     complete_row_data['row_position_start_date'],
                     complete_row_data['row_position_end_date'],
                     complete_row_data['row_reference_location_id'],

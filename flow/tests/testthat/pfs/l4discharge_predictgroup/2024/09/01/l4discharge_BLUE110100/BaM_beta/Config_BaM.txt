@@ -1,0 +1,13 @@
+"BaM_BaRatin/" ! workspace
+"Config_RunOptions.txt"                                        ! Config file: run options
+"Config_Model.txt"                                             ! Config file: model
+"Config_ControlMatrix.txt"                                     ! Config file: xtra model information
+"Config_Data.txt"                                              ! Config file: Data
+"Config_RemnantSigma.txt"                                      ! Config file: Remnant sigma (as many files as there are output variables separated by commas)
+"Config_MCMC.txt"                                              ! Config file: MCMC
+"Config_Cooking.txt"                                           ! Config file: cooking of MCMC samples
+"Config_Summary.txt"                                           ! Config file: summary of MCMC samples
+"Config_Residuals.txt"                                         ! Config file: residual diagnostics
+"Config_Pred_Master.txt"                                       ! Config file: prediction experiments
+
+

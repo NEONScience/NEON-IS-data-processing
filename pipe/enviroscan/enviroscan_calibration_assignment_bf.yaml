@@ -1,0 +1,49 @@
+---
+# _bf BACKFILL copy of enviroscan_calibration_assignment.yaml (pipeline enviroscan_calibration_assignment -> enviroscan_calibration_assignment_bf).
+# Only pipeline name + upstream pipeline repo: refs differ. Cycled with
+# utilities/vignettes/cycle_heavy_product_dag.sh ... _bf _bf - see
+# utilities/vignettes/concH2oSoilSalinity_backfill_cycle.md
+pipeline:
+  name: enviroscan_calibration_assignment_bf
+transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
+  - Rscript
+      ./flow.cal.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+      Arry=TRUE
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.2.0
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: enviroscan_calibration_loader_bf
+      glob: /enviroscan/*
+  - pfs:
+      name: FILE_YEAR
+      repo: enviroscan_cron_daily_and_date_control_bf
+      glob: /data_year*.txt
+parallelism_spec:
+  constant: 10
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 1.5
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 3.5G
+  cpu: 1
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

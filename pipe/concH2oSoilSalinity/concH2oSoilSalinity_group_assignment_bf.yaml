@@ -1,0 +1,51 @@
+---
+# _bf BACKFILL copy of concH2oSoilSalinity_group_assignment.yaml (pipeline concH2oSoilSalinity_group_assignment -> concH2oSoilSalinity_group_assignment_bf).
+# Only pipeline name + upstream pipeline repo: refs differ. Cycled with
+# utilities/vignettes/cycle_heavy_product_dag.sh ... _bf _bf - see
+# utilities/vignettes/concH2oSoilSalinity_backfill_cycle.md
+pipeline:
+  name: concH2oSoilSalinity_group_assignment_bf
+transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
+  - Rscript
+      ./flow.loc.grp.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+      TypeFile=group
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.4.1
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: concH2oSoilSalinity_group_loader_bf
+      glob: /conc-h2o-soil-salinity/*
+  - pfs:
+      name: FILE_YEAR
+      repo: enviroscan_cron_daily_and_date_control_bf
+      glob: /data_year_*.txt
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 250M
+  cpu: 1
+resource_limits:
+  memory: 400M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

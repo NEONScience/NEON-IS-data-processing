@@ -1,0 +1,44 @@
+---
+# _bf BACKFILL copy of enviroscan_location_asset.yaml (pipeline enviroscan_location_asset -> enviroscan_location_asset_bf).
+# Only pipeline name + upstream pipeline repo: refs differ. Cycled with
+# utilities/vignettes/cycle_heavy_product_dag.sh ... _bf _bf - see
+# utilities/vignettes/concH2oSoilSalinity_backfill_cycle.md
+pipeline:
+  name: enviroscan_location_asset_bf
+transform:
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-asset-loader:v1.1.2
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m location_asset_loader.location_asset_loader_main
+  env:
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+    LOG_LEVEL: INFO
+    SOURCE_TYPE: enviroscan
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    repo: enviroscan_ingest_days_bf
+    glob: /tick/
+    branch: master
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 100M
+  cpu: 0.15
+resource_limits:
+  memory: 300M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 250M
+  cpu: 0.3
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

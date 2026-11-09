@@ -1,4 +1,4 @@
-#	Next generation data processing algorithms and pipeline components for (most) NEON TIS and AIS data products.
+#	Science algorithms and data pipeline components for NEON Terrestrial and Aquatic Instrument Systems data products.
 Please see the Wiki for details on the structure of this repository and implementation of the processing pipeline.
 
 ## Credits & Acknowledgements

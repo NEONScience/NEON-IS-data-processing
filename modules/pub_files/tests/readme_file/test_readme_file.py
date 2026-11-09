@@ -65,6 +65,26 @@ class ReadmeFileTest(TestCase):
         assert datetime.strftime(start_time, '%Y-%m-%dT%H:%M:%SZ') == '2020-01-02T00:00:00Z'
         assert datetime.strftime(end_time, '%Y-%m-%dT%H:%M:%SZ') == '2020-01-03T00:00:00Z'
 
+    def test_get_time_span_ignores_uuid_first_column(self):
+        path = Path(self.in_path, 'uuid_first.csv')
+        self.fs.create_file(path, contents=(
+            'uid,domainID,startDate,endDate\n'
+            'be85b9b8-9077-43f1-9314-281e71bf7c28,NA,2024-09-30,2024-09-30\n'))
+
+        start_time, end_time = get_file_time_span(path, self.workbook, 'soilTemp')
+
+        assert datetime.strftime(start_time, '%Y-%m-%dT%H:%M:%SZ') == '2024-09-30T00:00:00Z'
+        assert datetime.strftime(end_time, '%Y-%m-%dT%H:%M:%SZ') == '2024-09-30T00:00:00Z'
+
+    def test_get_time_span_returns_none_for_header_only_file(self):
+        path = Path(self.in_path, 'header_only.csv')
+        self.fs.create_file(path, contents='uid,startDate,endDate\n')
+
+        start_time, end_time = get_file_time_span(path, self.workbook, 'soilTemp')
+
+        assert start_time is None
+        assert end_time is None
+
     def test_write_file(self):
         readme_template = self.template_path.read_text()
         file_processor_database = get_file_processor_database()

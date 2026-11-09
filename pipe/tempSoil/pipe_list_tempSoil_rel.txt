@@ -1,0 +1,8 @@
+tempSoil_cron_daily_and_date_control_rel.yaml
+tempSoil_srf_loader_rel.yaml
+tempSoil_srf_assignment_rel.yaml
+tempSoil_level1_group_consolidate_srf_rel.yaml
+tempSoil_cron_monthly_and_pub_control_rel.yaml
+tempSoil_pub_group_rel.yaml
+tempSoil_pub_format_and_package_rel.yaml
+tempSoil_pub_egress_and_publish_rel.yaml

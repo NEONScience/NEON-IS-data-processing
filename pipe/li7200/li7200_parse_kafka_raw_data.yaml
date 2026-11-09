@@ -90,13 +90,20 @@ transform:
 
         done
 
-        # Upload to bucket, compacting with any existing file
-        unset RELATIVE_PATH_INDEX # Avoid conflict with this env var used also in compact-bucket-copy
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --dedupmethod "readout_time" --nolog
+        echo "Syncing files to bucket"
+        rclone \
+          --no-check-dest \
+          --copy-links \
+          --gcs-bucket-policy-only \
+          --gcs-no-check-bucket \
+          copy \
+          "${linkdir}" \
+          ":gcs://${BUCKET_NAME}"
+        echo "Removing temporary files"
+        rm -rf $linkdir
+        
       fi
 
-      # set +x # Uncomment for debugging
-      rm -rf $linkdir
 
     fi
 
@@ -104,7 +111,7 @@ transform:
 input:
   pfs:
     name: DATA_PATH
-    repo: li7200_data_source_kafka
+    repo: li7200_data_source_gcs
     glob: /li7200_raw/*/*/*/*
 parallelism_spec:
   constant: 5

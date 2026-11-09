@@ -2,7 +2,7 @@ name: PROD-si111-update-dag
 on:
   push:
     branches:
-      - 'prod'
+      - 'none'
     paths:
       - 'pipe/si111/*.yaml'
       - 'pipe/si111/pipe_list_si111.txt'

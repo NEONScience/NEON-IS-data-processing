@@ -15,7 +15,7 @@ from common.err_datum import err_datum_path
 log = get_logger()
 
 
-def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
+def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_index: int, date_index: int, date_index_length: int, sort_index: int, dedup_tables=None) -> None:
     """
     Bundles the required files into a package suitable for publication.
 
@@ -27,6 +27,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
     :param date_index: start input path index of publication date field (e.g. index of the year in the path)
     :param date_index_length: number of input path indices forming the pub date field. e.g. for monthly pub, this will be 2 (year-month)
     :param sort_index: index of filename field to sort on (e.g. the day)
+    :param dedup_tables: partial output filename matches for which duplicate rows should be removed
     """
 
     # Each PUBLOC at the glob level is a datum (e.g. /product/year/month/*/PUBLOC). Get all the PUBLOCS, assuming
@@ -82,6 +83,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
 
         for package_file in package_files.keys():
             output_file = os.path.join(out_path, path_prefix, package_file)
+            drop_duplicates = any(table in package_file for table in (dedup_tables or []))
             package_path_by_file[package_file] = output_file
             os.makedirs(os.path.join(out_path, path_prefix), exist_ok=True)
             is_first_file = True
@@ -91,6 +93,12 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
                     data = pd.read_csv(file,dtype='str') # dtype='str' Preserves formatting applied in transformer module
                     mode = 'a'
                     write_header = False
+                    if drop_duplicates:
+                        if not is_first_file and os.path.exists(output_file):
+                            data = pd.concat([pd.read_csv(output_file, dtype='str'), data], ignore_index=True)
+                        data = data.drop_duplicates()
+                        mode = 'w'
+                        write_header = True
                     if is_first_file:
                         mode = 'w'
                         write_header = True

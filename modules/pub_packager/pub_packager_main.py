@@ -19,6 +19,7 @@ def main() -> None:
     date_index: int = env.int('DATE_INDEX')
     date_index_length: int = env.int('DATE_INDEX_LENGTH')
     sort_index: int = env.int('SORT_INDEX')
+    dedup_tables = [table.strip() for table in env.str('DEDUP_TABLES', '').split(',') if table.strip()]
     log_config.configure(log_level)
     pub_package(data_path=data_path,
                 out_path=out_path, 
@@ -27,7 +28,8 @@ def main() -> None:
                 publoc_index=publoc_index,
                 date_index=date_index,
                 date_index_length=date_index_length,
-                sort_index=sort_index)
+                sort_index=sort_index,
+                dedup_tables=dedup_tables)
 
 
 if __name__ == '__main__':

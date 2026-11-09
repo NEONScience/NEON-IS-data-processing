@@ -76,7 +76,8 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
           {
             source('../../flow.pub.tabl.srf/wrap.pub.tabl.srf.R')
             
-            DirOutBase = "pfs/out"
+            DirOutBase = tempfile("pub-tabl-srf-out-")
+            withr::defer(unlink(DirOutBase, recursive = TRUE))
             DirData = c('stats', 'quality_metrics')
             TimeBgn = 'startDateTime'
             TimeEnd = 'endDateTime'
@@ -97,6 +98,17 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
             DirIn = fs::path(dirInBase, baseRepo, dateDir, groupRepo)
             FilePubWb = 'pfs/pubWb/PublicationWorkbook_elevSurfacewater.txt'
             TablPub = 'EOS_30_min'
+            AddTabl = 'ais_maintenance_pub'
+            FileAddTabl = fs::path(
+              DirIn,
+              'stats',
+              paste0(basename(tempfile()), '_', AddTabl, '.parquet')
+            )
+            withr::defer(unlink(FileAddTabl))
+            arrow::write_parquet(
+              data.frame(startDate = as.POSIXct('2020-01-02 12:00:00', tz = 'UTC')),
+              FileAddTabl
+            )
             
             wrap.pub.tabl.srf(
               DirIn = DirIn,
@@ -104,6 +116,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
               DirData = c('stats', 'quality_metrics'),
               FilePubWb = FilePubWb,
               TablPub = TablPub,
+              AddTabl = AddTabl,
               NameVarTimeBgn = TimeBgn,
               NameVarTimeEnd = TimeEnd,
               DirSubCopy = DirSubCopydata
@@ -111,6 +124,10 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
             
             DirOutput = fs::path(DirOutBase, dateDir, groupRepo, 'data')
             expect_true(file.exists(DirOutput, recursive = TRUE))
+            expect_true(file.exists(fs::path(
+              DirOutput,
+              paste0(groupRepo, '_2020-01-02_', AddTabl, '.parquet')
+            )))
             
             #2. DP Ids are not in srf
             

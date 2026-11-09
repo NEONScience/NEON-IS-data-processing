@@ -56,3 +56,26 @@ test_that("Read parquet dataset",
             testthat::expect_true("data.frame" %in% class(ds))
             testthat::expect_true(anyDuplicated(ds) == 0)
           })
+
+test_that("Read parquet files with mixed string and large_string schema",
+          {
+            inputPath <- c(
+              "def.wrte.parq/cmp22_11183_2026-06-01.parquet",
+              "def.wrte.parq/cmp22_11183_2026-06-20.parquet"
+            )
+
+            # Successful: mixed string/large_string fields can be read together
+            ds <- suppressWarnings(
+              NEONprocIS.base::def.read.parq.ds(fileIn = inputPath,
+                                                Df = TRUE)
+            )
+            testthat::expect_true("data.frame" %in% class(ds))
+            testthat::expect_true(nrow(ds) > 0)
+            testthat::expect_true(is.character(ds$source_id))
+            testthat::expect_true(is.character(ds$kafka_key))
+
+            # Schema should normalize mixed-width strings to large_string
+            schm <- attr(ds, "schema")
+            testthat::expect_true(schm$GetFieldByName("source_id")$type$ToString() == "large_string")
+            testthat::expect_true(schm$GetFieldByName("kafka_key")$type$ToString() == "large_string")
+          })

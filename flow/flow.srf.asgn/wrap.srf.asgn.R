@@ -22,8 +22,11 @@
 #' Input path = /scratch/pfs/proc_group/surfacewater-physical_PRLA130100 \cr
 #'     
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
+#' 
 #' @param TimeBgn POSIX. The minimum date for which to assign location files.
+#' 
 #' @param TimeEnd POSIX. The maximum date for which to assign location files.
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #' 

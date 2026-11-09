@@ -1,5 +1,5 @@
+ptb330a_ingest_days.yaml
 ptb330a_cron_daily_and_date_control.yaml
-ptb330a_data_source_kafka.yaml
 ptb330a_data_source_gcs.yaml
 ptb330a_calibration_list_files.yaml
 ptb330a_calibration_loader.yaml

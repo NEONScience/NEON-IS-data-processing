@@ -5,6 +5,8 @@ on:
     branches:
       - 'master'
     paths:
+      - 'modules_combined/l4discharge_csd_swe_os_group_and_parse/**'
+      - 'modules/filter_joiner/**'
       - 'flow/flow.discharge.parse.os.inputs/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
@@ -22,7 +24,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/flow.discharge.parse.os.inputs
+  MODULE_PATH: ./modules_combined/l4discharge_csd_swe_os_group_and_parse
   IMAGE_NAME: neon-is-discharge-parse-os-inputs
 
 jobs:

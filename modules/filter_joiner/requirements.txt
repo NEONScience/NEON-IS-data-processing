@@ -1,4 +1,4 @@
-pyfakefs==3.6
-environs==7.3.1
+pyfakefs==5.10.0
+environs==14.1.1
 structlog==21.5.0
-PyYAML==5.4
+PyYAML==6.0.2

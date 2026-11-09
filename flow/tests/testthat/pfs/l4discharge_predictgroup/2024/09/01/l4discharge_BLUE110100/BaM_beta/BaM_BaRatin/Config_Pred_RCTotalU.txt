@@ -1,0 +1,12 @@
+'BaM_BaRatin\data\Hgrid.txt'    !!! Files containing spaghettis for each input variable (size nX)
+181                               !!! Nobs, number of observations per spaghetti (common to all files!)
+1                                 !!! Nspag, number of spaghettis for each input variable (size nX)
+.true.                           !!! Propagate parametric uncertainty?
+.true.                           !!! Propagate remnant uncertainty for each output variable? (size nY)
+-1                                !!! Nsim[prior]. If <=0: posterior sampling (nsim is given by mcmc sample); if >0: sample nsim replicates from prior distribution
+'Qrc_TotalU.spag'                 !!! Files containing spaghettis for each output variable (size nY)
+.true.                            !!! Post-processing: transpose spag file (so that each column is a spaghetti)? (size nY)
+.true.                            !!! Post-processing: create envelops? (size nY)
+'Qrc_TotalU.env'                  !!! Post-processing: name of envelop files (size nY)
+.true.                            !!! Print progress in console during computations?
+.false.                           !!! Do state prediction? (size nState)

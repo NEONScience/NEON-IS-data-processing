@@ -47,6 +47,8 @@
 #     add option to remove duplicated rows
 #   Cove Sturtevant (2026-02-19)
 #     Handling for non-hashable data columns when deduplicating
+#   Cove Sturtevant (2026-06-22)
+#     Handling for string and large_string types across dataset files
 ##############################################################################################
 def.read.parq.ds <- function(fileIn,
                              Var=NULL,
@@ -62,9 +64,115 @@ def.read.parq.ds <- function(fileIn,
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
+
+  # Build a normalized schema for mixed string/large_string fields across files.
+  # This avoids Arrow merge failures when dataset fragments disagree on string width.
+  build_schema_for_string_conflicts <- function(fileIn, log) {
+    files <- fileIn
+    if (base::length(fileIn) == 1 && base::dir.exists(fileIn)) {
+      files <- base::list.files(
+        path = fileIn,
+        pattern = "\\.parquet$",
+        recursive = TRUE,
+        full.names = TRUE
+      )
+    }
+
+    if (base::length(files) == 0) {
+      return(NULL)
+    }
+
+    # Read schemas from parquet footers without materializing row groups.
+    sch_list <- base::lapply(files, FUN = function(f) {
+      try(arrow::ParquetFileReader$create(f)$GetSchema(), silent = TRUE)
+    })
+    sch_list <- sch_list[!base::vapply(sch_list, inherits, logical(1), "try-error")]
+
+    if (base::length(sch_list) == 0) {
+      return(NULL)
+    }
+
+    all_names <- unique(unlist(base::lapply(sch_list, base::names), use.names = FALSE))
+    if (base::length(all_names) == 0) {
+      return(NULL)
+    }
+
+    fields_out <- base::vector(mode = "list", length = base::length(all_names))
+
+    for (i in base::seq_along(all_names)) {
+      nm <- all_names[[i]]
+
+      fld_list <- base::lapply(sch_list, FUN = function(sch) {
+        if (nm %in% base::names(sch)) sch$GetFieldByName(nm) else NULL
+      })
+      fld_list <- fld_list[!base::vapply(fld_list, base::is.null, logical(1))]
+      if (base::length(fld_list) == 0) {
+        next
+      }
+
+      type_str <- unique(base::vapply(fld_list, FUN = function(f) f$type$ToString(), character(1)))
+
+      # Promote mixed string widths to large_utf8
+      if (base::all(type_str %in% c("string", "large_string")) && base::length(type_str) > 1) {
+        type_use <- arrow::large_utf8()
+        log$debug(base::paste0("Promoting field ", nm, " to large_utf8 due to mixed types: ", base::paste(type_str, collapse = ", ")))
+      } else {
+        type_use <- fld_list[[1]]$type
+      }
+
+      nullable_use <- base::any(base::vapply(fld_list, FUN = function(f) isTRUE(f$nullable), logical(1)))
+      fields_out[[i]] <- arrow::field(nm, type_use, nullable = nullable_use)
+    }
+
+    fields_out <- fields_out[!base::vapply(fields_out, base::is.null, logical(1))]
+    if (base::length(fields_out) == 0) {
+      return(NULL)
+    }
+
+    base::do.call(arrow::schema, fields_out)
+  }
+
+  # Detect Arrow schema merge failures caused by string vs large_string mismatch.
+  is_string_width_schema_error <- function(err) {
+    if (base::is.null(err)) {
+      return(FALSE)
+    }
+
+    msg <- base::tolower(base::conditionMessage(err))
+    has_string_pair <-
+      (base::grepl("string", msg, fixed = TRUE) && base::grepl("large_string", msg, fixed = TRUE)) ||
+      (base::grepl("utf8", msg, fixed = TRUE) && base::grepl("large_utf8", msg, fixed = TRUE))
+    has_type_merge_context <-
+      base::grepl("schema", msg, fixed = TRUE) ||
+      base::grepl("type", msg, fixed = TRUE) ||
+      base::grepl("cast", msg, fixed = TRUE)
+
+    has_string_pair && has_type_merge_context
+  }
   
   # Load data files into an arrow dataset
-  data <- arrow::open_dataset(fileIn,unify_schemas = TRUE)
+  data <- tryCatch(
+    arrow::open_dataset(fileIn, unify_schemas = TRUE),
+    error = function(e) e
+  )
+
+  if (inherits(data, "error")) {
+    if (!is_string_width_schema_error(data)) {
+      stop(data)
+    }
+
+    log$warn(base::paste0(
+      "open_dataset() failed due to a detected string width schema conflict. ",
+      "Attempting schema normalization for string/large_string fields."
+    ))
+
+    schmIn <- build_schema_for_string_conflicts(fileIn = fileIn, log = log)
+    if (base::is.null(schmIn)) {
+      stop(data)
+    }
+
+    data <- arrow::open_dataset(fileIn, schema = schmIn, unify_schemas = TRUE)
+  }
   schm <- data$schema
   varData <- base::names(schm)
   

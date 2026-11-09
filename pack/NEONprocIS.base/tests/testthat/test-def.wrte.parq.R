@@ -1,7 +1,6 @@
 #library(testthat)
 #source("R/def.wrte.parq.R")
 
-
 test_that("write parquet file with basic parameter",
      {
        data <- data.frame(x=c(1,2,3), y=c('one','two','three'), stringsAsFactors=FALSE)
@@ -170,4 +169,58 @@ test_that("write from arrow_dplyr_query_object",
                   
                   if (file.exists(NameFile)) { file.remove(NameFile)}
                   
+          })
+
+test_that("preserve large_string fields when writing parquet data",
+          {
+            data <- suppressWarnings(
+              NEONprocIS.base::def.read.parq(
+                NameFile = 'def.wrte.parq/cmp22_11183_2026-06-20.parquet'
+              )
+            )
+            NameFile <- 'out_cmp22_large_string.parquet'
+            on.exit(if (file.exists(NameFile)) file.remove(NameFile), add = TRUE)
+            # Uses schema attached to input data; should preserve large_string fields.
+            rpt <- suppressWarnings(
+              NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile)
+            )
+            testthat::expect_true(file.exists(NameFile))
+
+            dataOut <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile = NameFile))
+            schmOut <- attr(dataOut, 'schema')
+            testthat::expect_true(schmOut$GetFieldByName('source_id')$type$ToString() == 'large_string')
+            testthat::expect_true(schmOut$GetFieldByName('kafka_key')$type$ToString() == 'large_string')
+
+            if (file.exists(NameFile)) { file.remove(NameFile)}
+          })
+
+test_that("cast string columns to large_string when required",
+          {
+            data <- suppressWarnings(
+              NEONprocIS.base::def.read.parq(
+                NameFile = 'def.wrte.parq/cmp22_11183_2026-06-01.parquet'
+              )
+            )
+            schmLarge <- suppressWarnings(
+              attr(
+                NEONprocIS.base::def.read.parq(
+                  NameFile = 'def.wrte.parq/cmp22_11183_2026-06-20.parquet'
+                ),
+                'schema'
+              )
+            )
+            NameFile <- 'out_cmp22_cast_large_string.parquet'
+            on.exit(if (file.exists(NameFile)) file.remove(NameFile), add = TRUE)
+            # Input data has string fields but target schema has large_string fields.
+            rpt <- suppressWarnings(
+              NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile, Schm = schmLarge)
+            )
+            testthat::expect_true(file.exists(NameFile))
+
+            dataOut <- suppressWarnings(NEONprocIS.base::def.read.parq(NameFile = NameFile))
+            schmOut <- attr(dataOut, 'schema')
+            testthat::expect_true(schmOut$GetFieldByName('source_id')$type$ToString() == 'large_string')
+            testthat::expect_true(schmOut$GetFieldByName('kafka_key')$type$ToString() == 'large_string')
+
+            if (file.exists(NameFile)) { file.remove(NameFile)}
           })

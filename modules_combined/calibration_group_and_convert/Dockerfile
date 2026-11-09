@@ -1,9 +1,10 @@
-# Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, array parser, and Calibration Conversion
+# Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, array parser, 
+# calibration assignment and calibration Conversion
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
 # Start with the calibration package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.1.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v3.2.1
 
 
 # maintainer handle
@@ -13,6 +14,7 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 ARG MODULE_DIR="modules"
 ARG APP_DIR="filter_joiner"
 ARG APP_DIR_2="array_parser"
+ARG APP_DIR_3="errored_file_manifest"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
@@ -21,24 +23,43 @@ WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR_3}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_3}/requirements.txt
 
  
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        software-properties-common \
-        gnupg && \
+        jq \
+        build-essential \
+        ca-certificates \
+        wget \
+        libssl-dev \
+        zlib1g-dev \
+        libbz2-dev \
+        libreadline-dev \
+        libsqlite3-dev \
+        libffi-dev \
+        liblzma-dev \
+        xz-utils && \
     rm -rf /var/lib/apt/lists/* 
-    
-RUN add-apt-repository ppa:deadsnakes/ppa -y
-RUN apt update
-RUN apt-get install -y python3.9 python3.9-venv python3-pip
-RUN python3.9 -m venv /opt/venv
+
+ARG PYTHON_VERSION=3.11.9
+RUN wget -q https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+    tar -xzf Python-${PYTHON_VERSION}.tgz && \
+    cd Python-${PYTHON_VERSION} && \
+    ./configure --enable-optimizations --with-ensurepip=install && \
+    make -j"$(nproc)" && \
+    make altinstall && \
+    cd / && \
+    rm -rf /usr/src/app/Python-${PYTHON_VERSION} /usr/src/app/Python-${PYTHON_VERSION}.tgz
+
+RUN python3.11 -m venv /opt/venv
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
+    pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_3}/requirements.txt && \
     apt-get autoremove -y && \
     apt-get autoclean -y && \
     groupadd -g 9999 appuser && \
@@ -47,6 +68,7 @@ RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}
+COPY ${MODULE_DIR}/${APP_DIR_3} ${CONTAINER_APP_DIR}/${APP_DIR_3}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 
@@ -63,12 +85,16 @@ COPY ./flow/flow.kfka.comb/wrap.kfka.comb.R .
 # Load calibration conversion module
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
+COPY ./flow/flow.cal.asgn/renv.lock .
+RUN R -e 'renv::restore(lockfile="./renv.lock")'
 COPY ./flow/flow.cal.conv/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
-# Copy in R code
+# Copy in calibration R code
 COPY ./flow/flow.cal.conv/flow.cal.conv.R .
 COPY ./flow/flow.cal.conv/wrap.cal.conv.R .
+COPY ./flow/flow.cal.asgn/flow.cal.asgn.R .
+COPY ./flow/flow.cal.asgn/wrap.cal.asgn.R .
 
 # Run as app user
 USER appuser
