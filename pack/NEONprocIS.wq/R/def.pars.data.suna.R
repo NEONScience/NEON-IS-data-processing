@@ -29,6 +29,8 @@
 #     original creation
 #   Cove Sturtevant (2020-04-28)
 #     adjusted to support data returned by parquet reader
+#   Nora Catolico (2026-11-09)
+#     updated to work with parchyderm suna file structure
 ##############################################################################################
 def.pars.data.suna <-
   function(sunaBurst = NULL,
@@ -39,10 +41,10 @@ def.pars.data.suna <-
     }
     
     # Merge the burst data from all observations into one data frame
-    parsedBurst <-
-      base::lapply(sunaBurst
-                   , base::as.data.frame, stringsAsFactors = FALSE)
-    parsedBurst <- base::do.call(base::cbind, parsedBurst)
+    # Split semicolon-separated strings and convert to numeric
+    parsedBurst <- base::lapply(sunaBurst, function(x) {
+      base::as.numeric(base::strsplit(x, ";")[[1]])
+    })
     parsedBurst <-
       base::as.data.frame(base::lapply(parsedBurst, base::as.numeric))
     

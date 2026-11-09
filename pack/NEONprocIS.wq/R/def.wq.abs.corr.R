@@ -36,6 +36,8 @@
 #     original creation
 #   Kaelin Cawley (2020-09-15)
 #     updated for reading parquet files
+#   Nora Catolico (2026-11-09)
+#     updated suna naming convention
 ##############################################################################################
 def.wq.abs.corr <-
   function(sunav2Filenames,
@@ -63,7 +65,7 @@ def.wq.abs.corr <-
       dplyr::bind_rows(sunav2DataList)
 
     #Clean up NA SUNA data
-    sunav2Data <- sunav2Data[!is.na(sunav2Data$header_light_frame), ]
+    sunav2Data <- sunav2Data[!is.na(sunav2Data$light_dark_frame), ]
     
     timeBgn <-
       base::format(base::min(sunav2Data$readout_time, na.rm = TRUE), format = "%Y-%m-%d")
@@ -97,7 +99,7 @@ def.wq.abs.corr <-
         "fDOMAbsQF")
     outputDF <- base::as.data.frame(base::matrix(
       data = NA,
-      nrow = base::nrow(sunav2Data[sunav2Data$header_light_frame == FALSE,]),
+      nrow = base::nrow(sunav2Data[sunav2Data$light_dark_frame == FALSE,]),
       ncol = base::length(outputNames)
     ))
     base::names(outputDF) <- outputNames
@@ -107,7 +109,7 @@ def.wq.abs.corr <-
     outputDF$spectrumCount <- 0
     
     outputDF$readout_time <-
-      sunav2Data$readout_time[sunav2Data$header_light_frame == FALSE]
+      sunav2Data$readout_time[sunav2Data$light_dark_frame == FALSE]
     
     #Need to loop through the calibration files in case there are more than one
     for (idxCal in calSlct$file[!base::is.na(calSlct$file)]) {
@@ -233,7 +235,7 @@ def.wq.abs.corr <-
               #Eyeball Check
               #plot(calTable$wavelength,test)
               
-              #Perfomr calculations to extrapolate to 480 nm
+              #Perform calculations to extrapolate to 480 nm
               log_abs <- try(base::log10(absorbance), silent = TRUE)
               log_waves <-
                 try(base::log10(calTable$wavelength), silent = TRUE)
