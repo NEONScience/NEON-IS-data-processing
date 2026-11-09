@@ -2,7 +2,7 @@
 pipeline:
   name: waterQuality_fdom_correct
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.3.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterQuality-fdom-group-correct:sha-f7791ae
   cmd:
   - sh
   - "-c"
@@ -38,7 +38,8 @@ transform:
     Rscript ./flow.wq.fdom.corr.R \
       DirIn=/tmp/filterjoined \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums    
+      DirErr=/pfs/out/errored_datums \
+      "DirSubCopy=exo2|exo2dissolvedoxygen|exo2conductivity|exo2phorp|exo2turbidity"
     
     EOF
   env:

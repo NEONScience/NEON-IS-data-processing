@@ -61,7 +61,7 @@
 
 #' @seealso None currently
 
-# changelog and author contributions / copyrights
+# changelog and author contributions / copyrights 
 #   Kaelin Cawley (2020-01-23)
 #     original creation
 #   Cove Sturtevant (2020-04-28)
