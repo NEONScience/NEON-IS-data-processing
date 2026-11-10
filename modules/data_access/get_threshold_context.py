@@ -30,4 +30,4 @@ def get_threshold_context(connector: DbConnector, threshold_uuid: str) -> List[s
         for row in rows:
             context_code = row[0]
             context_codes.append(context_code)
-    return context_codes
+    return sorted(context_codes)
