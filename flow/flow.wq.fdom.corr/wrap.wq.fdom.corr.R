@@ -270,7 +270,7 @@ wrap.wq.fdom.corr <- function(DirIn,
 
   ##### Absorbance Correction #####
   # Look for and read in sunav2 data
-  sunav2DataGlob <- base::file.path(DirIn,"sunav2","*","data","*")
+  sunav2DataGlob <- base::file.path(DirIn,"*","sunav2","*","data","*")
   sunav2DataPath <- base::Sys.glob(sunav2DataGlob)
   
   if(base::length(sunav2DataPath) >= 1){
