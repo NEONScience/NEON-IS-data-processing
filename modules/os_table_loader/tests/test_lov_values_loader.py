@@ -19,7 +19,7 @@ class LovValuesLoaderTest(unittest.TestCase):
                                          database_name='database',
                                          schema='schema'))
         self.assertEqual(get_default_lov_base_url(connector),
-                         'https://os-api-int.svcs-nonprod.gcp.neoninternal.org/os-api')
+                         'https://os-int.svcs-nonprod.gcp.neoninternal.org/os-api')
 
     @patch('os_table_loader.data.lov_values_loader.requests.get')
     @patch.object(DbConnector, '_connect')
