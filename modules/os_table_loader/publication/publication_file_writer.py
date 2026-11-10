@@ -23,6 +23,10 @@ def write_publication_files(config: PublicationConfig) -> None:
     now = datetime.now(timezone.utc)
     manifest_files = {}
     new_files = defaultdict(set)
+    lov_values_by_name: dict[str, list[dict[str, str]]] = {}
+    lov_rows_by_metadata_path: defaultdict[Path, list[dict[str, str]]] = defaultdict(list)
+    processed_lov_names_by_metadata_path: defaultdict[Path, set[str]] = defaultdict(set)
+    metadata_context_by_path: dict[Path, tuple[str, PathParts]] = {}
     for path in config.path_config.input_path.rglob('*'):
         if path.is_file():
             path_parts = parse_path(path, config.path_config)
@@ -37,6 +41,16 @@ def write_publication_files(config: PublicationConfig) -> None:
                 workbook_path = config.path_config.workbook_path
                 workbook_rows: list[dict] = workbook_parser.parse_workbook_file(workbook_path,
                                                                                 path_parts.data_product)
+                unique_lov_names = workbook_parser.get_unique_lov_names(workbook_rows)
+                metadata_path = path_parts.metadata_path
+                metadata_context_by_path[metadata_path] = (domain, path_parts)
+                for lov_name in unique_lov_names:
+                    if lov_name in processed_lov_names_by_metadata_path[metadata_path]:
+                        continue
+                    if lov_name not in lov_values_by_name:
+                        lov_values_by_name[lov_name] = config.data_loader.get_lovValues(lov_name)
+                    lov_rows_by_metadata_path[metadata_path].extend(lov_values_by_name[lov_name])
+                    processed_lov_names_by_metadata_path[metadata_path].add(lov_name)
                 for table in config.data_loader.get_tables(config.partial_table_name):
                     table_workbook_rows = workbook_parser.filter_workbook_rows(workbook_rows,
                                                                                table.name,
@@ -55,6 +69,15 @@ def write_publication_files(config: PublicationConfig) -> None:
                         if config.file_type == 'csv':
                             write_csv(file_path, table_workbook_rows, values)
                             new_files[path_parts.package_type].add(file_path)
+    for metadata_path, (domain, path_parts) in metadata_context_by_path.items():
+        lov_value_rows = lov_rows_by_metadata_path[metadata_path]
+        if lov_value_rows:
+            remove_previous_categorical_codes(config.path_config.out_path, metadata_path, domain, path_parts)
+            filename = get_categorical_codes_filename(domain, now, path_parts)
+            write_lov_values_csv(Path(config.path_config.out_path, metadata_path, filename), lov_value_rows)
+        directory = Path(config.path_config.out_path, metadata_path)
+        pattern = f'NEON.{domain}.{path_parts.site}.{path_parts.data_product}.categoricalCodes.*.csv'
+        new_files[path_parts.package_type].update(directory.glob(pattern))
     write_manifests(manifest_files, new_files)
 
 
@@ -113,6 +136,16 @@ def write_csv(path: Path, workbook_rows: list[dict],
             writer.writerow(row)
 
 
+def write_lov_values_csv(path: Path, rows: list[dict[str, str]]) -> None:
+    """Write a consolidated LOV table CSV."""
+    headers = ['name', 'pubCode', 'description', 'startDate', 'endDate']
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with closing(open(path, 'w', encoding='utf-8-sig', newline='')) as file:
+        writer = csv.DictWriter(file, fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def link_file(out_path: Path, metadata_path: Path, path: Path) -> None:
     """Link the input file into the output path."""
     link_path = Path(out_path, metadata_path, path.name)
@@ -139,3 +172,20 @@ def get_filename(table: Table, domain, now: datetime, path_parts: PathParts, con
     time = now.strftime('%Y%m%dT%H%M%SZ')
     file_type = config.file_type
     return f'NEON.{domain}.{site}.{data_product}.{table_name}.{year}-{month}.{package_type}.{time}.{file_type}'
+
+
+def get_categorical_codes_filename(domain: str, now: datetime, path_parts: PathParts) -> str:
+    site = path_parts.site
+    data_product = path_parts.data_product
+    time = now.strftime('%Y%m%dT%H%M%SZ')
+    return f'NEON.{domain}.{site}.{data_product}.categoricalCodes.{time}.csv'
+
+
+def remove_previous_categorical_codes(out_path: Path, metadata_path: Path, domain: str, path_parts: PathParts) -> None:
+    """Remove prior categoricalCodes files in a specific metadata/package output folder."""
+    directory = Path(out_path, metadata_path)
+    site = path_parts.site
+    data_product = path_parts.data_product
+    pattern = f'NEON.{domain}.{site}.{data_product}.categoricalCodes.*.csv'
+    for path in directory.glob(pattern):
+        path.unlink(missing_ok=True)
