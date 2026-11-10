@@ -34,6 +34,10 @@ transform:
       fi
     done
 
+    #debug: list contents of /tmp/filterjoined for verification
+    ls -R /tmp/filterjoined
+    echo "Contents of /tmp/filterjoined listed above for debugging purposes."
+
     #run second module - fdom corrector
     Rscript ./flow.wq.fdom.corr.R \
       DirIn=/tmp/filterjoined \
@@ -41,6 +45,9 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "DirSubCopy=exo2|exo2dissolvedoxygen|exo2conductivity|exo2phorp|exo2turbidity"
     
+    # Clean up temp directory after processing
+    rm -rf /tmp/filterjoined
+
     EOF
   env:
     # Environment variables for filter-joiner.
@@ -51,16 +58,22 @@ transform:
       # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: EXO2_DATA
-            glob_pattern: /pfs/EXO2_DATA/*/*/*/water-quality_*/**
+            name: EXO2_DATA_FDOM
+            glob_pattern: /pfs/EXO2_DATA/*/*/*/water-quality_*/exo2fdom/**
+            join_indices: [3,4,5,6]
+            empty_files: true
+            outer_join: true #pull in with or without SUNA data
+        - path:
+            name: EXO2_DATA_ALL
+            glob_pattern: /pfs/EXO2_DATA/*/*/*/water-quality_*/exo2*/**
             join_indices: [3,4,5,6]
             empty_files: true
         - path:
             name: SUNA_DATA
             glob_pattern: /pfs/SUNA_DATA/*/*/*/water-quality_*/*/sunav2/**
             join_indices: [3,4,5,6]
-            empty_files: true
-        
+            empty_files: true          
+            
     OUT_PATH_1: /tmp/filterjoined # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # Start from year to preserve Y/M/D structure
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
