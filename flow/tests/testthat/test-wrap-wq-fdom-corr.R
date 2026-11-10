@@ -65,7 +65,7 @@ test_that("Unit test of wrap.wq.fdom.corr.R - Basic output structure", {
   testDirRepo <- infoDirIn$dirRepo
   dirOutBase <- base::paste0(testDirOut, testDirRepo)
 
-  dirOutData <- file.path(dirOutBase, 'exo2fdom/CFGLOC123456/data')
+  dirOutData <- file.path(dirOutBase, 'exo2fdom/CFGLOC123456/stats')
   dirOutFlags <- file.path(dirOutBase, 'exo2fdom/CFGLOC123456/flags')
 
   testthat::expect_true(dir.exists(dirOutData))

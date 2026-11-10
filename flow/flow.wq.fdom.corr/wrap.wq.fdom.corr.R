@@ -70,7 +70,7 @@ wrap.wq.fdom.corr <- function(DirIn,
   timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
   
   idxDirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)
-  idxDirOutData <- base::paste0(idxDirOut, '/exo2fdom/', cfgLoc,'/data')
+  idxDirOutData <- base::paste0(idxDirOut, '/exo2fdom/', cfgLoc,'/stats')
   idxDirOutFlags <- base::paste0(idxDirOut, '/exo2fdom/', cfgLoc,'/flags')
   base::dir.create(idxDirOutData,recursive=TRUE)
   base::dir.create(idxDirOutFlags,recursive=TRUE)
