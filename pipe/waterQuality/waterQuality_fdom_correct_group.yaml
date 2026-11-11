@@ -1,0 +1,87 @@
+---
+pipeline:
+  name: waterQuality_fdom_correct_group
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-fdom-group-correct:sha-525be44
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Set some environment variables for the first module
+    export OUT_PATH=$OUT_PATH_1
+
+    # Run first module - filter-joiner (using environment variables below as input parameters). Join select sonde and suna tables.
+    python3 -m filter_joiner.filter_joiner_main
+
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: EXO2_DATA_FDOM
+            glob_pattern: /pfs/PLAU_DATA/*/*/*/water-quality_*/exo2fdom/**
+            join_indices: [3,4,5,6]
+            empty_files: true
+            outer_join: true #pull in with or without SUNA data
+        - path:
+            name: EXO2_DATA_CONDUCTIVITY
+            glob_pattern: /pfs/PLAU_DATA/*/*/*/water-quality_*/exo2conductivity/**
+            join_indices: [3,4,5,6]
+            empty_files: true
+        - path:
+            name: EXO2_CAL_FDOM
+            glob_pattern: /pfs/GROUP_DATA/*/*/*/water-quality_*/exo2fdom/*/calibration/**
+            join_indices: [3,4,5,6]
+            empty_files: true
+        - path:
+            name: SUNA_DATA
+            glob_pattern: /pfs/GROUP_DATA/*/*/*/water-quality_*/*/sunav2/**
+            join_indices: [3,4,5,6]
+            empty_files: true          
+            
+    OUT_PATH_1: /pfs/out #/tmp/filterjoined # Transfered to OUT_PATH for the first module
+    RELATIVE_PATH_INDEX: "3" # Start from year to preserve Y/M/D structure
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
+    LOG_LEVEL: DEBUG # Shared among all modules
+    
+input:
+  join:
+  - pfs:
+      name: PLAU_DATA
+      repo: waterQuality_analyze_pad_and_qaqc_plau
+      glob: /(*)/(*)/(*)/
+      joinOn: $1/$2/$3
+      empty_files: false
+  - pfs:
+      name: GROUP_DATA
+      repo: waterQuality_group_path
+      glob: /(*)/(*)/(*)/
+      joinOn: $1/$2/$3
+      empty_files: false
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 2.2
+resource_limits:
+  memory: 3G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 500
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
