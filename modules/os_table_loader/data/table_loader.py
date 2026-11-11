@@ -1,10 +1,8 @@
 from contextlib import closing
 from typing import NamedTuple, Optional
-
 import psycopg2.extras
 
 from data_access.db_connector import DbConnector
-
 
 class Table(NamedTuple):
     id: int
@@ -22,6 +20,7 @@ def get_tables(connector: DbConnector, partial_name: str) -> list[Table]:
     tables = []
     connection = connector.get_connection()
     schema = connector.get_schema()
+    print(f'connected to database: {connection.dsn}')
     sql = f'''
         select 
             pub_table_def_id,
