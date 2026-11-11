@@ -19,7 +19,7 @@ cloudpathlib==0.24.0
 cryptography==50.0.0
 decorator==5.2.1
 defusedxml==0.7.1
-dnspython==2.9.0
+dnspython==2.7.0
 docopt==0.6.2
 environs==14.4.0
 executing==2.2.1
@@ -51,7 +51,7 @@ mistune==3.3.3
 more-itertools==10.8.0
 multidict==6.9.1
 nbclient==0.10.2
-nbconvert==7.17.2
+nbconvert==7.16.6
 nbformat==5.10.4
 numpy==2.0.0
 pachyderm-sdk==2.12.2
@@ -95,7 +95,7 @@ stack-data==0.6.3
 structlog==25.5.0
 testfixtures==8.0.0
 tinycss2==1.4.0
-tornado==6.6
+tornado==6.5.2
 traitlets==5.14.3
 typing_extensions==4.15.0
 tzdata==2025.2
