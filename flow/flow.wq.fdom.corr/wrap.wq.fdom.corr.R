@@ -285,7 +285,7 @@ wrap.wq.fdom.corr <- function(DirIn,
   #Only need to read in calibration information for abs corrections if we're able to do them
   if(applyAbsCorr){
     #Look for and read in sunav2 calibration data
-    sunav2CalDataGlob <- base::file.path(DirIn,"sunav2","*","calibration","*")
+    sunav2CalDataGlob <- base::file.path(DirIn,"*","sunav2","*","calibration","*")
     sunav2CalDataPath <- base::Sys.glob(sunav2CalDataGlob)
     
     if(base::length(sunav2CalDataPath) >= 1){

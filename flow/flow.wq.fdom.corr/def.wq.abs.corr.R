@@ -161,7 +161,7 @@ def.wq.abs.corr <-
                          sunav2Data$readout_time < burstEndTime,]
           
           #According to the nitrate testing the lamp's data is best for the 10-20th frames, throw the others on the ground
-          if (base::nrow(burstData) < 10) {
+          if (base::nrow(burstData) < 5) {
             log$debug(
               base::paste0(
                 "SUNA nitrate data present, but fewer than 10 light frames found for: ",
