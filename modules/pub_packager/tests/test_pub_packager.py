@@ -33,7 +33,7 @@ class PubPackagerTest(TestCase):
         self.manifest_file_2 = Path(self.data_path,'CPER/25/manifest.csv')
         os.makedirs(Path(self.data_path,'CPER', '24'))
         os.makedirs(Path(self.data_path,'CPER', '25'))
-        header = 'startDateTime,endDateTime,soilTempMean,soilTempMinimum,soilTempMaximum,soilTempVariance,soilTempNumPts,soilTempExpUncert,soilTempStdErMean,finalQF\n'
+        header = 'startDateTime,endDateTime,mean,minimum,maximum,variance,numPts,expUncert,stdErMean,finalQF\n'
         with open(self.data_file_1, 'w') as f:
             f.write(header)
             f.write('2019-05-24T00:00:00Z,2019-05-24T00:01:00Z,27.32,27.316,27.324,9.7e-06,6,0.1483,0.001271,0\n')
