@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_os_table_loader
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-os-table-loader:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-os-table-loader:v1.1.1
   cmd:
   - sh
   - "-c"
