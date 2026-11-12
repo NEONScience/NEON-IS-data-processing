@@ -64,24 +64,25 @@ transform:
           # to change to lowercase in case
           # export site="${SITE,,}"
           #
-          while read -r mdpsite prod staging bucket_name
-           do
-              if [[ $SITE == $mdpsite ]] && [[ $prod == $PROD ]] && [[ $staging == $STAGING ]]; then
-                 BUCKET_NAME_MDP=$bucket_name
-                 echo "$mdpsite products to $bucket_name bucket"
-              else echo "**** No products available for $mdpsite to $bucket_name bucket"
-              fi
-           done < $OUT_MDP_SITES
-        echo "Syncing $SITE products directory $DIR to mdp bucket $BUCKET_NAME_MDP"
+          BUCKET_NAME_MDP=""
+          while IFS=$' \t' read -r mdpsite prod staging bucket_name; do
+            if [[ "$SITE" == "$mdpsite" && "$prod" == "$PROD" && "$staging" == "$STAGING" ]]; then
+              BUCKET_NAME_MDP="$bucket_name"
+            fi
+          done < "$OUT_MDP_SITES"
+          if [[ -z "$BUCKET_NAME_MDP" ]]; then
+            echo "No MDP bucket configured for $SITE (PROD=$PROD, STAGING=$STAGING)" >&2
+            exit 1
+          fi
+          rclone \
+            --no-check-dest \
+            --copy-links \
+            --gcs-bucket-policy-only \
+            --gcs-no-check-bucket \
+            copy \
+            "$DIR_SUB" \
+            ":gcs://${BUCKET_NAME_MDP}/${PRODUCT}/${SITE}"
         done
-        rclone \
-          --no-check-dest \
-          --copy-links \
-          --gcs-bucket-policy-only \
-          --gcs-no-check-bucket \
-          copy \
-          "${OUT_PATH_MDP}/${PRODUCT}" \
-          ":gcs://${BUCKET_NAME_MDP}/${PRODUCT}"
       done
       echo "============ Done for MDP sites"
       #cp -f "$OUT_MDP_SITES" $OUT_PATH_MDP/mdp_sites.txt
