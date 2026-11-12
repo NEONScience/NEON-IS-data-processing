@@ -244,8 +244,8 @@ wrap.wq.flags <- function(DirIn,
     sensorFlags$zeroConductivityQF <- base::as.integer(sensorFlags$zeroConductivityQF)
 
     # incorporate buoyProfilingQF flag into sensorFlags
-    if(BuoySite){
-      sensorFlags$buoyProfilingQF <- base::as.integer(-1)  # Initialize the column
+    sensorFlags$buoyProfilingQF <- base::as.integer(-1)  # Initialize the column
+    if(BuoySite){      
       idxMatchBuoy <- base::match(sensorFlags$readout_time, exo2Data$readout_time, nomatch = NA_integer_)
       idxMatchedBuoy <- !base::is.na(idxMatchBuoy)
       sensorFlags$buoyProfilingQF[idxMatchedBuoy] <- exo2Data$buoyProfilingQF[idxMatchBuoy[idxMatchedBuoy]]
@@ -267,11 +267,7 @@ wrap.wq.flags <- function(DirIn,
       SchmQf <- NULL
     } else {
       SchmList <- base::list.files(SchmPath,full.names=FALSE)
-      if(BuoySite){
-        SchmSensor <- SchmList[grepl(paste0(sensor,"_buoy.avsc"),SchmList)]        
-      }else{
-        SchmSensor <- SchmList[grepl(paste0(sensor,".avsc"),SchmList)]        
-      }
+      SchmSensor <- SchmList[grepl(paste0(sensor,".avsc"),SchmList)] 
       SchmQf <- base::paste0(base::readLines(base::file.path(SchmPath, SchmSensor)), collapse='')
     }    
 
