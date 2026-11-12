@@ -2,7 +2,7 @@
 pipeline:
   name: radShortPrimary_pub_group_release
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.7.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.8.1
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
