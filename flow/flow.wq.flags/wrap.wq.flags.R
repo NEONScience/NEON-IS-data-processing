@@ -19,15 +19,17 @@
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
-#' @param SchmQf (optional) A json-formatted character string containing the schema for the flags output
-#' by this function. If this input is not provided, the output schema for the data will be the same as the input data
+#' @param BuoySite Logical value. Indicates whether the site is a buoy site.
+#' 
+#' @param SchmPath (optional) The full path to the avro schemas for the output flags file.
+#' If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
 #' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
 #' output path (i.e. not combined but carried through as-is).
-
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
@@ -46,7 +48,7 @@
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' wrap.wq.flags <- function(DirIn="~/Git/pfs/waterQuality_temp_group/2025/09/04/water-quality_POSE102100",
 #'                               DirOutBase="~/Git/pfs/out",
-#'                               SchmQf=NULL,
+#'                               SchmPath=NULL,
 #'                               DirSubCopy=NULL,
 #'                               log=log)
 #'                               
@@ -59,8 +61,9 @@
 ##############################################################################################
 wrap.wq.flags <- function(DirIn,
                           DirOutBase,
+                          BuoySite,
                           DirSubCopy=NULL,
-                          SchmQf=NULL,
+                          SchmPath=NULL,
                           log=NULL
 ){
   
@@ -126,6 +129,66 @@ wrap.wq.flags <- function(DirIn,
   # Apply threshold: conductance <= 1 = flag 1, > 1 = flag 0
   condData$zeroConductivityQF[!na_mask & condData$specificConductance <= 1] <- base::as.integer(1)
   condData$zeroConductivityQF[!na_mask & condData$specificConductance > 1] <- base::as.integer(0)
+
+
+  # ========== Load reference buoy profiling data ==========
+  if(BuoySite){
+    log$debug(base::paste0('Buoy site detected. Processing exo2 data.'))
+    DirInExoData <- file.path(DirIn, "exo2")
+
+    if(!dir.exists(DirInExoData)){
+      log$error(base::paste0('Exo2 directory not found: ', DirInExoData))
+      base::stop()
+    }
+
+    # Find exo2 config subdirectory (should be exactly one)
+    cfgDirsExo2 <- base::list.files(DirInExoData, full.names = FALSE)
+    cfgDirsExo2 <- cfgDirsExo2[!base::grepl("^\\.", cfgDirsExo2)]
+    DirInExo2DataFiles <- file.path(DirInExoData, cfgDirsExo2[1], "data")
+    
+    
+    # Load exo2 data file (should be exactly one)
+    filesExo2 <- base::list.files(DirInExo2DataFiles, pattern = "\\.parquet$|\\.parq$", 
+                                  full.names = FALSE)  
+    if(length(filesExo2) == 0){
+      log$debug(base::paste0('No parquet files found in ', DirInExo2DataFiles))
+    }else{
+      if(length(filesExo2) > 1){
+        log$warn(base::paste0('Multiple Exo2 files found; using first: ', filesExo2[1]))
+      }
+      exo2Data <- 
+        base::try(NEONprocIS.base::def.read.parq(NameFile = file.path(DirInExo2DataFiles, filesExo2[1]),
+                                                  log = log),
+                    silent = FALSE)
+      if (base::any(base::class(exo2Data) == 'try-error')) {
+        # Generate error and stop execution
+        log$error(base::paste0('File ', file.path(DirInExo2DataFiles, filesExo2[1]), ' is unreadable.'))
+        base::stop()
+      } 
+
+      # Validate required columns
+      if(!("readout_time" %in% base::names(exo2Data))){
+        log$error('Exo2 data missing required column: readout_time')
+        base::stop()
+      }
+      
+      if(!("sensorDepth" %in% base::names(exo2Data))){
+        log$error('Exo2 data missing required column: sensorDepth')
+        base::stop()
+      }
+
+      exo2Data$depthChange <- base::c(NA, base::diff(exo2Data$sensorDepth))
+      
+      # Handle NA/NaN values explicitly (assign -1 for missing/invalid)
+      exo2Data$buoyProfilingQF <- base::as.integer(NA)  # Initialize the column
+      na_mask_exo2 <- base::is.na(exo2Data$depthChange) | base::is.nan(exo2Data$depthChange)
+      exo2Data$buoyProfilingQF[na_mask_exo2] <- base::as.integer(-1)
+      
+      # flag when depth change indicates profiling
+      exo2Data$buoyProfilingQF[!na_mask_exo2 & abs(exo2Data$depthChange) >= 0.5] <- base::as.integer(1)
+      exo2Data$buoyProfilingQF[!na_mask_exo2 & abs(exo2Data$depthChange) < 0.5] <- base::as.integer(0)
+    } 
+  }
   
   # ========== Process all sensors ==========
   sensorDirs <- base::list.files(DirIn, full.names = FALSE)
@@ -142,14 +205,6 @@ wrap.wq.flags <- function(DirIn,
     DirOutFlags <- file.path(DirOut, sensor, cfgDirsSensor[1], "flags")
     base::dir.create(DirOutFlags, recursive = TRUE)
       
-    # The flags folder is already populated from the calibration module. Copy over any existing files.
-    fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
-    # Symbolically link each file
-    for(idxFileCopy in fileCopy){
-      cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
-      rptCopy <- base::system(cmdCopy)
-    }
-      
     #Load in plausibility flag file
     fileFlags <- base::list.files(DirInFlags,full.names=FALSE)
     filePlau <- fileFlags[grepl("Plausibility",fileFlags)]
@@ -160,6 +215,14 @@ wrap.wq.flags <- function(DirIn,
     if (base::any(base::class(sensorFlags) == 'try-error')) {
         log$error(base::paste0('File ', DirInFlags, '/', filePlau, ' is unreadable.'))
         base::stop()
+    }
+
+    # The flags folder is already populated from other modules. Copy over any existing files.
+    fileCopy <- fileFlags[!grepl("Plausibility",fileFlags)]
+    # Symbolically link each file
+    for(idxFileCopy in fileCopy){
+      cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
+      rptCopy <- base::system(cmdCopy)
     }
 
     # Match and apply conductivity flags using keyed join on readout_time
@@ -174,12 +237,44 @@ wrap.wq.flags <- function(DirIn,
     sensorFlags$zeroConductivityQF[idxMatched] <- 
       condData$zeroConductivityQF[idxMatch[idxMatched]]
     
-    log$info(base::paste0('Sensor ', sensor, ': matched ', base::sum(idxMatched, na.rm = TRUE), 
-                          ' of ', base::nrow(sensorFlags), ' records with conductivity data'))
+    log$debug(base::paste0('Sensor ', sensor, ': matched ', base::sum(idxMatched, na.rm = TRUE), 
+                          ' of ', base::nrow(sensorFlags), ' records with conductivity data', ' for ', DirIn))
     
     # Ensure flag column is integer type
     sensorFlags$zeroConductivityQF <- base::as.integer(sensorFlags$zeroConductivityQF)
-    
+
+    # incorporate buoyProfilingQF flag into sensorFlags
+    if(BuoySite){
+      sensorFlags$buoyProfilingQF <- base::as.integer(-1)  # Initialize the column
+      idxMatchBuoy <- base::match(sensorFlags$readout_time, exo2Data$readout_time, nomatch = NA_integer_)
+      idxMatchedBuoy <- !base::is.na(idxMatchBuoy)
+      sensorFlags$buoyProfilingQF[idxMatchedBuoy] <- exo2Data$buoyProfilingQF[idxMatchBuoy[idxMatchedBuoy]]
+      log$debug(base::paste0('Sensor ', sensor, ': matched ', base::sum(idxMatchedBuoy, na.rm = TRUE), 
+                            ' of ', base::nrow(sensorFlags), ' records with buoy profiling data for', DirIn))
+
+      #if buoyProfilingQF flag = 1, set and columns with "Step" to 0 if step == 1
+      if(base::any(sensorFlags$buoyProfilingQF == 1, na.rm = TRUE)){
+        stepCols <- base::grep("Step", base::colnames(sensorFlags), value = TRUE)
+        for(col in stepCols){
+          sensorFlags[[col]][sensorFlags$buoyProfilingQF == 1 & sensorFlags[[col]] == 1] <- 0
+        }
+      }
+
+    }
+
+    # determine avro schema for writing flags
+    if(base::is.null(SchmPath) || SchmPath == 'NA'){
+      SchmQf <- NULL
+    } else {
+      SchmList <- base::list.files(SchmPath,full.names=FALSE)
+      if(BuoySite){
+        SchmSensor <- SchmList[grepl(paste0(sensor,"_buoy.avsc"),SchmList)]        
+      }else{
+        SchmSensor <- SchmList[grepl(paste0(sensor,".avsc"),SchmList)]        
+      }
+      SchmQf <- base::paste0(base::readLines(base::file.path(SchmPath, SchmSensor)), collapse='')
+    }    
+
     #Write out flags
     pathOutFlagFile <- base::paste0(DirOutFlags,"/",filePlau)
 

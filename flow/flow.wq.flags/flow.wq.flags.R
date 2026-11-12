@@ -19,18 +19,17 @@
 #'         /data
 #'         /flags
 #'        
-#' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
+#' 2. "SiteFileBuoy=value", where value is the full path to the site list buoy JSON file.
+#' 
+#' 3. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
 #' of DirIn.
 #' 
-#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' 4. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
-#'  
-#' 4. "FileSchmQf=value" (optional), where values is the full path to the avro schema for the output flags file. 
-#' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
-#' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
-#' nested within term/variable). See below for details.
 #' 
-#' 5. "DirSubCopy=value" (optional), where value is a pipe-separated list of subdirectories to be copied over 
+#' 5. "PathAvro=value" (optional), where value is the full path to the avro schemas for the output flags file. 
+#' 
+#' 6. "DirSubCopy=value" (optional), where value is a pipe-separated list of subdirectories to be copied over 
 #' to the output directory with a symbolic link.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -84,22 +83,22 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmQf","DirSubCopy"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr","SiteFileBuoy"),NameParaOptn = c("DirSubCopy","PathAvro"),log = log)
 
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+log$debug(base::paste0('Schema for output flags: ', Para$PathAvro))
 log$debug(base::paste0('Directories to copy: ', Para$DirSubCopy))
 
 # Read in the schemas so we only have to do it once and not every
 # time in the avro writer.
-if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
-  SchmQf <- NULL
+if(base::is.null(Para$PathAvro) || Para$PathAvro == 'NA'){
+  SchmPath <- NULL
 } else {
-  SchmQf <- base::paste0(base::readLines(Para$FileSchmQf),collapse='')
+  SchmPath <- Para$PathAvro
 }
 
 # Retrieve optional subdirectories to copy over
@@ -126,6 +125,21 @@ DirIn <-
   NEONprocIS.base::def.dir.in.partial(DirBgn = Para$DirIn, 
                               nameDirSubPartial = nameDirPartial,
                               log = log)
+#Determine site from DirIn
+Site <- base::sub("^water-quality_([A-Z]+).*", "\\1", base::basename(DirIn))
+log$debug(base::paste0('Site determined from input directory: ', Site))
+
+# Read in the site list buoy JSON file
+SiteFileBuoyJson <- jsonlite::fromJSON(base::paste0(Para$SiteFileBuoy, collapse = ''))
+
+# Check if site is in the buoy site list
+if (Site %in% SiteFileBuoyJson$site) {
+  BuoySite <- TRUE
+} else {
+  BuoySite <- FALSE
+}
+
+
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
@@ -138,8 +152,9 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.wq.flags(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmQf=SchmQf,
+        SchmPath=SchmPath,
         DirSubCopy=DirSubCopy,
+        BuoySite=BuoySite,
         log=log
       ),
       error = function(err) {
