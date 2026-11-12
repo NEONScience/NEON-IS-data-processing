@@ -1,0 +1,54 @@
+---
+pipeline:
+  name: radShortPrimary_group_path_release
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.2
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - set -euo pipefail
+  - python3 -m group_path.group_path_main
+  env:
+    GROUP: rad-short-primary_
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+    ERR_PATH: /pfs/out/errored_datums
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    LOCATION_FOCUS_SOURCE_TYPE_INDEX: '3'
+    LOCATION_FOCUS_YEAR_INDEX: '4'
+    LOCATION_FOCUS_MONTH_INDEX: '5'
+    LOCATION_FOCUS_DAY_INDEX: '6'
+    LOCATION_FOCUS_LOCATION_INDEX: '7'
+input:
+  join:
+  - pfs:
+      name: GROUP_ASSIGNMENT_PATH
+      repo: radShortPrimary_group_assignment_release
+      glob: /rad-short-primary/(*/*/*)
+      joinOn: $1
+  - pfs:
+      name: LOCATION_FOCUS_PATH
+      repo: cmp22_location_active_dates_assignment_release
+      glob: /cmp22/(*/*/*)
+      joinOn: $1
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 600M
+  cpu: 0.4
+resource_limits:
+  memory: 2G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
