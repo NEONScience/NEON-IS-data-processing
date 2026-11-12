@@ -2,7 +2,7 @@
 pipeline:
   name: waterQuality_fdom_correct
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-fdom-group-correct:sha-525be44
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-fdom-group-correct:sha-3625207
   cmd:
   - sh
   - "-c"

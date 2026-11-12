@@ -125,7 +125,6 @@ wrap.wq.fdom.corr <- function(DirIn,
   
   if (base::class(fdomData) == 'try-error') {
     # Generate error and stop execution
-    #log$error(base::paste0('File ', idxDirData, '/', fdomData, ' is unreadable.'))
     log$error(base::paste0('File: ', fdomDataGlob, ' is unreadable.'))
     stop()
   }
