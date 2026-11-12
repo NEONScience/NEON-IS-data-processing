@@ -29,9 +29,10 @@ transform:
       "TermCtxt4=sensorDepth|water-quality" \
       "TermCtxt5=dissolvedOxygen|water-quality" \
       "TermCtxt6=dissolvedOxygenSaturation|water-quality" \
-      "TermCtxt7=fDOM|water-quality" \
-      "TermCtxt8=pH|water-quality" \
-      "TermCtxt9=turbidity|water-quality" \
+      "TermCtxt7=localDissolvedOxygenSat|water-quality" \
+      "TermCtxt8=fDOM|water-quality" \
+      "TermCtxt9=pH|water-quality" \
+      "TermCtxt10=turbidity|water-quality" \
       "DirSubCopy=location|data|flags|uncertainty_data|uncertainty_coef"
     
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)

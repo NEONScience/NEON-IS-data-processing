@@ -47,11 +47,13 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=/home/ncatolico/Git/pfs/waterQuality_temp_group/2025/09/04/water-quality_POSE102100",
-         "DirOut=/home/ncatolico/Git/pfs/out/test",
-         "DirErr=/home/ncatolico/Git/pfs/out/errored_datums")
-rm(list=setdiff(ls(),c('arg','log')))
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=~/Git/pfs/waterQuality_temp_group/2025/09/04/water-quality_CRAM103100",
+#          "SiteFileBuoy=~/Git/pfs/exo2_site_list/site-list-buoy.json",
+#          "PathAvro=~/Git/pfs/waterQuality_avro_schemas/waterQuality_flags_specific",
+#          "DirOut=~/Git/pfs/out/wq.flags",
+#          "DirErr=~/Git/pfs/out/errored_datums")
+# rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
 

@@ -88,6 +88,7 @@ transform:
             DirErr=/pfs/out/errored_datums \
             "TermTest1=dissolvedOxygen:null|gap|range(rmv)|persistence|step|spike" \
             "TermTest2=dissolvedOxygenSaturation:null|gap|range(rmv)|persistence|step|spike" \
+            "TermTest3=dissolvedOxygenSaturationLocal:null|gap|range(rmv)|persistence|step|spike" \
             "DirSubCopy=location|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         elif [ $SENSOR_TYPE = 'exo2algae' ]
         then
