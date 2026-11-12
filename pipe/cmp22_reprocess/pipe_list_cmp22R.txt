@@ -1,5 +1,5 @@
 cmp22_cron_daily_and_date_controlR.yaml
-cmp22_data_sourceR.yaml
+cmp22_data_source_gcsR.yaml
 cmp22_calibration_list_filesR.yaml
 cmp22_calibration_loaderR.yaml
 cmp22_location_assetR.yaml
