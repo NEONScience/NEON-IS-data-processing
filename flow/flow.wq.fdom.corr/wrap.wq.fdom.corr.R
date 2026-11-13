@@ -306,8 +306,11 @@ wrap.wq.fdom.corr <- function(DirIn,
       fdomData$fDOMAbsQF <- 1
       fdomData$spectrumCount <- 0
     }else{
+      #update readout time to floor minute
+      absData$readout_time <- base::as.POSIXct(base::floor(as.numeric(absData$readout_time) / 60) * 60, origin = "1970-01-01", tz = "UTC")
       # Merge in abs data to the fdomData dataframe and calculate correction factors and flags
       for(idxAbsData in absData$readout_time){
+        # idxAbsData <- absData$readout_time[1]
         if(idxAbsData <= base::max(fdomData$readout_time)){
           nextReadout <- base::min(absData$readout_time[absData$readout_time > idxAbsData])
           fdomData$Abs_ex[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$Abs_ex[absData$readout_time == idxAbsData]
