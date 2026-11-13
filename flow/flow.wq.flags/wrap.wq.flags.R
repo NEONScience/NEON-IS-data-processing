@@ -204,7 +204,12 @@ wrap.wq.flags <- function(DirIn,
 
     # Copy with a symbolic link the desired subfolders 
     if(base::length(DirSubCopy) > 0){
-      NEONprocIS.base::def.dir.copy.symb(base::paste0(DirInSensor,'/',cfgDirsSensor[1],'/',DirSubCopy),
+      if(sensor=='exo2fdom'){
+        DirCopy <- DirSubCopy[!"data" %in% DirSubCopy]
+      } else {
+        DirCopy <- DirSubCopy
+      }
+      NEONprocIS.base::def.dir.copy.symb(base::paste0(DirInSensor,'/',cfgDirsSensor[1],'/',DirCopy),
         base::paste0(DirOut, '/', sensor, '/', cfgDirsSensor[1]),LnkSubObj=FALSE,log=log)
     } 
     
