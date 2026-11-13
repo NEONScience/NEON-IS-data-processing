@@ -74,12 +74,7 @@ wrap.wq.flags <- function(DirIn,
   
   # Gather info about the input directory (including date), and create base output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
-  DirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)
-
-  # Copy with a symbolic link the desired subfolders 
-  if(base::length(DirSubCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(DirIn,'/',DirSubCopy),DirOut,LnkSubObj=FALSE,log=log)
-  } 
+  DirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)  
   
   # ========== Load reference conductivity data ==========
   DirInCondData <- file.path(DirIn, "exo2conductivity")
@@ -206,6 +201,17 @@ wrap.wq.flags <- function(DirIn,
     # Find sensor config subdirectory (should be exactly one)
     cfgDirsSensor <- base::list.files(DirInSensor, full.names = FALSE)
     cfgDirsSensor <- cfgDirsSensor[!base::grepl("^\\.", cfgDirsSensor)]
+
+    # Copy with a symbolic link the desired subfolders 
+    if(sensor=='exo2fdom'){
+      DirCopy <- DirSubCopy[!DirSubCopy %in% c('data')]
+    }else{
+      DirCopy <- DirSubCopy
+    }
+    if(base::length(DirCopy) > 0){
+      NEONprocIS.base::def.dir.copy.symb(base::paste0(DirInSensor,'/',cfgDirsSensor[1],'/',DirCopy),
+        base::paste0(DirOut, '/', sensor, '/', cfgDirsSensor[1]),LnkSubObj=FALSE,log=log)
+    } 
     
     DirInFlags <- file.path(DirInSensor, cfgDirsSensor[1], "flags")
     DirOutFlags <- file.path(DirOut, sensor, cfgDirsSensor[1], "flags")
