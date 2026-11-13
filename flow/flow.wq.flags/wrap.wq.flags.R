@@ -205,7 +205,8 @@ wrap.wq.flags <- function(DirIn,
     # Copy with a symbolic link the desired subfolders 
     if(base::length(DirSubCopy) > 0){
       if(sensor=='exo2fdom'){
-        DirCopy <- DirSubCopy[!"data" %in% DirSubCopy]
+        # For exo2fdom sensor, exclude the 'data' subdirectory from copying
+        DirCopy <- DirSubCopy[DirSubCopy != 'data']
       } else {
         DirCopy <- DirSubCopy
       }
