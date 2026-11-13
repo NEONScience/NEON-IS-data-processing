@@ -195,6 +195,7 @@ wrap.wq.flags <- function(DirIn,
   sensorDirs <- sensorDirs[!base::grepl("^\\.", sensorDirs)]  # Exclude hidden files
   
   for(sensor in sensorDirs){
+    # sensor <- sensorDirs[3]
     DirInSensor <- file.path(DirIn, sensor)
     
     # Find sensor config subdirectory (should be exactly one)
