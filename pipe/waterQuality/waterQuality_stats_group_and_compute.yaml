@@ -1,0 +1,128 @@
+---
+pipeline:
+  name: waterQuality_stats_group_and_compute
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.1.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Find all water-quality directories within the matched day structure
+    for sensor_dir in /pfs/QAQC_PATH/*/*/*/water-quality_*/*; do
+      if [ -d "$sensor_dir" ]; then
+        SENSOR_TYPE=$(basename "$sensor_dir")
+        echo "Processing SENSOR_TYPE: $SENSOR_TYPE for $sensor_dir"
+
+        # Limit concurrent jobs to 4 to better utilize available CPU (increased from 2)
+        while [ $(jobs -r | wc -l) -ge 4 ]; do
+           sleep 0.5
+        done
+
+        # Run sensor types separately for combination script
+        if [ $SENSOR_TYPE = 'exo2' ]
+        then
+          Rscript ./flow.data.comb.ts.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "DirComb=data|uncertainty_data" \
+            NameDirCombOut="stats" \
+            "NameVarTime=readout_time" \
+            "ColKeep=readout_time|sensorDepth|sensorDepth_ucrtExpn" \
+            NameFileSufx="_basicStats_100"
+        elif [ $SENSOR_TYPE = 'exo2conductivity' ]
+        then
+          Rscript ./flow.data.comb.ts.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "DirComb=data|uncertainty_data" \
+            NameDirCombOut="stats" \
+            "NameVarTime=readout_time" \
+            "ColKeep=readout_time|specificConductance|specificConductance_ucrtExpn|surfaceWaterTemperature|surfaceWaterTemperature_ucrtExpn" \
+            NameFileSufx="_basicStats_100"
+        elif [ $SENSOR_TYPE = 'exo2turbidity' ]
+        then
+          Rscript ./flow.data.comb.ts.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "DirComb=data|uncertainty_data" \
+            NameDirCombOut="stats" \
+            "NameVarTime=readout_time" \
+            "ColKeep=readout_time|turbidity|turbidity_ucrtExpn" \
+            NameFileSufx="_basicStats_100"
+        elif [ $SENSOR_TYPE = 'exo2phorp' ]
+        then
+          Rscript ./flow.data.comb.ts.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "DirComb=data|uncertainty_data" \
+            NameDirCombOut="stats" \
+            "NameVarTime=readout_time" \
+            "ColKeep=readout_time|pH|pH_ucrtExpn" \
+            NameFileSufx="_basicStats_100"
+        elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
+        then
+          Rscript ./flow.data.comb.ts.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "DirComb=data|uncertainty_data" \
+            NameDirCombOut="stats" \
+            "NameVarTime=readout_time" \
+            "ColKeep=readout_time|dissolvedOxygen|dissolvedOxygen_ucrtExpn|dissolvedOxygenSaturation|dissolvedOxygenSaturation_ucrtExpn|localDissolvedOxygenSat|dissolvedOxygenSaturation_ucrtExpn" \
+            NameFileSufx="_basicStats_100"
+        elif [ $SENSOR_TYPE = 'exo2algae' ]
+        then
+          Rscript ./flow.data.comb.ts.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            "DirComb=data|uncertainty_data" \
+            NameDirCombOut="stats" \
+            "NameVarTime=readout_time" \
+            "ColKeep=readout_time|chlorophyll|chlorophyll_ucrtExpn|chlaRelativeFluorescence|chlaRelativeFluorescence_ucrtExpn" \
+            NameFileSufx="_basicStats_100"   
+        elif [ $SENSOR_TYPE = 'exo2fdom' ]
+        then
+          echo "FDOM stats calculated in flagging module. Skipping fdom sensor type..."
+        else
+          echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
+        fi
+      fi
+    done
+  
+      
+    EOF
+  
+input:
+  cross:
+  - pfs:
+      name: QAQC_PATH
+      repo: waterQuality_flags_specific
+      glob: /*/*/*/*/*
+      empty_files: false
+parallelism_spec:
+  constant: 10
+autoscaling: true
+resource_requests:
+  memory: 3G
+  cpu: 2.5
+resource_limits:
+  memory: 6G
+  cpu: 3
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 20
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

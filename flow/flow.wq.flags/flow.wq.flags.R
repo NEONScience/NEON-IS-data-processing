@@ -48,8 +48,9 @@
 #' @examples
 #' Stepping through the code in Rstudio 
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/Git/pfs/waterQuality_flags_specific_group/2025/09/09/water-quality_WALK101100",
+# arg <- c("DirIn=~/Git/pfs/waterQuality_flags_specific_group/2025/09/09/water-quality_BARC103100",
 #          "SiteFileBuoy=~/Git/pfs/exo2_site_list/site-list-buoy.json",
+#          "DirSubCopy=data|location|uncertainty_data",
 #          "PathAvro=~/Git/pfs/waterQuality_avro_schemas/waterQuality_flags_specific",
 #          "DirOut=~/Git/pfs/out/wq.flags",
 #          "DirErr=~/Git/pfs/out/errored_datums")

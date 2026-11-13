@@ -2,7 +2,7 @@
 pipeline:
   name: waterQuality_flags_specific
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-98c2372
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-febf999
   cmd:
   - sh
   - "-c"
@@ -26,7 +26,7 @@ transform:
     Rscript ./flow.wq.flags.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
-      "DirSubCopy=data|location|uncertainty_data" \
+      "DirSubCopy=data|location|uncertainty_data|stats" \
       SiteFileBuoy=$SITE_FILE_BUOY \
       PathAvro=$AVRO_PATH \
       DirErr=/pfs/out/errored_datums
