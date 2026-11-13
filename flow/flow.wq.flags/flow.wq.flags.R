@@ -116,16 +116,16 @@ log$debug(base::paste0(
 
 
 #what are the expected subdirectories of each input path
-nameDirPartial <- 'exo2'
+nameDirSub <- 'exo2'
 log$debug(base::paste0(
   'Expected subdirectories of each input path include: ',
-  base::paste0(nameDirPartial, collapse = ',')
+  base::paste0(nameDirSub, collapse = ',')
 ))
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
-  NEONprocIS.base::def.dir.in.partial(DirBgn = Para$DirIn, 
-                              nameDirSubPartial = nameDirPartial,
+  NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn, 
+                              nameDirSub = nameDirSub,
                               log = log)
 #Determine site from DirIn
 Site <- base::sub("^water-quality_([A-Z]+).*", "\\1", base::basename(DirIn))
