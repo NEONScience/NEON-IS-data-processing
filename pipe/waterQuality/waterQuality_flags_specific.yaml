@@ -2,7 +2,7 @@
 pipeline:
   name: waterQuality_flags_specific
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-071a003
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-8ce4bc6
   cmd:
   - sh
   - "-c"
@@ -11,17 +11,51 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
     
+    # Set some environment variables for the first module
+    export OUT_PATH=$OUT_PATH_1
+
+    # Run first module - filter-joiner (using environment variables below as input parameters).
+    python3 -m filter_joiner.filter_joiner_main
+
     #run flagging script
     Rscript ./flow.wq.flags.R \
-      DirIn=$DIR_IN \
+      DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       SiteFileBuoy=$SITE_FILE_BUOY \
       PathAvro=$AVRO_PATH \
       DirErr=/pfs/out/errored_datums
 
     EOF
-
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: EXO2_DATA_FDOM
+            glob_pattern: /pfs/EXO2_DATA_FDOM/*/*/*/water-quality_*/exo2fdom/**
+            join_indices: [3,4,5,6]
+            empty_files: true            
+        - path:
+            name: EXO2_DATA_NONFDOM
+            glob_pattern: /pfs/EXO2_DATA_NONFDOM/*/*/*/water-quality_*/exo2*/**
+            join_indices: [3,4,5,6]
+            empty_files: true   
+            outer_join: true #pull in with or without fdom data
+            
+    OUT_PATH_1: /tmp/pfs/filter_joined # Transfered to OUT_PATH for the first module
+    RELATIVE_PATH_INDEX: "3" # Start from year to preserve Y/M/D structure
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
+    LOG_LEVEL: DEBUG # Shared among all modules
+    
 input:
   cross:
   - pfs:
@@ -31,13 +65,20 @@ input:
   - pfs:
       name: AVRO_PATH
       repo: waterQuality_avro_schemas
-      glob: /waterQuality/waterQuality_flags_specific/*
-  - pfs:
-      name: DIR_IN
-      repo: waterQuality_flags_specific_group
-      branch: master
-      glob: /*/*/*
-      empty_files: false
+      glob: /waterQuality/waterQuality_flags_specific
+  - join:
+    - pfs:
+        name: EXO2_DATA_FDOM
+        repo: waterQuality_fdom_correct
+        glob: /(*)/(*)/(*)/
+        joinOn: $1/$2/$3
+        empty_files: false
+    - pfs:
+        name: EXO2_DATA_NONFDOM
+        repo: waterQuality_analyze_pad_and_qaqc_plau
+        glob: /(*)/(*)/(*)/
+        joinOn: $1/$2/$3
+        empty_files: false
     
 parallelism_spec:
   constant: 5

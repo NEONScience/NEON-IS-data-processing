@@ -48,7 +48,7 @@
 #' @examples
 #' Stepping through the code in Rstudio 
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=~/Git/pfs/waterQuality_temp_group/2025/09/04/water-quality_CRAM103100",
+# arg <- c("DirIn=~/Git/pfs/waterQuality_flags_specific_group/2025/09/09/water-quality_WALK101100",
 #          "SiteFileBuoy=~/Git/pfs/exo2_site_list/site-list-buoy.json",
 #          "PathAvro=~/Git/pfs/waterQuality_avro_schemas/waterQuality_flags_specific",
 #          "DirOut=~/Git/pfs/out/wq.flags",
@@ -93,7 +93,6 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output flags: ', Para$PathAvro))
-log$debug(base::paste0('Directories to copy: ', Para$DirSubCopy))
 
 # Read in the schemas so we only have to do it once and not every
 # time in the avro writer.
@@ -116,7 +115,7 @@ log$debug(base::paste0(
 
 
 #what are the expected subdirectories of each input path
-nameDirSub <- 'exo2'
+nameDirSub <- 'exo2conductivity'
 log$debug(base::paste0(
   'Expected subdirectories of each input path include: ',
   base::paste0(nameDirSub, collapse = ',')
