@@ -1,0 +1,96 @@
+{
+  "type": "record",
+  "name": "flags_specific_exof2dom",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "Plausibility and sensor-specific flags for exo2fdom sensor",
+  "fields": [
+    {
+      "name": "readout_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp of readout expressed in milliseconds since epoch"
+    },
+    {
+      "name": "fDOMNullQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "fDOM quality flag for the null test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "fDOMGapQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "fDOM quality flag for the gap test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "fDOMRangeQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "fDOM quality flag for the range test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "fDOMStepQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "fDOM quality flag for the step test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "fDOMSpikeQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "fDOM quality flag for the spike test detailed in NEON.DOC.000783 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "fDOMPersistenceQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "fDOM quality flag for the persistence test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "fDOMZeroConductivityQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Quality flag indicating whether sensor is submerged based on conductivity measurement (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "fDOMBuoyProfilingQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Quality flag indicating whether buoy sensor is profiling at the time of measurement (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    }
+    ]
+}
