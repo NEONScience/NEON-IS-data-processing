@@ -1,0 +1,58 @@
+---
+pipeline:
+  name: waterQuality_flags_specific
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-071a003
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    #run flagging script
+    Rscript ./flow.wq.flags.R \
+      DirIn=$DIR_IN \
+      DirOut=/pfs/out \
+      SiteFileBuoy=$SITE_FILE_BUOY \
+      PathAvro=$AVRO_PATH \
+      DirErr=/pfs/out/errored_datums
+
+    EOF
+
+input:
+  cross:
+  - pfs:
+      name: SITE_FILE_BUOY
+      repo: exo2_site_list
+      glob: /site-list-buoy.json
+  - pfs:
+      name: AVRO_PATH
+      repo: waterQuality_avro_schemas
+      glob: /waterQuality/waterQuality_flags_specific/*
+  - pfs:
+      name: DIR_IN
+      repo: waterQuality_flags_specific_group
+      branch: master
+      glob: /*/*/*
+      empty_files: false
+    
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 2.2
+resource_limits:
+  memory: 3G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 500
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

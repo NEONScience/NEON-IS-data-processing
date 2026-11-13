@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: waterQuality_temp_group
+  name: waterQuality_flags_specific_group
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-fdom-group-correct:sha-525be44
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-071a003
   cmd:
   - sh
   - "-c"
@@ -15,7 +15,7 @@ transform:
     # Set some environment variables for the first module
     export OUT_PATH=$OUT_PATH_1
 
-    # Run first module - filter-joiner (using environment variables below as input parameters). Join select sonde and suna tables.
+    # Run first module - filter-joiner (using environment variables below as input parameters).
     python3 -m filter_joiner.filter_joiner_main
 
     EOF
@@ -34,7 +34,7 @@ transform:
             empty_files: true            
         - path:
             name: EXO2_DATA_NONFDOM
-            glob_pattern: /pfs/EXO2_DATA_NONFDOM/*/*/*/water-quality_*/(exo2|exo2conductivity|exo2turbidity|exo2algae|exo2dissolvedoxygen)/**
+            glob_pattern: /pfs/EXO2_DATA_NONFDOM/*/*/*/water-quality_*/exo2*/**
             join_indices: [3,4,5,6]
             empty_files: true   
             outer_join: true #pull in with or without fdom data
@@ -45,30 +45,19 @@ transform:
     LOG_LEVEL: DEBUG # Shared among all modules
     
 input:
-  cross:
+  join:
   - pfs:
-      name: SITE_FILE_BUOY
-      repo: exo2_site_list
-      glob: /site-list-buoy.json
-  - join:
-    - pfs:
-        name: EXO2_DATA_FDOM
-        repo: waterQuality_fdom_correct
-        glob: /(*)/(*)/(*)/
-        joinOn: $1/$2/$3
-        empty_files: false
-    - pfs:
-        name: EXO2_DATA_NONFDOM
-        repo: waterQuality_analyze_pad_and_qaqc_plau
-        glob: /(*)/(*)/(*)/
-        joinOn: $1/$2/$3
-        empty_files: false
-    - pfs:
-        name: EXO2_DATA_GROUP
-        repo: waterQuality_group_path
-        glob: /(*)/(*)/(*)/
-        joinOn: $1/$2/$3
-        empty_files: false
+      name: EXO2_DATA_FDOM
+      repo: waterQuality_fdom_correct
+      glob: /(*)/(*)/(*)/
+      joinOn: $1/$2/$3
+      empty_files: false
+  - pfs:
+      name: EXO2_DATA_NONFDOM
+      repo: waterQuality_analyze_pad_and_qaqc_plau
+      glob: /(*)/(*)/(*)/
+      joinOn: $1/$2/$3
+      empty_files: false
     
 parallelism_spec:
   constant: 5
