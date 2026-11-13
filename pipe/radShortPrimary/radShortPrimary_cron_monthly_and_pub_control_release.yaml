@@ -1,0 +1,43 @@
+---
+# Publication months come from daily control, not a separate range or cron.
+# Validate every selected month before allowing publication.
+pipeline:
+  name: radShortPrimary_cron_monthly_and_pub_control_release
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-cntl:v1.1.0
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - set -euo pipefail
+  - |
+    month_path="${DATE_PATH##*/cmp22/}"
+    first="${month_path//\//-}-01"
+    next=$(date -u -d "$first +1 month" +%F)
+    last=$(date -u -d "$next -1 day" +%d)
+    for day in $(seq -w 1 "$last"); do
+      if [[ ! -d "$DATE_PATH/$day" ]]; then
+        echo "Incomplete release month: $month_path is missing day $day" >&2
+        exit 1
+      fi
+    done
+    mkdir -p "/pfs/out/$month_path"
+    touch "/pfs/out/$month_path/.empty"
+input:
+  pfs:
+    name: DATE_PATH
+    repo: cmp22_cron_daily_and_date_control_release
+    glob: /cmp22/*/*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 64M
+  cpu: 0.1
+resource_limits:
+  memory: 200M
+  cpu: 1
+sidecar_resource_requests:
+  memory: 200M
+  cpu: 0.1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

@@ -80,11 +80,30 @@ class PublicationWriterTest(DatabaseBackedTest):
                     view_csv_file(path)
 
     def test_write_publication_files(self):
+        def get_lov_values(lov_name: str):
+            return [{
+                'name': lov_name,
+                'pubCode': 'Sample',
+                'description': 'Sample Description',
+                'startDate': '2012-01-01T00:00:00',
+                'endDate': ''
+            }]
+
+        self.fs.create_file(Path(self.out_path,
+                                 self.metadata_path_1,
+                                 'basic',
+                                 'NEON.D10.ARIK.DP1.20100.001.categoricalCodes.20000101T000000Z.csv'))
+        self.fs.create_file(Path(self.out_path,
+                                 self.metadata_path_1,
+                                 'expanded',
+                                 'NEON.D10.ARIK.DP1.20100.001.categoricalCodes.20000101T000000Z.csv'))
+
         data_loader = DataLoader(get_tables=get_tables,
                                  get_fields=get_fields,
                                  get_results=get_results,
                                  get_site_results=get_site_results,
-                                 get_result_values=get_result_values)
+                                 get_result_values=get_result_values,
+                                 get_lovValues=get_lov_values)
         path_config = PathConfig(input_path=self.in_path,
                                  workbook_path=self.workbook_path,
                                  out_path=self.out_path,
@@ -106,7 +125,13 @@ class PublicationWriterTest(DatabaseBackedTest):
                 if self.view_files and path.name == 'manifest.csv':
                     print(f'\npath: {path}')
                     view_csv_file(path)
-        assert i == 5
+        basic_matches = list(Path(self.out_path, self.metadata_path_1, 'basic').glob(
+            'NEON.D10.ARIK.DP1.20100.001.categoricalCodes.*.csv'))
+        expanded_matches = list(Path(self.out_path, self.metadata_path_1, 'expanded').glob(
+            'NEON.D10.ARIK.DP1.20100.001.categoricalCodes.*.csv'))
+        assert len(basic_matches) == 1
+        assert len(expanded_matches) == 1
+        assert i == 7
 
         generated_files = [
             path for path in self.out_path.rglob('*.csv')
