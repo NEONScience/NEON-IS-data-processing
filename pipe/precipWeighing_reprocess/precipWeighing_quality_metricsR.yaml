@@ -1,0 +1,75 @@
+---
+# Mirror pre-L1 outputs to l1-bucket/pre-l1/precipWeighing_quality_metricsR; replica pipeline name has an R suffix.
+pipeline:
+  name: precipWeighing_quality_metricsR
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.6
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Run quality metrics module for hourly aggregation
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=$QAQC_PLAUSIBILITY_PATH \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_HOURLY \
+      "WndwAgr=060"
+      
+    # Run quality metrics module for daily aggregation
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=$QAQC_PLAUSIBILITY_PATH \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_DAILY \
+      "WndwAgr=01D"
+
+    if [[ -d /pfs/out ]]; then
+      rclone --no-check-dest --copy-links --gcs-bucket-policy-only \
+             --gcs-no-check-bucket \
+             --exclude "errored_datums/**" \
+             copy /pfs/out ":gcs://${BUCKET_NAME}/pre-l1/precipWeighing_quality_metrics"
+    fi
+    EOF
+  env:
+    LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
+  secrets:
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_QM_HOURLY
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/precipWeighing_dp01_quality_metrics_hourly_aepg.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM_DAILY
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/precipWeighing_dp01_quality_metrics_daily_aepg.avsc
+  - pfs:
+      name: QAQC_PLAUSIBILITY_PATH
+      repo: precipWeighing_compute_precipR
+      glob: /*/*/*
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests: 
+  memory: 900M
+  cpu: 3.5
+resource_limits:
+  memory: 2G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
