@@ -106,7 +106,7 @@ if(base::is.null(Para$PathAvro) || Para$PathAvro == 'NA'){
 DirSubCopy <-
   base::unique(base::setdiff(
     Para$DirSubCopy,
-    c('data')
+    c('flags')
   ))
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',

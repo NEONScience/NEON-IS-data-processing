@@ -75,6 +75,11 @@ wrap.wq.flags <- function(DirIn,
   # Gather info about the input directory (including date), and create base output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)
+
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirSubCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(DirIn,'/',DirSubCopy),DirOut,LnkSubObj=FALSE,log=log)
+  } 
   
   # ========== Load reference conductivity data ==========
   DirInCondData <- file.path(DirIn, "exo2conductivity")
