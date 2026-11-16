@@ -60,7 +60,7 @@ transform:
 
 
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     DB_CONFIG_SOURCE: mount
     FILE_TYPE: csv
     OUT_PATH: /pfs/out
