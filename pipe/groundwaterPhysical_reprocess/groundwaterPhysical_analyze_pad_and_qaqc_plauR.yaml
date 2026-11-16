@@ -1,0 +1,74 @@
+---
+pipeline:
+  name: groundwaterPhysical_analyze_pad_and_qaqc_plauR
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v2.0.4
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/padded_analyzer
+    rm -rf /tmp/pfs/padded_analyzerCopy
+    mkdir -p /tmp/pfs/padded_analyzer
+
+    # Run first module - padded_timeseries_analyzer
+    python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/pfs/padded_analyzer 
+
+    # Run second module - qaqc plausibility
+    Rscript ./flow.qaqc.plau.R \
+      DirIn=/tmp/pfs/padded_analyzerCopy \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQf=$SCHEMA_FLAGS \
+      "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+      "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+      "TermTest3=conductivity:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+      DirSubCopy=location
+    EOF
+  env:
+    # Environment variables for padded timeseries analyzer
+    OUT_PATH: /tmp/pfs/padded_analyzer
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: '3'
+    ERR_PATH: /pfs/out/errored_datums
+    # Environment variables for qaqc plausibility
+    PARALLELIZATION_INTERNAL: '4'
+input:
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: groundwaterPhysical_thresh_select_ts_padR
+      glob: /*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: groundwaterPhysical_avro_schemas
+      glob: /groundwaterPhysical/flags_plausibility_groundwaterPhysical.avsc
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2.5G
+  cpu: 4.4
+resource_limits:
+  memory: 4G
+  cpu: 5.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

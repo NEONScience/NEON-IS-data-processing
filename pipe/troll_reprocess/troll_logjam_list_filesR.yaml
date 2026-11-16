@@ -1,0 +1,41 @@
+---
+pipeline:
+  name: troll_logjam_list_filesR
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.1.0
+  cmd: ["/bin/bash"]
+  env:
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
+    PREFIXES: logjam_prod/leveltroll500,logjam_prod/aquatroll200 # Filter for these path prefixes in the bucket. Separate multiple with commas (no spaces)
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+  stdin:
+  - "#!/bin/bash"
+  - python3 -m logjam_loader.logjam_loader
+input:
+  join:
+  - pfs:
+      repo: surfacewaterPhysical_cron_monthly_and_pub_controlR_tick
+      glob: /(*-*)-*
+      empty_files: true
+      joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
+      outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
+  - pfs:
+      repo: groundwaterPhysical_cron_monthly_and_pub_controlR_tick
+      glob: /(*-*)-*
+      empty_files: true
+      joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
+      outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 1
+resource_limits:
+  memory: 1.5G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.4
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
