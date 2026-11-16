@@ -71,12 +71,12 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   # Load any streamed data
   if(length(streamedFileName)>=1){
     streamedData  <-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', streamedFileName),log = log),silent = FALSE)
-    #remove columns that contiane "kafka" in column names
-    streamedData <- streamedData[,!grepl("kafka",colnames(streamedData))]
-    streamedData <- streamedData[,!grepl("kakfa",colnames(streamedData))]
     if (base::any(base::class(streamedData) == 'try-error')) {
       log$error(base::paste0('File ', DirInData, '/', streamedFileName, ' is unreadable.'))
       base::stop()}
+    #remove columns that contiane "kafka" in column names
+    streamedData <- streamedData[,!grepl("kafka",colnames(streamedData))]
+    streamedData <- streamedData[,!grepl("kakfa",colnames(streamedData))]
   }else{streamedData<-NULL}
   
   # Load any logged data
@@ -145,6 +145,11 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   if(is.null(streamedData) & !is.null(loggedData)){dataOut<-loggedData}
   # Combine logged and streamed data.  
   if(!is.null(streamedData) & !is.null(loggedData)){
+    #test that both share the same readout times
+    if(!all(loggedData$readout_time == streamedData$readout_time)){
+      log$error(base::paste0('readout times for logged and streamed data do not match for file ', DirInData))
+      stop()
+    }
     # try to combine dataframes
     base::try({
       dataOut<-rbind(loggedData,streamedData)
@@ -154,13 +159,18 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
       base::stop()
     }
     
-    # If there is logged and streamed data for a bin time, logged data is used.
-    dataOut$bin_time<-lubridate::floor_date(dataOut$readout_time,unit = "5 minutes")
+    # Logged and streamed data share readout times. For each readout time, use the logged data
+    # unless all logged data columns (excluding readout_time and QF columns) are NA, then use streamed data.
+    dataCols <- base::names(dataOut)[!grepl("readout_time|QF", base::names(dataOut))]
+    logAllNA <- base::rowSums(!base::is.na(dataOut[, dataCols, drop = FALSE])) == 0
+    # Priority: valid logged = 2, streamed = 1, all-NA logged = 0
+    dataOut$priority <- base::ifelse(dataOut$logDataQF == 1, base::ifelse(logAllNA, 0, 2), 1)
     dataOut <- dataOut %>%
-      group_by(bin_time) %>%
-      slice_max(order_by = logDataQF, n = 1, with_ties = FALSE) %>%
-      dplyr::ungroup()
-    dataOut <- subset(dataOut, select = -c(bin_time))
+      dplyr::group_by(readout_time) %>%
+      dplyr::slice_max(order_by = priority, n = 1, with_ties = FALSE) %>%
+      dplyr::ungroup() %>%
+      dplyr::arrange(readout_time)
+    dataOut <- subset(dataOut, select = -c(priority))
   }
   dataOut <- subset(dataOut, select = -c(logDataQF))
   
