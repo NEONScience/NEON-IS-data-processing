@@ -1,0 +1,12 @@
+precipBucket_group_loaderR.yaml
+precipBucket_group_assignmentR.yaml
+precipBucket_group_pathR.yaml
+precipBucket_srf_loaderR.yaml
+precipBucket_srf_assignmentR.yaml
+precipBucket_thresholdR.yaml
+precipBucket_thresh_select_precip_statsR.yaml
+precipBucket_level1_group_consolidate_srfR.yaml
+precipBucket_cron_monthly_and_pub_controlR.yaml
+precipBucket_pub_groupR.yaml
+precipBucket_pub_format_and_packageR.yaml
+precipBucket_pub_egress_and_publishR.yaml
