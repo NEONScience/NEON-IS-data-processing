@@ -1,0 +1,84 @@
+---
+# Read the final-L1 archive, NOT pre-l1/. Restore the consolidated group layout:
+# /YEAR/MONTH/DAY/rad-short-primary_LOCATION/data/FILE.parquet.
+# Read all archived groups for each selected date. Site markers supply dates,
+# not a site filter. Missing archive days and failed GCS requests stop the job.
+pipeline:
+  name: radShortPrimary_level1_reingest_release
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.4.0
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - set -euo pipefail
+  - |
+    ymd_path="${DATE_PATH##*/cmp22/}"
+    ymd="${ymd_path//\//-}"
+    ym="${ymd%-*}"
+    archive_dir=$(mktemp -d)
+    trap 'rm -rf "$archive_dir"' EXIT
+    rclone --gcs-bucket-policy-only --gcs-no-check-bucket copy \
+      ":gcs://${BUCKET_NAME}/v2/${GROUP_PREFIX}" "$archive_dir" \
+      --include "/*/group=*/ms=${ym}/${GROUP_PREFIX}_*_${ymd}_*.parquet"
+
+    shopt -s nullglob
+    count=0
+    pattern="^([A-Za-z0-9]+)/group=(${GROUP_PREFIX}_[A-Za-z0-9]+)"
+    pattern+="/ms=${ym}/([^/]+\.parquet)$"
+    for file in "$archive_dir"/*/group=*/ms="$ym"/*.parquet; do
+      relative="${file#"$archive_dir"/}"
+      if [[ ! "$relative" =~ $pattern ]]; then
+        echo "Unexpected L1 archive path: $relative" >&2
+        exit 1
+      fi
+      interval="${BASH_REMATCH[1]}"
+      group="${BASH_REMATCH[2]}"
+      filename="${BASH_REMATCH[3]}"
+      if [[ "$filename" != "${group}_${ymd}_"*"_${interval}.parquet" ]]; then
+        echo "L1 filename disagrees with archive partition: $relative" >&2
+        exit 1
+      fi
+      destination="/pfs/out/$ymd_path/$group/data/$filename"
+      mkdir -p "$(dirname "$destination")"
+      if [[ -e "$destination" ]]; then
+        echo "Duplicate archived L1 table: $destination" >&2
+        exit 1
+      fi
+      cp "$file" "$destination"
+      count=$((count + 1))
+    done
+    if [[ "$count" -eq 0 ]]; then
+      echo "No archived radShortPrimary L1 tables for $ymd;" \
+        "refusing incomplete republication" >&2
+      exit 1
+    fi
+    echo "Restored $count L1 tables for $ymd"
+  env:
+    GROUP_PREFIX: rad-short-primary
+  secrets:
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+input:
+  pfs:
+    name: DATE_PATH
+    repo: cmp22_cron_daily_and_date_control_release
+    glob: /cmp22/*/*/*
+    empty_files: true
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 2G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

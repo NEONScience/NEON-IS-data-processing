@@ -2,7 +2,7 @@ name: CERT-troll-SW-GW-update-dag
 on:
   push:
     branches:
-      - 'none'
+      - 'cert'
     paths:
       - 'pipe/troll/*.yaml'
       - 'pipe/troll/pipe_list_troll.txt'

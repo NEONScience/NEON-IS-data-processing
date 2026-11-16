@@ -285,3 +285,64 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
             
             
           })
+
+test_that("archived final tables preserve existing SRFs and accept new SRFs", {
+  source('../../flow.pub.tabl.srf/wrap.pub.tabl.srf.R')
+  work <- tempfile("release-pub-tabl-srf-")
+  dir.create(work)
+  withr::defer(unlink(work, recursive = TRUE))
+  dayGroup <- '2020/01/02/sw-physical_ARIK101100'
+  fixture <- fs::path('pfs/swPhysical_level1_group_consolidate', dayGroup)
+  raw <- fs::path(work, 'pfs/raw', dayGroup)
+  fs::dir_create(fs::path_dir(raw))
+  fs::dir_copy(fixture, raw)
+  workbook <- 'pfs/pubWb/PublicationWorkbook_elevSurfacewater.txt'
+  srfFile <- fs::path(raw, 'science_review_flags/surfacewater-physical_ARIK101100_science_review_flags.json')
+  srfs <- jsonlite::fromJSON(srfFile, simplifyVector = FALSE)
+  old <- srfs$science_review_flags[[1]]
+  old$id <- 999001
+  old$measurement_stream_name <- 'NEON.D10.ARIK.DP1.20016.001.04114.101.100.030'
+  old$start_date <- '2020-01-02T00:00:00Z'
+  old$end_date <- '2020-01-02T00:30:00Z'
+  old$srf <- 1
+  srfs$science_review_flags <- c(srfs$science_review_flags, list(old))
+  jsonlite::write_json(srfs, srfFile, auto_unbox = TRUE)
+
+  archiveBase <- fs::path(work, 'pfs/archive')
+  wrap.pub.tabl.srf(
+    DirIn = raw, DirOutBase = archiveBase,
+    DirData = c('stats', 'quality_metrics'), FilePubWb = workbook,
+    TablPub = 'EOS_30_min', DirSubCopy = c('group', 'location', 'science_review_flags')
+  )
+  archive <- fs::path(archiveBase, dayGroup)
+  filename <- 'sw-physical_ARIK101100_2020-01-02_EOS_30_min_030.parquet'
+  baseline <- arrow::read_parquet(fs::path(archive, 'data', filename))
+  expect_equal(baseline$sWatElevFinalQFSciRvw[1], 1)
+  expect_equal(baseline$sWatElevFinalQF[1], 1)
+
+  unchangedBase <- fs::path(work, 'pfs/unchanged')
+  wrap.pub.tabl.srf(
+    DirIn = archive, DirOutBase = unchangedBase, DirData = 'data',
+    FilePubWb = workbook, TablPub = 'EOS_30_min', DirSubCopy = c('group', 'location')
+  )
+  unchanged <- arrow::read_parquet(fs::path(unchangedBase, dayGroup, 'data', filename))
+  expect_equal(unchanged, baseline)
+
+  new <- old
+  new$id <- 999002
+  new$start_date <- '2020-01-02T00:30:00Z'
+  new$end_date <- '2020-01-02T01:00:00Z'
+  new$srf <- 2
+  srfs$science_review_flags <- c(srfs$science_review_flags, list(new))
+  jsonlite::write_json(srfs, srfFile, auto_unbox = TRUE)
+  updatedBase <- fs::path(work, 'pfs/updated')
+  wrap.pub.tabl.srf(
+    DirIn = archive, DirOutBase = updatedBase, DirData = 'data',
+    FilePubWb = workbook, TablPub = 'EOS_30_min', DirSubCopy = c('group', 'location')
+  )
+  updated <- arrow::read_parquet(fs::path(updatedBase, dayGroup, 'data', filename))
+  expect_equal(updated$sWatElevFinalQFSciRvw[1:2], c(1, 2))
+  expect_equal(updated$sWatElevFinalQF[1:2], c(1, 1))
+  expect_true(is.na(updated$surfacewaterElevMean[2]))
+  expect_equal(updated[-2, ], baseline[-2, ])
+})

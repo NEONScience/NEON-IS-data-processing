@@ -1,0 +1,59 @@
+---
+# Independent release-window driver; retains source-specific site lists and year-file layout.
+pipeline:
+  name: radShortPrimary_cron_daily_and_date_control_rel
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
+  cmd: ["/bin/bash"]
+  env:
+    # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
+    # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
+    # start_date field in the site-list file is the earliest date to pull data from a site
+    # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
+    # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
+    OUT_PATH: /pfs/out
+    START_DATE: "2013-12-01"
+    END_DATE: "2014-12-31"
+    SOURCE_TYPE: "cmp22"
+  stdin:
+  - set -euo pipefail
+  - "#!/bin/bash"
+  - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
+  - |-
+    # Collapse sensor/source dates to one release trigger per day.
+    for day_dir in /pfs/out/cmp22/*/*/*; do
+      [[ -d "$day_dir" ]] || continue
+      day="${day_dir##*/}"
+      month_dir="${day_dir%/*}"
+      month="${month_dir##*/}"
+      year_dir="${month_dir%/*}"
+      year="${year_dir##*/}"
+      mkdir -p "/pfs/out/release/${year}/${month}/${day}"
+      printf "%s\n" "${year}-${month}-${day}" > "/pfs/out/release/${year}/${month}/${day}/trigger"
+    done
+    tick_str=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    mkdir -p /pfs/out/tick
+    printf "%s\n" "$tick_str" > "/pfs/out/tick/$tick_str"
+input:
+  cross:
+  - cron:
+      name: tick
+      spec: '@never'
+      overwrite: true
+  - pfs:
+      name: SITE_FILE
+      repo: cmp22_site_list
+      glob: /site-list.json
+resource_requests:
+  memory: 500M
+  cpu: 1
+resource_limits:
+  memory: 800M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 500M
+  cpu: 0.5
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class-no-spot
