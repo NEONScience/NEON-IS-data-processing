@@ -1,4 +1,6 @@
 name: PROD-troll-SW-GW-reprocess-update-dag
+permissions:
+  contents: read
 on:
   push:
     branches:
