@@ -1,0 +1,122 @@
+---
+pipeline:
+  name: surfacewaterPhysical_analyze_pad_and_qaqc_plauR
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v2.0.4
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/padded_analyzer
+    rm -rf /tmp/pfs/padded_analyzerCopy
+    mkdir -p /tmp/pfs/padded_analyzer
+
+    # Determine which source type we have
+    if [ ${SCHEMA_FLAGS_AQUATROLL+x} ]
+    then export DATA_TYPE=aquatroll
+    elif [ ${SCHEMA_FLAGS_LEVELTROLL+x} ]
+    then export DATA_TYPE=leveltroll
+    else echo "FATAL - Input repository names do not match expectations. Check pipeline specification."
+    fi
+    echo "Data type detected = $DATA_TYPE"
+
+    # Run first module - padded_timeseries_analyzer
+    export DATA_PATH=/pfs/DATA_PATH # The env var set by pachyderm is the last datum in the group. Need the base parent.
+    python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/pfs/padded_analyzer 
+
+    # Run second module - qaqc plausibility
+    # Run aquatroll and leveltroll separately
+    if [ $DATA_TYPE = 'aquatroll' ]
+    then 
+      Rscript ./flow.qaqc.plau.R \
+        DirIn=/tmp/pfs/padded_analyzerCopy \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmQf=$SCHEMA_FLAGS_AQUATROLL \
+        "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+        "TermTest3=conductivity:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+        DirSubCopy=location
+    elif [ $DATA_TYPE = 'leveltroll' ]
+    then 
+      Rscript ./flow.qaqc.plau.R \
+        DirIn=/tmp/pfs/padded_analyzerCopy \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmQf=$SCHEMA_FLAGS_LEVELTROLL \
+        "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+        DirSubCopy=location
+    else echo "FATAL - Cannot determine source_type as aquatroll or leveltroll. Aborting..."
+    fi
+    
+    EOF
+  env:
+    # Environment variables for padded timeseries analyzer
+    OUT_PATH: /tmp/pfs/padded_analyzer
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: '3'
+    ERR_PATH: /pfs/out/errored_datums
+    # Environment variables for qaqc plausibility
+    PARALLELIZATION_INTERNAL: '4'
+input:
+# We're going to send in the aquatroll locations separately from the leveltroll locations
+# The 'separate' part is achieved by the union. Each datum in a union is sent in separately to the container. 
+# Each datum consists of a cross between the aquatroll or leveltroll data and it's associated avro schema 
+# for the output. The group nested within this cross is what allows us to send in all the aquatroll data for 
+# each day in as one datum. It groups by day AND sensor type.
+# We need to do some distinguishing between these sensor types when we execute the code above. We'll 
+# determine which sensor type we have by seeing which SCHEMA_FLAGS_[SOURCE_TYPE] environment variables is populated 
+# in the container. 
+  union:
+  - cross:
+    - pfs:
+       name: SCHEMA_FLAGS_AQUATROLL
+       repo: surfacewaterPhysical_avro_schemas
+       glob: /surfacewaterPhysical/flags_plausibility_surfacewaterPhysical_aquatroll200.avsc
+    - group:
+      - pfs:
+          name: DATA_PATH
+          repo: surfacewaterPhysical_thresh_select_ts_padR
+          glob: /(*/*/*)/*/(aquatroll200)
+          group_by: "$1$2"
+  - cross:
+    - pfs:
+       name: SCHEMA_FLAGS_LEVELTROLL
+       repo: surfacewaterPhysical_avro_schemas
+       glob: /surfacewaterPhysical/flags_plausibility_surfacewaterPhysical_leveltroll500.avsc
+    - group:
+      - pfs:
+          name: DATA_PATH
+          repo: surfacewaterPhysical_thresh_select_ts_padR
+          glob: /(*/*/*)/*/(leveltroll500)
+          group_by: "$1$2"
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 5.5
+resource_limits:
+  memory: 4G
+  cpu: 7
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
