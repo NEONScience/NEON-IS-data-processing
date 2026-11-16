@@ -1,0 +1,47 @@
+---
+pipeline:
+  name: radShortPrimary_srf_assignment_release
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.2.0
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - set -euo pipefail
+  - month_path="${DATE_PATH##*/cmp22/}"
+  - date_bgn="${month_path//\//-}-01"
+  - date_end=$(date -u -d "$date_bgn +1 month" +%F)
+  - |
+    Rscript ./flow.srf.asgn.R \
+      DirIn="$DIR_IN" DirOut=/pfs/out \
+      DirErr="/pfs/out/errored_datums/$month_path" \
+      DateBgn="$date_bgn" DateEnd="$date_end"
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: radShortPrimary_srf_loader_release
+      glob: /*
+  - pfs:
+      name: DATE_PATH
+      repo: cmp22_cron_daily_and_date_control_release
+      glob: /cmp22/*/*
+      empty_files: true
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 200M
+  cpu: 0.8
+resource_limits:
+  memory: 800M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.2
+datum_set_spec:
+  number: 10
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
