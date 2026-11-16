@@ -13,7 +13,7 @@ transform:
       "DirRglr=data"
       FreqRglr=0.003333
       MethRglr=CybiEc
-      WndwRglr=Cntr
+      WndwRglr=Lead
       IdxWndw=IdxWndwMin
       RptTimeWndw=FALSE
       DropNotNumc=TRUE

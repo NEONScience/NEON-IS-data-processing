@@ -71,6 +71,9 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   # Load any streamed data
   if(length(streamedFileName)>=1){
     streamedData  <-base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInData, '/', streamedFileName),log = log),silent = FALSE)
+    #remove columns that contiane "kafka" in column names
+    streamedData <- streamedData[,!grepl("kafka",colnames(streamedData))]
+    streamedData <- streamedData[,!grepl("kakfa",colnames(streamedData))]
     if (base::any(base::class(streamedData) == 'try-error')) {
       log$error(base::paste0('File ', DirInData, '/', streamedFileName, ' is unreadable.'))
       base::stop()}
@@ -142,7 +145,15 @@ wrap.exo2.logfiles.fill <- function(DirInBase,
   if(is.null(streamedData) & !is.null(loggedData)){dataOut<-loggedData}
   # Combine logged and streamed data.  
   if(!is.null(streamedData) & !is.null(loggedData)){
-    dataOut<-rbind(loggedData,streamedData)
+    # try to combine dataframes
+    base::try({
+      dataOut<-rbind(loggedData,streamedData)
+    }, silent = TRUE)
+    if (base::any(base::class(dataOut) == 'try-error')) {
+      log$error(base::paste0('File ', DirInData, ' files cannot be merged.'))
+      base::stop()
+    }
+    
     # If there is logged and streamed data for a bin time, logged data is used.
     dataOut$bin_time<-lubridate::floor_date(dataOut$readout_time,unit = "5 minutes")
     dataOut <- dataOut %>%

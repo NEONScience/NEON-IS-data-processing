@@ -13,7 +13,7 @@ transform:
       "DirRglr=data"
       FreqRglr=0.003333
       MethRglr=CybiEc
-      WndwRglr=Cntr
+      WndwRglr=Trlg
       IdxWndw=IdxWndwMin
       RptTimeWndw=FALSE
       DropNotNumc=TRUE
@@ -23,7 +23,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: exo2_data_source_trino
+      repo: exo2_data_source_gcs
       glob: /
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
