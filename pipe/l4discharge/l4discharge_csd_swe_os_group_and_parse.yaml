@@ -56,7 +56,7 @@ transform:
     OUT_PATH_1: /tmp/filterjoined # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
     
 input:
   cross:
@@ -97,19 +97,19 @@ input:
       repo: l4discharge_os_table_loader
       glob: /
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
-  memory: 1.5G
-  cpu: 2.2
-resource_limits:
   memory: 3G
-  cpu: 3.5
+  cpu: 3
+resource_limits:
+  memory: 5G
+  cpu: 5
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 1
 datum_set_spec:
-  number: 500
+  number: 1000
 scheduling_spec:
   node_selector:
     cloud.google.com/compute-class: pach-pipeline-class
