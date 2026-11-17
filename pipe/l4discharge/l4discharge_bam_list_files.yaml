@@ -20,7 +20,7 @@ input:
     empty_files: true
 parallelism_spec:
   constant: 1
-autoscaling: false
+autoscaling: true
 resource_requests:
   memory: 256M
   cpu: 0.5

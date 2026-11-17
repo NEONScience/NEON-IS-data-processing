@@ -2,7 +2,7 @@ name: CERT-aepg600m-precipWeighing-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'none'
     paths:
       - 'pipe/aepg600m/*.yaml'
       - 'pipe/aepg600m/pipe_list_aepg600m.txt'
