@@ -54,7 +54,7 @@ transform:
     PRODUCTS: NEON.DOM.SITE.DP4.00130.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
 
     # Environment variables for 2nd module (part B): pub_transformer.
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     PRODUCT_INDEX: '3' # input path index of the data product identifier. Also shared with pub_packager.
     YEAR_INDEX: '4'
     MONTH_INDEX: '5'
