@@ -7,7 +7,7 @@ transform:
   env:
     LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
   stdin:
   - "#!/bin/bash"
   - python3 --version

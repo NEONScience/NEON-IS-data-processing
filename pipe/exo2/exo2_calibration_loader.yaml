@@ -18,7 +18,7 @@ transform:
   env:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     SOURCE_TYPES: exo2,exo2conductivity,exo2turbidity,exo2fdom,exo2phorp,exo2dissolvedoxygen,exo2algae
     STARTING_PATH_INDEX: "5"
   secrets:

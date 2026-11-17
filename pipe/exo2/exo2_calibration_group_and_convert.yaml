@@ -111,7 +111,7 @@ transform:
 
     OUT_PATH_LIMIT_LOG: /tmp/log_limited
     OUT_PATH_JOIN_CAL: /tmp/pfs/filter_joined
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY
     PARALLELIZATION_INTERNAL: '3'

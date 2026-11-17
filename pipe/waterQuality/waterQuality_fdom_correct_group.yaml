@@ -52,7 +52,7 @@ transform:
     OUT_PATH_1: /pfs/out #/tmp/filterjoined # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # Start from year to preserve Y/M/D structure
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
     
 input:
   join:

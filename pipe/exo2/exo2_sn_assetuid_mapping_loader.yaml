@@ -34,7 +34,7 @@ transform:
     SOURCE_TYPE_6: exo2dissolvedoxygen
     SOURCE_TYPE_7: exo2algae
     CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret

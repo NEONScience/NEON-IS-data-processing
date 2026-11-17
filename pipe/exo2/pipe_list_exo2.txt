@@ -17,4 +17,4 @@ exo2_location_loader.yaml
 exo2_location_asset_assignment.yaml
 exo2_location_active_dates_assignment.yaml
 exo2_location_group_and_restructure.yaml
-exo2_fill_date_gaps_and_regularize.yaml
+exo2_fill_date_gaps.yaml

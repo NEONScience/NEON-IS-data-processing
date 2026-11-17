@@ -80,7 +80,7 @@ transform:
             outer_join: true
     OUT_PATH_LIMIT_LOGFILES: /tmp/log_limited
     OUT_PATH_JOIN_SOURCES: /tmp/pfs/join_sources # Note that R modules use "pfs" in the path structure to determine datums
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     

@@ -12,8 +12,8 @@
 
 # Define paths
 git_path_pipelines='/home/ncatolico/Git/NEON-IS-data-processing/pipe'
-source_type='rmyoung'
-product='windBuoy'
+source_type='exo2'
+product='waterQuality'
 pipe_list_prefix='pipe_list_'
 pipe_list_suffix=''
 ext='.yaml' # file extension for pipeline specs specified in the pipe_list files. Must be consistent.
