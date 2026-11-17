@@ -1,5 +1,5 @@
 # Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, array parser, 
-# calibration assignment and calibration Conversion
+# time shift, calibration assignment and calibration Conversion
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
@@ -95,6 +95,16 @@ COPY ./flow/flow.cal.conv/flow.cal.conv.R .
 COPY ./flow/flow.cal.conv/wrap.cal.conv.R .
 COPY ./flow/flow.cal.asgn/flow.cal.asgn.R .
 COPY ./flow/flow.cal.asgn/wrap.cal.asgn.R .
+
+# Load time shift module
+# Copy the lockfile and restore known working versions of R dependency packages
+# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
+COPY ./flow/flow.time.shft/renv.lock .
+RUN R -e 'renv::restore(lockfile="./renv.lock")'
+
+# Copy in time shift R code
+COPY ./flow/flow.time.shft/flow.time.shft.R .
+COPY ./flow/flow.time.shft/wrap.time.shft.R .
 
 # Run as app user
 USER appuser
