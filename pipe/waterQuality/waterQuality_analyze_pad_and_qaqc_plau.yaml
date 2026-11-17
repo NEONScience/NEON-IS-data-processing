@@ -55,6 +55,7 @@ transform:
             DirOut=/pfs/out \
             DirErr=/pfs/out/errored_datums \
             "TermTest1=specificConductance:null|gap|range(rmv)|persistence|step|spike" \
+            "TermTest2=surfaceWaterTemperature:null|gap|range(rmv)|persistence|step|spike" \
             "DirSubCopy=location|flags|uncertainty_data|uncertainty_coef" 2>&1 | tee -a /tmp/r_output.log &
         elif [ $SENSOR_TYPE = 'exo2turbidity' ]
         then
