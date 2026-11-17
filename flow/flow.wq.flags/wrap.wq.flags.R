@@ -75,6 +75,7 @@ wrap.wq.flags <- function(DirIn,
   # Gather info about the input directory (including date), and create base output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   DirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)  
+  timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   
   # ========== Load reference conductivity data ==========
   DirInCondData <- file.path(DirIn, "exo2conductivity")
@@ -195,7 +196,7 @@ wrap.wq.flags <- function(DirIn,
   sensorDirs <- sensorDirs[!base::grepl("^\\.", sensorDirs)]  # Exclude hidden files
   
   for(sensor in sensorDirs){
-    # sensor <- sensorDirs[4]
+    # sensor <- sensorDirs[7]
     DirInSensor <- file.path(DirIn, sensor)
     
     # Find sensor config subdirectory (should be exactly one)
@@ -288,7 +289,7 @@ wrap.wq.flags <- function(DirIn,
     }    
 
     #Write out flags
-    pathOutFlagFile <- base::paste0(DirOutFlags,"/",filePlau)
+    pathOutFlagFile <- base::paste0(DirOutFlags,"/",sensor,"_",cfgDirsSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCombined.parquet")
 
     rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = sensorFlags,NameFile = pathOutFlagFile,Schm = SchmQf),silent=FALSE)
     if(base::any(base::class(rptQfOut) == 'try-error')){
