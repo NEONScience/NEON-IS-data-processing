@@ -1,0 +1,155 @@
+---
+pipeline:
+  name: waterQuality_qm_group_and_compute
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.6
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    # ---- Run module - quality metrics (averaged) ----
+    # Find all water-quality directories within the matched day structure
+    for sensor_dir in /pfs/QAQC_PATH/*/*/*/water-quality_*/*; do
+      if [ -d "$sensor_dir" ]; then
+        SENSOR_TYPE=$(basename "$sensor_dir")
+        echo "Processing SENSOR_TYPE: $SENSOR_TYPE for $sensor_dir"
+
+        # Limit concurrent jobs to 4 to better utilize available CPU (increased from 2)
+        while [ $(jobs -r | wc -l) -ge 4 ]; do
+           sleep 0.5
+        done
+
+        # Run sensor types separately for combination script
+        if [ $SENSOR_TYPE = 'exo2' ]
+        then
+          Rscript ./flow.qaqc.qm.dp0p.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            FileSchmQm=$AVRO_PATH/quality_metrics_exo2.avsc \
+            Tmi=005 \
+            VarTimeBgn=readout_time \
+            VarTimeEnd=readout_time \
+            "GrpQfAlph1=sensorDepth:sensorDepthNullQF|sensorDepthGapQF|sensorDepthRangeQF|sensorDepthPersistenceQF|exo2ZeroConductivityQF|depth_qfExpi" \
+            "GrpQfBeta1=sensorDepth:sensorDepthNullQF|sensorDepthGapQF|sensorDepthRangeQF|sensorDepthPersistenceQF|exo2ZeroConductivityQF|depth_qfExpi"       
+        elif [ $SENSOR_TYPE = 'exo2conductivity' ]
+        then
+          Rscript ./flow.qaqc.qm.dp0p.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            FileSchmQm=$AVRO_PATH/quality_metrics_exo2conductivity.avsc \
+            Tmi=005 \
+            VarTimeBgn=readout_time \
+            VarTimeEnd=readout_time \
+            "GrpQfAlph1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceStepQF|specific_conductance_qfExpi|zeroConductivityQF" \
+            "GrpQfBeta1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceStepQF|specific_conductance_qfExpi|zeroConductivityQF" \
+            "GrpQfAlph2=waterTemp:waterTempNullQF|waterTempGapQF|waterTempRangeQF|waterTempPersistQF|waterTempStepQF|waterTempSpikeQF|zeroConductivityQF" \
+            "GrpQfBeta2=waterTemp:waterTempNullQF|waterTempGapQF|waterTempRangeQF|waterTempPersistQF|waterTempStepQF|waterTempSpikeQF|zeroConductivityQF" 
+        elif [ $SENSOR_TYPE = 'exo2turbidity' ]
+        then
+          Rscript ./flow.qaqc.qm.dp0p.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            FileSchmQm=$AVRO_PATH/quality_metrics_exo2turbidity.avsc \
+            Tmi=005 \
+            VarTimeBgn=readout_time \
+            VarTimeEnd=readout_time \
+            "GrpQfAlph1=turbidity:turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityPersistenceQF|turbidityStepQF|turbiditySpikeQF|turbidityZeroConductivityQF|turbidity_qfExpi" \
+            "GrpQfBeta1=turbidity:turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityPersistenceQF|turbidityStepQF|turbiditySpikeQF|turbidityZeroConductivityQF|turbidity_qfExpi"
+        elif [ $SENSOR_TYPE = 'exo2phorp' ]
+        then
+          Rscript ./flow.qaqc.qm.dp0p.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            FileSchmQm=$AVRO_PATH/quality_metrics_exo2phorp.avsc \
+            Tmi=005 \
+            VarTimeBgn=readout_time \
+            VarTimeEnd=readout_time \
+            "GrpQfAlph1=pH:pHNullQF|pHGapQF|pHRangeQF|pHPersistenceQF|pHStepQF|pHSpikeQF|pHZeroConductivityQF|ph_qfExpi" \
+            "GrpQfBeta1=pH:pHNullQF|pHGapQF|pHRangeQF|pHPersistenceQF|pHStepQF|pHSpikeQF|pHZeroConductivityQF|ph_qfExpi"
+        elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
+        then
+          Rscript ./flow.qaqc.qm.dp0p.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            FileSchmQm=$AVRO_PATH/quality_metrics_exo2dissolvedoxygen.avsc \
+            Tmi=005 \
+            VarTimeBgn=readout_time \
+            VarTimeEnd=readout_time \
+            "GrpQfAlph1=dissolvedOxygen:dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenPersistenceQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
+            "GrpQfBeta1=dissolvedOxygen:dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenPersistenceQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
+            "GrpQfAlph2=seaLevelDOSat:seaLevelDOSatNullQF|seaLevelDOSatGapQF|seaLevelDOSatRangeQF|seaLevelDOSatPersistQF|seaLevelDOSatStepQF|seaLevelDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
+            "GrpQfBeta2=seaLevelDOSat:seaLevelDOSatNullQF|seaLevelDOSatGapQF|seaLevelDOSatRangeQF|seaLevelDOSatPersistQF|seaLevelDOSatStepQF|seaLevelDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
+            "GrpQfAlph3=localDOSat:localDOSatNullQF|localDOSatGapQF|localDOSatRangeQF|localDOSatPersistQF|localDOSatStepQF|localDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
+            "GrpQfBeta3=localDOSat:localDOSatNullQF|localDOSatGapQF|localDOSatRangeQF|localDOSatPersistQF|localDOSatStepQF|localDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi"
+        elif [ $SENSOR_TYPE = 'exo2algae' ]
+        then
+          Rscript ./flow.qaqc.qm.dp0p.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            FileSchmQm=$AVRO_PATH/quality_metrics_exo2algae.avsc \
+            Tmi=005 \
+            VarTimeBgn=readout_time \
+            VarTimeEnd=readout_time \
+            "GrpQfAlph1=chlorophyll:chlorophyllNullQF|chlorophyllGapQF|chlorophyllRangeQF|chlorophyllPersistenceQF|chlorophyllStepQF|chlorophyllSpikeQF|chlorophyllZeroConductivityQF|chlorophyll_qfExpi" \
+            "GrpQfBeta1=chlorophyll:chlorophyllNullQF|chlorophyllGapQF|chlorophyllRangeQF|chlorophyllPersistenceQF|chlorophyllStepQF|chlorophyllSpikeQF|chlorophyllZeroConductivityQF|chlorophyll_qfExpi" \
+            "GrpQfAlph2=chlaRelFluoro:chlaRelFluoroNullQF|chlaRelFluoroGapQF|chlaRelFluoroRangeQF|chlaRelFluoroPersistenceQF|chlaRelFluoroStepQF|chlaRelFluoroSpikeQF|chlorophyllZeroConductivityQF|chlorophyll_rfu_qfExpi" \
+            "GrpQfBeta2=chlaRelFluoro:chlaRelFluoroNullQF|chlaRelFluoroGapQF|chlaRelFluoroRangeQF|chlaRelFluoroPersistenceQF|chlaRelFluoroStepQF|chlaRelFluoroSpikeQF|chlorophyllZeroConductivityQF|chlorophyll_rfu_qfExpi"
+        elif [ $SENSOR_TYPE = 'exo2fdom' ]
+        then
+          Rscript ./flow.qaqc.qm.dp0p.R \
+            DirIn=$sensor_dir \
+            DirOut=/pfs/out \
+            DirErr=/pfs/out/errored_datums \
+            FileSchmQm=$AVRO_PATH/quality_metrics_exo2fdom.avsc \
+            Tmi=005 \
+            VarTimeBgn=readout_time \
+            VarTimeEnd=readout_time \
+            "GrpQfAlph1=fDOM:fDOMNullQF|fDOMGapQF|fDOMRangeQF|fDOMPersistenceQF|fDOMStepQF|fDOMSpikeQF|fDOMZeroConductivityQF|fDOMTempQF|fDOMAbsQF|fdom_qfExpi" \
+            "GrpQfBeta1=fDOM:fDOMNullQF|fDOMGapQF|fDOMRangeQF|fDOMPersistenceQF|fDOMStepQF|fDOMSpikeQF|fDOMZeroConductivityQF|fDOMTempQF|fDOMAbsQF|fdom_qfExpi"
+        else
+          echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
+        fi
+      fi
+    done
+      
+    EOF
+  env:
+    LOG_LEVEL: DEBUG
+input:
+  cross:
+  - pfs:
+      name: QAQC_PATH
+      repo: waterQuality_flags_specific
+      glob: /*/*/05/water-quality_CRAM103100/*
+  - pfs:
+      name: AVRO_PATH
+      repo: waterQuality_avro_schemas
+      glob: /waterQuality/waterQuality_quality_metrics
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 1.2
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
