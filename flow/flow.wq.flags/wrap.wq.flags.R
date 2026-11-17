@@ -271,14 +271,6 @@ wrap.wq.flags <- function(DirIn,
       sensorFlags$localDOSatSuspectCal <- sensorFlags$dissolved_oxygen_saturation_qfSusp      
     }
 
-    #add start and end date time columns to the beginning of the sensorFlags data frame
-    sensorFlags <- base::cbind(
-      startDateTime = sensorFlags$readout_time,
-      endDateTime = sensorFlags$readout_time + 5 * 60,
-      sensorFlags
-    )
-    sensorFlags$readout_time <- NULL
-
     # determine avro schema for writing flags
     if(base::is.null(SchmPath) || SchmPath == 'NA'){
       SchmQf <- NULL
