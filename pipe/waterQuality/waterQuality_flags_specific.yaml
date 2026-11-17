@@ -2,7 +2,7 @@
 pipeline:
   name: waterQuality_flags_specific
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-febf999
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-4f815f7
   cmd:
   - sh
   - "-c"
@@ -55,7 +55,7 @@ transform:
     OUT_PATH_1: /tmp/pfs/filter_joined # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # Start from year to preserve Y/M/D structure
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
     
 input:
   cross:

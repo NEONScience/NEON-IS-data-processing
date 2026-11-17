@@ -35,8 +35,8 @@ transform:
             Tmi=005 \
             VarTimeBgn=readout_time \
             VarTimeEnd=readout_time \
-            "GrpQfAlph1=sensorDepth:sensorDepthNullQF|sensorDepthGapQF|sensorDepthRangeQF|sensorDepthPersistenceQF|exo2ZeroConductivityQF|depth_qfExpi" \
-            "GrpQfBeta1=sensorDepth:sensorDepthNullQF|sensorDepthGapQF|sensorDepthRangeQF|sensorDepthPersistenceQF|exo2ZeroConductivityQF|depth_qfExpi"       
+            "GrpQfAlph1=sensorDepth:sensorDepthNullQF|sensorDepthGapQF|sensorDepthRangeQF|sensorDepthPersistenceQF|exo2ZeroConductivityQF|sensorDepthValidCalQF" \
+            "GrpQfBeta1=sensorDepth:sensorDepthNullQF|sensorDepthGapQF|sensorDepthRangeQF|sensorDepthPersistenceQF|exo2ZeroConductivityQF|sensorDepthValidCalQF"       
         elif [ $SENSOR_TYPE = 'exo2conductivity' ]
         then
           Rscript ./flow.qaqc.qm.dp0p.R \
@@ -47,8 +47,8 @@ transform:
             Tmi=005 \
             VarTimeBgn=readout_time \
             VarTimeEnd=readout_time \
-            "GrpQfAlph1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceStepQF|specific_conductance_qfExpi|zeroConductivityQF" \
-            "GrpQfBeta1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceStepQF|specific_conductance_qfExpi|zeroConductivityQF" \
+            "GrpQfAlph1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceStepQF|specificConductanceValidCalQF|zeroConductivityQF" \
+            "GrpQfBeta1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceStepQF|specificConductanceValidCalQF|zeroConductivityQF" \
             "GrpQfAlph2=waterTemp:waterTempNullQF|waterTempGapQF|waterTempRangeQF|waterTempPersistQF|waterTempStepQF|waterTempSpikeQF|zeroConductivityQF" \
             "GrpQfBeta2=waterTemp:waterTempNullQF|waterTempGapQF|waterTempRangeQF|waterTempPersistQF|waterTempStepQF|waterTempSpikeQF|zeroConductivityQF" 
         elif [ $SENSOR_TYPE = 'exo2turbidity' ]
@@ -61,8 +61,8 @@ transform:
             Tmi=005 \
             VarTimeBgn=readout_time \
             VarTimeEnd=readout_time \
-            "GrpQfAlph1=turbidity:turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityPersistenceQF|turbidityStepQF|turbiditySpikeQF|turbidityZeroConductivityQF|turbidity_qfExpi" \
-            "GrpQfBeta1=turbidity:turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityPersistenceQF|turbidityStepQF|turbiditySpikeQF|turbidityZeroConductivityQF|turbidity_qfExpi"
+            "GrpQfAlph1=turbidity:turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityPersistenceQF|turbidityStepQF|turbiditySpikeQF|turbidityZeroConductivityQF|turbidityValidCalQF" \
+            "GrpQfBeta1=turbidity:turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityPersistenceQF|turbidityStepQF|turbiditySpikeQF|turbidityZeroConductivityQF|turbidityValidCalQF"
         elif [ $SENSOR_TYPE = 'exo2phorp' ]
         then
           Rscript ./flow.qaqc.qm.dp0p.R \
@@ -73,8 +73,8 @@ transform:
             Tmi=005 \
             VarTimeBgn=readout_time \
             VarTimeEnd=readout_time \
-            "GrpQfAlph1=pH:pHNullQF|pHGapQF|pHRangeQF|pHPersistenceQF|pHStepQF|pHSpikeQF|pHZeroConductivityQF|ph_qfExpi" \
-            "GrpQfBeta1=pH:pHNullQF|pHGapQF|pHRangeQF|pHPersistenceQF|pHStepQF|pHSpikeQF|pHZeroConductivityQF|ph_qfExpi"
+            "GrpQfAlph1=pH:pHNullQF|pHGapQF|pHRangeQF|pHPersistenceQF|pHStepQF|pHSpikeQF|pHZeroConductivityQF|pHValidCalQF" \
+            "GrpQfBeta1=pH:pHNullQF|pHGapQF|pHRangeQF|pHPersistenceQF|pHStepQF|pHSpikeQF|pHZeroConductivityQF|pHValidCalQF"
         elif [ $SENSOR_TYPE = 'exo2dissolvedoxygen' ]
         then
           Rscript ./flow.qaqc.qm.dp0p.R \
@@ -85,12 +85,12 @@ transform:
             Tmi=005 \
             VarTimeBgn=readout_time \
             VarTimeEnd=readout_time \
-            "GrpQfAlph1=dissolvedOxygen:dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenPersistenceQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
-            "GrpQfBeta1=dissolvedOxygen:dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenPersistenceQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
-            "GrpQfAlph2=seaLevelDOSat:seaLevelDOSatNullQF|seaLevelDOSatGapQF|seaLevelDOSatRangeQF|seaLevelDOSatPersistQF|seaLevelDOSatStepQF|seaLevelDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
-            "GrpQfBeta2=seaLevelDOSat:seaLevelDOSatNullQF|seaLevelDOSatGapQF|seaLevelDOSatRangeQF|seaLevelDOSatPersistQF|seaLevelDOSatStepQF|seaLevelDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
-            "GrpQfAlph3=localDOSat:localDOSatNullQF|localDOSatGapQF|localDOSatRangeQF|localDOSatPersistQF|localDOSatStepQF|localDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi" \
-            "GrpQfBeta3=localDOSat:localDOSatNullQF|localDOSatGapQF|localDOSatRangeQF|localDOSatPersistQF|localDOSatStepQF|localDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|dissolved_oxygen_saturation_qfExpi"
+            "GrpQfAlph1=dissolvedOxygen:dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenPersistenceQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenZeroConductivityQF|dissolvedOxygenValidCalQF" \
+            "GrpQfBeta1=dissolvedOxygen:dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenPersistenceQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenZeroConductivityQF|dissolvedOxygenValidCalQF" \
+            "GrpQfAlph2=seaLevelDOSat:seaLevelDOSatNullQF|seaLevelDOSatGapQF|seaLevelDOSatRangeQF|seaLevelDOSatPersistQF|seaLevelDOSatStepQF|seaLevelDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|seaLevelDOSatValidCalQF" \
+            "GrpQfBeta2=seaLevelDOSat:seaLevelDOSatNullQF|seaLevelDOSatGapQF|seaLevelDOSatRangeQF|seaLevelDOSatPersistQF|seaLevelDOSatStepQF|seaLevelDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|seaLevelDOSatValidCalQF" \
+            "GrpQfAlph3=localDOSat:localDOSatNullQF|localDOSatGapQF|localDOSatRangeQF|localDOSatPersistQF|localDOSatStepQF|localDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|localDOSatValidCalQF" \
+            "GrpQfBeta3=localDOSat:localDOSatNullQF|localDOSatGapQF|localDOSatRangeQF|localDOSatPersistQF|localDOSatStepQF|localDOSatSpikeQF|dissolvedOxygenZeroConductivityQF|localDOSatValidCalQF"
         elif [ $SENSOR_TYPE = 'exo2algae' ]
         then
           Rscript ./flow.qaqc.qm.dp0p.R \
@@ -101,10 +101,10 @@ transform:
             Tmi=005 \
             VarTimeBgn=readout_time \
             VarTimeEnd=readout_time \
-            "GrpQfAlph1=chlorophyll:chlorophyllNullQF|chlorophyllGapQF|chlorophyllRangeQF|chlorophyllPersistenceQF|chlorophyllStepQF|chlorophyllSpikeQF|chlorophyllZeroConductivityQF|chlorophyll_qfExpi" \
-            "GrpQfBeta1=chlorophyll:chlorophyllNullQF|chlorophyllGapQF|chlorophyllRangeQF|chlorophyllPersistenceQF|chlorophyllStepQF|chlorophyllSpikeQF|chlorophyllZeroConductivityQF|chlorophyll_qfExpi" \
-            "GrpQfAlph2=chlaRelFluoro:chlaRelFluoroNullQF|chlaRelFluoroGapQF|chlaRelFluoroRangeQF|chlaRelFluoroPersistenceQF|chlaRelFluoroStepQF|chlaRelFluoroSpikeQF|chlorophyllZeroConductivityQF|chlorophyll_rfu_qfExpi" \
-            "GrpQfBeta2=chlaRelFluoro:chlaRelFluoroNullQF|chlaRelFluoroGapQF|chlaRelFluoroRangeQF|chlaRelFluoroPersistenceQF|chlaRelFluoroStepQF|chlaRelFluoroSpikeQF|chlorophyllZeroConductivityQF|chlorophyll_rfu_qfExpi"
+            "GrpQfAlph1=chlorophyll:chlorophyllNullQF|chlorophyllGapQF|chlorophyllRangeQF|chlorophyllPersistenceQF|chlorophyllStepQF|chlorophyllSpikeQF|chlorophyllZeroConductivityQF|chlorophyllValidCalQF" \
+            "GrpQfBeta1=chlorophyll:chlorophyllNullQF|chlorophyllGapQF|chlorophyllRangeQF|chlorophyllPersistenceQF|chlorophyllStepQF|chlorophyllSpikeQF|chlorophyllZeroConductivityQF|chlorophyllValidCalQF" \
+            "GrpQfAlph2=chlaRelFluoro:chlaRelFluoroNullQF|chlaRelFluoroGapQF|chlaRelFluoroRangeQF|chlaRelFluoroPersistenceQF|chlaRelFluoroStepQF|chlaRelFluoroSpikeQF|chlorophyllZeroConductivityQF|chlaRelFluoroValidCalQF" \
+            "GrpQfBeta2=chlaRelFluoro:chlaRelFluoroNullQF|chlaRelFluoroGapQF|chlaRelFluoroRangeQF|chlaRelFluoroPersistenceQF|chlaRelFluoroStepQF|chlaRelFluoroSpikeQF|chlorophyllZeroConductivityQF|chlaRelFluoroValidCalQF"
         elif [ $SENSOR_TYPE = 'exo2fdom' ]
         then
           Rscript ./flow.qaqc.qm.dp0p.R \
@@ -115,8 +115,8 @@ transform:
             Tmi=005 \
             VarTimeBgn=readout_time \
             VarTimeEnd=readout_time \
-            "GrpQfAlph1=fDOM:fDOMNullQF|fDOMGapQF|fDOMRangeQF|fDOMPersistenceQF|fDOMStepQF|fDOMSpikeQF|fDOMZeroConductivityQF|fDOMTempQF|fDOMAbsQF|fdom_qfExpi" \
-            "GrpQfBeta1=fDOM:fDOMNullQF|fDOMGapQF|fDOMRangeQF|fDOMPersistenceQF|fDOMStepQF|fDOMSpikeQF|fDOMZeroConductivityQF|fDOMTempQF|fDOMAbsQF|fdom_qfExpi"
+            "GrpQfAlph1=fDOM:fDOMNullQF|fDOMGapQF|fDOMRangeQF|fDOMPersistenceQF|fDOMStepQF|fDOMSpikeQF|fDOMZeroConductivityQF|fDOMTempQF|fDOMAbsQF|fDOMValidCalQF" \
+            "GrpQfBeta1=fDOM:fDOMNullQF|fDOMGapQF|fDOMRangeQF|fDOMPersistenceQF|fDOMStepQF|fDOMSpikeQF|fDOMZeroConductivityQF|fDOMTempQF|fDOMAbsQF|fDOMValidCalQF"
         else
           echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
         fi
@@ -125,13 +125,13 @@ transform:
       
     EOF
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 input:
   cross:
   - pfs:
       name: QAQC_PATH
       repo: waterQuality_flags_specific
-      glob: /*/*/05/water-quality_CRAM103100/*
+      glob: /*/*/*/*/*
   - pfs:
       name: AVRO_PATH
       repo: waterQuality_avro_schemas

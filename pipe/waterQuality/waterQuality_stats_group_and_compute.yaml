@@ -103,17 +103,17 @@ transform:
           echo "WARNING - Sensor type $SENSOR_TYPE not recognized. Skipping..."
         fi
       fi
-    done
-  
+    done  
       
     EOF
-  
+  env:
+    LOG_LEVEL: INFO
 input:
   cross:
   - pfs:
       name: QAQC_PATH
       repo: waterQuality_flags_specific
-      glob: /*/*/05/water-quality_CRAM103100/*
+      glob: /*/*/*/*/*
       empty_files: false
   - pfs:
       name: AVRO_PATH
