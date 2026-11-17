@@ -195,7 +195,7 @@ wrap.wq.flags <- function(DirIn,
   sensorDirs <- sensorDirs[!base::grepl("^\\.", sensorDirs)]  # Exclude hidden files
   
   for(sensor in sensorDirs){
-    # sensor <- sensorDirs[3]
+    # sensor <- sensorDirs[4]
     DirInSensor <- file.path(DirIn, sensor)
     
     # Find sensor config subdirectory (should be exactly one)
@@ -217,26 +217,14 @@ wrap.wq.flags <- function(DirIn,
     DirInFlags <- file.path(DirInSensor, cfgDirsSensor[1], "flags")
     DirOutFlags <- file.path(DirOut, sensor, cfgDirsSensor[1], "flags")
     base::dir.create(DirOutFlags, recursive = TRUE)
-      
-    #Load in plausibility flag file
-    fileFlags <- base::list.files(DirInFlags,full.names=FALSE)
-    filePlau <- fileFlags[grepl("Plausibility",fileFlags)]
-    sensorFlags  <-
-        base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(DirInFlags, '/', filePlau),
-                                                log = log),
-                  silent = FALSE)
-    if (base::any(base::class(sensorFlags) == 'try-error')) {
-        log$error(base::paste0('File ', DirInFlags, '/', filePlau, ' is unreadable.'))
-        base::stop()
-    }
 
-    # The flags folder is already populated from other modules. Copy over any existing files.
-    fileCopy <- fileFlags[!grepl("Plausibility",fileFlags)]
-    # Symbolically link each file
-    for(idxFileCopy in fileCopy){
-      cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
-      rptCopy <- base::system(cmdCopy)
-    }
+    # Combine flags files
+    fileQf <- base::sort(base::dir(DirInFlags))    
+    sensorFlags <- NULL
+    sensorFlags <- NEONprocIS.base::def.file.comb.ts(
+            file = base::paste0(DirInFlags, '/', fileQf),
+            nameVarTime = 'readout_time',
+            log = log)
 
     # Match and apply conductivity flags using keyed join on readout_time
     # Use match() for safe, explicit key-based join
@@ -272,8 +260,23 @@ wrap.wq.flags <- function(DirIn,
           sensorFlags[[col]][sensorFlags$buoyProfilingQF == 1 & sensorFlags[[col]] == 1] <- 0
         }
       }
-
     }
+
+    # DO Sat valid calibration based on DO calibration
+    if(sensor == 'exo2dissolvedoxygen'){
+      sensorFlags$seaLevelDOSatValidCal <- sensorFlags$dissolved_oxygen_saturation_qfExpi
+      sensorFlags$seaLevelDOSatSuspectCal <- sensorFlags$dissolved_oxygen_saturation_qfSusp
+      sensorFlags$localDOSatValidCal <- sensorFlags$dissolved_oxygen_saturation_qfExpi
+      sensorFlags$localDOSatSuspectCal <- sensorFlags$dissolved_oxygen_saturation_qfSusp      
+    }
+
+    #add start and end date time columns to the beginning of the sensorFlags data frame
+    sensorFlags <- base::cbind(
+      startDateTime = sensorFlags$readout_time,
+      endDateTime = sensorFlags$readout_time + 5 * 60,
+      sensorFlags
+    )
+    sensorFlags$readout_time <- NULL
 
     # determine avro schema for writing flags
     if(base::is.null(SchmPath) || SchmPath == 'NA'){
