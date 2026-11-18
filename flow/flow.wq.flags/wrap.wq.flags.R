@@ -254,10 +254,14 @@ wrap.wq.flags <- function(DirIn,
       log$debug(base::paste0('Sensor ', sensor, ': matched ', base::sum(idxMatchedBuoy, na.rm = TRUE), 
                             ' of ', base::nrow(sensorFlags), ' records with buoy profiling data for', DirIn))
 
-      #if buoyProfilingQF flag = 1, set and columns with "Step" to 0 if step == 1
+      #if buoyProfilingQF flag = 1, set and columns with "Step/spike" to 0 if step/spike == 1
       if(base::any(sensorFlags$buoyProfilingQF == 1, na.rm = TRUE)){
         stepCols <- base::grep("Step", base::colnames(sensorFlags), value = TRUE)
         for(col in stepCols){
+          sensorFlags[[col]][sensorFlags$buoyProfilingQF == 1 & sensorFlags[[col]] == 1] <- 0
+        }
+        spikeCols <- base::grep("Spike", base::colnames(sensorFlags), value = TRUE)
+        for(col in spikeCols){
           sensorFlags[[col]][sensorFlags$buoyProfilingQF == 1 & sensorFlags[[col]] == 1] <- 0
         }
       }

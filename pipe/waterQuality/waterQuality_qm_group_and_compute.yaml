@@ -47,7 +47,7 @@ transform:
             Tmi=005 \
             VarTimeBgn=readout_time \
             VarTimeEnd=readout_time \
-            "GrpQfAlph1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceStepQF|specificConductanceValidCalQF|zeroConductivityQF" \
+            "GrpQfAlph1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceStepQF|specificConductanceSpikeQF|specificConductanceValidCalQF|zeroConductivityQF" \
             "GrpQfBeta1=specificConductance:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductancePersistQF|specificConductanceValidCalQF|zeroConductivityQF" \
             "GrpQfAlph2=waterTemp:waterTempNullQF|waterTempGapQF|waterTempRangeQF|waterTempPersistQF|waterTempStepQF|waterTempSpikeQF|zeroConductivityQF" \
             "GrpQfBeta2=waterTemp:waterTempNullQF|waterTempGapQF|waterTempRangeQF|waterTempPersistQF|zeroConductivityQF" 
