@@ -2,7 +2,7 @@
 pipeline:
   name: waterQuality_flags_specific
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-4f815f7
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-flags-specific:sha-61665a9
   cmd:
   - sh
   - "-c"
