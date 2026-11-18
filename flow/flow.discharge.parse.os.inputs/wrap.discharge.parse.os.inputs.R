@@ -24,6 +24,10 @@
 #' 
 #' @param DirOutBase Character value. The output path that will replace the 
 #' #/pfs/BASE_REPO portion of DirInBase.
+#' 
+#' @param osDates List. Optional pre-parsed OS table dates from 
+#' \code{parse.discharge.os.dates}. Computed internally if NULL. Pass it in when 
+#' processing many datums to avoid re-parsing the dates for each one.
 
 #' @return 
 
@@ -80,7 +84,44 @@
 #     updated dates to POSIX
 #   Nora Catolico(2026-09-07)
 #     updated to write out parquet files
+#   Nora Catolico(2026-11-18)
+#     pre-parse OS table dates once (osDates) and simplify date-window overlap test
 ##############################################################################################
+# Parse the date columns of the OS tables once so they can be reused across datums
+parse.discharge.os.dates <- function(csd_constantBiasShift_pub,
+                                     csd_dataGapToFillMethodMapping_pub,
+                                     csd_gapFillingRegression_pub,
+                                     csd_gaugeWaterColumnRegression_pub,
+                                     sdrc_controlInfo_pub,
+                                     sdrc_curveIdentification_pub,
+                                     sdrc_priorParameters_pub,
+                                     csd_dischargeRegressionUSGS_pub=NULL){
+  fmtZ <- "%Y-%m-%dT%H:%M:%SZ"
+  list(
+    curve = list(start = as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC"),
+                 end = as.POSIXct(sdrc_curveIdentification_pub$curveEndDate,tz="UTC")),
+    reg = list(start = as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC"),
+               end = as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionEndDate,tz="UTC")),
+    # USGS table is only used for TOMB, so it is optional
+    usgs = if(base::is.null(csd_dischargeRegressionUSGS_pub)) NULL else
+      list(start = as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegStartDate,tz="UTC"),
+           end = as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC")),
+    gap = list(start = as.POSIXct(csd_dataGapToFillMethodMapping_pub$startDate,tz="UTC",format=fmtZ),
+               end = as.POSIXct(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format=fmtZ)),
+    shift = list(start = as.POSIXct(csd_constantBiasShift_pub$startDate,tz="UTC",format=fmtZ),
+                 end = as.POSIXct(csd_constantBiasShift_pub$endDate,tz="UTC",format=fmtZ)),
+    gapReg = list(start = as.POSIXct(csd_gapFillingRegression_pub$startDate,tz="UTC",format=fmtZ),
+                  end = as.POSIXct(csd_gapFillingRegression_pub$endDate,tz="UTC",format=fmtZ)),
+    controlEnd = as.Date(sdrc_controlInfo_pub$endDate,tz="UTC",format=fmtZ),
+    priorEnd = as.Date(sdrc_priorParameters_pub$endDate,tz="UTC",format=fmtZ)
+  )
+}
+
+# TRUE where the [start, end] window overlaps the [startDate, endDate] day window
+in.window <- function(win, startDate, endDate){
+  win$start <= endDate & win$end >= startDate
+}
+
 wrap.discharge.parse.os.inputs <- function(DirIn,
                                            csd_constantBiasShift_pub,
                                            csd_dataGapToFillMethodMapping_pub,
@@ -95,12 +136,26 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
                                            sdrc_gaugePressureRelationship_pub,
                                            sdrc_stageDischargeCurveInfo_pub,
                                            DirOutBase,
+                                           osDates=NULL,
                                            log=NULL
 ){
   # Start logging if not already
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
   } 
+  
+  # Parse OS table dates if not provided by the caller
+  if(base::is.null(osDates)){
+    osDates <- parse.discharge.os.dates(
+      csd_constantBiasShift_pub=csd_constantBiasShift_pub,
+      csd_dataGapToFillMethodMapping_pub=csd_dataGapToFillMethodMapping_pub,
+      csd_gapFillingRegression_pub=csd_gapFillingRegression_pub,
+      csd_gaugeWaterColumnRegression_pub=csd_gaugeWaterColumnRegression_pub,
+      sdrc_controlInfo_pub=sdrc_controlInfo_pub,
+      sdrc_curveIdentification_pub=sdrc_curveIdentification_pub,
+      sdrc_priorParameters_pub=sdrc_priorParameters_pub
+    )
+  }
   
   # Set constants
   secInDay <- 60*60*24
@@ -150,13 +205,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }
   currCurveData <- sdrc_curveIdentification_pub[
     grepl(paste0("^",curveIDsite,"\\."), sdrc_curveIdentification_pub$curveID)
-    &((as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC")<=startDate
-       &as.POSIXct(sdrc_curveIdentification_pub$curveEndDate,tz="UTC")>=endDate)
-      |(as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC")<=startDate
-        &as.POSIXct(sdrc_curveIdentification_pub$curveEndDate,tz="UTC")>=startDate)
-      |(as.POSIXct(sdrc_curveIdentification_pub$curveStartDate,tz="UTC")<=endDate
-        &as.POSIXct(sdrc_curveIdentification_pub$curveEndDate,tz="UTC")>=endDate)
-    ),
+    &in.window(osDates$curve,startDate,endDate),
   ]
   
   # If there are no active curve IDs, proceed with the max curve ID
@@ -200,10 +249,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }
   write_sdrc_controlInfo <-
         base::try(NEONprocIS.base::def.wrte.parq(
-            data = sdrc_controlInfo_pub[as.Date(sdrc_controlInfo_pub$endDate,
-                                  tz="UTC",
-                                  format="%Y-%m-%dT%H:%M:%SZ")
-                          %in%surveyDate
+            data = sdrc_controlInfo_pub[osDates$controlEnd %in% surveyDate
                           &sdrc_controlInfo_pub$namedLocation==surveyLoc,],
             NameFile = paste(DirOutData,
                              "NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.parquet",
@@ -220,10 +266,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   
   write_sdrc_priorParameters <-
         base::try(NEONprocIS.base::def.wrte.parq(
-            data = sdrc_priorParameters_pub[as.Date(sdrc_priorParameters_pub$endDate,
-                                  tz="UTC",
-                                  format="%Y-%m-%dT%H:%M:%SZ")
-                          %in%surveyDate
+            data = sdrc_priorParameters_pub[osDates$priorEnd %in% surveyDate
                           &sdrc_priorParameters_pub$namedLocation==surveyLoc,],
             NameFile = paste(DirOutData,
                              "NEON.DOM.SITE.DP1.00133.001.sdrc_priorParameters_pub.parquet",
@@ -303,13 +346,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   }
   currRegData <- csd_gaugeWaterColumnRegression_pub[
     grepl(paste0("^",regIDsite,"\\."), csd_gaugeWaterColumnRegression_pub$regressionID)
-    &((as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC")<=startDate
-       &as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionEndDate,tz="UTC")>=endDate)
-      |(as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC")<=startDate
-        &as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionEndDate,tz="UTC")>=startDate)
-      |(as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionStartDate,tz="UTC")<=endDate
-        &as.POSIXct(csd_gaugeWaterColumnRegression_pub$regressionEndDate,tz="UTC")>=endDate)
-    ),
+    &in.window(osDates$reg,startDate,endDate),
   ]
   
   # If there are no active regressionIDs, proceed with the max regressionID
@@ -365,13 +402,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   # Is this day in a gap?
   currGapData <- csd_dataGapToFillMethodMapping_pub[
     csd_dataGapToFillMethodMapping_pub$namedLocation==surveyLoc
-    &((as.POSIXct(csd_dataGapToFillMethodMapping_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
-       &as.POSIXct(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
-      |(as.POSIXct(csd_dataGapToFillMethodMapping_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
-        &as.POSIXct(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=startDate)
-      |(as.POSIXct(csd_dataGapToFillMethodMapping_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=endDate
-        &as.POSIXct(csd_dataGapToFillMethodMapping_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
-    ),
+    &in.window(osDates$gap,startDate,endDate),
   ]
   if(nrow(currGapData)>0){
     # Write dataGapToFillMethodMapping
@@ -397,13 +428,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   # Is this day in a shift?
   currShiftData <- csd_constantBiasShift_pub[
     csd_constantBiasShift_pub$namedLocation==surveyLoc
-    &((as.POSIXct(csd_constantBiasShift_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
-       &as.POSIXct(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
-      |(as.POSIXct(csd_constantBiasShift_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
-        &as.POSIXct(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=startDate)
-      |(as.POSIXct(csd_constantBiasShift_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=endDate
-        &as.POSIXct(csd_constantBiasShift_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
-    ),
+    &in.window(osDates$shift,startDate,endDate),
   ]
 
   if(nrow(currShiftData)>0){
@@ -430,13 +455,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
   # Does this day fall within a gap-filling regression?
   currGapRegData <- csd_gapFillingRegression_pub[
     csd_gapFillingRegression_pub$namedLocation==surveyLoc
-    &((as.POSIXct(csd_gapFillingRegression_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
-       &as.POSIXct(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
-      |(as.POSIXct(csd_gapFillingRegression_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=startDate
-        &as.POSIXct(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=startDate)
-      |(as.POSIXct(csd_gapFillingRegression_pub$startDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")<=endDate
-        &as.POSIXct(csd_gapFillingRegression_pub$endDate,tz="UTC",format="%Y-%m-%dT%H:%M:%SZ")>=endDate)
-    ),
+    &in.window(osDates$gapReg,startDate,endDate),
   ]
   
   if(nrow(currGapRegData)>0){
@@ -462,14 +481,12 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
 
   # Which USGS discharge usgsDischargeRegID(s) is/are active for this site*date?
   if(site=="TOMB"){
+    if(base::is.null(osDates$usgs)){
+      osDates$usgs <- list(start = as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegStartDate,tz="UTC"),
+                           end = as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC"))
+    }
     currUSGSRegData <- csd_dischargeRegressionUSGS_pub[
-      ((as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegStartDate,tz="UTC")<=startDate
-        &as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC")>=endDate)
-        |(as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegStartDate,tz="UTC")<=startDate
-          &as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC")>=startDate)
-        |(as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegStartDate,tz="UTC")<=endDate
-          &as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC")>=endDate)
-      ),
+      in.window(osDates$usgs,startDate,endDate),
     ]
     
     # If there are no active usgsDischargeRegIDs, proceed with the max usgsDischargeRegID
