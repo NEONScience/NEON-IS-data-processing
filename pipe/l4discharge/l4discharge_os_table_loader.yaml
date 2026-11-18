@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_os_table_loader
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-os-table-loader:v1.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-os-table-loader:sha-a3de9f2
   cmd:
   - sh
   - "-c"
@@ -56,11 +56,15 @@ transform:
     export PARTIAL_TABLE_NAME="stageDischargeCurveInfo"
     python3 -m os_table_loader.main
 
+    # Run os_table_loader    
+    export PARTIAL_TABLE_NAME="csd_dischargeRegressionUSGS_pub"
+    python3 -m os_table_loader.main
+
     EOF
 
 
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     DB_CONFIG_SOURCE: mount
     FILE_TYPE: csv
     OUT_PATH: /pfs/out
