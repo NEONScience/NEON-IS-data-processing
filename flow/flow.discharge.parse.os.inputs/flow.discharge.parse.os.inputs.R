@@ -145,6 +145,14 @@ if (base::any(base::class(csd_gaugeWaterColumnRegression_pub) == 'try-error')) {
   base::stop()
 }
 
+csd_dischargeRegressionUSGS_pub  <-
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_dischargeRegressionUSGS_pub.csv')))
+if (base::any(base::class(csd_dischargeRegressionUSGS_pub) == 'try-error')) {
+  # Generate error and stop execution
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_dischargeRegressionUSGS_pub.csv is unreadable.'))
+  base::stop()
+}
+
 sdrc_controlInfo_pub  <-
   base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv')))
 if (base::any(base::class(sdrc_controlInfo_pub) == 'try-error')) {
@@ -216,6 +224,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         csd_dataGapToFillMethodMapping_pub=csd_dataGapToFillMethodMapping_pub,
         csd_gapFillingRegression_pub=csd_gapFillingRegression_pub,
         csd_gaugeWaterColumnRegression_pub=csd_gaugeWaterColumnRegression_pub,
+        csd_dischargeRegressionUSGS_pub=csd_dischargeRegressionUSGS_pub,
         sdrc_controlInfo_pub=sdrc_controlInfo_pub,
         sdrc_curveIdentification_pub=sdrc_curveIdentification_pub,
         sdrc_priorParameters_pub=sdrc_priorParameters_pub,

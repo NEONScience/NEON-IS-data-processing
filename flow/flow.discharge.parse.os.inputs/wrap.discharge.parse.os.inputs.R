@@ -57,6 +57,7 @@
 #   csd_dataGapToFillMethodMapping_pub=csd_dataGapToFillMethodMapping_pub,
 #   csd_gapFillingRegression_pub=csd_gapFillingRegression_pub,
 #   csd_gaugeWaterColumnRegression_pub=csd_gaugeWaterColumnRegression_pub,
+#   csd_dischargeRegressionUSGS_pub=csd_dischargeRegressionUSGS_pub,
 #   sdrc_controlInfo_pub=sdrc_controlInfo_pub,
 #   sdrc_curveIdentification_pub=sdrc_curveIdentification_pub,
 #   sdrc_priorParameters_pub=sdrc_priorParameters_pub,
@@ -85,6 +86,7 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
                                            csd_dataGapToFillMethodMapping_pub,
                                            csd_gapFillingRegression_pub,
                                            csd_gaugeWaterColumnRegression_pub,
+                                           csd_dischargeRegressionUSGS_pub,
                                            sdrc_controlInfo_pub,
                                            sdrc_curveIdentification_pub,
                                            sdrc_priorParameters_pub,
@@ -456,6 +458,46 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
     }
   }else{
     log$info("No records to write out for csd_gapFillingRegression_pub")
+  }
+
+  # Which USGS discharge usgsDischargeRegID(s) is/are active for this site*date?
+  if(site=="TOMB"){
+    currUSGSRegData <- csd_dischargeRegressionUSGS_pub[
+      ((as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegStartDate,tz="UTC")<=startDate
+        &as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC")>=endDate)
+        |(as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegStartDate,tz="UTC")<=startDate
+          &as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC")>=startDate)
+        |(as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegStartDate,tz="UTC")<=endDate
+          &as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC")>=endDate)
+      ),
+    ]
+    
+    # If there are no active usgsDischargeRegIDs, proceed with the max usgsDischargeRegID
+    if(nrow(currUSGSRegData)==0){
+      log$info(paste0("No active usgsDischargeRegID for ",site," on ",date,". Using the max usgsDischargeRegID for this site."))
+      currUSGSRegData <- csd_dischargeRegressionUSGS_pub[
+        csd_dischargeRegressionUSGS_pub$usgsDischargeRegID==max(csd_dischargeRegressionUSGS_pub$usgsDischargeRegID),
+      ]
+    }
+
+    # Write out data associated with active USGS discharge regression
+
+    # Write dischargeRegressionUSGS
+    write_currUSGSRegData <-
+          base::try(NEONprocIS.base::def.wrte.parq(
+              data = currUSGSRegData,
+              NameFile = paste(DirOutData,
+                              "NEON.DOM.SITE.DP1.00133.001.csd_dischargeRegressionUSGS_pub.parquet",
+                              sep = "/"),
+              Schm = NULL,
+              log=log
+          ),silent = TRUE)
+    if(any(grepl('try-error',class(write_currUSGSRegData)))){
+      log$error(base::paste0('Writing the currUSGSRegData output data failed: ',attr(write_currUSGSRegData,"condition")))
+      stop()
+    } else {
+      log$info("currUSGSRegData data written out.")
+    }
   }
   
   return()
