@@ -1,0 +1,152 @@
+---
+pipeline:
+  name: aepg600m_calibration_group_and_convertR
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.6.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH
+    rm -rf /tmp/pfs/kafka_merged
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    mkdir -p /tmp/pfs/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    
+    # Detect the source_type
+    unset source_type
+    if [ ${DATA_PATH_ARCHIVE+x} ]; then 
+      export SOURCE_TYPE_PATH=$DATA_PATH_ARCHIVE
+    elif [ ${KAFKA_UNMERGED_DATA+x} ]; then 
+      export SOURCE_TYPE_PATH=$KAFKA_UNMERGED_DATA
+    elif [ ${CALIBRATION_PATH+x} ]; then 
+      export SOURCE_TYPE_PATH=$CALIBRATION_PATH
+    fi
+    source_type=$(echo $SOURCE_TYPE_PATH | cut -f $SOURCE_TYPE_INDEX -d "/")
+    echo "source_type: $source_type"
+
+    # Select schemas based on source_type
+    if [ $source_type = "aepg600m_heated" ]; then 
+      export FILE_SCHEMA_L0=/pfs/FILE_SCHEMAS/aepg600m/aepg600m_heated.avsc
+      export FILE_SCHEMA_DATA=/pfs/FILE_SCHEMAS/aepg600m/aepg600m_heated_calibrated.avsc
+    elif [ $source_type = "aepg600m" ]; then 
+      export FILE_SCHEMA_L0=/pfs/FILE_SCHEMAS/aepg600m/aepg600m.avsc
+      export FILE_SCHEMA_DATA=/pfs/FILE_SCHEMAS/aepg600m/aepg600m_calibrated.avsc
+    else
+      unset FILE_SCHEMA_L0
+      unset FILE_SCHEMA_DATA
+    fi
+    
+    # Join files from the archive and from Kafka
+    python3 -m filter_joiner.filter_joiner_main
+        
+    # Combine data from Kafka and the archive
+    Rscript ./flow.kfka.comb.R \
+          DirIn=$OUT_PATH \
+          DirOut=/tmp/pfs/kafka_merged \
+          DirErr=/pfs/out/errored_datums \
+          FileSchmL0=$FILE_SCHEMA_L0 \
+          DirSubCopy=calibration
+
+    # Run calibration conversion module
+    Rscript ./flow.cal.conv.R  \
+      DirIn=/tmp/pfs/kafka_merged \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmData=$FILE_SCHEMA_DATA \
+      FileSchmQf=/pfs/FILE_SCHEMAS/aepg600m/flags_calibration_aepg600m.avsc \
+      ConvFuncTerm1=def.cal.conv.poly.aepg600m:strain_gauge1_frequency_raw \
+      ConvFuncTerm2=def.cal.conv.poly.aepg600m:strain_gauge2_frequency_raw \
+      ConvFuncTerm3=def.cal.conv.poly.aepg600m:strain_gauge3_frequency_raw \
+      "TermQf=strain_gauge1_frequency_raw|strain_gauge2_frequency_raw|strain_gauge3_frequency_raw" 
+
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: KAFKA_UNMERGED_DATA
+            # Filter for data directory
+            glob_pattern: /pfs/KAFKA_UNMERGED_DATA/*/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: DATA_PATH_ARCHIVE
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_ARCHIVE/*/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+    OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    # Environment variable to determine source type
+    SOURCE_TYPE_INDEX: "4"
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '2' # Option for calibration conversion module
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMAS
+      repo: aepg600m_avro_schemas
+      glob: /aepg600m/
+
+  # Outer join all days so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: aepg600m_calibration_assignmentR
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH_ARCHIVE
+        repo: aepg600m_data_source_gcsR
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    # - pfs:
+    #     name: KAFKA_UNMERGED_DATA
+    #     repo: aepg600m_data_source_kafka
+    #     glob: /(*)/(*)/(*)/(*)
+    #     joinOn: $1/$2/$3/$4
+    #     outer_join: true
+    #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 5
+autoscaling: true #set back to true after testing
+resource_requests:
+  memory: 900M
+  cpu: 2.2
+resource_limits:
+  memory: 1.5G
+  cpu: 3
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
