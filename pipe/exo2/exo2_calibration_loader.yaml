@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_calibration_loader 
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:sha-3c39e73
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:sha-a7aa84c
   cmd:
   - sh
   - "-c"
