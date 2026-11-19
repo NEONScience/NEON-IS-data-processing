@@ -23,8 +23,7 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, relative_path
         if path.is_file():
             log.debug(f'data_path: {path}')
             serial_number = path.parent.parent.name
-            serial_number = serial_number.upper()
-            asset_uid = sn_asset_map.get(serial_number)
+            asset_uid = sn_asset_map.get(serial_number.upper())
             log.debug(f'serial_number is: {serial_number}; asset_uid is: {asset_uid}')
             if asset_uid is None:
                 log.error(f'serial number {serial_number} is not in the map file, skipping it')

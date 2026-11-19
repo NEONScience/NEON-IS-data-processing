@@ -24,7 +24,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: exo2_replace_sn_with_assetuid
-      glob: /
+      glob: /*/*/*/*
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 5

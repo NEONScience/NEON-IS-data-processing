@@ -39,7 +39,7 @@ def get_avro_schema_name(connection, asset_uid: int) -> Optional[str]:
         if row is None:
             logging.error(f'Avro schema name not found for asset id ID {asset_uid} .')
             return None
+        # Return the raw name; downstream stream lookups match it exactly in the database.
         avro_schema_name = row[0]
-        avro_schema_name = normalize_avro_schema_name(avro_schema_name)
         print(f'asset_uid: {asset_uid}, avro_schema_name: {avro_schema_name}')
     return avro_schema_name
