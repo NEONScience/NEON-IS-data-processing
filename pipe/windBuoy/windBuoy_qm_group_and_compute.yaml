@@ -24,14 +24,14 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM \
       "WndwAgr=002|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
-      FileSchmQm=$FILE_SCHEMA_QM \
-      "GrpQfAlph1=speed:speedNullQF|speedGapQF|speedRangeQF" \
-      "GrpQfBeta1=speed:speedNullQF|speedGapQF|speedRangeQF"  \
-      "GrpQfAlph2=direction:directionNullQF|directionGapQF|directionRangeQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF" \
-      "GrpQfBeta2=direction:directionNullQF|directionGapQF|directionRangeQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF"
+      "GrpQfAlph1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedRangeQF" \
+      "GrpQfBeta1=buoyWindSpeed:buoyWindSpeedNullQF|buoyWindSpeedGapQF|buoyWindSpeedRangeQF"  \
+      "GrpQfAlph2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF" \
+      "GrpQfBeta2=buoyWindDir:buoyWindDirNullQF|buoyWindDirGapQF|buoyWindDirRangeQF|buoyCompNullQF|buoyCompGapQF|buoyCompRangeQF"
     EOF
   env:
     # Environment variables for filter-joiner
