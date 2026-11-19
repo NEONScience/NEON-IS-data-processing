@@ -1,0 +1,199 @@
+---
+pipeline:
+  name: troll_fill_log_filesR
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-logs-group-fill:v1.1.5
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH_JOIN_L0
+    rm -rf /tmp/pfs/join_sources
+    mkdir -p $OUT_PATH_JOIN_L0 # R modules must have pfs in the repo structure
+    mkdir -p /tmp/pfs/join_sources # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    
+    # Check if there is any data (could just be the DATE_CONTROL, in which case we'll skip)
+    data="F"
+    if [ ${DATA_PATH_KAFKA+x} ]; then 
+      data="T"
+    fi
+    if [ ${DATA_PATH_ARCHIVE+x} ]; then 
+      data="T"
+    fi
+    if [ ${DATA_PATH_LOG+x} ]; then 
+      data="T"
+    fi
+    if [ $data = "F" ]; then
+      echo "No actual data in datum. Skipping..."
+      exit 0
+    fi
+    
+    # Get source type
+    path_glob="/pfs/DATA_PATH_*/*/"
+    for path in $path_glob; do
+      # Parse the path
+      [[ "$path" =~ ^/pfs/DATA_PATH_(.*)/(.*)/$ ]]
+      source_type="${BASH_REMATCH[2]}"
+    done
+    echo "Source type detected: $source_type"
+    
+    # Set schemas based on source type
+    if [ $source_type = 'aquatroll200' ]; then
+      export FILE_SCHEMA_L0='/pfs/AQUATROLL_SCHEMAS/aquatroll200/aquatroll200.avsc'
+      export SCHEMA_DATA='/pfs/AQUATROLL_SCHEMAS/aquatroll200/aquatroll200_log_data.avsc'
+      export SCHEMA_FLAGS='/pfs/AQUATROLL_SCHEMAS/aquatroll200/aquatroll200_log_flags.avsc'
+      # export SCHEMA_DATA=NA
+      # export SCHEMA_FLAGS=NA
+    elif [ $source_type = 'leveltroll500' ]; then
+      export FILE_SCHEMA_L0='/pfs/LEVELTROLL_SCHEMAS/leveltroll500/leveltroll500.avsc'
+      export SCHEMA_DATA='/pfs/LEVELTROLL_SCHEMAS/leveltroll500/leveltroll500_log_data.avsc'
+      export SCHEMA_FLAGS='/pfs/LEVELTROLL_SCHEMAS/leveltroll500/leveltroll500_log_flags.avsc'
+    fi
+    
+    # Run the filter joiner to merge files from kafka and archive sources. 
+    echo "Running filter-joiner to merge all data sources"
+    export CONFIG=$CONFIG_JOIN_L0
+    export OUT_PATH=$OUT_PATH_JOIN_L0
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # Run the Kafka-merger 
+    if [ ${OUT_PATH_JOIN_L0+x} ]; then 
+      # Data from kafka. 
+      # Run kafka combiner
+      Rscript ./flow.kfka.comb.R \
+          DirIn=$OUT_PATH_JOIN_L0 \
+          DirOut=/tmp/pfs/join_sources \
+          DirErr=/pfs/out/errored_datums \
+          FileSchmL0=$FILE_SCHEMA_L0
+    fi 
+    
+    # If we have log files, limit them to the dates in the date_control pipeline
+    echo "Running filter-joiner to limit log files"
+    export CONFIG=$CONFIG_LIMIT_LOGFILES
+    export OUT_PATH=/tmp/pfs/join_sources
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # Run log filler script
+    Rscript ./flow.troll.logfiles.fill.R \
+      DirIn=/tmp/pfs/join_sources \
+      DirOut=/pfs/out \
+      FileSchmData=$SCHEMA_DATA \
+      FileSchmFlags=$SCHEMA_FLAGS \
+      DirErr=/pfs/out/errored_datums
+      
+    EOF
+  env:
+    # Environment variables for filter-joiners.
+    CONFIG_JOIN_L0: |
+      ---
+      # Configuration for filter-joiner module that will bring together L0 sources of data
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_KAFKA
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_KAFKA/*/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [3,4,5,6]
+            outer_join: true
+        - path:
+            name: DATA_PATH_ARCHIVE
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_ARCHIVE/*/*/*/**
+            # Join on y/m/d and sourceID 
+            join_indices: [3,4,5,6]
+            outer_join: True
+    CONFIG_LIMIT_LOGFILES: |
+      ---
+      # Configuration for filter-joiner module that will limit log files to the dates in
+      # the date control pipeline
+      # Make sure the DATE_CONTROL path is second. We actually don't want these files and 
+      # they won't be copied if log files for the site are present
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_LOG
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_LOG/*/*/*/**
+            # Join on y/m/d and sourceID
+            join_indices: [3,4,5,6]
+            outer_join: False
+        - path:
+            name: DATE_CONTROL
+            # Filter for data directory
+            glob_pattern: /pfs/DATE_CONTROL/*/*/*/**
+            # Join on y/m/d and sourceID 
+            join_indices: [3,4,5,6]
+            outer_join: False
+    OUT_PATH_JOIN_L0: /tmp/pfs/join_l0 # Note that R modules use "pfs" in the path structure to determine datums
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+input:
+  cross:
+  - group:
+    - pfs:
+        name: AQUATROLL_SCHEMAS
+        repo: troll_avro_schemas
+        glob: /(aquatroll200)/(aquatroll200.avsc|aquatroll200_log_data.avsc|aquatroll200_log_flags.avsc)
+        group_by: $1
+  - group:
+    - pfs:
+        name: LEVELTROLL_SCHEMAS
+        repo: troll_avro_schemas
+        glob: /(leveltroll500)/(leveltroll500.avsc|leveltroll500_log_data.avsc|leveltroll500_log_flags.avsc)
+        group_by: $1
+  - join:
+    - pfs:
+        name: DATA_PATH_ARCHIVE
+        repo: troll_data_source_gcsR
+        glob: /(*/*/*/*) #aquatroll200/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+    # - pfs:
+    #     name: DATA_PATH_KAFKA
+    #     repo: troll_data_source_kafka
+    #     glob: /(*/*/*/*)
+    #     joinOn: $1
+    #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    #     outer_join: true
+    - pfs:
+        name: DATA_PATH_LOG
+        repo: troll_logjam_assign_clean_filesR
+        glob: /(*/*/*/*) #aquatroll200/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+    - pfs:
+        name: DATE_CONTROL
+        repo: troll_cron_daily_and_date_controlR
+        glob: /(*/*/*/*) #aquatroll200/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
