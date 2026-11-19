@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>59477</MxAssetID>
+    
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID/>
+      <ActivityLocation/>
+      <SWVersion>99</SWVersion>
+      <ProcedureVersion/>
+      <Station/>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>25.0</Min>
+        <Max>25.0</Max>
+        <Mean>25.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>760.0</Min>
+        <Max>760.0</Max>
+        <Mean>760.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>25.0</Min>
+        <Max>25.0</Max>
+        <Mean>25.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient> 
+		<Name>CVALA1</Name>
+		<Value>-0.01024</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALB1</Name>
+		<Value>0.330</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALR1</Name>
+		<Value>0</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="">
+    <Metadata>
+        <Entry>
+            <Name> </Name>
+            <Value> </Value>
+        </Entry> 
+    </Metadata>
+	<Row index="">
+    <Independent name=""> </Independent>
+    <Column index="">
+        <Dependent name=""> </Dependent>
+    </Column>
+	</Row>
+	</CalibrationTable>
+    <CalibrationStandards CertNumber=""> </CalibrationStandards>
+    <StreamID>30</StreamID>
+    <Uncertainty units="QSU"> 
+		<Name>U_CVALA5</Name>
+		<Value>0.178</Value>
+	</Uncertainty><Uncertainty units="QSU"> 
+		<Name>U_CVALA4</Name>
+		<Value>0.002458</Value>
+	</Uncertainty><Uncertainty units="QSU"> 
+		<Name>U_CVALD3</Name>
+		<Value>13</Value>
+	</Uncertainty><Uncertainty units="QSU"> 
+		<Name>U_CVALD2</Name>
+		<Value>50</Value>
+	</Uncertainty><Uncertainty units="QSU"> 
+		<Name>U_CVALD1</Name>
+		<Value>13</Value>
+	</Uncertainty><Uncertainty units="QSU"> 
+		<Name>U_CVALA3</Name>
+		<Value>0.00310</Value>
+	</Uncertainty><Uncertainty units="QSU"> 
+		<Name>U_CVALA2</Name>
+		<Value>0.0000313</Value>
+	</Uncertainty><Uncertainty units="QSU"> 
+		<Name>U_CVALA1</Name>
+		<Value>0.00310</Value>
+	</Uncertainty>
+    <Trueness units="QSU">0.000000</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2025-08-28T06:37:54.0000</StartTime>
+      <EndTime>2025-08-28T06:41:39.0000</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>405045</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2025-08-28T06:41:39.0000</StartTime>
+    <EndTime>2025-10-30T06:41:39.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment> </Equipment>
+			<Operator>osborneb</Operator>
+			<WorkOrder>WO85438</WorkOrder>
+			<MaximoID>59477</MaximoID>
+			<AssetID>30000000026348</AssetID>
+			<Reference/>
+			<Fixture>L3F600</Fixture>
+			<NEONPN>f0320170030</NEONPN>
+			<SN header="">25E102115</SN>
+			<FW header="">3.0.0</FW>
+			<SOH header=""/>
+			<UncertaintyCtl>L3F600</UncertaintyCtl>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header="">
+
+Last Calibration Time=,8/28/2025 6:35:47 PM
+Calibration Start Time=,8/28/2025 6:37:54 PM
+Calibration End Time=,8/28/2025 6:41:39 PM
+Calibration Status=,Completed
+QC Score=,Good
+Instrument Type=,EXO2
+Instrument Name=,
+Instrument Serial Number=,16B103173
+Instrument Firmware Version=,1.0.86
+Parameter Type=,fDOM (QSU)
+Sensor Type=,fDOM
+Sensor Serial Number=,25E102115
+Sensor Firmware Version=,3.0.0
+User ID=,&lt;Unknown&gt;
+
+[Cal Point 1]
+Standard=,0.00 QSU
+Pre Calibration Value=,-0.06 QSU
+Post Calibration Value=,0.00 QSU
+Raw Value=,0.00 QSU
+Temperature=,23.863 °C
+Stability Achieved=,Yes
+
+[Cal Point 2]
+Standard=,299.59 QSU
+Pre Calibration Value=,316.94 QSU
+Post Calibration Value=,299.58 QSU
+Raw Value=,0.00 QSU
+Temperature=,23.172 °C
+Stability Achieved=,Yes
+
+</CALDATA>
+		<ValidationDATA header=""/>
+		<QCStatic header="K,U_Constant,U_QA,R2_Check,U_Drift,Drift_Total,Revision,Unit">2.000000,2.000000,10.000000,0.950000,0.000000,0.000000,3,QSU</QCStatic>
+		<QCDynamic header=""/>
+		<Precision header=""/>
+		<AsLeftCFG header="">New polys
+&#xD;
+</AsLeftCFG>
+		<AsReceived>
+			<ReceivedCFG header="">Old polys
+&#xD;
+</ReceivedCFG>
+			<ReceivedCoefficient> 
+				<Name> </Name>
+				<Value> </Value>
+			</ReceivedCoefficient>
+			<ReceivedDATA header=""/>
+		</AsReceived>
+  </DATA>
+  </CalVal>

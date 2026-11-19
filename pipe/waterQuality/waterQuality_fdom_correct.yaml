@@ -1,0 +1,46 @@
+---
+pipeline:
+  name: waterQuality_fdom_correct
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-waterquality-fdom-group-correct:sha-9428a68
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+
+    #run fdom corrector
+    Rscript ./flow.wq.fdom.corr.R \
+      DirIn=$DIR_IN \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums
+
+    EOF
+      
+input:
+  join:
+  - pfs:
+      name: DIR_IN
+      repo: waterQuality_fdom_correct_group
+      glob: /(*)/(*)/(*)/(*)
+      empty_files: false
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 2.2
+resource_limits:
+  memory: 3G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 500
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

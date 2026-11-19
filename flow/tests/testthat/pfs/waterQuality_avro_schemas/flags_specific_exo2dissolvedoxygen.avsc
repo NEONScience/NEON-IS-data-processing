@@ -1,0 +1,216 @@
+{
+  "type": "record",
+  "name": "flags_specific_exo2dissolvedoxygen",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "Plausibility and sensor-specific flags for exodissolvedoxygen sensor",
+  "fields": [
+    {
+      "name": "readout_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp of readout expressed in milliseconds since epoch"
+    },
+    {
+      "name": "dissolvedOxygenNullQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Dissolved oxygen quality flag for the null test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "dissolvedOxygenGapQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Dissolved oxygen quality flag for the gap test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "dissolvedOxygenRangeQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Dissolved oxygen quality flag for the range test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "dissolvedOxygenPersistenceQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Dissolved oxygen quality flag for the persistence test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "dissolvedOxygenStepQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Dissolved oxygen quality flag for the step test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "dissolvedOxygenSpikeQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Dissolved oxygen quality flag for the spike test detailed in NEON.DOC.000783 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "seaLevelDOSatNullQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the null test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "seaLevelDOSatGapQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the gap test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "seaLevelDOSatRangeQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the range test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "seaLevelDOSatPersistQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the persistence test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "seaLevelDOSatStepQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the step test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "seaLevelDOSatSpikeQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the spike test detailed in NEON.DOC.000783 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "localDOSatNullQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the null test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "localDOSatGapQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the gap test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "localDOSatRangeQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the range test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "localDOSatPersistQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the persistence test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "localDOSatStepQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the step test detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "localDOSatSpikeQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "dissolved oxygen saturation quality flag for the spike test detailed in NEON.DOC.000783 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "dissolvedOxygenZeroConductivityQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Quality flag indicating whether sensor is submerged based on conductivity measurement (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },    
+    {
+      "name": "dissolvedOxygenBuoyProfilingQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Quality flag indicating whether buoy sensor is profiling at the time of measurement (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    }
+    ]
+}

@@ -28,7 +28,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "DirFill=data|flags" \
       WndwFill="015" \
-      "DirSubCopy=location|uncertainty_coef" \
+      "DirSubCopy=location|uncertainty_coef|calibration" \
       "FileSchm=data:$FILE_SCHEMA_DATA|flags:$FILE_SCHEMA_CAL_FLAGS|flags:$FILE_SCHEMA_LOG_FLAGS"
     
     EOF
@@ -36,7 +36,7 @@ transform:
     # Environment variables for date gap filler
     LOG_LEVEL: INFO
     OUT_PATH: /tmp/pfs/interim
-    OUTPUT_DIRECTORIES: data,location,uncertainty_coef,flags
+    OUTPUT_DIRECTORIES: data,location,uncertainty_coef,flags,calibration
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
     DATA_MONTH_INDEX: '5'

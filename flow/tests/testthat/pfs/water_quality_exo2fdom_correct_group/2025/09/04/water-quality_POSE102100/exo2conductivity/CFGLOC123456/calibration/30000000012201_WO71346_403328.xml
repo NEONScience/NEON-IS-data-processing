@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>26669</MxAssetID>
+    
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID/>
+      <ActivityLocation/>
+      <SWVersion>99</SWVersion>
+      <ProcedureVersion/>
+      <Station/>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>25.0</Min>
+        <Max>25.0</Max>
+        <Mean>25.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>760.0</Min>
+        <Max>760.0</Max>
+        <Mean>760.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>25.0</Min>
+        <Max>25.0</Max>
+        <Mean>25.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient> 
+		<Name>CVALR1</Name>
+		<Value>0</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="">
+    <Metadata>
+        <Entry>
+            <Name> </Name>
+            <Value> </Value>
+        </Entry> 
+    </Metadata>
+	<Row index="">
+    <Independent name=""> </Independent>
+    <Column index="">
+        <Dependent name=""> </Dependent>
+    </Column>
+	</Row>
+	</CalibrationTable>
+    <CalibrationStandards CertNumber=""> </CalibrationStandards>
+    <StreamID>31</StreamID>
+    <Uncertainty units="uS/cm"> 
+		<Name>U_CVALD3</Name>
+		<Value>104</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALD2</Name>
+		<Value>50</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALD1</Name>
+		<Value>104</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALA3</Name>
+		<Value>0.00585</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALA2</Name>
+		<Value>0.000141</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALA1</Name>
+		<Value>0.00585</Value>
+	</Uncertainty>
+    <Trueness units="uS/cm">0.000000</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2025-08-04T06:40:48.0000</StartTime>
+      <EndTime>2025-08-04T06:44:47.0000</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>403328</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2025-08-04T06:44:47.0000</StartTime>
+    <EndTime>2025-10-06T06:44:47.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment> </Equipment>
+			<Operator>GCain</Operator>
+			<WorkOrder>WO71346</WorkOrder>
+			<MaximoID>26669</MaximoID>
+			<AssetID>30000000012201</AssetID>
+			<Reference/>
+			<Fixture>L3F200</Fixture>
+			<NEONPN>f0320170026</NEONPN>
+			<SN header="">16B100682</SN>
+			<FW header="">3.0.5</FW>
+			<SOH header=""/>
+			<UncertaintyCtl>L3F200</UncertaintyCtl>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header="">Kor Calibration File Export
+
+Last Calibration Time=,6/9/2025 2:49:48 PM
+Calibration Start Time=,8/4/2025 6:40:48 PM
+Calibration End Time=,8/4/2025 6:44:47 PM
+Calibration Status=,Completed
+QC Score=,Good
+Instrument Type=,EXO2
+Instrument Name=,
+Instrument Serial Number=,16B103173
+Instrument Firmware Version=,1.0.86
+Parameter Type=,Sp Cond (µS/cm)
+Sensor Type=,Conductivity
+Sensor Serial Number=,16B100682
+Sensor Firmware Version=,3.0.5
+User ID=,&lt;Unknown&gt;
+Cell Constant=,5.20
+
+[Cal Point 1]
+Standard=,1000.0 µS/cm
+Pre Calibration Value=,993.4 µS/cm
+Post Calibration Value=,1000.0 µS/cm
+Raw Value=,0.0 µS/cm
+Temperature=,23.299 °C
+Stability Achieved=,Yes
+
+</CALDATA>
+		<ValidationDATA header=""/>
+		<QCStatic header="K,U_Constant,U_QA,R2_Check,U_Drift,Drift_Total,Revision,Unit">2.000000,2.000000,10.000000,0.950000,0.000000,0.000000,3,uS/cm</QCStatic>
+		<QCDynamic header=""/>
+		<Precision header=""/>
+		<AsLeftCFG header="">New polys
+&#xD;
+</AsLeftCFG>
+		<AsReceived>
+			<ReceivedCFG header="">Old polys
+&#xD;
+</ReceivedCFG>
+			<ReceivedCoefficient> 
+				<Name>CVALR1</Name>
+				<Value>0</Value>
+			</ReceivedCoefficient>
+			<ReceivedDATA header=""/>
+		</AsReceived>
+  </DATA>
+  </CalVal>

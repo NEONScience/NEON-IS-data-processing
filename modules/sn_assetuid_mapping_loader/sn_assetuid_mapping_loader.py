@@ -1,0 +1,58 @@
+#!usr/bin/env python3
+import os
+from pathlib import Path
+from structlog import get_logger
+import requests
+import common.log_config as log_config
+
+
+log = get_logger()
+
+
+def load() -> None:
+    out_path: str = os.environ['OUTPUT_PATH']
+    region: str = os.environ['REGION']
+    log_level: str = os.environ['LOG_LEVEL']
+    log_config.configure(log_level)
+    source_type: str = os.environ['SOURCE_TYPE']
+    log.debug(f'out_path: {out_path}')
+    
+
+    mount_path= Path('/var/cds_secret')
+    cds_hostname_file = Path(mount_path, "hostname")
+    cds_url_path = cds_hostname_file.read_text()
+    url_path = f"{cds_url_path}/assets?sensor-type-name={source_type}"
+
+    log.debug(f"url_path is {url_path}")
+    response = requests.get(url_path, headers={'Accept': 'application/json'})
+    if response.status_code == 200:
+        log.debug(f'successfully fetched the data for {source_type}')
+        assets = response.json()['assets']
+        for asset in assets:
+            log.debug(f'found asset data: {asset}')
+            try:
+                asset_uid = asset.get("assetUid")
+                log.debug(f'asset_uid: {asset_uid}')
+                serial_number = asset.get("serialNumber")                
+                
+                if not serial_number:
+                    log.debug(f"Empty serialNumber for asset_uid {asset.get('assetUid')}")
+                    continue
+                serial_number = serial_number.split("/")[-1]
+                log.debug(f'serial_number after split: {serial_number}')
+
+                file_name = f'{source_type}_{serial_number}_{asset_uid}.txt'
+                file_path = Path(out_path, source_type, serial_number, file_name)
+                # print(f"filePath to write is: {file_path}")
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(file_path, 'w') as asset_file:
+                    asset_file.write(str(asset_uid))
+            except BaseException as err:
+                log.error(f"Unexpected {asset_uid}, {serial_number}")
+                raise err
+    else:
+        log.error(f"Asset call failed with error code: {response.status_code}.")
+
+
+if __name__ == '__main__':
+    load()

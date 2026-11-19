@@ -1,0 +1,135 @@
+---
+pipeline:
+  name: exo2_fill_log_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-exo2-logs-group-fill:sha-1c2fca3
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH_LIMIT_LOGFILES
+    rm -rf $OUT_PATH_JOIN_SOURCES
+    mkdir -p $OUT_PATH_LIMIT_LOGFILES  
+    mkdir -p $OUT_PATH_JOIN_SOURCES
+      
+    # If we have log files, limit them to the dates in the date_control pipeline
+    echo "Running filter-joiner to limit log files"
+    export CONFIG=$CONFIG_LIMIT_LOGFILES
+    export OUT_PATH=$OUT_PATH_LIMIT_LOGFILES
+    python3 -m filter_joiner.filter_joiner_main   
+
+    # Run filter-joiner module to merge all data sources
+    echo "Running filter-joiner to merge all data sources"
+    export CONFIG=$CONFIG_JOIN_SOURCES
+    export OUT_PATH=$OUT_PATH_JOIN_SOURCES
+    python3 -m filter_joiner.filter_joiner_main
+
+    # Run log filler script
+    Rscript ./flow.exo2.logfiles.fill.R \
+      DirIn=$OUT_PATH_JOIN_SOURCES \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      DirSchmData=$DIR_SCHEMA_DATA \
+      DirSchmFlags=$DIR_SCHEMA_FLAGS
+      
+    EOF
+  env:
+    # Environment variables for the log limiter filter-joiner.
+    CONFIG_LIMIT_LOGFILES: |
+      ---
+      # Configuration for filter-joiner module that will bring together L0 sources of data
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_LOG
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_LOG/*/*/*/**
+            # Join on y/m/d
+            join_indices: [3,4,5]
+            outer_join: False
+        - path:
+            name: DATE_CONTROL
+            # Filter for data directory
+            glob_pattern: /pfs/DATE_CONTROL/*/*/*/**
+            # Join on y/m/d
+            join_indices: [3,4,5]
+            outer_join: False
+    # Environment variables for source filter-joiner.
+    CONFIG_JOIN_SOURCES: |
+      ---
+      # Configuration for filter-joiner module that will bring together L0 sources of data
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_LOG
+            glob_pattern: /tmp/log_limited/*/*/*/**
+            join_indices: [3,4,5,6]
+            outer_join: true
+        - path:
+            name: DATA_PATH_STREAM
+            glob_pattern: /pfs/DATA_PATH_STREAM/*/*/*/**
+            join_indices: [3,4,5,6]
+            outer_join: true
+    OUT_PATH_LIMIT_LOGFILES: /tmp/log_limited
+    OUT_PATH_JOIN_SOURCES: /tmp/pfs/join_sources # Note that R modules use "pfs" in the path structure to determine datums
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    
+input:
+  cross:
+  - pfs:
+      name: DIR_SCHEMA_DATA
+      repo: exo2_avro_schemas
+      glob: /exo2/exo2_filled_schemas/data_schemas
+  - pfs:
+      name: DIR_SCHEMA_FLAGS
+      repo: exo2_avro_schemas
+      glob: /exo2/exo2_filled_schemas/flag_schemas
+  - join:
+    - pfs:
+        name: DATA_PATH_LOG
+        repo: exo2_regularize_log_data
+        glob: /(*/*/*/*) #sensor/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+    - pfs:
+        name: DATA_PATH_STREAM
+        repo: exo2_regularize_stream_data
+        glob: /(*/*/*/*) #sensor/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+    - pfs:
+        name: DATE_CONTROL
+        repo: exo2_all_probes_cron_daily_and_date_control
+        glob: /(*/*/*/*) #sunav2/Y/M/D
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 1.5
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

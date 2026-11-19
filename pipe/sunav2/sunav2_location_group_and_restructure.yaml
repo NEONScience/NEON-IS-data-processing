@@ -35,7 +35,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "DirSubCombData=data|flags" \
       DirSubCombUcrt=uncertainty_coef \
-      DirSubCopy=location 
+      "DirSubCopy=location|calibration"
     EOF
   env:
     # Environment variables for filter-joiner

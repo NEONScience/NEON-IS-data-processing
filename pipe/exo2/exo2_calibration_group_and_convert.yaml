@@ -1,0 +1,167 @@
+---
+pipeline:
+  name: exo2_calibration_group_and_convert
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v3.2.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    rm -rf $OUT_PATH_LIMIT_LOG $OUT_PATH_JOIN_CAL
+    mkdir -p $OUT_PATH_LIMIT_LOG $OUT_PATH_JOIN_CAL
+
+    export CONFIG=$CONFIG_LIMIT_LOG
+    export OUT_PATH=$OUT_PATH_LIMIT_LOG
+    python3 -m filter_joiner.filter_joiner_main 
+
+    # Determine source type
+    if [[ -d "${OUT_PATH_LIMIT_LOG}/exo2" || -d "${OUT_PATH_LIMIT_LOG}/exo2conductivity" || -d "${OUT_PATH_LIMIT_LOG}/exo2turbidity" || -d "${OUT_PATH_LIMIT_LOG}/exo2fdom" || -d "${OUT_PATH_LIMIT_LOG}/exo2phorp" || -d "${OUT_PATH_LIMIT_LOG}/exo2dissolvedoxygen" || -d "${OUT_PATH_LIMIT_LOG}/exo2algae" ]]; then
+      source_type=$(echo $DATE_CONTROL | cut -f $SOURCE_TYPE_INDEX -d "/")
+      echo "Source type: $source_type"
+    else
+        echo "Datum not in DATE_CONTROL repo. Skipping..."
+        exit 0
+    fi
+
+    export CONFIG=$CONFIG_JOIN_CAL
+    export OUT_PATH=$OUT_PATH_JOIN_CAL
+    python3 -m filter_joiner.filter_joiner_main
+    rm -rf $OUT_PATH_LIMIT_LOG
+
+    # Load schemas from dedicated repo once (not cross product)
+    # Schemas are mounted at /pfs/SCHEMAS_PATH/exo2/*.avsc
+    schema_dir="/pfs/SCHEMAS_PATH"
+    
+    # Map source type to schema file and parameters
+    declare -A schema_config=(
+      [exo2]="exo2/exo2_calibrated.avsc|def.ucrt.meas.mult:depth|depth"
+      [exo2turbidity]="exo2turbidity/exo2turbidity_calibrated.avsc|def.ucrt.meas.mult:turbidity|turbidity"
+      [exo2conductivity]="exo2conductivity/exo2conductivity_calibrated.avsc|def.ucrt.wq.temp.conc:temperature,def.ucrt.meas.mult:specific_conductance|specific_conductance"
+      [exo2fdom]="exo2fdom/exo2fdom_calibrated.avsc|def.ucrt.meas.cnst:fdom|fdom"
+      [exo2phorp]="exo2phorp/exo2phorp_calibrated.avsc|def.ucrt.meas.mult:ph|ph"
+      [exo2dissolvedoxygen]="exo2dissolvedoxygen/exo2dissolvedoxygen_calibrated.avsc|def.ucrt.wq.do.conc:dissolved_oxygen,def.ucrt.meas.mult:dissolved_oxygen_saturation|dissolved_oxygen_saturation"
+      [exo2algae]="exo2algae/exo2algae_calibrated.avsc|def.ucrt.meas.mult:chlorophyll,def.ucrt.meas.mult:chlorophyll_rfu|chlorophyll|chlorophyll_rfu"
+    )
+
+    IFS='|' read -r schema_path ucrt_terms term_qf <<< "${schema_config[$source_type]}"
+    file_schema="$schema_dir/$schema_path"
+    
+    # Verify schema exists
+    if [[ ! -f "$file_schema" ]]; then
+      echo "ERROR: Schema not found at $file_schema"
+      exit 1
+    fi
+    
+    # Build Rscript command dynamically
+    rscript_args=(
+      "DirIn=$OUT_PATH_JOIN_CAL"
+      "DirOut=/pfs/out"
+      "DirErr=/pfs/out/errored_datums"
+      "DirSubCopy=flags|calibration"
+      "FileSchmData=$file_schema"
+    )
+    
+    # Add uncertainty function terms
+    if [[ ! -z "$ucrt_terms" ]]; then
+      IFS=',' read -ra terms <<< "$ucrt_terms"
+      idx=1
+      for term in "${terms[@]}"; do
+        rscript_args+=("UcrtFuncTerm$idx=$term")
+        ((idx++))
+      done
+    fi
+    
+    rscript_args+=("TermQf=$term_qf")
+    
+    echo "Running: Rscript ./flow.cal.conv.R ${rscript_args[*]}"
+    Rscript ./flow.cal.conv.R "${rscript_args[@]}"
+    
+    EOF
+  env:
+    CONFIG_LIMIT_LOG: |
+      ---
+      input_paths:
+        - path:
+            name: DATA_PATH
+            glob_pattern: /pfs/DATA_PATH/*/*/*/*/**
+            join_indices: [3,4,5,6]
+            outer_join: False
+        - path:
+            name: DATE_CONTROL
+            glob_pattern: /pfs/DATE_CONTROL/*/*/*/*/**
+            join_indices: [3,4,5,6]
+            outer_join: False
+    
+    CONFIG_JOIN_CAL: |
+      ---
+      input_paths:
+        - path:
+            name: DATA_PATH
+            glob_pattern: /tmp/log_limited/*/*/*/*/*/**
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
+            join_indices: [7]
+
+    OUT_PATH_LIMIT_LOG: /tmp/log_limited
+    OUT_PATH_JOIN_CAL: /tmp/pfs/filter_joined
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY
+    PARALLELIZATION_INTERNAL: '3'
+    SOURCE_TYPE_INDEX: '4'
+
+input:
+  cross:
+  # Schema repo (single mount, not repeated per datum like before)
+  - pfs:
+      name: SCHEMAS_PATH
+      repo: exo2_avro_schemas
+      glob: /
+  # Main data join
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: exo2_calibration_assignment
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: false
+        empty_files: false
+    - pfs:
+        name: DATA_PATH
+        repo: exo2_fill_log_files
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: false
+        empty_files: false
+    - pfs:
+        name: DATE_CONTROL
+        repo: exo2_all_probes_cron_daily_and_date_control
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        empty_files: false
+        outer_join: false
+
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class

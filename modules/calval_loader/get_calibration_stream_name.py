@@ -38,5 +38,5 @@ def get_calibration_stream_name(connection, schema_name: str, stream_number: int
             logging.error(f'Stream name not found for stream ID {stream_number} and asset type {schema_name}.')
             return None
         stream_name = row[0]
-        # print(f'asset_type: {schema_name}    stream_name: {stream_name}')
+        print(f'asset_type: {schema_name}    stream_name: {stream_name}')
     return stream_name

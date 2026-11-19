@@ -3,8 +3,22 @@ from contextlib import closing
 from typing import Optional
 import logging
 
+SCHEMA_ALIASES = {
+    'exo': 'exo2',
+    'exoconductivity': 'exo2conductivity',
+    'exoturbidity': 'exo2turbidity',
+    'exofdom': 'exo2fdom',
+    'exophorp': 'exo2phorp',
+    'exodissolvedoxygen': 'exo2dissolvedoxygen',
+    'exoalgae': 'exo2algae',
+}
 
-def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
+
+def normalize_avro_schema_name(schema_name: str) -> str:
+    return SCHEMA_ALIASES.get(schema_name, schema_name)
+
+
+def get_avro_schema_name(connection, asset_uid: int) -> Optional[str]:
 
     sql = '''
          select 
@@ -25,7 +39,7 @@ def get_avro_schema_name(connection, asset_uid : int) -> Optional[list]:
         if row is None:
             logging.error(f'Avro schema name not found for asset id ID {asset_uid} .')
             return None
-        avro_schema_name = row
-        #avro_schema_name = row[0]
-        #print(f'avro_schema_name: {avro_schema_name}')
+        # Return the raw name; downstream stream lookups match it exactly in the database.
+        avro_schema_name = row[0]
+        print(f'asset_uid: {asset_uid}, avro_schema_name: {avro_schema_name}')
     return avro_schema_name

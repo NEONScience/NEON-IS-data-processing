@@ -1,0 +1,73 @@
+---
+pipeline:
+  name: exo2_replace_sn_with_assetuid
+transform:
+  # image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sn-to-asset-uid:sha-a7aa84c
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t' 
+
+    # Refresh interim directories with each datum.
+    rm -rf "$OUT_PATH_REPLACE_SN"
+    mkdir -p "$OUT_PATH_REPLACE_SN"
+
+    # The mapping root is shared; restrict lookup to this datum's sensor.
+    sensor_date=${PACH_DATUM_DATA_PATH_JOIN_ON:?Missing sensor/date join key}
+    export MAP_PATH="$MAP_PATH/${sensor_date%%/*}"
+    export OUT_PATH=$OUT_PATH_REPLACE_SN
+    python3 -m replace_sn_with_assetuid.replace_sn_with_assetuid_main
+
+    # Materialize output so it does not link to interim files cleared by the next datum.
+    cp -rL "$OUT_PATH_REPLACE_SN/." /pfs/out
+
+    EOF
+  env:
+    OUT_PATH_REPLACE_SN: /tmp/sn_replaced
+    RELATIVE_PATH_INDEX: "3"
+    LOG_LEVEL: INFO
+input:
+  cross:
+  # One mapping-root datum supplies mappings without multiplying sensor/date matches.
+  - pfs:
+      name: MAP_PATH
+      repo: exo2_sn_assetuid_mapping_loader
+      glob: /
+      empty_files: false
+  - join:
+    - pfs:
+        name: DATA_PATH
+        repo: exo2_logjam_load_clean_assign
+        glob: /(*)/(*)/(*)/(*) #sensor/year/month/day
+        joinOn: $1/$2/$3/$4
+        empty_files: false
+        outer_join: false
+    - pfs:
+        name: DATE_CONTROL
+        repo: exo2_all_probes_cron_daily_and_date_control
+        glob: /(*)/(*)/(*)/(*) #sensor/year/month/day
+        joinOn: $1/$2/$3/$4
+        empty_files: true # Only paths are needed for the date intersection.
+        outer_join: false
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 1.0
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/compute-class: pach-pipeline-class
