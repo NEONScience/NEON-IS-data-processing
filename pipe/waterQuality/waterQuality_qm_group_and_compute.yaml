@@ -131,7 +131,7 @@ input:
   - pfs:
       name: QAQC_PATH
       repo: waterQuality_flags_specific
-      glob: /*/*/*/water-quality_CRAM103100/*
+      glob: /*/*/*/*/*
   - pfs:
       name: AVRO_PATH
       repo: waterQuality_avro_schemas
