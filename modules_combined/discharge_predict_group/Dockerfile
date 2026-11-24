@@ -16,7 +16,7 @@ WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
-
+# The locked s2 package builds its bundled Abseil on Linux.
 RUN apt update && \
     apt-get install -y --no-install-recommends \
         jq \
@@ -25,12 +25,11 @@ RUN apt update && \
         curl \
         cmake \
         wget \
-        libabsl-dev \
         libgdal-dev \
         libssl-dev \
         zlib1g-dev \
         libbz2-dev \
-        libunits2-dev \
+        libudunits2-dev \
         libgeos-dev \
         libproj-dev \
         libreadline-dev \
