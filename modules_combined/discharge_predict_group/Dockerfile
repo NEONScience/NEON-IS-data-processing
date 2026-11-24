@@ -23,10 +23,16 @@ RUN apt update && \
         build-essential \
         ca-certificates \
         curl \
+        cmake \
         wget \
+        libabsl-dev \
+        libgdal-dev \
         libssl-dev \
         zlib1g-dev \
         libbz2-dev \
+        libunits2-dev \
+        libgeos-dev \
+        libproj-dev \
         libreadline-dev \
         libsqlite3-dev \
         libffi-dev \
