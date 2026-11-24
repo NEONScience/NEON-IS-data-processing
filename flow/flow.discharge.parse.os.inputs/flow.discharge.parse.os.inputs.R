@@ -55,7 +55,8 @@
 #     updated to write out parquet files
 #   Nora Catolico(2026-11-18)
 #     parse OS table dates once and pass to wrapper
-
+#   Zachary Nickerson (2026-11-24)
+#     added code for processing USGS discharge data
 ##############################################################################################
 options(digits.secs = 3)
 library(lubridate)

@@ -86,6 +86,8 @@
 #     updated to write out parquet files
 #   Nora Catolico(2026-11-18)
 #     pre-parse OS table dates once (osDates) and simplify date-window overlap test
+#   Zachary Nickerson (2026-11-24)
+#     added code for processing USGS discharge data
 ##############################################################################################
 # Parse the date columns of the OS tables once so they can be reused across datums
 parse.discharge.os.dates <- function(csd_constantBiasShift_pub,

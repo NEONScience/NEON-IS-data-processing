@@ -40,10 +40,12 @@
 # DirBaM <- '/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta'
 # DirOutBase <- "/home/nickerson/pfs/out"
 # SchmDataOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
+# SchmDataUSGSOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04_usgs.avsc"
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # wrap.discharge.predict(DirIn=DirIn,
 #                        DirOutBase=DirOutBase,
 #                        SchmDataOut=SchmDataOut,
+#                        SchmDataUSGSOut=SchmDataUSGSOut,
 #                        log=log)
 
 #' @seealso None currently
@@ -59,10 +61,13 @@
 #     updated to use parquet files
 #   Nora Catolico(2026-09-23)
 #     updated for NA watercolumn data handling
+#   Zachary Nickerson (2026-11-24)
+#     added code for processing USGS discharge data
 ##############################################################################################
 wrap.discharge.predict <- function(DirIn,
                                    DirOutBase,
                                    SchmDataOut=NULL,
+                                   SchmDataUSGSOut=NULL,
                                    log=NULL
 ){
 
@@ -931,6 +936,25 @@ wrap.discharge.predict <- function(DirIn,
 
       #Assign final QF based only on null timestamps
       csd_continuousDischargeUSGS_pub$dischargeFinalQF <- base::ifelse(base::is.na(csd_continuousDischargeUSGS_pub$usgsDischarge),1,0)
+
+      outFileName <- base::gsub("surfacewater-physical","l4discharge",uncorrectedFile)
+      outFileName <- base::gsub("EOS_1_min_001","CSD_USGS_100",outFileName)
+      write_CSD_USGS <- base::try(NEONprocIS.base::def.wrte.parq(
+        data = csd_continuousDischargeUSGS_pub,
+        NameFile = base::paste(DirOutData,
+                         outFileName,
+                         sep = "/"),
+        Schm = SchmDataUSGSOut
+        ),
+        silent=TRUE
+        )
+      if(base::inherits(write_CSD_USGS,"try-error")){
+        log$error(base::paste0("Failed to write CSD_USGS file: ", DirOutData,"/",outFileName))
+      }else{
+        log$info(base::paste0("Successfully wrote CSD_USGS file: ", DirOutData,"/",outFileName))
+      }
+
+      base::return()
     }
   }else{
     # Workflow for predicting corrected discharge ####

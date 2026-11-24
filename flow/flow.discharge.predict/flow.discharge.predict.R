@@ -57,6 +57,8 @@
 #     updated to use parquet files
 #   Nora Catolico(2026-09-23)
 #     updated for NA watercolumn data handling
+#   Zachary Nickerson (2026-11-24)
+#     added code for processing USGS discharge data
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
