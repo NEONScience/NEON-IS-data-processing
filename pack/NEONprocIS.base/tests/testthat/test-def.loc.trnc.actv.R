@@ -128,6 +128,29 @@ test_that("active period end date is timeBgn, get the active periods flag as end
           }
           
 )
+test_that("active period ending at midnight the following day gets the end flag",
+          {
+            nameFileIn <- tempfile(fileext = ".json")
+            base::writeLines(
+              '{"features":[{"properties":{"active_periods":[{"start_date":"2024-09-15T00:00:00Z","end_date":"2024-09-17T00:00:00Z"}]}}]}',
+              con = nameFileIn
+            )
+            timeBgn <- base::as.POSIXct('2024-09-16T00:00:00Z', tz = 'GMT')
+            timeEnd <- base::as.POSIXct('2024-09-17T00:00:00Z', tz = 'GMT')
+
+            loc <- NEONprocIS.base::def.loc.trnc.actv(
+              NameFileIn = nameFileIn,
+              TimeBgn = timeBgn,
+              TimeEnd = timeEnd
+            )
+
+            testthat::expect_equal(
+              loc$features[[1]]$properties$active_periods[[1]]$active_periods_flag,
+              "end"
+            )
+            base::unlink(nameFileIn)
+          }
+)
 test_that("active period is single day, get the active periods flag as both",
           {
             nameFileIn = 'def.loc.trnc.actv/CFGLOC113812_1.json'
