@@ -24,7 +24,13 @@
 #'         
 #' @param DirOutBase Character value. The output path that will replace the 
 #' #/pfs/BASE_REPO portion of DirInWch.
-
+#' 
+#' @param SchmCSDOut Character value (optional). The full path to the avro schema for the output CSD data file.
+#' 
+#' @param SchmUSGSOut Character value (optional). The full path to the avro schema for the output USGS data file.
+#' 
+#' @param log Object (optional). A logging object created by \code{\link[NEONprocIS.base]{def.log.init}}.
+#' 
 #' @return A repository in DirOutBase containing the merged and filtered Kafka
 #' output, where DirOutBase replaces BASE_REPO of argument \code{DirInWch} but 
 #' otherwise retains the child directory structure of the input path.
@@ -39,13 +45,13 @@
 # DirIn <- '/home/nickerson/Git/pfs/l4discharge_csd_swe_os_group_and_parse/2021/09/05/l4discharge_TOMB101100'
 # DirBaM <- '/home/nickerson/Git/NEON-IS-data-processing/flow/flow.discharge.predict/BaM_beta'
 # DirOutBase <- "/home/nickerson/pfs/out"
-# SchmDataOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
-# SchmDataUSGSOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04_usgs.avsc"
+# SchmCSDOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc"
+# SchmUSGSOut="/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04_usgs.avsc"
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # wrap.discharge.predict(DirIn=DirIn,
 #                        DirOutBase=DirOutBase,
-#                        SchmDataOut=SchmDataOut,
-#                        SchmDataUSGSOut=SchmDataUSGSOut,
+#                        SchmCSDOut=SchmCSDOut,
+#                        SchmUSGSOut=SchmUSGSOut,
 #                        log=log)
 
 #' @seealso None currently
@@ -63,11 +69,13 @@
 #     updated for NA watercolumn data handling
 #   Zachary Nickerson (2026-11-24)
 #     added code for processing USGS discharge data
+#   Nora Catolico (2026-11-24)
+#     vectorized handling of USGS discharge data, update documentation
 ##############################################################################################
 wrap.discharge.predict <- function(DirIn,
                                    DirOutBase,
-                                   SchmDataOut=NULL,
-                                   SchmDataUSGSOut=NULL,
+                                   SchmCSDOut=NULL,
+                                   SchmUSGSOut=NULL,
                                    log=NULL
 ){
 
@@ -876,12 +884,12 @@ wrap.discharge.predict <- function(DirIn,
       }
 
       #Generate the publication table format
-      continuousDischargeUSGS_names <- c("siteID",
+      continuousDischargeUSGS_names <- c("startDate",
+                                         "endDate",
+                                         "siteID",
                                          "stationHorizontalID",
                                          "namedLocation",
-                                         "usgsSiteNumber",
-                                         "startDate",
-                                         "endDate",
+                                         "usgsSiteNumber",                                         
                                          "usgsDischargeRegID",
                                          "usgsDischarge",
                                          "regressionDerivedDischarge",
@@ -891,8 +899,7 @@ wrap.discharge.predict <- function(DirIn,
                                          "withRegressionUncQUpper1Std",
                                          "usgsDownloadDate",
                                          "usgsValueQualCode",
-                                         "dischargeFinalQF",
-                                         "dischargeFinalQFSciRvw")
+                                         "dischargeFinalQF")
       csd_continuousDischargeUSGS_pub <- base::data.frame(
         base::matrix(data = NA,
                ncol = base::length(continuousDischargeUSGS_names),
@@ -921,18 +928,32 @@ wrap.discharge.predict <- function(DirIn,
       #Add regression ID to the publication table
       csd_continuousDischargeUSGS_pub$usgsDischargeRegID <- regID
 
-      #Calculate derived NEON discharge and uncertainty bands for USGS discharge
-      for (i in 1:base::nrow(csd_continuousDischargeUSGS_pub)) {
-        for (j in 1:base::nrow(dischargeRegressionUSGS)) {
-          if (csd_continuousDischargeUSGS_pub$usgsDischargeRegID[i]==dischargeRegressionUSGS$usgsDischargeRegID[j]) {
-            csd_continuousDischargeUSGS_pub$regressionDerivedDischarge[i] <- 10^((base::log10(csd_continuousDischargeUSGS_pub$usgsDischarge[i])*dischargeRegressionUSGS$usgsDischargeRegSlope[j])+dischargeRegressionUSGS$usgsDischargeRegIntercept[j])
-            csd_continuousDischargeUSGS_pub$withRegressionUncQLower2Std[i]=10^(base::log10(csd_continuousDischargeUSGS_pub$usgsDischarge[i])*(dischargeRegressionUSGS$usgsDischargeRegSlope[j]-(1.96*dischargeRegressionUSGS$usgsDischargeRegSlopeSE[j]))+(dischargeRegressionUSGS$usgsDischargeRegIntercept[j]-(1.96*dischargeRegressionUSGS$usgsDischargeRegInterceptSE[j])))
-            csd_continuousDischargeUSGS_pub$withRegressionUncQUpper2Std[i]=10^(base::log10(csd_continuousDischargeUSGS_pub$usgsDischarge[i])*(dischargeRegressionUSGS$usgsDischargeRegSlope[j]+(1.96*dischargeRegressionUSGS$usgsDischargeRegSlopeSE[j]))+(dischargeRegressionUSGS$usgsDischargeRegIntercept[j]+(1.96*dischargeRegressionUSGS$usgsDischargeRegInterceptSE[j])))
-            csd_continuousDischargeUSGS_pub$withRegressionUncQLower1Std[i]=10^(base::log10(csd_continuousDischargeUSGS_pub$usgsDischarge[i])*(dischargeRegressionUSGS$usgsDischargeRegSlope[j]-(dischargeRegressionUSGS$usgsDischargeRegSlopeSE[j]))+(dischargeRegressionUSGS$usgsDischargeRegIntercept[j]-(dischargeRegressionUSGS$usgsDischargeRegInterceptSE[j])))
-            csd_continuousDischargeUSGS_pub$withRegressionUncQUpper1Std[i]=10^(base::log10(csd_continuousDischargeUSGS_pub$usgsDischarge[i])*(dischargeRegressionUSGS$usgsDischargeRegSlope[j]+(dischargeRegressionUSGS$usgsDischargeRegSlopeSE[j]))+(dischargeRegressionUSGS$usgsDischargeRegIntercept[j]+(dischargeRegressionUSGS$usgsDischargeRegInterceptSE[j])))
-          }
-        }
-      }
+      # Use the last regression for duplicate IDs, as in the original loop.
+      regOrder <- base::rev(base::seq_len(base::nrow(dischargeRegressionUSGS)))
+      regMatches <- base::match(
+        csd_continuousDischargeUSGS_pub$usgsDischargeRegID,
+        dischargeRegressionUSGS$usgsDischargeRegID[regOrder]
+      )
+      matchedRows <- base::which(!base::is.na(regMatches))
+      matchedRegressions <- dischargeRegressionUSGS[
+        regOrder[regMatches[matchedRows]], , drop = FALSE
+      ]
+      logUSGSDischarge <- base::log10(csd_continuousDischargeUSGS_pub$usgsDischarge[matchedRows])
+      regSlope <- matchedRegressions$usgsDischargeRegSlope
+      regIntercept <- matchedRegressions$usgsDischargeRegIntercept
+      regSlopeSE <- matchedRegressions$usgsDischargeRegSlopeSE
+      regInterceptSE <- matchedRegressions$usgsDischargeRegInterceptSE
+
+      csd_continuousDischargeUSGS_pub$regressionDerivedDischarge[matchedRows] <-
+        10^(logUSGSDischarge * regSlope + regIntercept)
+      csd_continuousDischargeUSGS_pub$withRegressionUncQLower2Std[matchedRows] <-
+        10^(logUSGSDischarge * (regSlope - 1.96 * regSlopeSE) + (regIntercept - 1.96 * regInterceptSE))
+      csd_continuousDischargeUSGS_pub$withRegressionUncQUpper2Std[matchedRows] <-
+        10^(logUSGSDischarge * (regSlope + 1.96 * regSlopeSE) + (regIntercept + 1.96 * regInterceptSE))
+      csd_continuousDischargeUSGS_pub$withRegressionUncQLower1Std[matchedRows] <-
+        10^(logUSGSDischarge * (regSlope - regSlopeSE) + (regIntercept - regInterceptSE))
+      csd_continuousDischargeUSGS_pub$withRegressionUncQUpper1Std[matchedRows] <-
+        10^(logUSGSDischarge * (regSlope + regSlopeSE) + (regIntercept + regInterceptSE))
 
       #Assign final QF based only on null timestamps
       csd_continuousDischargeUSGS_pub$dischargeFinalQF <- base::ifelse(base::is.na(csd_continuousDischargeUSGS_pub$usgsDischarge),1,0)
@@ -944,7 +965,7 @@ wrap.discharge.predict <- function(DirIn,
         NameFile = base::paste(DirOutData,
                          outFileName,
                          sep = "/"),
-        Schm = SchmDataUSGSOut
+        Schm = SchmUSGSOut
         ),
         silent=TRUE
         )
@@ -984,7 +1005,7 @@ wrap.discharge.predict <- function(DirIn,
     NameFile = paste(DirOutData,
                      outFileName,
                      sep = "/"),
-    Schm = SchmDataOut
+    Schm = SchmCSDOut
     ),
     silent=TRUE
     )
