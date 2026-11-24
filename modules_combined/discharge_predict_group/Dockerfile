@@ -22,6 +22,7 @@ RUN apt update && \
         jq \
         build-essential \
         ca-certificates \
+        curl \
         wget \
         libssl-dev \
         zlib1g-dev \
