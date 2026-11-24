@@ -66,7 +66,8 @@
 #   Zachary Nickerson (2026-11-24)
 #     added code for processing USGS discharge data
 #   Nora Catolico (2026-11-24)
-#     vectorized handling of USGS discharge data, update documentation##############################################################################################
+#     vectorized handling of USGS discharge data, update documentation
+#############################################################################################
 options(digits.secs = 3)
 library(foreach)
 library(doParallel)
