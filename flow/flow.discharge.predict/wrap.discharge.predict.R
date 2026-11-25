@@ -971,6 +971,7 @@ wrap.discharge.predict <- function(DirIn,
         )
       if(base::inherits(write_CSD_USGS,"try-error")){
         log$error(base::paste0("Failed to write CSD_USGS file: ", DirOutData,"/",outFileName))
+        base::stop(base::attr(write_CSD_USGS, "condition"))
       }else{
         log$info(base::paste0("Successfully wrote CSD_USGS file: ", DirOutData,"/",outFileName))
       }
