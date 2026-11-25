@@ -908,6 +908,7 @@ wrap.discharge.predict <- function(DirIn,
 
       #Populate the publication table with the metadata and USGS data
       csd_continuousDischargeUSGS_pub$siteID <- siteID
+      csd_continuousDischargeUSGS_pub$stationHorizontalID <- qHOR
       csd_continuousDischargeUSGS_pub$namedLocation <- siteID
       csd_continuousDischargeUSGS_pub$usgsSiteNumber <- usgsSiteNumber
       csd_continuousDischargeUSGS_pub$startDate <- base::as.POSIXct(
