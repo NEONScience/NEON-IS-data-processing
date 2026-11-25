@@ -32,8 +32,8 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmCSD=/pfs/SCHEMAS/l4discharge_dp04.avsc \
-      FileSchmUSGS=/pfs/SCHEMAS/l4discharge_dp04_usgs.avsc
+      FileSchmCSD=$SCHEMAS/l4discharge_dp04.avsc \
+      FileSchmUSGS=$SCHEMAS/l4discharge_dp04_usgs.avsc
     
     EOF
   env:
