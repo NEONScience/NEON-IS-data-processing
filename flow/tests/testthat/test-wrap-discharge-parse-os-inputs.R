@@ -72,6 +72,11 @@ test_that("Unit test of wrap.discharge.parse.os.inputs.R", {
     csd_dataGapToFillMethodMapping_pub = csd_dataGapToFillMethodMapping_pub,
     csd_gapFillingRegression_pub = csd_gapFillingRegression_pub,
     csd_gaugeWaterColumnRegression_pub = csd_gaugeWaterColumnRegression_pub,
+    csd_dischargeRegressionUSGS_pub = data.frame(
+      usgsDischargeRegStartDate = character(),
+      usgsDischargeRegEndDate = character(),
+      usgsDischargeRegID = character()
+    ),
     sdrc_controlInfo_pub = sdrc_controlInfo_pub,
     sdrc_curveIdentification_pub = sdrc_curveIdentification_pub,
     sdrc_priorParameters_pub = sdrc_priorParameters_pub,
@@ -115,4 +120,68 @@ test_that("Unit test of wrap.discharge.parse.os.inputs.R", {
   testthat::expect_true(nrow(gapData) > 0)
   testthat::expect_true(all(gapData$namedLocation == 'BLUE.AOS.discharge'))
 
+})
+
+test_that("TOMB writes only the active USGS regression table", {
+
+  source('../../flow.discharge.parse.os.inputs/wrap.discharge.parse.os.inputs.R')
+  log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+
+  testRoot <- tempfile('wrap-discharge-parse-os-inputs-tomb-')
+  withr::defer(unlink(testRoot, recursive = TRUE))
+  testDirIn <- file.path(
+    testRoot,
+    'pfs/l4discharge_csd_swe_group/2021/09/05/l4discharge_TOMB101100',
+    'surfacewater-physical_TOMB101100'
+  )
+  base::dir.create(file.path(testDirIn, 'data'), recursive = TRUE)
+  testDirOut <- file.path(testRoot, 'out')
+
+  emptyDates <- data.frame(startDate = character(), endDate = character())
+  emptyRegressionDates <- data.frame(
+    regressionStartDate = character(),
+    regressionEndDate = character()
+  )
+  emptyCurveDates <- data.frame(
+    curveStartDate = character(),
+    curveEndDate = character()
+  )
+
+  usgsRegressions <- data.frame(
+    usgsDischargeRegStartDate = c('2021-09-01 00:00:00', '2022-01-01 00:00:00'),
+    usgsDischargeRegEndDate = c('2021-09-30 23:59:59', '2022-12-31 23:59:59'),
+    usgsDischargeRegID = c('TOMB.USGS.active', 'TOMB.USGS.inactive'),
+    usgsDischargeRegSlope = c(1.2, 2.3)
+  )
+
+  wrap.discharge.parse.os.inputs(
+    DirIn = testDirIn,
+    csd_constantBiasShift_pub = emptyDates,
+    csd_dataGapToFillMethodMapping_pub = emptyDates,
+    csd_gapFillingRegression_pub = emptyDates,
+    csd_gaugeWaterColumnRegression_pub = emptyRegressionDates,
+    csd_dischargeRegressionUSGS_pub = usgsRegressions,
+    sdrc_controlInfo_pub = data.frame(endDate = character()),
+    sdrc_curveIdentification_pub = emptyCurveDates,
+    sdrc_priorParameters_pub = data.frame(endDate = character()),
+    sdrc_gaugeDischargeMeas_pub = data.frame(),
+    sdrc_sampledParameters_pub = data.frame(),
+    sdrc_gaugePressureRelationship_pub = data.frame(),
+    sdrc_stageDischargeCurveInfo_pub = data.frame(),
+    DirOutBase = testDirOut,
+    log = log
+  )
+
+  infoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(testDirIn)
+  outputPath <- paste0(
+    testDirOut,
+    infoDirIn$dirRepo,
+    '/data/NEON.DOM.SITE.DP1.00133.001.csd_dischargeRegressionUSGS_pub.parquet'
+  )
+  testthat::expect_true(file.exists(outputPath))
+
+  output <- arrow::read_parquet(outputPath)
+  testthat::expect_equal(nrow(output), 1)
+  testthat::expect_equal(output$usgsDischargeRegID, 'TOMB.USGS.active')
+  testthat::expect_equal(output$usgsDischargeRegSlope, 1.2, tolerance = 1e-6)
 })

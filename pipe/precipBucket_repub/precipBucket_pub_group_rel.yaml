@@ -4,7 +4,7 @@ pipeline:
   name: precipBucket_pub_group_rel
 transform:
 #  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.8.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.8.2
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

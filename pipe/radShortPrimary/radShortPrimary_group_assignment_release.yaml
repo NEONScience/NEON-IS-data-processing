@@ -2,7 +2,7 @@
 pipeline:
   name: radShortPrimary_group_assignment_release
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.4.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.4.2
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

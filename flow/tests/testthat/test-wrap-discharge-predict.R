@@ -4,8 +4,8 @@
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org} \cr
 #'
-#' @description Unit test for wrap.discharge.predict.R. Verifies pass-through
-#' output when a minimal CSD_15_min input parquet is present.
+#' @description Unit tests for wrap.discharge.predict.R. Verify corrected CSD
+#' pass-through and TOMB USGS publication output.
 #'
 #' @param DirIn Character value. The input path to the discharge datum.
 #'
@@ -20,6 +20,8 @@
 #' changelog and author contributions
 #   Nora Catolico (2026-08-11)
 #'     Original Creation
+#   Nora Catolico (2026-11-24)
+#'     Add TOMB USGS publication test
 #
 ##############################################################################################
 
@@ -74,7 +76,7 @@ test_that("Unit test of wrap.discharge.predict.R", {
   wrap.discharge.predict(
     DirIn = testDirIn,
     DirOutBase = testDirOut,
-    SchmDataOut = NULL,
+    SchmCSDOut = NULL,
     log = log
   )
 
@@ -94,4 +96,175 @@ test_that("Unit test of wrap.discharge.predict.R", {
   testthat::expect_true('dischargeContinuous' %in% names(csdOut))
   testthat::expect_equal(round(csdOut$dischargeContinuous[1], 2), 12.34)
 
+})
+
+test_that("TOMB USGS discharge is published with regression estimates", {
+
+  source('../../flow.discharge.predict/wrap.discharge.predict.R')
+  log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+
+  testRoot <- tempfile('wrap-discharge-predict-tomb-')
+  withr::defer(unlink(testRoot, recursive = TRUE))
+  testDirIn <- file.path(
+    testRoot,
+    'pfs/l4discharge_predictgroup_tmp',
+    '2021/09/05/l4discharge_TOMB101100'
+  )
+  testDirData <- file.path(testDirIn, 'data')
+  testDirSWEData <- file.path(
+    testDirIn,
+    'surfacewater-physical_TOMB101100',
+    'data'
+  )
+  base::dir.create(testDirData, recursive = TRUE)
+  base::dir.create(testDirSWEData, recursive = TRUE)
+
+  inputFileName <- 'surfacewater-physical_TOMB101100_2021-09-05_EOS_1_min_001.parquet'
+  inputFilePath <- file.path(testDirSWEData, inputFileName)
+  regressionFilePath <- file.path(
+    testDirData,
+    'NEON.DOM.SITE.DP1.00133.001.csd_dischargeRegressionUSGS_pub.parquet'
+  )
+  regression <- data.frame(
+    usgsDischargeRegStartDate = '2020-01-01 00:00:00',
+    usgsDischargeRegEndDate = '2022-01-01 00:00:00',
+    usgsDischargeRegID = 'TOMB.USGS.2021.reg.1',
+    usgsDischargeRegSlope = 1,
+    usgsDischargeRegSlopeSE = 0.1,
+    usgsDischargeRegIntercept = 0,
+    usgsDischargeRegInterceptSE = 0.05,
+    usgsSiteNumber = '1234567'
+  )
+
+  testthat::expect_false(inherits(
+    try(
+      NEONprocIS.base::def.wrte.parq(
+        data = data.frame(surfacewaterColumnHeight = 1),
+        NameFile = inputFilePath,
+        Schm = NULL
+      ),
+      silent = TRUE
+    ),
+    'try-error'
+  ))
+  testthat::expect_false(inherits(
+    try(
+      NEONprocIS.base::def.wrte.parq(
+        data = regression,
+        NameFile = regressionFilePath,
+        Schm = NULL
+      ),
+      silent = TRUE
+    ),
+    'try-error'
+  ))
+
+  retrievedArgs <- NULL
+  testthat::local_mocked_bindings(
+    read_waterdata_continuous = function(monitoring_location_id,
+                                         parameter_code,
+                                         time) {
+      retrievedArgs <<- list(
+        monitoring_location_id = monitoring_location_id,
+        parameter_code = parameter_code,
+        time = time
+      )
+      data.frame(
+        time = as.POSIXct(
+          c(
+            '2021-09-05 00:00:00',
+            '2021-09-05 12:00:00',
+            '2021-09-05 23:30:00',
+            '2021-09-05 23:45:00'
+          ),
+          tz = 'UTC'
+        ),
+        value = c(1, 2, 3, 4),
+        qualifier = c('A', 'P', 'A', 'A')
+      )
+    },
+    .package = 'dataRetrieval'
+  )
+
+  testDirOut <- file.path(testRoot, 'out')
+  wrap.discharge.predict(
+    DirIn = testDirIn,
+    DirOutBase = testDirOut,
+    SchmCSDOut = NULL,
+    SchmUSGSOut = NULL,
+    log = log
+  )
+
+  testthat::expect_equal(retrievedArgs$monitoring_location_id, 'USGS-01234567')
+  testthat::expect_equal(retrievedArgs$parameter_code, '00060')
+
+  outputFileName <- 'l4discharge_TOMB101100_2021-09-05_CSD_USGS_100.parquet'
+  outputFilePath <- file.path(
+    testDirOut,
+    '2021/09/05/l4discharge_TOMB101100/data',
+    outputFileName
+  )
+  testthat::expect_true(file.exists(outputFilePath))
+
+  usgsOut <- NEONprocIS.base::def.read.parq(NameFile = outputFilePath, log = log)
+  testthat::expect_equal(nrow(usgsOut), 3)
+  expectedTimes <- as.POSIXct(
+    c(
+      '2021-09-05 00:00:00',
+      '2021-09-05 12:00:00',
+      '2021-09-05 23:30:00'
+    ),
+    tz = 'UTC'
+  )
+  testthat::expect_equal(as.numeric(usgsOut$startDate), as.numeric(expectedTimes))
+  testthat::expect_equal(as.numeric(usgsOut$endDate), as.numeric(expectedTimes))
+  testthat::expect_true(all(c(
+    'startDate',
+    'endDate',
+    'usgsSiteNumber',
+    'usgsDischargeRegID',
+    'usgsDischarge',
+    'regressionDerivedDischarge',
+    'withRegressionUncQLower1Std',
+    'withRegressionUncQUpper1Std',
+    'withRegressionUncQLower2Std',
+    'withRegressionUncQUpper2Std',
+    'usgsValueQualCode',
+    'dischargeFinalQF'
+  ) %in% names(usgsOut)))
+  testthat::expect_equal(usgsOut$usgsSiteNumber, rep('01234567', 3))
+  testthat::expect_equal(usgsOut$usgsDischargeRegID, rep('TOMB.USGS.2021.reg.1', 3))
+  testthat::expect_equal(
+    usgsOut$usgsDischarge,
+    c(1, 2, 3) * 28.316847,
+    tolerance = 1e-5
+  )
+  testthat::expect_equal(usgsOut$usgsValueQualCode, c('A', 'P', 'A'))
+  testthat::expect_equal(usgsOut$dischargeFinalQF, c(0, 0, 0))
+  testthat::expect_equal(
+    usgsOut$regressionDerivedDischarge,
+    c(1, 2, 3) * 28.316847,
+    tolerance = 1e-5
+  )
+  logDischarge <- log10(c(1, 2, 3) * 28.316847)
+  testthat::expect_equal(
+    usgsOut$withRegressionUncQLower1Std,
+    10^(logDischarge * (1 - 0.1) - 0.05),
+    tolerance = 1e-5
+  )
+  testthat::expect_equal(
+    usgsOut$withRegressionUncQUpper1Std,
+    10^(logDischarge * (1 + 0.1) + 0.05),
+    tolerance = 1e-5
+  )
+  testthat::expect_equal(
+    usgsOut$withRegressionUncQLower2Std,
+    10^(logDischarge * (1 - 1.96 * 0.1) - 1.96 * 0.05),
+    tolerance = 1e-5
+  )
+  testthat::expect_equal(
+    usgsOut$withRegressionUncQUpper2Std,
+    10^(logDischarge * (1 + 1.96 * 0.1) + 1.96 * 0.05),
+    tolerance = 1e-5
+  )
 })

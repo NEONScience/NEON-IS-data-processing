@@ -128,6 +128,54 @@ test_that("active period end date is timeBgn, get the active periods flag as end
           }
           
 )
+test_that("active period ending at midnight the following day gets the end flag",
+          {
+            nameFileIn <- tempfile(fileext = ".json")
+            base::writeLines(
+              '{"features":[{"properties":{"active_periods":[{"start_date":"2024-09-15T00:00:00Z","end_date":"2024-09-17T00:00:00Z"}]}}]}',
+              con = nameFileIn
+            )
+            timeBgn <- base::as.POSIXct('2024-09-16T00:00:00Z', tz = 'GMT')
+            timeEnd <- base::as.POSIXct('2024-09-17T00:00:00Z', tz = 'GMT')
+
+            loc <- NEONprocIS.base::def.loc.trnc.actv(
+              NameFileIn = nameFileIn,
+              TimeBgn = timeBgn,
+              TimeEnd = timeEnd
+            )
+
+            testthat::expect_equal(
+              loc$features[[1]]$properties$active_periods[[1]]$active_periods_flag,
+              "end"
+            )
+            base::unlink(nameFileIn)
+          }
+)
+test_that("active period starting on timeBgn's date and ending at the following midnight gets the both flag",
+          {
+            nameFileIn <- tempfile(fileext = ".json")
+            nameFileOut <- tempfile(fileext = ".json")
+            on.exit(base::unlink(c(nameFileIn, nameFileOut)))
+            base::writeLines(
+              '{"features":[{"properties":{"active_periods":[{"start_date":"2018-01-03T12:00:00Z","end_date":"2018-01-04T00:00:00Z"}]}}]}',
+              con = nameFileIn
+            )
+            timeBgn <- base::as.POSIXct('2018-01-03T00:00:00Z', tz = 'GMT')
+            timeEnd <- base::as.POSIXct('2018-01-04T00:00:00Z', tz = 'GMT')
+
+            NEONprocIS.base::def.loc.trnc.actv(
+              NameFileIn = nameFileIn,
+              NameFileOut = nameFileOut,
+              TimeBgn = timeBgn,
+              TimeEnd = timeEnd
+            )
+            loc <- rjson::fromJSON(file = nameFileOut, simplify = FALSE)
+            period <- loc$features[[1]]$properties$active_periods[[1]]
+            testthat::expect_equal(period$active_periods_flag, "both")
+            testthat::expect_equal(period$start_date, "2018-01-03T12:00:00Z")
+            testthat::expect_equal(period$end_date, "2018-01-04T00:00:00Z")
+          }
+)
 test_that("active period is single day, get the active periods flag as both",
           {
             nameFileIn = 'def.loc.trnc.actv/CFGLOC113812_1.json'
