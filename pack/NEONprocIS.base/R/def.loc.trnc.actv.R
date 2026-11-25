@@ -99,6 +99,10 @@ def.loc.trnc.actv <-
                                  } else {
                                    timeEndIdx <- TimeEnd
                                  }
+                                 endAtNextMidnight <- !base::is.null(idxList$end_date) &&
+                                   timeEndIdx == TimeEnd &&
+                                   base::format(timeEndIdx,format='%H:%M:%S',tz='GMT') == '00:00:00' &&
+                                   base::as.Date(timeEndIdx,tz='GMT') == base::as.Date(TimeBgn,tz='GMT') + 1
                                  if(timeBgnIdx < TimeEnd && timeEndIdx > TimeBgn){
                                    # This is a relevant set of active dates. 
                                    # Truncate the active range to our range of interest
@@ -114,13 +118,17 @@ def.loc.trnc.actv <-
                                    }
                                    
                                    if(!base::is.null(idxList$start_date) && substr(TimeBgnFmt,1,10) == substr(idxList$start_date,1,10)){
-                                     if(!base::is.null(idxList$end_date) && substr(idxList$end_date,1,10) == substr(idxList$start_date,1,10)){
+                                     if(!base::is.null(idxList$end_date) &&
+                                        (substr(idxList$end_date,1,10) == substr(idxList$start_date,1,10) ||
+                                           endAtNextMidnight)){
                                        return(list(start_date=timeBgnIdx,end_date=timeEndIdx,active_periods_flag="both"))
                                      } else {
                                       return(list(start_date=timeBgnIdx,end_date=timeEndIdx,active_periods_flag="start"))
                                      }
                                    }
-                                   if(!base::is.null(idxList$end_date) && substr(TimeBgnFmt,1,10) == substr(idxList$end_date,1,10)){
+                                   if(!base::is.null(idxList$end_date) &&
+                                      (substr(TimeBgnFmt,1,10) == substr(idxList$end_date,1,10) ||
+                                         endAtNextMidnight)){
                                      return(list(start_date=timeBgnIdx,end_date=timeEndIdx,active_periods_flag="end"))
                                    }
                                    return(list(start_date=timeBgnIdx,end_date=timeEndIdx))

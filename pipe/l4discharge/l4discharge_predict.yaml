@@ -2,7 +2,7 @@
 pipeline:
   name: l4discharge_predict
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-discharge-predict-group:v2.0.0
   cmd:
   - sh
   - "-c"
@@ -31,7 +31,9 @@ transform:
     Rscript ./flow.discharge.predict.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums
+      DirErr=/pfs/out/errored_datums \
+      FileSchmCSD=$SCHEMAS/l4discharge_dp04.avsc \
+      FileSchmUSGS=$SCHEMAS/l4discharge_dp04_usgs.avsc
     
     EOF
   env:
@@ -64,6 +66,11 @@ input:
       name: BAM_EXE
       repo: l4discharge_bam_load_files
       glob: /*
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: SCHEMAS
+      repo: l4discharge_avro_schemas
+      glob: /l4discharge
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5

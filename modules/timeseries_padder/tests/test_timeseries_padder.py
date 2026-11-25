@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import os
+import datetime
+import json
 from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -89,6 +91,51 @@ class TimeSeriesPadTest(TestCase):
         variable_pad = VariablePad(config)
         variable_pad.pad()
         self.check_output()
+
+    def test_variable_pad_manifest_at_midnight_end_date(self):
+        location_path = Path('/tmp/in', self.metadata_path, 'location/CFGLOC112154.json')
+        self.fs.create_file(location_path)
+        config = Config(data_path=self.input_path,
+                        out_path=self.out_path,
+                        pad_dirs=self.pad_dirs,
+                        copy_dirs=self.copy_dirs,
+                        relative_path_index=self.relative_path_index,
+                        year_index=self.year_index,
+                        month_index=self.month_index,
+                        day_index=self.day_index,
+                        location_index=self.location_index,
+                        data_type_index=self.data_type_index,
+                        window_size=0)
+        manifest_path = Path(self.out_path, self.metadata_path, self.data_dir, Config.manifest_filename)
+        for flag, start, expected in [
+            ('end', '2018-01-03T00:00:00Z', ['2018-01-02', '2018-01-03']),
+            ('both', '2018-01-03T12:00:00Z', ['2018-01-03']),
+        ]:
+            with self.subTest(flag=flag):
+                location_path.write_text(json.dumps({
+                    "features": [{"Data Rate": "0.1", "properties": {"active_periods": [{
+                        "start_date": start,
+                        "end_date": "2018-01-04T00:00:00Z",
+                        "active_periods_flag": flag,
+                    }]}}]
+                }))
+                VariablePad(config).pad()
+                self.assertEqual(manifest_path.read_text().splitlines(), expected)
+
+    def test_recheck_padded_dates_active_period_boundaries(self):
+        dates = [datetime.date(2018, 12, 31), datetime.date(2019, 1, 1),
+                 datetime.date(2019, 1, 2)]
+        for flag, start, end, expected in [
+            ('end', '2018-12-31T00:00:00Z', '2019-01-01T00:00:00Z', dates[:1]),
+            ('end', '2018-12-31T00:00:00Z', '2019-01-01T00:00:01Z', dates[:2]),
+            ('end', '2018-12-31T00:00:00Z', '2019-01-01T12:00:00Z', dates[:2]),
+            ('start', '2019-01-01T00:00:00Z', '2019-01-02T00:00:00Z', dates[1:]),
+            ('both', '2019-01-01T12:00:00Z', '2019-01-02T00:00:00Z', dates[1:2]),
+        ]:
+            with self.subTest(flag=flag, end=end):
+                period = {'start_date': start, 'end_date': end, 'active_periods_flag': flag}
+                self.assertEqual(VariablePad.recheck_padded_dates(dates, period), expected)
+        self.assertEqual(VariablePad.recheck_padded_dates(dates, None), dates)
 
     def check_output(self):
         """Ensure the expected files are in the output directory."""

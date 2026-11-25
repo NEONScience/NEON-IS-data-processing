@@ -32,13 +32,13 @@
 
 #' @examples
 #' Stepping through the code in Rstudio
-# Sys.setenv(DIR_IN_OS='/home/nickerson/pfs/l4discharge_os_table_group',
-#            DIR_IN='/home/nickerson/pfs/l4discharge_csd_swe_group/2024/09/01')
+# Sys.setenv(DIR_IN_OS='~/Git/pfs/l4discharge_os_table_loader',
+#            DIR_IN='~/Git/pfs/l4discharge_csd_swe_group/2024/09/01')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # arg <- c("DirIn=$DIR_IN",
 #          "DirInOS=$DIR_IN_OS",
-#          "DirOut=/home/nickerson/pfs/out",
-#          "DirErr=/home/nickerson/pfs/out/errored_datums")
+#          "DirOut=~/Git/pfs/out",
+#          "DirErr=~/Git/pfs/out/errored_datums")
 # rm(list=setdiff(ls(),c('arg','log')))
 # setwd('/home/NEON/nickerson/R/NEON-IS-data-processing/flow/flow.discharge.parse.os.inputs')
 
@@ -53,7 +53,10 @@
 #     updated dates to POSIX
 #   Nora Catolico(2026-09-07)
 #     updated to write out parquet files
-
+#   Nora Catolico(2026-11-18)
+#     parse OS table dates once and pass to wrapper
+#   Zachary Nickerson (2026-11-24)
+#     added code for processing USGS discharge data
 ##############################################################################################
 options(digits.secs = 3)
 library(lubridate)
@@ -145,6 +148,14 @@ if (base::any(base::class(csd_gaugeWaterColumnRegression_pub) == 'try-error')) {
   base::stop()
 }
 
+csd_dischargeRegressionUSGS_pub  <-
+  base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_dischargeRegressionUSGS_pub.csv')))
+if (base::any(base::class(csd_dischargeRegressionUSGS_pub) == 'try-error')) {
+  # Generate error and stop execution
+  log$error(base::paste0('File ', Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.csd_dischargeRegressionUSGS_pub.csv is unreadable.'))
+  base::stop()
+}
+
 sdrc_controlInfo_pub  <-
   base::try(read.csv(paste0(Para$DirInOS, '/NEON.DOM.SITE.DP1.00133.001.sdrc_controlInfo_pub.csv')))
 if (base::any(base::class(sdrc_controlInfo_pub) == 'try-error')) {
@@ -202,6 +213,18 @@ if (base::any(base::class(sdrc_stageDischargeCurveInfo_pub) == 'try-error')) {
 }
 
 
+# Parse OS table dates once for reuse across all discharge groups
+osDates <- parse.discharge.os.dates(
+  csd_constantBiasShift_pub=csd_constantBiasShift_pub,
+  csd_dataGapToFillMethodMapping_pub=csd_dataGapToFillMethodMapping_pub,
+  csd_gapFillingRegression_pub=csd_gapFillingRegression_pub,
+  csd_gaugeWaterColumnRegression_pub=csd_gaugeWaterColumnRegression_pub,
+  csd_dischargeRegressionUSGS_pub=csd_dischargeRegressionUSGS_pub,
+  sdrc_controlInfo_pub=sdrc_controlInfo_pub,
+  sdrc_curveIdentification_pub=sdrc_curveIdentification_pub,
+  sdrc_priorParameters_pub=sdrc_priorParameters_pub
+)
+
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
@@ -216,6 +239,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         csd_dataGapToFillMethodMapping_pub=csd_dataGapToFillMethodMapping_pub,
         csd_gapFillingRegression_pub=csd_gapFillingRegression_pub,
         csd_gaugeWaterColumnRegression_pub=csd_gaugeWaterColumnRegression_pub,
+        csd_dischargeRegressionUSGS_pub=csd_dischargeRegressionUSGS_pub,
         sdrc_controlInfo_pub=sdrc_controlInfo_pub,
         sdrc_curveIdentification_pub=sdrc_curveIdentification_pub,
         sdrc_priorParameters_pub=sdrc_priorParameters_pub,
@@ -224,6 +248,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         sdrc_gaugePressureRelationship_pub=sdrc_gaugePressureRelationship_pub,
         sdrc_stageDischargeCurveInfo_pub=sdrc_stageDischargeCurveInfo_pub,
         DirOutBase=Para$DirOut,
+        osDates=osDates,
         log=log
       ),
       error = function(err) {
