@@ -18,10 +18,15 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #'  
-#' 4. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
+#' 4. "FileSchmCSD=value" (optional), where values is the full path to the avro schema for the output CSD data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. #' 
+#'
+#' 5. "FileSchmUSGS=value" (optional), where values is the full path to the avro schema for the output USGS data 
+#' file. If this input is not provided, the output schema for the USGS data will be the same as the input USGS data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE USGS DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT USGS DATA. #' 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -41,7 +46,8 @@
 # arg <- c("DirIn=$DIR_IN",
 #          "DirOut=/home/nickerson/pfs/out",
 #          "DirErr=/home/nickerson/pfs/out/errored_datums",
-#          "FileSchmData=/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc")
+#          "FileSchmCSD=/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04.avsc",
+#          "FileSchmUSGS=/home/nickerson/pfs/l4discharge_avro_schemas/l4discharge/l4discharge_dp04_usgs.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -57,12 +63,17 @@
 #     updated to use parquet files
 #   Nora Catolico(2026-09-23)
 #     updated for NA watercolumn data handling
-##############################################################################################
+#   Zachary Nickerson (2026-11-24)
+#     added code for processing USGS discharge data
+#   Nora Catolico (2026-11-24)
+#     vectorized handling of USGS discharge data, update documentation
+#############################################################################################
 options(digits.secs = 3)
 library(foreach)
 library(doParallel)
 library(lubridate)
 library(dplyr)
+library(dataRetrieval)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.discharge.predict.R")
@@ -86,27 +97,34 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn","DirOut","DirErr"),
-                                      NameParaOptn = c("FileSchmData"),log = log)
+                                      NameParaOptn = c("FileSchmCSD","FileSchmUSGS"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
+log$debug(base::paste0('Schema for output data: ', Para$FileSchmCSD))
+log$debug(base::paste0('Schema for USGS data: ', Para$FileSchmUSGS))
 
 
 # Read in the schemas so we only have to do it once and not every time in the avro writer.
-if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
-  SchmDataOut <- NULL
+if(base::is.null(Para$FileSchmCSD) || Para$FileSchmCSD == 'NA'){
+  SchmCSDOut <- NULL
 } else {
-  SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
+  SchmCSDOut <- base::paste0(base::readLines(Para$FileSchmCSD),collapse='')
+}
+
+if(base::is.null(Para$FileSchmUSGS) || Para$FileSchmUSGS == 'NA'){
+  SchmUSGSOut <- NULL
+} else {
+  SchmUSGSOut <- base::paste0(base::readLines(Para$FileSchmUSGS),collapse='')
 }
 
 
 # Find all the input paths (datums). We will process each one.
 DirIn <-
-  NEONprocIS.base::def.dir.in.partial(DirBgn = Para$DirIn,
-                     nameDirSubPartial = 'l4discharge',
+  NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
+                     nameDirSub = 'BaM_beta',
                      log = log)
 log$debug(base::paste0('Directories identified:', DirIn))
 
@@ -122,7 +140,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.discharge.predict(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmDataOut=SchmDataOut,
+        SchmCSDOut=SchmCSDOut,
+        SchmUSGSOut=SchmUSGSOut,
         log=log
       ),
       error = function(err) {
