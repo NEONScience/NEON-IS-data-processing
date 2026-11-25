@@ -131,7 +131,7 @@ class VariablePad:
         return None
 
     @staticmethod
-    def recheck_padded_dates(padded_dates: List[datetime.datetime], active_periods: Optional[Dict[str, Any]]) -> List[datetime.datetime]:
+    def recheck_padded_dates(padded_dates: List[datetime.date], active_periods: Optional[Dict[str, Any]]) -> List[datetime.date]:
         if not active_periods:
             return padded_dates
 
@@ -145,7 +145,9 @@ class VariablePad:
             return [dt for dt in padded_dates if dt >= pivot]
         elif flag == "end":
             date_str = active_periods.get("end_date")
-            pivot = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ").date()
+            end_time = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+            # End timestamps are exclusive and have one-second precision.
+            pivot = (end_time - datetime.timedelta(seconds=1)).date()
             return [dt for dt in padded_dates if dt <= pivot]
         else:
             return padded_dates
