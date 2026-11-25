@@ -841,7 +841,7 @@ wrap.discharge.predict <- function(DirIn,
       dischargeRegressionUSGS$usgsDischargeRegEndDate <- base::as.POSIXct(
         dischargeRegressionUSGS$usgsDischargeRegEndDate,
         tz="UTC")
-      regID <- dischargeRegressionUSGS$usgsDischargeRegID
+      regID <- dischargeRegressionUSGS$usgsDischargeRegID[1]
 
       dischargeRegressionUSGS$usgsDischargeRegSlope <- base::as.numeric(dischargeRegressionUSGS$usgsDischargeRegSlope)
       dischargeRegressionUSGS$usgsDischargeRegSlopeSE <- base::as.numeric(dischargeRegressionUSGS$usgsDischargeRegSlopeSE)
