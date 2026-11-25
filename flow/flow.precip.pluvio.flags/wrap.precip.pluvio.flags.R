@@ -5,7 +5,8 @@
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 
 #' @description Workflow. Compute the heater and status flags by assessing the bit rate. Only 
-#' flagging alarm codes of interest. Flag heater error if inlet temp is below freezing in near freezing conditions
+#' flagging alarm codes of interest. Flag heater error if inlet temp is below freezing in near freezing conditions, or if the inlet temp
+#' reports its failure value (99.9) while the cell temperature is below 1 C
 #' 
 #' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/location-id, where # indicates any number of parent and child directories 
@@ -71,6 +72,8 @@
 #     removing unnecessary block and adding in schema to report write
 #   Teresa Burlingame  (2026-05-08)
 #     changing test so that it looks at inlet temp rather than status
+#   Teresa Burlingame  (2026-11-25)
+#     flag heater error when inlet temp reports failure value (99.9) and cell temp is below 1 C
 ##############################################################################################
 wrap.precip.pluvio.flags<- function(DirIn,
                                     DirOutBase,
@@ -164,20 +167,25 @@ wrap.precip.pluvio.flags<- function(DirIn,
     }
   }
   
-  # If inlet temperature indicates that sensor is not adequately heating
-
-   for (i in seq_along(data$inletTemp)) {
-    if (is.na(data$inletTemp[i])) {
-       qfPlau$heaterErrorQF[i] <- -1
-     } else {
-       if (data$inletTemp[i] > 0 ) { 
-         qfPlau$heaterErrorQF[i] <- 0
-       }
-       if (data$inletTemp[i] < 0 & data$cell_temperature[i] > -40 ) { #see if there's a threshold where it stops trying to heat?
-         qfPlau$heaterErrorQF[i] <- 1
-       }
-     }
-   }
+  # If inlet temperature indicates that sensor is not adequately heating.
+  # The inlet temp stream reports a failure value (99.9) when the heater/probe has failed. This is only
+  # a concern when it is cold enough for the orifice to freeze, so use the cell temperature to gate it.
+  inletTempFail <- 90 # Anything above this is a failure value, not a real temperature
+  cellTempCold <- 1 # deg C. Below this a failed heater can impact data quality
+  
+  inletTemp <- data$inletTemp
+  cellTemp <- data$cell_temperature
+  if(base::is.null(cellTemp)){
+    cellTemp <- base::rep(NA_real_, base::length(inletTemp))
+  }
+  
+  inletFail <- !base::is.na(inletTemp) & inletTemp > inletTempFail
+  inletFrozen <- !base::is.na(inletTemp) & inletTemp < 0
+  
+  qfPlau$heaterErrorQF[inletFail & !base::is.na(cellTemp) & cellTemp < cellTempCold] <- 1
+  qfPlau$heaterErrorQF[inletFrozen & !base::is.na(cellTemp) & cellTemp > -40] <- 1 #see if there's a threshold where it stops trying to heat?
+  qfPlau$heaterErrorQF[(inletFail | inletFrozen) & base::is.na(cellTemp)] <- -1
+  qfPlau$heaterErrorQF[base::is.na(inletTemp)] <- -1
   
       nameFileQfOutFlag <- fileQfPlau
 

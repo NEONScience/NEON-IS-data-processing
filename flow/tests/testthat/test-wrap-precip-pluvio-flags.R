@@ -29,6 +29,10 @@
 #'   Row 8:  sensorStatus=0,    inletTemp=-2.0 -> sensorErrorQF=0,  heaterErrorQF=1
 #'   Row 9:  sensorStatus=0,    inletTemp=5.0  -> sensorErrorQF=0,  heaterErrorQF=0
 #'   Row 10: sensorStatus=0,    inletTemp=5.0  -> sensorErrorQF=0,  heaterErrorQF=0
+#'   Row 11: sensorStatus=0,    inletTemp=99.9, cell=-5 -> sensorErrorQF=0, heaterErrorQF=1  (failed heater, cold)
+#'   Row 12: sensorStatus=0,    inletTemp=99.9, cell=5  -> sensorErrorQF=0, heaterErrorQF=0  (failed heater, warm)
+#'   Row 13: sensorStatus=0,    inletTemp=99.9, cell=NA -> sensorErrorQF=0, heaterErrorQF=-1
+#'   Row 14: sensorStatus=0,    inletTemp=99.9, cell=1  -> sensorErrorQF=0, heaterErrorQF=0  (1 C is not below threshold)
 
 # changelog and author contributions / copyrights
 #   Teresa Burlingame (2026-05-08)
@@ -134,6 +138,14 @@ test_that("Unit test of wrap.precip.pluvio.flags.R", {
   # Test 14: heaterErrorQF is 1 when sensorStatus=0 but inletTemp<0 (row 8, inletTemp=-2)
   # --------------------------------------------------------------------------------------------
   testthat::expect_equal(qfOut$heaterErrorQF[8], 1L)
+
+  # --------------------------------------------------------------------------------------------
+  # Test 14b: Failed inlet temp (99.9) flags only when the cell temperature is below 1 C (rows 11-14)
+  # --------------------------------------------------------------------------------------------
+  testthat::expect_equal(qfOut$heaterErrorQF[11], 1L)
+  testthat::expect_equal(qfOut$heaterErrorQF[12], 0L)
+  testthat::expect_equal(qfOut$heaterErrorQF[13], -1L)
+  testthat::expect_equal(qfOut$heaterErrorQF[14], 0L)
 
   # --------------------------------------------------------------------------------------------
   # Test 15: Original flag columns are preserved in output (nullQF, rangeQF, gapQF)
