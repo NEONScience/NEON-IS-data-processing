@@ -488,7 +488,8 @@ wrap.discharge.parse.os.inputs <- function(DirIn,
                           end = as.POSIXct(csd_dischargeRegressionUSGS_pub$usgsDischargeRegEndDate,tz="UTC"))
     }
     currUSGSRegData <- csd_dischargeRegressionUSGS_pub[
-      in.window(osDates$usgs,startDate,endDate),
+      grepl(paste0("^",site,"\\."), csd_dischargeRegressionUSGS_pub$usgsDischargeRegID)
+      &in.window(osDates$usgs,startDate,endDate),
     ]
     
     # If there are no active usgsDischargeRegIDs, proceed with the max usgsDischargeRegID
