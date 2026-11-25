@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS L4 Discharge parsing script
 
 # Start with the neon-is-base-r image.
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v2.2.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v2.2.1
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.discharge.parse.os.inputs"
