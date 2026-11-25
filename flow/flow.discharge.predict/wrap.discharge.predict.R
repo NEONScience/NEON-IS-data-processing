@@ -870,7 +870,7 @@ wrap.discharge.predict <- function(DirIn,
 
       # Subset to the data for this search interval
       usgsData <- usgsData[
-        usgsData$time>=startDate&usgsData$time<(startDate+secondsInDay),
+        usgsData$time>=startDate&usgsData$time<endDate,
       ]
 
       # Error handling If there are 0 records
