@@ -92,15 +92,9 @@ class TimeSeriesPadTest(TestCase):
         variable_pad.pad()
         self.check_output()
 
-    def test_variable_pad_manifest_excludes_midnight_end_date(self):
+    def test_variable_pad_manifest_at_midnight_end_date(self):
         location_path = Path('/tmp/in', self.metadata_path, 'location/CFGLOC112154.json')
-        self.fs.create_file(location_path, contents=json.dumps({
-            "features": [{"Data Rate": "0.1", "properties": {"active_periods": [{
-                "start_date": "2018-01-03T00:00:00Z",
-                "end_date": "2018-01-04T00:00:00Z",
-                "active_periods_flag": "end",
-            }]}}]
-        }))
+        self.fs.create_file(location_path)
         config = Config(data_path=self.input_path,
                         out_path=self.out_path,
                         pad_dirs=self.pad_dirs,
@@ -112,9 +106,21 @@ class TimeSeriesPadTest(TestCase):
                         location_index=self.location_index,
                         data_type_index=self.data_type_index,
                         window_size=0)
-        VariablePad(config).pad()
         manifest_path = Path(self.out_path, self.metadata_path, self.data_dir, Config.manifest_filename)
-        self.assertEqual(manifest_path.read_text().splitlines(), ['2018-01-02', '2018-01-03'])
+        for flag, start, expected in [
+            ('end', '2018-01-03T00:00:00Z', ['2018-01-02', '2018-01-03']),
+            ('both', '2018-01-03T12:00:00Z', ['2018-01-03']),
+        ]:
+            with self.subTest(flag=flag):
+                location_path.write_text(json.dumps({
+                    "features": [{"Data Rate": "0.1", "properties": {"active_periods": [{
+                        "start_date": start,
+                        "end_date": "2018-01-04T00:00:00Z",
+                        "active_periods_flag": flag,
+                    }]}}]
+                }))
+                VariablePad(config).pad()
+                self.assertEqual(manifest_path.read_text().splitlines(), expected)
 
     def test_recheck_padded_dates_active_period_boundaries(self):
         dates = [datetime.date(2018, 12, 31), datetime.date(2019, 1, 1),
